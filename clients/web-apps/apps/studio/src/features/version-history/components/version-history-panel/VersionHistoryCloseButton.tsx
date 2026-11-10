@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { X } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarryParams } from "../../hooks/useForwardQueryParams";
@@ -13,12 +13,12 @@ export const VersionHistoryCloseButton = () => {
     <>
       <Tooltip content="CLose">
         <Button
-          className="hover:bg-white/10"
+          className="hover:bg-hover"
           variant="ghost"
           size="icon8"
           onClick={() => navigate(withQueryParams("/agent"))}
         >
-          <X className="h-[1.1rem] w-[1.1rem] text-white/80" />
+          <XIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         </Button>
       </Tooltip>
     </>

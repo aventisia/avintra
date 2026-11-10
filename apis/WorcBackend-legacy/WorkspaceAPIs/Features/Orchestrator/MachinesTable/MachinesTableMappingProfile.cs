@@ -29,10 +29,20 @@ public class MachinesTableMappingProfile : IRegister
                 src => src.FlowVersion != null && src.FlowVersion.Flow != null
                     ? (Guid?)src.FlowVersion.FlowId
                     : null)
+            .Map(dest => dest.FlowName,
+                src => src.FlowVersion != null && src.FlowVersion.Flow != null
+                    ? src.FlowVersion.Flow.Name
+                    : null)
+            .Map(dest => dest.FlowType,
+                src => src.FlowVersion != null && src.FlowVersion.Flow != null
+                    ? (FlowTypesEnum?)src.FlowVersion.Flow.Type
+                    : null)
             .Map(dest => dest.VersionNumber,
                 src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
             .Map(dest => dest.SupportedPlatform,
-                src => src.FlowVersion != null ? src.FlowVersion.SupportedPlatform : null);
+                src => src.FlowVersion != null ? src.FlowVersion.SupportedPlatform : null)
+            .Map(dest => dest.LastModifiedOn,
+                src => src.FlowVersion != null ? (DateTimeOffset?)src.FlowVersion.LastModifiedOn : null);
 
         // For - Update existing machine
         config.NewConfig<UpdateMachineDto, Machine>()

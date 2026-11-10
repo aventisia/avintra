@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { SubPlansRowDeleteAction } from "./SubPlansRowDeleteAction.ee";
 
@@ -10,18 +11,18 @@ interface SubPlansRowActionsProps {
 export const SubPlansRowActions = ({ rowId }: SubPlansRowActionsProps) => {
   return (
     // Dropdown menu for plans table row action */}
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open sub plans actions">
       {/* View the plans details */}
-      <DTRowAction rowId={rowId} crudAction="read" entity="subscriptionPlan" />
+      <CrudRowAction rowId={rowId} crudAction="read" entity="subscriptionPlan" />
 
       {/* Edit plans details */}
-      <DTRowAction rowId={rowId} crudAction="update" entity="subscriptionPlan" />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="subscriptionPlan" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 
       {/* Triggers SubPlans delete alert dialog  */}
       <SubPlansRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

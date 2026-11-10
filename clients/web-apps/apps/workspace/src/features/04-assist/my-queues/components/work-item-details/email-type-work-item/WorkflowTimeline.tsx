@@ -1,15 +1,14 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
-  CheckCircle2,
-  CornerUpRight,
-  MessageSquare,
-  Pencil,
-  // PlusCircle,
-} from "lucide-react";
+  ArrowBendUpRightIcon,
+  ChatIcon,
+  CheckCircleIcon,
+  PencilSimpleIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
@@ -47,26 +46,26 @@ const formatTimelineDate = (dateString: Date | string) => {
 
 const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
   const baseStyles =
-    "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border bg-background ring-4 ring-background shadow-sm";
+    "relative z-10 flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface ring-4 ring-surface";
 
   switch (type) {
     case QueueTransactionEventEnum.StatusChange:
       // case QueueTransactionEventEnum.DescriptionUpdated:
       return (
-        <div className={cn(baseStyles, "border-gray-200 text-gray-500")}>
-          <Pencil className="h-3.5 w-3.5" />
+        <div className={cn(baseStyles, "border-line text-muted-foreground")}>
+          <PencilSimpleIcon className="h-3.5 w-3.5" />
         </div>
       );
     case QueueTransactionEventEnum.Closed:
       return (
-        <div className={cn(baseStyles, "border-green-200 bg-green-50 text-green-600")}>
-          <CheckCircle2 className="h-4 w-4" />
+        <div className={cn(baseStyles, "border-ok/35 bg-ok/10 text-ok")}>
+          <CheckCircleIcon className="h-4 w-4" />
         </div>
       );
     case QueueTransactionEventEnum.QueueTransactionRouted:
       return (
-        <div className={cn(baseStyles, "border-blue-200 bg-blue-50 text-blue-600")}>
-          <CornerUpRight className="h-3.5 w-3.5" />
+        <div className={cn(baseStyles, "border-line text-ink-2")}>
+          <ArrowBendUpRightIcon className="h-3.5 w-3.5" />
         </div>
       );
     // case QueueTransactionEventEnum.QueueTransactionCreated:
@@ -79,8 +78,8 @@ const TimelineIcon = ({ type }: { type: QueueTransactionEventEnum }) => {
     //   );
     default:
       return (
-        <div className={cn(baseStyles, "border-gray-200 text-gray-500")}>
-          <MessageSquare className="h-3.5 w-3.5" />
+        <div className={cn(baseStyles, "border-line text-muted-foreground")}>
+          <ChatIcon className="h-3.5 w-3.5" />
         </div>
       );
   }
@@ -95,8 +94,8 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
       {/* 1. Icon/Avatar */}
       <div className="relative flex-none">
         {isComment ? (
-          <Avatar className="relative z-10 h-8 w-8 border border-primary-100">
-            <AvatarFallback className="bg-primary-50 pt-0.5 text-xs font-bold text-primary">
+          <Avatar className="relative z-10 h-8 w-8 border border-line">
+            <AvatarFallback className="bg-sunken pt-0.5 text-xs font-bold text-ink-2">
               {getInitials(authorName)}
             </AvatarFallback>
           </Avatar>
@@ -119,11 +118,11 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
                 </span>
                 <span className="text-sm text-muted-foreground">commented</span>
               </div>
-              <span className="text-xs tabular-nums text-muted-foreground">
+              <span className="font-mono text-xs tabular-nums text-muted-foreground">
                 {formatTimelineDate(item.createdOn)}
               </span>
             </div>
-            <div className="bg-muted/30 hover:bg-muted/50 relative rounded-lg border px-2.5 py-1 text-sm leading-relaxed shadow-sm transition-all">
+            <div className="relative rounded-lg border border-line bg-sunken px-2.5 py-1 text-sm leading-relaxed">
               <MarkdownViewer textValue={item.data} size="xs" />
             </div>
           </div>
@@ -135,13 +134,9 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
             <div className="flex flex-wrap items-center gap-x-2 text-sm">
               <span className="font-semibold">{authorName}</span>
               <span className="text-muted-foreground">changed status to</span>
-              {item.data && (
-                <Badge variant="outline" className="bg-slate-200 text-slate-600">
-                  {item.data}
-                </Badge>
-              )}
+              {item.data && <Badge variant="outline">{item.data}</Badge>}
             </div>
-            <span className="pl-0.5 text-xs text-muted-foreground">
+            <span className="pl-0.5 font-mono text-xs tabular-nums text-muted-foreground">
               {formatTimelineDate(item.createdOn)}
             </span>
           </div>
@@ -153,13 +148,9 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
             <div className="flex items-center gap-2 text-sm">
               <span className="font-semibold">{authorName}</span>
               <span className="text-muted-foreground">routed the work item to</span>
-              {
-                <Badge variant="default" className="bg-blue-200 text-blue-700">
-                  {item.data || "Queue"}
-                </Badge>
-              }
+              {<Badge variant="default">{item.data || "Queue"}</Badge>}
             </div>
-            <span className="pl-0.5 text-xs text-muted-foreground">
+            <span className="pl-0.5 font-mono text-xs tabular-nums text-muted-foreground">
               {formatTimelineDate(item.createdOn)}
             </span>
           </div>
@@ -170,9 +161,9 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2 py-1 text-sm">
               <span className="font-semibold">{authorName}</span>
-              <span className="font-medium text-green-600">marked this workitem as closed</span>
+              <span className="font-medium text-ok">marked this workitem as closed</span>
             </div>
-            <span className="text-xs text-muted-foreground">
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
               {formatTimelineDate(item.createdOn)}
             </span>
           </div>
@@ -189,13 +180,9 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
             <div className="flex flex-wrap items-center gap-x-2 text-sm">
               <span className="font-semibold">{authorName}</span>
               <span className="text-muted-foreground">updated the item</span>
-              {item.data && (
-                <Badge variant="outline" className="bg-slate-200 text-slate-600">
-                  {item.data}
-                </Badge>
-              )}
+              {item.data && <Badge variant="outline">{item.data}</Badge>}
             </div>
-            <span className="pl-0.5 text-xs text-muted-foreground">
+            <span className="pl-0.5 font-mono text-xs tabular-nums text-muted-foreground">
               {formatTimelineDate(item.createdOn)}
             </span>
           </div>
@@ -245,10 +232,10 @@ export default function WorkflowTimeline({
   return (
     <div className="w-full max-w-4xl space-y-2">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-xs font-semibold">Activity Log</h3>
+        <h3 className="text-xs font-semibold">Activity log</h3>
       </div>
 
-      <div className="rounded-lg border bg-background p-6 shadow-sm">
+      <div className="rounded-lg border border-line bg-surface p-6">
         {isLoading ? (
           <div className="pb-6 text-sm text-muted-foreground">Loading timeline...</div>
         ) : (
@@ -257,7 +244,7 @@ export default function WorkflowTimeline({
               <>
                 <div
                   className={cn(
-                    "absolute bottom-0 left-6 top-2 w-0.5 bg-gray-100 ",
+                    "absolute bottom-0 left-6 top-2 w-0.5 bg-sunken ",
                     isCompleted && "bottom-12",
                   )}
                   aria-hidden="true"
@@ -269,7 +256,7 @@ export default function WorkflowTimeline({
                 </div>
               </>
             ) : (
-              <NoContentMessage primaryMessage="No activity recorded yet." />
+              <EmptyState primaryMessage="No activity recorded yet." />
             )}
           </div>
         )}
@@ -281,7 +268,7 @@ export default function WorkflowTimeline({
               <TimelineIcon type={QueueTransactionEventEnum.CommentAdded} />
             </div>
 
-            <div className="min-w-0 flex-1 rounded-lg border p-2">
+            <div className="min-w-0 flex-1 rounded-lg border border-line bg-surface p-2">
               <MarkdownContainer
                 setTextValue={setCommentText}
                 textValue={commentText}

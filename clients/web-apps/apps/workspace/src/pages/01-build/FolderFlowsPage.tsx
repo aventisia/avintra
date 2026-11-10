@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 import { useParams } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export const FolderFlowsPage = () => {
   const { folderId = "" } = useParams();
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <FolderFlowsTable key={folderId} folderId={folderId} />
     </Suspense>
   );

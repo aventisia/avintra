@@ -1,5 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import {
   DateTimePickerField,
   Form,
@@ -11,10 +11,10 @@ import {
   InputField,
   SelectField,
   SwitchField,
+  crudDialogFieldClasses,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
-import { type CrudActionType } from "@avplatform/ui/types";
 import {
   applyTimeZoneOffset,
   getTimezoneOptions,
@@ -27,8 +27,10 @@ import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import { getVaultCredentialSelectOptions } from "../../apis/vault-credential-select.apis.ts";
 import { resourceRequiresReference } from "../../constants/form-utils.ts";
 import {
+  LOCKED_AGENTS_DESCRIPTION,
+  agentsLabelProps,
+  credentialProps,
   expiryDateTimeProps,
-  idProps,
   isDisabledProps,
   nameProps,
   providerProps,
@@ -36,7 +38,8 @@ import {
   resourceProps,
   resubscribeEnabledProps,
   resubscribeFrequencyProps,
-} from "../../constants/trigger-form-field-props.ts";
+  timezoneLabelProps,
+} from "../../constants/trigger-form-field-props.constant.ts";
 import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
 import { MessageTriggerDto } from "../../dtos/message-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
@@ -46,7 +49,7 @@ import { TimezoneSelector } from "./TimezoneSelector.tsx";
 
 interface TriggerCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
@@ -77,7 +80,6 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     queryKey,
   );
 
-  // const resubscribeEnabled = form.watch("resubscribeEnabled");
   const resubscribeFrequency = form.watch("resubscribeFrequency");
   const provider = form.watch("provider");
 
@@ -108,15 +110,12 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       payload: refineFormData(formData) as unknown as MessageTriggerDto,
       crudAction: crudAction,
     });
-
-    // Close the dialog if not creating/updating the record
-    if (crudAction == "read") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if ((crudAction === "create" || crudAction === "update") && isSuccess) onCloseConfirmed();
-  }, [isSuccess, crudAction, onCloseConfirmed]);
+    if (isSuccess) onCloseConfirmed();
+  }, [isSuccess, onCloseConfirmed]);
   const timezone = form.watch("timezone");
 
   // sync expiry date with selected timezone
@@ -141,141 +140,94 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
 
   const referenceRequired = resourceRequiresReference(form.watch("resource"));
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
   const isUpdateMode = crudAction === "update";
 
-  // Return the form
-  return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* trigger Id */}
-      {isReadMode && <InputField {...idProps} />}
+  const timezoneOptions = getTimezoneOptions();
 
-      {/* Name */}
+  return (
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
-        disabled={crudAction !== "create"}
+        disabled={isUpdateMode}
       />
+
+      <div className="grid grid-cols-2 gap-3">
+        <SelectField {...providerProps} disabled={isUpdateMode} />
+        {(!isUpdateMode || form.getValues("credentialName") !== "") && (
+          <SelectField
+            {...credentialProps}
+            selectOptions={selectOptions ?? []}
+            disabled={isUpdateMode}
+          />
+        )}
+      </div>
+
+      <SelectField {...resourceProps} disabled={isUpdateMode} />
+      {referenceRequired && <InputField {...referenceProps} disabled={isUpdateMode} />}
 
       <FormField
         name="timezone"
         control={form.control}
         render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt
-              size={"base"}
-              label="Timezone"
-              description="Select the timezone for the trigger."
-              isRequired
-            />
+          <FormItem className={crudDialogFieldClasses.item}>
+            <FormLabelExt {...timezoneLabelProps} />
             <FormControl>
               <TimezoneSelector
-                options={getTimezoneOptions()}
-                selectedItem={getTimezoneOptions().find((val) => val.value == field.value) || null}
+                options={timezoneOptions}
+                selectedItem={timezoneOptions.find((val) => val.value == field.value) || null}
                 onItemSelect={(item) => field.onChange(item.value)}
                 onItemClear={() => field.onChange(null)}
-                placeholder="Search"
+                placeholder="Search timezones"
               />
             </FormControl>
-
-            <FormMessage size={"base"} />
+            <FormMessage />
           </FormItem>
         )}
       />
-      <SelectField {...providerProps} disabled={isReadMode || isUpdateMode} />
-      {crudAction === "create" ? (
-        <SelectField
-          selectOptions={selectOptions ?? []}
-          name="credentialName"
-          label="Credential"
-          isRequired
-          disabled={isReadMode}
-        />
-      ) : (
-        form.getValues("credentialName") !== "" && (
-          <SelectField
-            selectOptions={selectOptions ?? []}
-            name="credentialName"
-            label="Credential"
-            isRequired
-            disabled={isReadMode || isUpdateMode}
-          />
-        )
-      )}
 
-      <SelectField {...resourceProps} disabled={isReadMode || isUpdateMode} />
-      {referenceRequired && (
-        <InputField {...referenceProps} disabled={isReadMode || isUpdateMode} />
-      )}
+      <div className="grid grid-cols-2 gap-3">
+        <InputField type="number" {...resubscribeFrequencyProps} min={1} max={4320} />
+        <DateTimePickerField {...expiryDateTimeProps} disabled />
+      </div>
 
-      <InputField type="number" {...resubscribeFrequencyProps} min={1} max={4320} />
-      <DateTimePickerField disabled {...expiryDateTimeProps} />
-
-      <SwitchField size="sm" {...resubscribeEnabledProps} />
-
-      {/* {resubscribeEnabled && (
-        <>
-          <SelectField {...resubscribeFrequencyProps} />
-
-          {resubscribeFrequency == "custom" && (
-            <InputField
-              name="resubscribeFrequencyCustom"
-              label="Custom Frequency (in days)"
-            />
-          )}
-        </>
-      )} */}
-
-      {/* Agents Selector */}
       <FormField
         name="agents"
         control={form.control}
         render={({ field }) => (
-          <FormItem size={"base"}>
+          <FormItem className={crudDialogFieldClasses.item}>
             <FormLabelExt
-              size={"base"}
-              label="Select Agent(s)"
-              description="Choose the agent(s) that should be triggered by this event."
-              isRequired
+              {...agentsLabelProps}
+              description={isUpdateMode ? LOCKED_AGENTS_DESCRIPTION : agentsLabelProps.description}
             />
-
             <FormControl>
               <AgentsSelector
                 value={field.value ?? []}
                 onChange={field.onChange}
                 id={rowId}
                 crudAction={crudAction}
-                disabled={isReadMode || isUpdateMode}
+                disabled={isUpdateMode}
               />
             </FormControl>
-
-            <FormMessage size={"base"} />
+            <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Is Disabled */}
-      {crudAction !== "create" && <SwitchField size="sm" {...isDisabledProps} />}
+      <SwitchField size="sm" {...resubscribeEnabledProps} />
 
-      {/* Submit button */}
-      {!isReadMode && (
-        <div className="!mt-10 flex w-full justify-end">
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
-            isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </div>
-      )}
+      {isUpdateMode && <SwitchField size="sm" {...isDisabledProps} />}
+
+      <CrudDialogActions>
+        <SubmitButton
+          className="min-w-[5rem]"
+          primaryText={isUpdateMode ? "Save changes" : "Create trigger"}
+          secondaryText={isUpdateMode ? "Saving..." : "Creating..."}
+          isPending={isPending}
+          disabled={!isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

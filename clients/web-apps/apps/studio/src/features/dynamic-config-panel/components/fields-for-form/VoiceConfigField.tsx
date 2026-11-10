@@ -2,7 +2,7 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { Settings2Icon } from "lucide-react";
+import { SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
@@ -122,7 +122,7 @@ const VoiceConfigField = ({
 
         <Popover>
           <PopoverTrigger className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}>
-            <Settings2Icon className="h-3 w-3" />
+            <SlidersHorizontalIcon className="h-3 w-3" />
           </PopoverTrigger>
 
           <PopoverContent className="mr-6 w-[25rem] space-y-3.5 p-2">

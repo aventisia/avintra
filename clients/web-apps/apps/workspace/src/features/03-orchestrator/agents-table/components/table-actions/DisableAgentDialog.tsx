@@ -1,12 +1,14 @@
-import { Checkbox, LoadingSpinner } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { Dialog, DialogContent } from "@avplatform/ui/dialog";
-import { Label } from "@avplatform/ui/label";
+import { Checkbox } from "@avplatform/ui";
+import { IconTile } from "@avplatform/ui/icon-tile";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { ProhibitIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { DATA_QUERY_KEY } from "../../constants";
@@ -27,14 +29,13 @@ const DisableAgentDialog = () => {
     })),
   );
 
-  // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  // The agents data is cached under a space-scoped key (see useFetchAgents)
+  // IMPORTANT NOTE: The agents data is cached under a space-scoped key (see useFetchAgents).
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({
       currentSpace: state.currentSpace,
@@ -44,10 +45,8 @@ const DisableAgentDialog = () => {
     data: AgentsTableDto[];
   }>([...DATA_QUERY_KEY, currentSpace?.id]);
 
-  // Get agent data by id
   const agentData = agentsData?.data.find((item) => item.id === flowVersionId);
 
-  // Define mutation using React Query
   const { isPending, mutate } = useUpdateAgentMutation();
 
   const handleDisable = () => {
@@ -61,42 +60,57 @@ const DisableAgentDialog = () => {
       });
   };
   return (
-    <Dialog open={open} onOpenChange={(open: boolean) => setOpen(open)}>
-      <DialogContent className="space-y-6 p-4">
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Disable Agent</h2>
-          <p className="text-sm text-muted-foreground">
-            Are you sure you want to disable this agent? They will no longer be active, but their
-            data will be retained.
-          </p>
-
-          <div className="flex items-start gap-3 pt-2">
-            <Checkbox
-              checked={checked}
-              onCheckedChange={(value) => setChecked(!!value)}
-              id="archive"
-            />
-            <div className="grid gap-2">
-              <Label htmlFor="archive"> Also archive this agent</Label>
-              <p className="text-sm text-muted-foreground">
-                Archives the agent from views but keeps their history.
-              </p>
-            </div>
+    <CardDialog
+      isOpen={open}
+      onClose={() => setOpen(false)}
+      isDismissLocked={isPending}
+      mark={
+        <IconTile
+          Icon={ProhibitIcon}
+          size="lg"
+          className="size-12 rounded-lg text-bad [&>svg]:size-6"
+        />
+      }
+      eyebrow="Disable agent"
+      eyebrowClassName="text-bad"
+      title={agentData?.name || "Agent"}
+      footer={
+        <>
+          <StatusLine tone="idle">Its data is kept</StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton data-autofocus onClick={() => setOpen(false)} disabled={isPending}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="danger"
+              disabled={isPending}
+              isBusy={isPending}
+              onClick={handleDisable}
+            >
+              {isPending ? "Disabling" : "Disable agent"}
+            </CardDialogButton>
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button variant="destructive" disabled={isPending} onClick={handleDisable}>
-            {isPending && <LoadingSpinner className="mr-2 h-4 w-4" />}
-            Disable Agent
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <p className="text-[13px] leading-5 text-ink-2">
+        The agent will no longer be active, but its data will be retained.
+      </p>
+      <div className="mt-4 flex items-start gap-3 rounded-md bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
+        <Checkbox
+          checked={checked}
+          onCheckedChange={(value) => setChecked(!!value)}
+          id="archive"
+          className="mt-0.5"
+        />
+        <label htmlFor="archive" className="min-w-0">
+          <span className="block text-[13px] font-semibold text-ink">Also archive this agent</span>
+          <span className="block text-[12px] text-muted-foreground">
+            Archives the agent from views but keeps its history.
+          </span>
+        </label>
+      </div>
+    </CardDialog>
   );
 };
 

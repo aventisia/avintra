@@ -1,5 +1,8 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
-import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
+import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
+import { ArrowUpRightIcon } from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { ResourceFlowAccessRowAction } from "@/features/resource-flow-access/components/common-row-actions/ResourceFlowAccessRowAction";
@@ -9,16 +12,17 @@ import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/re
 import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
 import { useTableTab } from "../../hooks/useTableTab.hook";
+import { getToolDetailsPath } from "../../utils/tool-details-path.util";
 import { ToolRowDeleteAction } from "./ToolRowDeleteAction";
 
-interface ToolRowActionsProps {
+type ToolRowActionsProps = {
   rowId: string;
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
   isResourceAccessRestricted: boolean;
   isPlatformTool?: boolean;
-}
+};
 
 export const ToolRowActions = ({
   rowId,
@@ -31,13 +35,18 @@ export const ToolRowActions = ({
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
   // Get the query key used to invalidate the merged tools list after a mutation
   const { queryKey } = useTableTab();
+  const navigate = useNavigate();
 
   return (
-    <DataTableRowActions className="w-36 min-w-36">
-      <DTRowAction rowId={rowId} crudAction="read" entity="tool" />
+    <TableCNRowActionsMenu ariaLabel="Open tool actions" contentClassName="w-36 min-w-36">
+      <SimpleDDMenuItem
+        content="View"
+        Icon={ArrowUpRightIcon}
+        onClick={() => navigate(getToolDetailsPath(rowId, name, isPlatformTool))}
+      />
 
       {!isPlatformTool && actions?.update && (
-        <DTRowAction rowId={rowId} crudAction="update" entity="tool" />
+        <CrudRowAction rowId={rowId} crudAction="update" entity="tool" />
       )}
 
       {!isPlatformTool && actions?.update && (
@@ -67,6 +76,6 @@ export const ToolRowActions = ({
       {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

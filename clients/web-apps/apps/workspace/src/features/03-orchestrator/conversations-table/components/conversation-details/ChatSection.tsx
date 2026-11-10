@@ -20,9 +20,7 @@ export default function ChatSection({ data }: { data: AdminConversationDto }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className={"text-sm font-semibold"}>{data.flowName}</span>
-              <Badge className="px-2 py-0 rounded-full text-2xs bg-slate-200 text-secondary font-medium">
-                v{data.versionNumber}
-              </Badge>
+              <Badge variant="outline">v{data.versionNumber}</Badge>
             </div>
           </div>
         </div>

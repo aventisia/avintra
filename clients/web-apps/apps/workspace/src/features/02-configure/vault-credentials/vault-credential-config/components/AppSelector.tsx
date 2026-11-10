@@ -3,7 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { FormLabelExt } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type AppOption = {
@@ -120,7 +120,7 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
     <div
       key={option.value}
       className={cn(
-        "flex cursor-pointer items-center gap-3 rounded-lg py-2 pl-6 pr-2 transition-colors hover:bg-accent",
+        "flex cursor-pointer items-center gap-3 rounded-lg py-2 pl-6 pr-2 transition-colors hover:bg-hover",
         isItemSelected(option.value) && "cursor-not-allowed opacity-50",
       )}
       onClick={() => !isItemSelected(option.value) && handleItemSelect(option)}
@@ -156,16 +156,16 @@ export const AppSelector: React.FC<AppSelectorProps> = ({
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
             )}
           </Button>
         </div>
       </div>
 
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-surface shadow-pop">
           <div className="p-2">
             {inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">

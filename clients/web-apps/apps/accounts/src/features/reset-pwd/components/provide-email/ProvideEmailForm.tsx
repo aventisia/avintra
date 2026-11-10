@@ -37,7 +37,7 @@ export const ProvideEmailForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
+        className="!mt-5 h-control-lg w-full"
         primaryText="Continue"
         isPending={isSubmitting || isCodePending}
       />

@@ -33,7 +33,7 @@ export const FlowsPopoverTrigger = () => {
       className={cn(
         buttonVariants({ variant: "ghost" }),
         "group flex h-full max-w-[15rem] gap-1.5 px-3",
-        isPopoverOpen && "bg-slate-100",
+        isPopoverOpen && "bg-hover",
       )}
     >
       {isFlowLoading ? <FPTLoadingFlow /> : <FPTNameAndVersion />}

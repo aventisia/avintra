@@ -3,12 +3,12 @@ import { type CrudActionType, type CustomFormMessage } from "@avplatform/ui/type
 import { useFormContext } from "react-hook-form";
 
 import {
+  AUTH_TYPE_OPTIONS,
   CustomApiToolAuthTypeEnum,
   CustomApiToolVaultCredentialFormValues,
-} from "../constants/custom-api-tool-schema";
+} from "../constants/custom-api-tool-schema.constant";
 
 interface CustomApiToolFormProps {
-  rowId: string;
   crudAction: CrudActionType;
   onNameChange?: (value: string) => void;
   availabilityMessage?: CustomFormMessage | null;
@@ -21,30 +21,19 @@ interface CustomApiToolFormProps {
  * share a single form and a single submit handler.
  */
 const CustomApiToolForm = ({
-  rowId,
   crudAction,
   onNameChange,
   availabilityMessage,
 }: CustomApiToolFormProps) => {
   const { watch } = useFormContext<CustomApiToolVaultCredentialFormValues>();
-  const isReadOnly = crudAction === "read";
   const authType = watch("authenticationType");
 
-  const authTypeOptions = [
-    { label: "API Key (Header)", value: CustomApiToolAuthTypeEnum.ApiKeyHeader },
-    { label: "API Key (Query)", value: CustomApiToolAuthTypeEnum.ApiKeyQuery },
-    { label: "Bearer Token", value: CustomApiToolAuthTypeEnum.Bearer },
-    { label: "Basic Authentication", value: CustomApiToolAuthTypeEnum.Basic },
-  ];
-
   return (
-    <div className="space-y-4 px-2.5 pb-5">
-      {isReadOnly && <InputField name="id" label="Vault Id" value={rowId} disabled />}
-
+    <>
       <InputField
         name="name"
-        label="Unique Name"
-        placeholder="Custom API Tool"
+        label="Unique name"
+        placeholder="e.g. crm-api"
         isRequired
         description="Name cannot be modified after creation."
         autoFocus
@@ -56,14 +45,14 @@ const CustomApiToolForm = ({
       <TextareaField
         name="description"
         label="Description"
-        placeholder="Describe what this credential is for"
+        placeholder="What is this credential for?"
       />
 
       <SelectField
         name="authenticationType"
-        label="Authentication Type"
+        label="Authentication type"
         placeholder="Select authentication type"
-        selectOptions={authTypeOptions}
+        selectOptions={AUTH_TYPE_OPTIONS}
         isRequired
       />
 
@@ -78,8 +67,13 @@ const CustomApiToolForm = ({
       )}
 
       {authType === CustomApiToolAuthTypeEnum.Basic && (
-        <>
-          <InputField name="basicUsername" label="Username" placeholder="Username" isRequired />
+        <div className="grid grid-cols-2 gap-3">
+          <InputField
+            name="basicUsername"
+            label="Username"
+            placeholder="e.g. api-user"
+            isRequired
+          />
           <InputField
             name="basicPassword"
             label="Password"
@@ -87,53 +81,53 @@ const CustomApiToolForm = ({
             type="password"
             isRequired
           />
-        </>
+        </div>
       )}
 
       {authType === CustomApiToolAuthTypeEnum.ApiKeyHeader && (
-        <>
+        <div className="grid grid-cols-2 gap-3">
           <InputField
             name="apiKeyHeaderName"
-            label="Header Name"
+            label="Header name"
             placeholder="e.g. X-API-Key"
             isRequired
           />
           <InputField
             name="apiKeyHeaderValue"
-            label="API Key"
+            label="API key"
             placeholder="API key"
             type="password"
             isRequired
           />
-        </>
+        </div>
       )}
 
       {authType === CustomApiToolAuthTypeEnum.ApiKeyQuery && (
-        <>
+        <div className="grid grid-cols-2 gap-3">
           <InputField
             name="apiKeyQueryName"
-            label="Parameter Name"
+            label="Parameter name"
             placeholder="e.g. apiKey"
             isRequired
           />
           <InputField
             name="apiKeyQueryValue"
-            label="API Key"
+            label="API key"
             placeholder="API key"
             type="password"
             isRequired
           />
-        </>
+        </div>
       )}
 
       {crudAction !== "create" && (
         <SwitchField
           name="isDisabled"
-          label="Disable Record"
+          label="Disable record"
           description="Disable this record if it's been outdated, or not required anymore"
         />
       )}
-    </div>
+    </>
   );
 };
 

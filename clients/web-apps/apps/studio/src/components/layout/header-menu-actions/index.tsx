@@ -1,22 +1,17 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  SimpleDDMenuItem,
-} from "@avplatform/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
-import { invoke } from "@tauri-apps/api/core";
 import {
-  ArrowLeftRightIcon,
-  BookCopyIcon,
-  DockIcon,
-  ImportIcon,
+  AppWindowIcon,
+  ArrowSquareInIcon,
+  ArrowSquareOutIcon,
+  ArrowsLeftRightIcon,
+  BooksIcon,
   KeyboardIcon,
   LockOpenIcon,
-  UploadIcon,
-} from "lucide-react";
+  UploadSimpleIcon,
+} from "@phosphor-icons/react";
+import { invoke } from "@tauri-apps/api/core";
 import { useShallow } from "zustand/react/shallow";
 
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
@@ -24,7 +19,6 @@ import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/u
 import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
-import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
 import { useExportFlow } from "@/hooks/useExportFlow.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -99,15 +93,15 @@ export const HeaderActionMenu: React.FC = () => {
         {IS_TAURI && !isChatAgent ? (
           <SimpleDDMenuItem
             size="md"
-            Icon={ArrowTopRightOnSquareIcon}
-            content="Open UI Inspector"
+            Icon={ArrowSquareOutIcon}
+            content="Open UI inspector"
             onClick={openUIInspector}
           />
         ) : null}
 
         <SimpleDDMenuItem
           size="md"
-          Icon={ImportIcon}
+          Icon={ArrowSquareInIcon}
           content="Import"
           onClick={() => {
             setUpload(true);
@@ -116,7 +110,7 @@ export const HeaderActionMenu: React.FC = () => {
 
         <SimpleDDMenuItem
           size="md"
-          Icon={UploadIcon}
+          Icon={UploadSimpleIcon}
           content="Export"
           onClick={() => {
             void guardDirtyNodeConfig(exportFlow);
@@ -125,8 +119,8 @@ export const HeaderActionMenu: React.FC = () => {
 
         <SimpleDDMenuItem
           size="md"
-          Icon={BookCopyIcon}
-          content="Save As Template"
+          Icon={BooksIcon}
+          content="Save as template"
           onClick={() => void guardDirtyNodeConfig(() => setSATDialog(true))}
         />
 
@@ -134,8 +128,8 @@ export const HeaderActionMenu: React.FC = () => {
           <SimpleDDMenuItem
             onClick={() => setExportDialog(true)}
             size="md"
-            Icon={ArrowLeftRightIcon}
-            content="Add Input/Output"
+            Icon={ArrowsLeftRightIcon}
+            content="Add input/output"
           />
         ) : null}
 
@@ -143,7 +137,7 @@ export const HeaderActionMenu: React.FC = () => {
           <SimpleDDMenuItem
             size="md"
             Icon={KeyboardIcon}
-            content="Keyboard Shortcuts"
+            content="Keyboard shortcuts"
             onClick={() => {
               keyboardDialog(true);
             }}
@@ -154,19 +148,17 @@ export const HeaderActionMenu: React.FC = () => {
           <>
             <SimpleDDMenuItem
               size="md"
-              Icon={UploadIcon}
-              content="Export (Trimmed)"
+              Icon={UploadSimpleIcon}
+              content="Export (trimmed)"
               onClick={() => {
                 void guardDirtyNodeConfig(exportFlowTrimmed);
               }}
             />
 
             <SimpleDDMenuItem size="md" Icon={LockOpenIcon} content="Lock" />
-            <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
+            <SimpleDDMenuItem size="md" Icon={AppWindowIcon} content="Archive" />
           </>
         ) : null}
-        <DropdownMenuSeparator className="mt-1 mb-2" />
-        <PublishFlow />
       </DropdownMenuContent>
     </DropdownMenu>
   );

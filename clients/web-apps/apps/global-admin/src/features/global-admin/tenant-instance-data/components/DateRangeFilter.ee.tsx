@@ -2,8 +2,8 @@ import { Calendar } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useDateRangePickerStore } from "../date-range-store.ee";
@@ -23,8 +23,8 @@ export const DateRangeFilter = () => {
 
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     { label: "Last 7 days", value: 7 },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
@@ -60,7 +60,7 @@ export const DateRangeFilter = () => {
           "data-[state=open]:border-primary data-[state=open]:ring-[3px] data-[state=open]:ring-ring",
         )}
       >
-        <CalendarDays className="h-4 w-4 text-[--icon-color]" />{" "}
+        <CalendarDotsIcon className="h-4 w-4 text-[--icon-color]" />{" "}
         {format(dateRange?.from || "", "MMM d, yyyy")} -{" "}
         {format(dateRange?.to || "", "MMM d, yyyy")}
       </PopoverTrigger>
@@ -79,7 +79,7 @@ export const DateRangeFilter = () => {
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
                   className={`justify-start border-none shadow-none ${
-                    isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                    isSelected ? "bg-selected text-primary-text" : ""
                   }`}
                   onClick={() => setSelectedRange(presetRange)}
                 >

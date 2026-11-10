@@ -6,7 +6,7 @@ import {
 } from "@avplatform/ui/components/input-group";
 import { FormLabelExt } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 export default function InputWithCopy({
@@ -38,7 +38,7 @@ export default function InputWithCopy({
     <div>
       <FormLabelExt label={label} description={description} />
       <InputGroup
-        className={cn("mt-1", readOnly && "focus-within:border-input focus-within:ring-0")}
+        className={cn("mt-1", readOnly && "focus-within:border-line focus-within:ring-0")}
       >
         <InputGroupInput
           value={value}

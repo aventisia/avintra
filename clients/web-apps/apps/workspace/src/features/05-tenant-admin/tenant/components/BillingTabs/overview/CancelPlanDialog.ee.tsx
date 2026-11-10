@@ -1,156 +1,180 @@
-import { Separator } from "@avplatform/ui";
-import { Button, buttonVariants } from "@avplatform/ui/buttons";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogPrimitive,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
+import { IconTile } from "@avplatform/ui/icon-tile";
 import { Label } from "@avplatform/ui/label";
 import { RadioGroup, RadioGroupItem } from "@avplatform/ui/radio-group";
+import { RecordList, RecordListItem, RecordSection } from "@avplatform/ui/record-sheet";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { AlertTriangleIcon, X } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
+import type { IconProps } from "@avplatform/ui/types";
+import { formatDate } from "@avplatform/ui/utils";
+import {
+  ArrowCounterClockwiseIcon,
+  CalendarCheckIcon,
+  CoinsIcon,
+  DownloadSimpleIcon,
+  ProhibitIcon,
+  TrashIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
+import type { ComponentType, ReactNode } from "react";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { useCancelPlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/cancel-plan-dialog-store.ee";
 
-const CancelPlanDialog = () => {
+type Consequence = {
+  Icon: ComponentType<IconProps>;
+  title: ReactNode;
+  detail: string;
+  isSevere?: boolean;
+};
+
+const getConsequences = (planType: string, expiresOn?: string | Date): Consequence[] => [
+  ...(planType === "Starter"
+    ? [
+        {
+          Icon: TrashIcon,
+          title: "Your account is deleted immediately",
+          detail: "All agents and their data are lost and can’t be recovered.",
+          isSevere: true,
+        },
+        {
+          Icon: DownloadSimpleIcon,
+          title: "Export what you want to keep first",
+          detail: "Download any data you need before you continue.",
+        },
+      ]
+    : []),
+  ...(planType === "Pro"
+    ? [
+        {
+          Icon: CalendarCheckIcon,
+          title: expiresOn
+            ? `Your plan stays active until ${formatDate(expiresOn)}`
+            : "Your plan stays active until the end of this billing cycle",
+          detail: "Keep using every feature and export your data until then.",
+        },
+        {
+          Icon: TrashIcon,
+          title: "Then your account is deleted",
+          detail: "All agents and their data are permanently deleted and can’t be recovered.",
+          isSevere: true,
+        },
+      ]
+    : []),
+  {
+    Icon: CoinsIcon,
+    title: "Unused top-up credits are forfeited",
+    detail: "Even when their expiry date is still in the future.",
+  },
+  {
+    Icon: ArrowCounterClockwiseIcon,
+    title: "This can’t be undone",
+    detail: "A cancelled plan can’t be restored.",
+  },
+];
+
+const REASONS = [
+  { id: "r1", value: "productQuality", label: "I am not satisfied with the product quality" },
+  {
+    id: "r2",
+    value: "customerSupport",
+    label: "I am not satisfied with the customer support/service",
+  },
+  {
+    id: "r3",
+    value: "foundAlternativeSolution",
+    label: "I found an alternative solution",
+    planType: "Starter",
+  },
+  {
+    id: "r3",
+    value: "pricing",
+    label: "The pricing does not meet my expectations",
+    planType: "Pro",
+  },
+  { id: "r4", value: "others", label: "Other (please share your feedback)" },
+];
+
+const CancelPlanDialog = ({ expiresOn }: { expiresOn?: string | Date }) => {
   const { isOpen, setOpen } = useCancelPlanDialogStore();
-
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({
-      userSession: state.userSession,
-    })),
-  );
-
-  const planType = userSession?.planType ?? "";
+  const planType = useUserSessionStore((state) => state.userSession?.planType ?? "");
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent className="!max-w-[45rem] px-1">
-        <DialogHeader className="border-b px-6 py-4 pb-2">
-          <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">Cancel Plan</h2>
-            <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Cancel Plan</span>
-            </DialogPrimitive.Close>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="mx-5 mt-4 flex gap-3 rounded-lg bg-red-100 px-3 py-2 text-[0.85rem] text-red-800">
-          <AlertTriangleIcon className="h-5 w-5 text-red-500" />
-          Warning: This action will permanently delete your account
-        </div>
-        <div className="mt-2 space-y-4 px-6 pb-4 pt-1.5 text-md">
-          <h2 className="-mb-1 text-lg font-medium">
-            You are about to cancel your <span className="font-semibold">{planType}</span> Plan
-          </h2>
-          <div>
-            <p className="mb-2">Before you continue, please note the following:</p>
-            <ul className="list-disc pl-8">
-              {/* Starter Plan: Points to note */}
-              {planType === "Starter" && (
-                <>
-                  <li>
-                    Cancelling your plan will{" "}
-                    <span className="font-semibold">
-                      permanently delete your entire account immediately
-                    </span>
-                    . All Agents and associated data will be lost and cannot be recovered.
-                  </li>
-                  <li>Please export any data you wish to keep before proceeding.</li>
-                </>
-              )}
-
-              {/* Pro Plan: Points to note */}
-              {planType === "Pro" && (
-                <>
-                  <li>Your plan will remain active until the end of your current billing cycle.</li>
-                  <li>
-                    Once cancelled, your entire account - including all Agents and associated data -
-                    will be{" "}
-                    <span className="font-semibold">
-                      permanently deleted and cannot be recovered
-                    </span>
-                    .
-                  </li>
-                  <li>
-                    You can continue using all features and export your data until your plan expires
-                  </li>
-                </>
-              )}
-
-              {/* Common point for all plans */}
-              <li>
-                <span className="font-semibold">
-                  Any unused top-up credits will also be forfeited
-                </span>
-                , even if their expiration date is in the future.
-              </li>
-              <li>
-                This action <span className="font-semibold">cannot be undone</span>.
-              </li>
-            </ul>
+    <CardDialog
+      isOpen={isOpen}
+      onClose={() => setOpen(false)}
+      widthClassName="w-[min(36rem,calc(100vw-2rem))]"
+      mark={
+        <IconTile
+          Icon={ProhibitIcon}
+          size="lg"
+          className="size-12 rounded-lg bg-bad/10 text-bad ring-bad/20 [&>svg]:size-6"
+        />
+      }
+      eyebrow="Cancel plan"
+      eyebrowClassName="text-bad"
+      title={planType ? `${planType} plan` : "Your plan"}
+      footer={
+        <>
+          <p className="flex min-w-0 items-center gap-2 text-[12.5px] text-muted-foreground">
+            <WarningIcon className="size-4 shrink-0 text-warn" />
+            <span className="truncate">This can’t be undone</span>
+          </p>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton data-autofocus onClick={() => setOpen(false)}>
+              Keep my plan
+            </CardDialogButton>
+            <CardDialogButton variant="danger" onClick={() => setOpen(false)}>
+              Cancel plan
+            </CardDialogButton>
           </div>
-          <Separator />
+        </>
+      }
+    >
+      <div className="space-y-5">
+        <p className="flex items-start gap-2.5 rounded-lg bg-bad/[0.06] px-3.5 py-3 text-[13px] leading-5 text-ink-2 ring-1 ring-bad/20">
+          <WarningIcon className="mt-0.5 size-4 shrink-0 text-bad" />
+          <span>
+            Cancelling your <span className="font-semibold text-ink">{planType}</span> plan{" "}
+            <span className="font-semibold text-bad">permanently deletes your account</span>.
+          </span>
+        </p>
 
-          <div className="space-y-2">
-            <h3 className="text-base font-medium">Help us improve - why are you cancelling?</h3>
+        <RecordSection title="What happens next">
+          <RecordList>
+            {getConsequences(planType, expiresOn).map(({ Icon, title, detail, isSevere }) => (
+              <RecordListItem key={detail} className="items-start">
+                <IconTile
+                  Icon={Icon}
+                  size="sm"
+                  className={isSevere ? "bg-bad/10 text-bad ring-bad/20" : undefined}
+                />
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium text-ink">{title}</p>
+                  <p className="text-[12.5px] text-muted-foreground">{detail}</p>
+                </div>
+              </RecordListItem>
+            ))}
+          </RecordList>
+        </RecordSection>
 
-            <RadioGroup className="space-y-0.5 pl-3">
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="productQuality" id="r1" />
-                <Label htmlFor="r1" className="text-md font-normal">
-                  I am not satisfied with the product quality
+        <RecordSection title="Why are you cancelling?">
+          <RadioGroup className="gap-0 divide-y divide-line overflow-hidden rounded-lg ring-1 ring-line">
+            {REASONS.filter((reason) => !reason.planType || reason.planType === planType).map(
+              ({ id, value, label }) => (
+                <Label
+                  key={value}
+                  htmlFor={id}
+                  className="flex cursor-pointer items-center gap-3 bg-popover px-3.5 py-3 text-[13px] font-normal text-ink-2 transition-colors hover:bg-hover has-[[data-state=checked]]:bg-selected/50 has-[[data-state=checked]]:text-ink"
+                >
+                  <RadioGroupItem value={value} id={id} />
+                  {label}
                 </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="customerSupport" id="r2" />
-                <Label htmlFor="r2" className="text-md font-normal">
-                  I am not satisfied with the customer support/service
-                </Label>
-              </div>
-              {/* Starter Plan: Additional reason */}
-              {planType === "Starter" && (
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value="foundAlternativeSolution" id="r3" />
-                  <Label htmlFor="r3" className="text-md font-normal">
-                    I found an alternative solution
-                  </Label>
-                </div>
-              )}
-              {/* Pro Plan: Additional reason */}
-              {planType === "Pro" && (
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value="pricing" id="r3" />
-                  <Label htmlFor="r3" className="text-md font-normal">
-                    The pricing does not meet my expectations
-                  </Label>
-                </div>
-              )}
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="others" id="r4" />
-                <Label htmlFor="r4" className="text-md font-normal">
-                  Other (please share your feedback)
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
-        </div>
-        <Separator />
-        <DialogFooter className="px-6 py-4 pb-4">
-          <Button variant={"outline"} onClick={() => setOpen(false)}>
-            Don't Cancel
-          </Button>
-          <Button variant={"destructive"} onClick={() => setOpen(false)}>
-            Cancel Plan
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              ),
+            )}
+          </RadioGroup>
+        </RecordSection>
+      </div>
+    </CardDialog>
   );
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "CallBlockNode",
-  "label": "Call Block",
+  "label": "Call block",
   "description": "Use to add custom block",
   "version": "1.0.0",
   "author": "@aventisia",

@@ -4,6 +4,7 @@ import { InputField, SelectField } from "@avplatform/ui/form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { COUNTRY_LS_KEY } from "@/constants/variables";
 import {
   countryProps,
   industryProps,
@@ -43,7 +44,7 @@ export const CompanyInfoForm = () => {
   const onSubmit = async (formData: z.infer<typeof companyInfoSchema>) => {
     try {
       await updateTenantInfoMutation({ ...formData, type: "Organization" });
-      localStorage.setItem("country", formData.country);
+      localStorage.setItem(COUNTRY_LS_KEY, formData.country);
 
       // Reset the form to clear dirty state and suppress discard dialog
       form.reset(form.getValues());
@@ -86,6 +87,7 @@ export const CompanyInfoForm = () => {
 
       <div className="flex w-full justify-between">
         <Button
+          size="lg"
           variant={"outline"}
           type="button"
           onClick={() => {
@@ -94,7 +96,7 @@ export const CompanyInfoForm = () => {
         >
           Back
         </Button>
-        <SubmitButton isPending={isCreationPending} primaryText="Continue" />
+        <SubmitButton size="lg" isPending={isCreationPending} primaryText="Continue" />
       </div>
     </Form>
   );

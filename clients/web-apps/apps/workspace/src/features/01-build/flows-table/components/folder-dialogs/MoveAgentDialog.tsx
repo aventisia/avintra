@@ -1,6 +1,7 @@
+import { EmptyState } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
-import { ArrowRight, FolderSearch, Search } from "lucide-react";
+import { ArrowRightIcon, FolderOpenIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useId, useState } from "react";
 
@@ -141,12 +142,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
       isOpen={isOpen}
       onClose={onClose}
       isDismissLocked={isSaving}
-      mark={
-        <AgentAvatar
-          size="lg"
-          className="size-12 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)] [&>svg]:size-6"
-        />
-      }
+      mark={<AgentAvatar size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
       eyebrow="Move agent"
       title={agent.name}
       footer={
@@ -166,7 +162,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
                     transition={PANEL_TRANSITION}
                     className="flex min-w-0 items-center gap-1.5"
                   >
-                    <ArrowRight className="size-3.5 shrink-0 text-slate-400" />
+                    <ArrowRightIcon className="size-3.5 shrink-0 text-muted-foreground" />
                     <LocationChip target={selectedTarget} newFolderColor={newFolderColor} />
                   </motion.span>
                 )}
@@ -189,8 +185,8 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
         </>
       }
     >
-      <div className="relative flex h-11 items-center rounded-xl bg-popover shadow-[0_1px_2px_rgba(15,23,42,0.04)] ring-1 ring-border transition-shadow focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.12)] focus-within:ring-indigo-500">
-        <Search className="pointer-events-none absolute left-3.5 size-4 text-slate-400" />
+      <div className="relative flex h-control-lg items-center rounded-md bg-popover ring-1 ring-border transition-shadow focus-within:ring-focus">
+        <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
         <input
           data-autofocus
           role="combobox"
@@ -204,7 +200,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Search folders or type a new name…"
-          className="h-full w-full bg-transparent pl-10 pr-3 text-[13.5px] text-slate-900 outline-none placeholder:text-slate-400"
+          className="h-full w-full bg-transparent pl-10 pr-3 text-[13.5px] text-ink outline-none placeholder:text-muted-foreground"
         />
       </div>
 
@@ -239,20 +235,15 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
       )}
 
       {!hasOtherFolders && !trimmedQuery && (
-        <div
+        <EmptyState
+          Icon={FolderOpenIcon}
+          primaryMessage="No other folders yet"
+          secondaryMessage="Type a name above to create a folder and move this agent into it."
           className={cn(
-            "flex flex-col items-center rounded-xl border border-dashed border-border bg-slate-50/50 px-6 py-6 text-center",
+            "rounded-md border border-dashed border-line py-6",
             targets.length > 0 && "mt-2",
           )}
-        >
-          <span className="grid size-10 place-items-center rounded-full bg-popover text-indigo-500 shadow-sm ring-1 ring-border">
-            <FolderSearch className="size-5" />
-          </span>
-          <p className="mt-3 text-[13.5px] font-semibold text-slate-800">No other folders yet</p>
-          <p className="mt-1 max-w-[18rem] text-[12.5px] leading-5 text-muted-foreground">
-            Type a name above to create a folder and move this agent into it.
-          </p>
-        </div>
+        />
       )}
 
       <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">

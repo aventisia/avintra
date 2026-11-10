@@ -1,23 +1,26 @@
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
 
-import { HelpButton } from "@/components/help/HelpButton";
-
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  SUB_PLANS_INITIAL_STATE,
+  SUB_PLANS_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchSubPlans } from "../hooks/useFetchSubPlans.ee";
 import { SubPlansBulkActions } from "./SubPlansBulkActions.ee";
 import { subPlansTableColumns } from "./SubPlansTableColumns.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: SUB_PLANS_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of Subscription Plans.
@@ -28,22 +31,20 @@ export const SubPlansTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch subscription plans data
   const { data } = useFetchSubPlans();
 
-  // Create a React table for plans data
-  const table = useDataTable(
-    subPlansTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: subPlansTableColumns,
+    getRowId: (row) => row.id ?? "",
+    initialState: SUB_PLANS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
@@ -51,28 +52,27 @@ export const SubPlansTable = () => {
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="subscription-plans" />
+              <TableCNHeading heading={TABLE_HEADING} />
             </div>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search plans..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Create Plan" entity="subscriptionPlan" />
+              <CrudCreateButton buttonText="Create plan" entity="subscriptionPlan" />
             </div>
           </div>
 
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={subPlansTableColumns.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <SubPlansBulkActions table={table} />
+          {/* Data table with its search, view options, footer and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<SubPlansBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search plans..." />
+          </TableCN>
         </div>
       ) : (
         // Show data table skeleton while fetching the plans data
-        <DataTableSkeleton />
+        <TableCNSkeleton columnCount={6} />
       )}
     </>
   );

@@ -1,4 +1,4 @@
-import { Lock } from "lucide-react";
+import { LockIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { LockDto } from "../dtos/collaboration-dtos";
@@ -32,10 +32,10 @@ export const LockHolderBadge = ({ lock }: LockHolderBadgeProps) => {
 
   return (
     <div
-      className="pointer-events-none flex items-center gap-1 rounded-md bg-white/90 px-2 py-1 text-[10px] font-semibold text-slate-700 shadow"
+      className="pointer-events-none flex items-center gap-1 rounded-md border border-line bg-surface/90 px-2 py-1 text-[10px] font-semibold text-ink-2 shadow-pop"
       title={`Locked by ${displayName}`}
     >
-      <Lock className={`h-3 w-3 ${textColor}`} />
+      <LockIcon className={`h-3 w-3 ${textColor}`} />
       <span className="max-w-24 truncate uppercase tracking-wide">{initials}</span>
     </div>
   );

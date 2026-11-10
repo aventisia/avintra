@@ -1,6 +1,6 @@
 import { CopyableText } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { DateTimePickerField } from "@avplatform/ui/form";
 import { useShowAlertHandler, useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
@@ -11,10 +11,9 @@ import { updateApiKey } from "../../apis/api-key.apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   expiresAtProps,
-  idProps,
   isRevokedProps,
   nameProps,
-} from "../../constants/api-key-form-field-props";
+} from "../../constants/api-key-form-field-props.constant";
 import type { ApiKeyDto } from "../../dtos/api-key.dto";
 import type { UpdateApiKeyDto } from "../../dtos/update-api-key.dto";
 import { useApiKeyMutations } from "../../hooks/useApiKeyMutations.hook";
@@ -23,7 +22,7 @@ import { FeatureAccessSection } from "./FeatureAccessSection";
 
 interface ApiKeyCrudFormProps {
   rowId: string;
-  crudAction: "create" | "update" | "read";
+  crudAction: "create" | "update";
 }
 
 export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
@@ -34,7 +33,6 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
   // Custom mutation for create because the response contains the plain API key to display once.
   const { createApiKey: createApiKeyMutation, isCreatePending } = useApiKeyMutations();
 
-  // Optimistic mutation for update (matches the rest of the app)
   const {
     mutate: updateMutate,
     isPending: isUpdatePending,
@@ -49,7 +47,6 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
     [["apiKey", rowId]],
   );
 
-  // Define API key form
   const { form, isDirty, isValid, isRevoked } = useDefineApiKeyForm({ rowId, crudAction });
 
   // Close the dialog when an already-revoked key is opened in edit mode; revocation is permanent.
@@ -60,7 +57,6 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
     }
   }, [isCreate, isRevoked, onCloseConfirmed]);
 
-  // Close dialog when update succeeds
   useEffect(() => {
     if (isUpdateSuccess) onCloseConfirmed();
   }, [isUpdateSuccess, onCloseConfirmed]);
@@ -71,7 +67,7 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
       title: "Your API key",
       description: "Copy it now. For security reasons, this key will not be shown again.",
       content: (
-        <div className="min-w-0 rounded w-full border bg-muted pl-4 py-2 pr-1">
+        <div className="min-w-0 rounded w-full border border-line bg-sunken pl-4 py-2 pr-1">
           <CopyableText
             value={plainApiKey}
             copyValue={plainApiKey}
@@ -89,7 +85,6 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
     });
   };
 
-  // Define submit handler
   const onSubmit = form.handleSubmit(async (formData) => {
     const expiresAt = formData.expiresAt ? formData.expiresAt.toISOString() : null;
 
@@ -114,37 +109,24 @@ export const ApiKeyCrudForm = ({ rowId, crudAction }: ApiKeyCrudFormProps) => {
     }
   });
 
-  const isReadMode = crudAction === "read";
-
   return (
-    <Form methods={form} onSubmit={onSubmit} className="px-2.5 pb-5" disabled={isReadMode}>
-      {/* API Key Id (read-only) */}
-      {!isCreate && <InputField {...idProps} />}
+    <Form methods={form} onSubmit={onSubmit}>
+      <InputField {...nameProps} autoFocus />
 
-      {/* Name */}
-      <InputField {...nameProps} />
-
-      {/* Expires At */}
       <DateTimePickerField {...expiresAtProps} />
 
-      {/* Feature Access */}
-      <FeatureAccessSection disabled={isReadMode} />
+      <FeatureAccessSection />
 
-      {/* Revoke API key (update mode only) */}
       {!isCreate && <SwitchField {...isRevokedProps} />}
 
-      {/* Submit button */}
-      {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={isCreate ? "Create" : "Save changes"}
-            secondaryText={isCreate ? "Creating..." : "Saving..."}
-            isPending={isCreate ? isCreatePending : isUpdatePending}
-            disabled={!isDirty || !isValid || (isCreate ? isCreatePending : isUpdatePending)}
-          />
-        </div>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          primaryText={isCreate ? "Create API key" : "Save changes"}
+          secondaryText={isCreate ? "Creating..." : "Saving..."}
+          isPending={isCreate ? isCreatePending : isUpdatePending}
+          disabled={!isDirty || !isValid || (isCreate ? isCreatePending : isUpdatePending)}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

@@ -9,6 +9,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IAzureBlobStorageService _azureBlobStorageService;
+    private readonly IAuthHelperService _authHelperService;
+    private readonly string _jwt;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
     private readonly string? _username;
@@ -21,7 +23,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         IEmailService emailService,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService,
-        IAzureBlobStorageService azureBlobStorageService)
+        IAzureBlobStorageService azureBlobStorageService,
+        IAuthHelperService authHelperService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -37,6 +40,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _azureBlobStorageService = azureBlobStorageService;
+        _authHelperService = authHelperService;
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
     }
 
     // Retrieves all tenant subscriptions from the database including the creator user.
@@ -359,6 +364,69 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         return serviceResponse;
     }
 
+    private async Task<string?> GetDeferredProfileErrorAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto, SubscriptionPlan subscriptionPlan, AccountUser? currentUser)
+    {
+        if (subscriptionPlan.Price <= 0)
+            return null;
+
+        if ((string.IsNullOrWhiteSpace(tenantSubscriptionPurchaseDto.FirstName) && string.IsNullOrWhiteSpace(currentUser?.FirstName)) ||
+            (string.IsNullOrWhiteSpace(tenantSubscriptionPurchaseDto.LastName) && string.IsNullOrWhiteSpace(currentUser?.LastName)))
+            return "First name and last name are required to purchase this plan.";
+
+        var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+        if (tenant == null || tenant.Type == TenantTypesEnum.Unspecified)
+            return "Complete organization setup before purchasing this plan.";
+
+        if (tenant.Country == CountriesEnum.India && subscriptionPlan.Currency != CurrencyTypesEnum.INR)
+            return "Billing in India requires an INR plan. Choose the plan again in INR.";
+
+        return null;
+    }
+
+    private (string ContactPerson, bool NameChanged) ApplyContactName(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto, AccountUser user)
+    {
+        var firstName = string.IsNullOrWhiteSpace(tenantSubscriptionPurchaseDto.FirstName)
+            ? user.FirstName
+            : CapitalizeFirstLetterUtil.CapitalizeFirstLetter(tenantSubscriptionPurchaseDto.FirstName);
+        var lastName = string.IsNullOrWhiteSpace(tenantSubscriptionPurchaseDto.LastName)
+            ? user.LastName
+            : CapitalizeFirstLetterUtil.CapitalizeFirstLetter(tenantSubscriptionPurchaseDto.LastName);
+
+        var nameChanged = firstName != user.FirstName || lastName != user.LastName;
+        if (nameChanged)
+        {
+            user.FirstName = firstName;
+            user.LastName = lastName;
+            user.LastModifiedByUserId = _userId;
+            _unitOfWork.AccountUserRepo.Update(user);
+        }
+
+        var contactPerson = $"{firstName} {lastName}".Trim();
+        return (string.IsNullOrWhiteSpace(contactPerson) ? user.UserName ?? string.Empty : contactPerson, nameChanged);
+    }
+
+    private async Task<bool> StageBillingContactAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto, AccountUser user)
+    {
+        var (contactPerson, nameChanged) = ApplyContactName(tenantSubscriptionPurchaseDto, user);
+
+        var billingDetail = await _unitOfWork.BillingDetailRepo
+            .GetByConditionAsync(w => w.TenantId == _tenantId)
+            .FirstOrDefaultAsync();
+        if (billingDetail != null && billingDetail.ContactPerson != contactPerson)
+        {
+            billingDetail.ContactPerson = contactPerson;
+            _unitOfWork.BillingDetailRepo.Update(billingDetail);
+        }
+
+        return nameChanged;
+    }
+
+    private async Task SyncUserNameToOtherDbsAsync(AccountUser user)
+    {
+        if (!await _authHelperService.CreateOrUpdateUserInOtherDbsAsync(user, CrudTypesEnum.Update, _jwt))
+            _logger.LogError("Failed to sync the updated name to other databases. UserId={UserId}", user.Id);
+    }
+
     // Creates a new tenant subscription if it doesn't already exist for the tenant and plan.
     public async Task<ServiceResponse<TenantSubscriptionDto>> PurchaseTenantSubscriptionPlanAsync(TenantSubscriptionPurchaseDto tenantSubscriptionPurchaseDto)
     {
@@ -395,6 +463,24 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
             // Trim string properties in the DTO to eliminate any unnecessary whitespace
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
+
+            var hasActivePaidPlan = await _unitOfWork.TenantSubscriptionRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.IsActive && w.Status == SubscriptionStatusTypesEnum.Active && w.Plan.Price > 0)
+                .AnyAsync();
+            if (hasActivePaidPlan)
+            {
+                serviceResponse.Message = "Your organization already has an active paid plan. Use Upgrade Plan in the Workspace billing settings to change it.";
+                return serviceResponse;
+            }
+
+            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            var deferredProfileError = await GetDeferredProfileErrorAsync(tenantSubscriptionPurchaseDto, subscriptionPlan, currentUser);
+            if (deferredProfileError != null)
+            {
+                serviceResponse.Message = deferredProfileError;
+                return serviceResponse;
+            }
 
             // Fetch existing tenant subscription (if any), including plan and creator information
             var existingTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -468,15 +554,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             billingDetail.SubscriptionId = tenantSubscription.Id;
             billingDetail.TenantId = _tenantId;
 
-            // Fetch the current user's information based on their User ID
-            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+            var nameChanged = false;
             if (currentUser != null)
             {
                 // Set the BillingEmail to the current user's username
-                billingDetail.BillingEmail = currentUser?.UserName;
-
-                // Set the ContactPerson to the full name (First and Last Name) of the current user
-                billingDetail.ContactPerson = $"{currentUser?.FirstName} {currentUser.LastName}";
+                billingDetail.BillingEmail = currentUser.UserName;
+                (billingDetail.ContactPerson, nameChanged) = ApplyContactName(tenantSubscriptionPurchaseDto, currentUser);
             }
 
             // Check if billing details already exist for the tenant and subscription
@@ -510,6 +593,9 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 _logger.LogError("Unable to persist billing details. TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
                 return serviceResponse;
             }
+
+            if (nameChanged && currentUser != null)
+                await SyncUserNameToOtherDbsAsync(currentUser);
 
             string? razorpayOrderId = null;
 
@@ -810,6 +896,15 @@ public class TenantSubscriptionService : ITenantSubscriptionService
             // Sanitize input data
             tenantSubscriptionPurchaseDto = TrimDtoStringPropsUtil.TrimDtoStringProps(tenantSubscriptionPurchaseDto);
 
+            var currentUser = await _unitOfWork.AccountUserRepo.GetByConditionAsync(w => w.Id == _userId).FirstOrDefaultAsync();
+
+            var deferredProfileError = await GetDeferredProfileErrorAsync(tenantSubscriptionPurchaseDto, subscriptionPlan, currentUser);
+            if (deferredProfileError != null)
+            {
+                serviceResponse.Message = deferredProfileError;
+                return serviceResponse;
+            }
+
             // Fetch existing tenant subscription (if any), including plan and creator information
             var exitingtSubscription = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w =>
@@ -831,6 +926,8 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
             }
+
+            var nameChanged = currentUser != null && await StageBillingContactAsync(tenantSubscriptionPurchaseDto, currentUser);
 
             // Fetch existing tenant subscription (if any), including plan and creator information
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -871,6 +968,14 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
             }
+            else if (!await _unitOfWork.SaveAsync(checkHasChanges: true))
+            {
+                _logger.LogError("Failed to persist the billing contact for TenantId: {TenantId}.", _tenantId);
+                return serviceResponse;
+            }
+
+            if (nameChanged && currentUser != null)
+                await SyncUserNameToOtherDbsAsync(currentUser);
 
             string? razorpayOrderId = null;
 

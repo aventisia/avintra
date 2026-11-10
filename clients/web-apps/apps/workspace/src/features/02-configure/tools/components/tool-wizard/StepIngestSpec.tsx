@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { cn } from "@avplatform/ui/lib";
+import { WarningCircleIcon } from "@phosphor-icons/react";
+import { useEffect, useId, useRef, useState } from "react";
+
+import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
+import { FormField } from "@/components/card-dialog/FormField";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { isToolNameAvailable } from "../../apis/tools.apis";
 import { ManualToolOperation, ToolDto } from "../../dtos";
@@ -10,8 +16,10 @@ import {
 } from "../../utils/manual-openapi.util";
 import { isValidIconUrl } from "../../utils/tool-icon.util";
 import { getOperationVerificationMap } from "../../utils/tool-operations.util";
-import { FieldLabel } from "./FieldLabel";
+import { FieldHint } from "./FieldHint";
 import { ManualMethodsEditor } from "./ManualMethodsEditor";
+
+const TOOL_NAME_MAX_LENGTH = 255;
 
 type StepIngestSpecProps = {
   crudAction?: "create" | "read" | "update";
@@ -32,6 +40,12 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isCreate = crudAction === "create";
+  const fieldId = useId();
+  const nameId = `${fieldId}-name`;
+  const descriptionId = `${fieldId}-description`;
+  const baseUrlId = `${fieldId}-base-url`;
+  const iconUrlId = `${fieldId}-icon-url`;
+  const methodsId = `${fieldId}-methods`;
 
   useEffect(() => {
     const name = draftTool?.name?.trim() ?? "";
@@ -43,7 +57,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     setNameAvailability({
       isAvailable: true,
       isCheckPending: true,
-      message: "Checking availability...",
+      message: "Checking availability…",
     });
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -55,7 +69,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             isCheckPending: false,
             message: res.data.result
               ? `${name} is available`
-              : `Tool name "${name}" already exists. Please enter a unique name.`,
+              : `A tool named “${name}” already exists.`,
           });
         })
         .catch(() => {
@@ -118,17 +132,43 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     rebuildManualArtifacts(operations);
   };
 
+  const nameError =
+    getError("name") ??
+    (isCreate && !isNameCheckPending && !isNameAvailable ? nameAvailabilityMessage : null);
+  const hasMethod = (draftTool?.manualOperations ?? []).some(
+    (op) => op.name.trim() && op.endpoint.trim(),
+  );
+  const methodsError =
+    crudAction !== "read" && touched.openApiSpec && !hasMethod
+      ? "Add at least one method with a name and endpoint."
+      : null;
+
   return (
     <div className="space-y-4">
-      <div className="space-y-1.5">
-        <FieldLabel
-          label="Unique Name"
-          isRequired
-          description={
-            "A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** any characters (letters, numbers, spaces and symbols).\n- **Cannot be changed** after creation."
-          }
-        />
+      <FormField
+        htmlFor={nameId}
+        label="Name"
+        length={draftTool?.name?.length ?? 0}
+        maxLength={TOOL_NAME_MAX_LENGTH}
+        error={nameError}
+        hint={
+          isCreate && nameAvailabilityMessage ? (
+            <AvailabilityHint
+              message={{
+                type: isNameCheckPending ? "Gray" : "Green",
+                message: nameAvailabilityMessage,
+              }}
+            />
+          ) : (
+            <FieldHint>Unique, and can’t be changed after the tool is created.</FieldHint>
+          )
+        }
+      >
         <input
+          id={nameId}
+          data-autofocus
+          autoComplete="off"
+          maxLength={TOOL_NAME_MAX_LENGTH}
           value={draftTool?.name ?? ""}
           onChange={(e) => {
             // IMPORTANT NOTE: operation IDs derive from the tool name, so renaming invalidates
@@ -139,69 +179,71 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             rebuildManualArtifacts(draftTool?.manualOperations ?? [], { name: e.target.value });
           }}
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-          placeholder="My Custom API Tool"
+          placeholder="e.g. Weather API"
           disabled={crudAction === "update" || crudAction === "read"}
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          aria-invalid={Boolean(nameError)}
+          className={cn(getFieldInputClassName(Boolean(nameError)), "h-11 disabled:bg-sunken")}
         />
-        {isNameCheckPending ? (
-          <p className="text-xs text-muted-foreground">{nameAvailabilityMessage}</p>
-        ) : !isNameAvailable && isCreate ? (
-          <p className="text-xs text-destructive">{nameAvailabilityMessage}</p>
-        ) : isNameAvailable && isCreate && nameAvailabilityMessage ? (
-          <p className="text-xs text-emerald-600">{nameAvailabilityMessage}</p>
-        ) : null}
-        {getError("name") && <p className="text-xs text-destructive">{getError("name")}</p>}
-      </div>
+      </FormField>
 
-      <div className="space-y-1.5">
-        <FieldLabel label="Description" description="A short summary of what the tool does." />
+      <FormField htmlFor={descriptionId} label="Description" isOptional>
         <textarea
+          id={descriptionId}
           value={draftTool?.description ?? ""}
           onChange={(e) => updateDraft({ description: e.target.value })}
-          placeholder="Describe what this tool does"
+          placeholder="What does this tool do?"
           rows={3}
-          className="flex min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-xs shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(getFieldInputClassName(false), "block resize-none py-2.5 leading-5")}
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-1.5">
-        <FieldLabel
-          label="Icon URL (optional)"
-          description="Optional URL of the icon that represents the tool. Defaults to the placeholder icon when left empty."
-        />
-        <input
-          type="url"
-          value={draftTool?.iconUrl ?? ""}
-          onChange={(e) => updateDraft({ iconUrl: e.target.value })}
-          onBlur={() => setTouched((prev) => ({ ...prev, iconUrl: true }))}
-          placeholder="https://example.com/icon.svg"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        {getError("iconUrl") && <p className="text-xs text-destructive">{getError("iconUrl")}</p>}
-      </div>
-
-      <div className="space-y-1.5">
-        <FieldLabel
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField
+          htmlFor={baseUrlId}
           label="Base URL"
-          isRequired
-          description="The base URL of the external API the tool calls (e.g. https://api.example.com)."
-        />
-        <input
-          value={draftTool?.baseUrl ?? ""}
-          onChange={(e) => updateDraft({ baseUrl: e.target.value })}
-          onBlur={() => setTouched((prev) => ({ ...prev, baseUrl: true }))}
-          placeholder="https://api.example.com"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-        />
-        {getError("baseUrl") && <p className="text-xs text-destructive">{getError("baseUrl")}</p>}
+          error={getError("baseUrl")}
+          hint={<FieldHint>The API every method calls.</FieldHint>}
+        >
+          <input
+            id={baseUrlId}
+            value={draftTool?.baseUrl ?? ""}
+            onChange={(e) => updateDraft({ baseUrl: e.target.value })}
+            onBlur={() => setTouched((prev) => ({ ...prev, baseUrl: true }))}
+            placeholder="https://api.example.com"
+            aria-invalid={Boolean(getError("baseUrl"))}
+            className={cn(getFieldInputClassName(Boolean(getError("baseUrl"))), "h-11")}
+          />
+        </FormField>
+
+        <FormField
+          htmlFor={iconUrlId}
+          label="Icon URL"
+          isOptional
+          error={getError("iconUrl")}
+          hint={<FieldHint>Uses the default icon when empty.</FieldHint>}
+        >
+          <input
+            id={iconUrlId}
+            type="url"
+            value={draftTool?.iconUrl ?? ""}
+            onChange={(e) => updateDraft({ iconUrl: e.target.value })}
+            onBlur={() => setTouched((prev) => ({ ...prev, iconUrl: true }))}
+            placeholder="https://example.com/icon.svg"
+            aria-invalid={Boolean(getError("iconUrl"))}
+            className={cn(getFieldInputClassName(Boolean(getError("iconUrl"))), "h-11")}
+          />
+        </FormField>
       </div>
 
-      <div className="space-y-1.5">
-        <FieldLabel
-          label="Methods"
-          isRequired
-          description="Each method is a distinct call this tool can make — its own type, endpoint, headers, parameters, and payload. The OpenAPI spec is generated from these methods."
-        />
+      <section aria-labelledby={methodsId}>
+        <div className="mb-1.5 flex items-baseline justify-between gap-3">
+          <h3 id={methodsId} className="text-[12.5px] font-semibold text-ink-2">
+            Methods
+          </h3>
+          <span className="text-[11px] tabular-nums text-muted-foreground">
+            {(draftTool?.manualOperations ?? []).length} added
+          </span>
+        </div>
         <div onFocus={markMethodsTouched} onBlur={markMethodsTouched}>
           <ManualMethodsEditor
             operations={draftTool?.manualOperations ?? []}
@@ -209,28 +251,17 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             disabled={crudAction === "read"}
           />
         </div>
-        {crudAction !== "read" &&
-          touched.openApiSpec &&
-          !(draftTool?.manualOperations ?? []).some(
-            (op) => op.name.trim() && op.endpoint.trim(),
-          ) && (
-            <p className="text-xs text-destructive">
-              At least one method with a name and endpoint is required.
-            </p>
-          )}
-      </div>
-
-      {draftTool && (
-        <div className="rounded border bg-muted/30 p-3">
-          <p className="text-sm font-medium">Parsed: {draftTool.name}</p>
-          {draftTool.parsedSchema && "operations" in draftTool.parsedSchema && (
-            <p className="text-xs text-muted-foreground">
-              {(draftTool.parsedSchema as { operations: unknown[] }).operations.length} method(s)
-              defined
-            </p>
-          )}
-        </div>
-      )}
+        {methodsError ? (
+          <p className="flex items-center gap-1.5 pt-1.5 text-[12px] text-bad">
+            <WarningCircleIcon className="size-3.5 shrink-0" />
+            {methodsError}
+          </p>
+        ) : (
+          <FieldHint>
+            Each method is one request the tool can make. The OpenAPI spec is generated from them.
+          </FieldHint>
+        )}
+      </section>
     </div>
   );
 };

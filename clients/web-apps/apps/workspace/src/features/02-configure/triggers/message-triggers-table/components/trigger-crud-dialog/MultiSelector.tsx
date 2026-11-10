@@ -3,7 +3,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { SearchAgentsDto } from "../../dtos/search-agent-dto";
@@ -84,7 +84,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-lg border border-input bg-background px-2 py-1.5 text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring focus-within:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-80">
+      <div className="flex min-h-control-md items-center justify-between gap-2 rounded-md border border-line-strong bg-surface px-[11px] py-0.5 text-body ring-offset-background transition-shadow focus-within:border-focus focus-within:outline-none focus-within:ring-[3px] focus-within:ring-focus/[0.28] focus-within:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-80">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
@@ -116,7 +116,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                   onClick={() => onItemRemove(item.id)}
                   disabled={disabled}
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </Badge>
             ))}
@@ -148,16 +148,16 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           disabled={disabled}
         >
           {isOpen ? (
-            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+            <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
           )}
         </Button>
       </div>
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border border-line bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -166,7 +166,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
               </div>
             )}
             {isError && (
-              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+              <div className="p-4 text-center text-sm text-bad">Error loading results</div>
             )}
             {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">

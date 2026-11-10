@@ -22,5 +22,5 @@ export const useFetchTriggerAgents = (id: string) => {
   }, [error, isError]);
 
   // Return isFetching and isLoading flag
-  return { data, isFetching, isLoading };
+  return { data, isFetching, isLoading, isError };
 };

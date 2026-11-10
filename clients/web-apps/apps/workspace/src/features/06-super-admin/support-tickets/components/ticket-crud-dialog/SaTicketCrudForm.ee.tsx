@@ -1,8 +1,7 @@
-import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { type CrudActionType } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
@@ -13,13 +12,12 @@ import {
   changeSummaryProps,
   descriptionProps,
   expectedBehaviorProps,
-  idProps,
   isDisabledProps,
   requestTypeProps,
   requestedTimelineProps,
   requiredByProps,
   titleProps,
-} from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-form-field-props";
+} from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-form-field-props.constant";
 import { createTicketZodSchema } from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-zod-schema";
 import {
   TicketDto,
@@ -32,7 +30,7 @@ import { DATA_QUERY_KEY } from "../../constants";
 
 interface SaTicketCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const SaTicketCrudForm = ({ rowId, crudAction }: SaTicketCrudFormProps) => {
@@ -76,42 +74,38 @@ export const SaTicketCrudForm = ({ rowId, crudAction }: SaTicketCrudFormProps) =
     );
   };
 
-  const isReadMode = crudAction === "read";
   const requestType = form.watch("requestType");
 
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
+      recordName={form.watch("title") ?? ""}
     >
-      {isReadMode && <InputField {...idProps} />}
-      {crudAction === "create" ? (
-        <SelectField {...requestTypeProps} />
-      ) : (
-        <SelectField {...requestTypeProps} disabled={isReadMode} />
-      )}
       <InputField {...titleProps} autoFocus={crudAction === "create"} />
       <TextareaField {...descriptionProps} />
-      {requestType === "ServiceRequest" && <InputField {...requiredByProps} />}
+      <div className="grid grid-cols-2 gap-3">
+        <SelectField {...requestTypeProps} />
+        {requestType === "ServiceRequest" && <InputField {...requiredByProps} />}
+        {requestType === "ChangeRequest" && <InputField {...requestedTimelineProps} />}
+      </div>
       {requestType === "ChangeRequest" && (
         <>
           <SelectField {...agentRefIdProps} selectOptions={agentOptions} />
           <TextareaField {...changeSummaryProps} />
           <TextareaField {...changeReasonProps} />
           <TextareaField {...expectedBehaviorProps} />
-          <InputField {...requestedTimelineProps} />
         </>
       )}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-      {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
-          <Button type="submit" disabled={!isDirty || isPending} className="min-w-[5rem]">
-            {crudAction === "create" ? "Create Ticket" : "Save changes"}
-          </Button>
-        </div>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          primaryText={crudAction === "create" ? "Create ticket" : "Save changes"}
+          secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

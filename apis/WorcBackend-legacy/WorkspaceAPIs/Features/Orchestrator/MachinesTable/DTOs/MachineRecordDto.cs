@@ -83,6 +83,16 @@ public class MachineFlowVersion : SelectOption
     public Guid? FlowId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the parent flow.
+    /// </summary>
+    public string? FlowName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of the parent flow.
+    /// </summary>
+    public FlowTypesEnum? FlowType { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number of the flow version.
     /// </summary>
     public int VersionNumber { get; set; }
@@ -92,4 +102,9 @@ public class MachineFlowVersion : SelectOption
     /// "windows").
     /// </summary>
     public string? SupportedPlatform { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the flow version was last modified.
+    /// </summary>
+    public DateTimeOffset? LastModifiedOn { get; set; }
 }

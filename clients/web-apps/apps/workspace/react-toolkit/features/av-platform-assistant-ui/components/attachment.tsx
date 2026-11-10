@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { FileText, PlusIcon, XIcon } from "lucide-react";
+import { FileTextIcon, PlusIcon, XIcon } from "@phosphor-icons/react";
 import { type FC, PropsWithChildren, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -78,14 +78,14 @@ const AttachmentPreviewDialog: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Dialog>
       <DialogTrigger
-        className="aui-attachment-preview-trigger cursor-pointer transition-colors hover:bg-accent/50"
+        className="aui-attachment-preview-trigger cursor-pointer transition-colors hover:bg-hover/50"
         asChild
       >
         {children}
       </DialogTrigger>
-      <DialogContent className="aui-attachment-preview-dialog-content p-2 sm:max-w-3xl [&>button]:rounded-full [&>button]:bg-foreground/60 [&>button]:p-1 [&>button]:opacity-100 [&>button]:!ring-0 [&_svg]:text-background [&>button]:hover:[&_svg]:text-destructive">
-        <DialogTitle className="aui-sr-only sr-only">Image Attachment Preview</DialogTitle>
-        <div className="aui-attachment-preview relative mx-auto flex max-h-[80dvh] w-full items-center justify-center overflow-hidden bg-background">
+      <DialogContent className="aui-attachment-preview-dialog-content p-2 sm:max-w-3xl [&>button]:rounded-full [&>button]:bg-ink/60 [&>button]:p-1 [&>button]:opacity-100 [&>button]:!ring-0 [&_svg]:text-bg [&>button]:hover:[&_svg]:text-destructive">
+        <DialogTitle className="aui-sr-only sr-only">Image attachment preview</DialogTitle>
+        <div className="aui-attachment-preview relative mx-auto flex max-h-[80dvh] w-full items-center justify-center overflow-hidden bg-surface">
           <AttachmentPreview src={src} />
         </div>
       </DialogContent>
@@ -105,7 +105,7 @@ const AttachmentThumb: FC = () => {
         className="aui-attachment-tile-image object-cover"
       />
       <AvatarFallback delayMs={isImage ? 200 : 0}>
-        <FileText className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
+        <FileTextIcon className="aui-attachment-tile-fallback-icon size-8 text-muted-foreground" />
       </AvatarFallback>
     </Avatar>
   );
@@ -140,7 +140,7 @@ const AttachmentUI: FC = () => {
       <AttachmentPreviewDialog>
         <Tooltip content={<AttachmentPrimitive.Name />} side="top">
           <div
-            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border bg-muted transition-opacity hover:opacity-75"
+            className="aui-attachment-tile size-14 cursor-pointer overflow-hidden rounded-[calc(var(--composer-radius)-var(--composer-padding))] border border-line bg-sunken transition-opacity hover:opacity-75"
             role="button"
             aria-label={`${typeLabel} attachment`}
           >
@@ -158,10 +158,10 @@ const AttachmentRemove: FC = () => {
     <AttachmentPrimitive.Remove asChild>
       <TooltipIconButton
         tooltip="Remove file"
-        className="aui-attachment-tile-remove absolute top-1.5 right-1.5 size-3.5 rounded-full bg-white text-muted-foreground opacity-100 shadow-sm hover:!bg-white [&_svg]:text-black hover:[&_svg]:text-destructive"
+        className="aui-attachment-tile-remove absolute top-1.5 right-1.5 size-3.5 rounded-full bg-surface text-muted-foreground opacity-100 hover:!bg-surface [&_svg]:text-ink hover:[&_svg]:text-destructive"
         side="top"
       >
-        <XIcon className="aui-attachment-remove-icon size-3 dark:stroke-[2.5px]" />
+        <XIcon className="aui-attachment-remove-icon size-3" />
       </TooltipIconButton>
     </AttachmentPrimitive.Remove>
   );
@@ -187,14 +187,14 @@ export const ComposerAddAttachment: FC = () => {
   return (
     <ComposerPrimitive.AddAttachment asChild>
       <TooltipIconButton
-        tooltip="Add Attachment"
+        tooltip="Add attachment"
         side="bottom"
         variant="ghost"
         size="icon6"
-        className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-muted-foreground/15 dark:border-muted-foreground/15 dark:hover:bg-muted-foreground/30"
-        aria-label="Add Attachment"
+        className="aui-composer-add-attachment size-8 rounded-full p-1 font-semibold text-xs hover:bg-hover dark:border-line dark:hover:bg-hover"
+        aria-label="Add attachment"
       >
-        <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
+        <PlusIcon className="aui-attachment-add-icon size-5" />
       </TooltipIconButton>
     </ComposerPrimitive.AddAttachment>
   );

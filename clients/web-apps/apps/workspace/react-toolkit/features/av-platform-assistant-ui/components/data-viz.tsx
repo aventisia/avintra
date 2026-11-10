@@ -75,7 +75,7 @@ const BarChart = memo(function BarChart({ rows }: { rows: DataRow[] }) {
   if (data.items.length === 0) return null;
 
   return (
-    <div className="aui-dataviz-bar w-full overflow-x-auto rounded-lg border border-border/50 bg-muted/20 p-3">
+    <div className="aui-dataviz-bar w-full overflow-x-auto rounded-lg border border-line/50 bg-sunken/60 p-3">
       <div className="flex h-40 items-end gap-2">
         {data.items.map((item, i) => (
           <div key={i} className="flex min-w-8 flex-1 flex-col items-center gap-1">
@@ -103,14 +103,14 @@ const DataTable = memo(function DataTable({ rows }: { rows: DataRow[] }) {
   if (rows.length === 0 || columns.length === 0) return null;
 
   return (
-    <div className="aui-dataviz-table w-full overflow-x-auto rounded-lg border border-border/50">
+    <div className="aui-dataviz-table w-full overflow-x-auto rounded-lg border border-line/50">
       <table className="w-full border-separate border-spacing-0 text-sm">
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                className="bg-muted px-2 py-1.5 text-left font-medium first:rounded-tl-lg last:rounded-tr-lg"
+                className="bg-sunken px-2 py-1.5 text-left font-medium first:rounded-tl-lg last:rounded-tr-lg"
               >
                 {col}
               </th>
@@ -123,7 +123,7 @@ const DataTable = memo(function DataTable({ rows }: { rows: DataRow[] }) {
               {columns.map((col) => (
                 <td
                   key={col}
-                  className="border-t border-border/40 px-2 py-1.5 text-left last:border-r"
+                  className="border-t border-line/40 px-2 py-1.5 text-left last:border-r"
                 >
                   {String(row[col] ?? "")}
                 </td>

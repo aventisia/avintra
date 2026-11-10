@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { FieldHelpPopover } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import {
   MITIGATION_STATUS_OPTIONS,
@@ -31,15 +31,15 @@ const InfoLabel = ({ children, info }: { children: React.ReactNode; info?: strin
 );
 
 const severityBadgeClass: Record<RiskSeverity, string> = {
-  [RiskSeverity.Low]: "bg-emerald-500/15 text-emerald-600",
-  [RiskSeverity.Medium]: "bg-amber-500/15 text-amber-600",
-  [RiskSeverity.High]: "bg-red-500/15 text-red-600",
-  [RiskSeverity.Critical]: "bg-red-600/20 text-red-700",
+  [RiskSeverity.Low]: "border-ok/35 text-ok",
+  [RiskSeverity.Medium]: "border-warn/35 text-warn",
+  [RiskSeverity.High]: "border-bad/35 text-bad",
+  [RiskSeverity.Critical]: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -98,21 +98,21 @@ export const RisksMitigationsSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 03"
-      title="Risks & Mitigations"
+      title="Risks & mitigations"
       description="Capture the key risks around the agent and the mitigation plan for each. Severity is computed automatically from likelihood and impact."
     >
       <div className="space-y-3">
         {risks.length === 0 && (
-          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted-foreground">
             No risks recorded yet. Add a risk to begin building the register.
           </div>
         )}
 
         {risks.map((row, index) => (
-          <div key={index} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+          <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <input
-                className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                 placeholder="Risk name"
                 value={row.name}
                 onChange={(e) => updateRow(index, { name: e.target.value })}
@@ -120,10 +120,10 @@ export const RisksMitigationsSection = () => {
               <button
                 type="button"
                 onClick={() => removeRow(index)}
-                className="text-muted-foreground hover:text-destructive"
+                className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
                 aria-label="Remove risk"
               >
-                <Trash2Icon className="h-4 w-4" />
+                <TrashIcon className="h-4 w-4" />
               </button>
             </div>
 
@@ -161,7 +161,7 @@ export const RisksMitigationsSection = () => {
                 </label>
                 <span
                   className={cn(
-                    "inline-flex rounded-full px-2.5 py-1 text-xs font-bold",
+                    "inline-flex rounded-sm border px-2.5 py-1 text-xs font-bold",
                     severityBadgeClass[row.severity],
                   )}
                 >
@@ -173,7 +173,7 @@ export const RisksMitigationsSection = () => {
                   Owner
                 </InfoLabel>
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   placeholder="Owner"
                   value={row.owner}
                   onChange={(e) => updateRow(index, { owner: e.target.value })}
@@ -190,12 +190,12 @@ export const RisksMitigationsSection = () => {
             </div>
 
             <Field
-              label="Mitigation Plan"
+              label="Mitigation plan"
               required
               info="Describe the concrete actions taken or planned to reduce the likelihood and/or impact of this risk."
             >
               <textarea
-                className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                 placeholder="Describe the mitigation plan for this risk."
                 value={row.mitigationPlan}
                 onChange={(e) => updateRow(index, { mitigationPlan: e.target.value })}
@@ -206,7 +206,7 @@ export const RisksMitigationsSection = () => {
 
         <Button variant="outline" onClick={addRow}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add Risk
+          Add risk
         </Button>
       </div>
     </SectionLayout>

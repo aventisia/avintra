@@ -1,26 +1,33 @@
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
-  DTCreateButton,
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNSortMenu,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
+import { useMemo, useState } from "react";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceFlowAccessDialog from "@/features/resource-flow-access/components/resource-flow-access/ResourceFlowAccessDialog";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  CONFIG_STORES_INITIAL_STATE,
+  CONFIG_STORES_PAGE_SIZE_OPTIONS,
+  TABLE_HEADING,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchConfigStores } from "../hooks/useFetchConfigStores";
 import { useTableTab } from "../hooks/useTableTab";
 import { configStoresTableColumns } from "./ConfigStoresTableColumns";
 import { ConfigStoresBulkActions } from "./config-store-row-actions/ConfigStoresBulkActions";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: CONFIG_STORES_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "key store", plural: "key stores" },
+};
 
 /**
  * Renders a table of config stores.
@@ -31,60 +38,61 @@ export const ConfigStoresTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
 
   // Fetch the merged config stores data
   const { data } = useFetchConfigStores();
 
-  const configStoresTableColumnsArray = configStoresTableColumns();
+  // Controlled search so the name cell can highlight matches, like the Agents page
+  const [searchText, setSearchText] = useState("");
+  const columns = useMemo(() => configStoresTableColumns({ searchText }), [searchText]);
 
-  // Create a React table for config stores data
-  const table = useDataTable(
-    configStoresTableColumnsArray,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns,
+    getRowId: (row) => row.id ?? "",
+    initialState: CONFIG_STORES_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+    globalFilter: searchText,
+    onGlobalFilterChange: setSearchText,
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
-        <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="configstore" />
+        <div className="space-y-4 pb-6 pt-6">
+          {/* Page heading and create action */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TableCNHeading heading={TABLE_HEADING} />
+              </div>
+              <div className="flex items-center gap-2">
+                <CrudCreateButton entity="configstore" />
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <DTSearchBox
-                table={table}
-                searchColumns={["name"]}
-                placeholder="Search key stores..."
-              />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton entity="configstore" />
-            </div>
+            {/* Table with its toolbar, pagination footer, and bulk actions */}
+            <TableCN
+              table={table}
+              label={TABLE_HEADING}
+              paginationProps={PAGINATION_PROPS}
+              actionBar={<ConfigStoresBulkActions table={table} />}
+            >
+              <TableCNToolbar table={table} searchPlaceholder="Search key stores...">
+                <TableCNSortMenu table={table} />
+              </TableCNToolbar>
+            </TableCN>
           </div>
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={configStoresTableColumnsArray.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
           {/* Resource Share Dialog component */}
           <ResourceUserAccessDialog queryKey={queryKey} />
           <ResourceFlowAccessDialog queryKey={queryKey} />
-          {/* Bulk actions for data table */}
-          <ConfigStoresBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the config stores data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the config stores data
+        <TableCNSkeleton columnCount={7} filterCount={2} withSearch className="py-5" />
       )}
     </>
   );

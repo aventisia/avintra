@@ -1,3 +1,4 @@
+import { useIsInsideCrudDialog } from "@avplatform/ui/crud-dialog";
 import {
   BaseFieldProps,
   FormControl,
@@ -5,7 +6,9 @@ import {
   FormItem,
   FormLabelExt,
   FormMessage,
+  crudDialogFieldClasses,
 } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
 import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
@@ -36,13 +39,14 @@ const SearchableSelectField = ({
   isLoading,
 }: SearchableSelectFieldProps) => {
   const { control } = useFormContext<FieldValues>();
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
 
   return (
     <FormField
       name={name}
       control={control}
       render={({ field }) => (
-        <FormItem size={size}>
+        <FormItem size={size} className={cn(isInDialog && crudDialogFieldClasses.item)}>
           {label && <FormLabelExt {...{ size, label, disabled, isRequired, description }} />}
 
           <FormControl>
@@ -56,6 +60,7 @@ const SearchableSelectField = ({
               disabled={disabled}
               size={size}
               isLoading={isLoading}
+              triggerClassName={cn(isInDialog && crudDialogFieldClasses.selectTrigger)}
             />
           </FormControl>
 

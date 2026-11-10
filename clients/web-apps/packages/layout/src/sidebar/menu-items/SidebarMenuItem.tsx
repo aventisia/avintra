@@ -1,13 +1,16 @@
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import type { IconProps } from "@avplatform/ui/types";
-import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useMenuItemLink } from "./useMenuItemLink.hook";
 
 interface SidebarMenuItemProps {
   Icon: React.ComponentType<IconProps>;
   name: string;
   route: string;
   badge?: string;
+  /** Routes that mark the item current instead of its own route, for a hub entry. */
+  activeRoutes?: string[];
 }
 
 /**
@@ -41,7 +44,7 @@ interface SidebarMenuItemProps {
  * />
  * ```
  */
-const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => {
+const SidebarMenuItem = ({ Icon, name, route, badge, activeRoutes }: SidebarMenuItemProps) => {
   // Get the sidebarExpand and sidebarOnDialogOpen state from the base layout store
   const { sidebarOnDialogOpen, setSidebarOnDialogOpen, sidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
@@ -58,46 +61,28 @@ const SidebarMenuItem = ({ Icon, name, route, badge }: SidebarMenuItemProps) => 
     }
   }
 
-  // Return the sidebar menu item component
+  const { LinkComponent, ariaCurrent } = useMenuItemLink(activeRoutes);
+
   return (
-    <div className={`${sidebarExpand ? "mx-3" : "mx-4"}`}>
-      <NavLink
-        to={route}
-        className={({ isActive }) => {
-          return isActive ? "active group rounded-lg" : "group rounded-lg";
-        }}
-        onClick={closeSidebarOnDialog}
-      >
-        <li className="group relative my-1.5 flex h-9 cursor-pointer items-center justify-between overflow-hidden rounded-lg border-0 pr-3.5 transition-[width] duration-500 hover:bg-accent hover:text-primary group-[.active]:bg-accent group-[.active]:text-primary">
-          <span className="absolute block h-[45%] w-[0.18rem] rounded-full opacity-80 group-[.active]:bg-secondary" />
-          <div className="flex items-center justify-center">
-            <div
-              className={`mr-1 flex h-9 items-center justify-center ${
-                sidebarExpand ? "w-[2.5rem]" : "w-9"
-              }`}
-            >
-              <Icon className="h-5 w-5 text-[--icon-color] group-hover:text-primary group-[.active]:text-primary" />
-            </div>
-            <span
-              className={`whitespace-nowrap text-sm font-medium capitalize tracking-wide ${
-                sidebarExpand ? "block" : "hidden"
-              }`}
-            >
-              {name}
-            </span>
-          </div>
-          {badge && (
-            <span
-              className={`rounded-xl bg-slate-200 px-2.5 py-0.5 text-sm ${
-                sidebarExpand ? "block" : "hidden"
-              }`}
-            >
-              {badge}
-            </span>
-          )}
-        </li>
-      </NavLink>
-    </div>
+    <LinkComponent
+      to={route}
+      aria-current={ariaCurrent}
+      onClick={closeSidebarOnDialog}
+      className="group relative flex h-8 items-center gap-[9px] rounded-sm px-2 text-body-sm text-ink-2 transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:font-semibold aria-[current=page]:text-ink motion-reduce:transition-none"
+    >
+      <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
+      <Icon className="size-4 shrink-0 stroke-[1.75] text-muted-foreground group-aria-[current=page]:text-ink" />
+      <span className={`truncate ${sidebarExpand ? "block" : "hidden"}`}>{name}</span>
+      {badge && (
+        <span
+          className={`ml-auto font-mono text-2xs leading-none text-muted-foreground ${
+            sidebarExpand ? "block" : "hidden"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
+    </LinkComponent>
   );
 };
 

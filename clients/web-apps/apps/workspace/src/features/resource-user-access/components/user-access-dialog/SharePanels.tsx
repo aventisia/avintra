@@ -1,4 +1,4 @@
-import { UsersRound } from "lucide-react";
+import { UsersIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
 
 import {
@@ -34,8 +34,8 @@ export const SharePanels = ({ draft, spaceName }: SharePanelsProps) => {
               description={
                 <>
                   Includes people who join later. Choose{" "}
-                  <span className="font-medium text-emerald-900">Specific people</span> to pick who
-                  gets access.
+                  <span className="font-medium text-ink">Specific people</span> to pick who gets
+                  access.
                 </>
               }
             />
@@ -56,12 +56,12 @@ export const SharePanels = ({ draft, spaceName }: SharePanelsProps) => {
 
             {draft.rows.length === 0 ? (
               <AccessEmptyState
-                icon={UsersRound}
+                icon={UsersIcon}
                 title="No one has access yet"
                 description={<>Search above to add people from {spaceName}.</>}
               />
             ) : (
-              <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl bg-popover ring-1 ring-border">
+              <ul className="divide-y divide-line overflow-hidden rounded-lg bg-surface ring-1 ring-line">
                 <AnimatePresence initial={false}>
                   {draft.rows.map((row) => (
                     <motion.li

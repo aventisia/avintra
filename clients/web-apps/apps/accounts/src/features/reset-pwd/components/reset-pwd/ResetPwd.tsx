@@ -8,7 +8,7 @@ import { ResetPwdForm } from "./ResetPwdForm";
 
 export const ResetPwd = () => {
   // Set dcoument title
-  useDocumentTitle("Reset Password");
+  useDocumentTitle("Reset password");
 
   // Return component
   return (

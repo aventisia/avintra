@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
+import { FlaskIcon, InfoIcon, MagnifyingGlassIcon, PlayIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -87,7 +87,7 @@ export const DCPForm = () => {
         </div>
       ) : !isFormReady ? (
         <div className="flex h-full items-center justify-center gap-2 text-sm">
-          <SearchCodeIcon className="text-icon h-5 w-5" />
+          <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (
@@ -124,7 +124,7 @@ export const DCPForm = () => {
                           void flushNow();
                         }}
                       >
-                        <FlaskConical className="h-3.5 w-3.5" />
+                        <FlaskIcon className="h-3.5 w-3.5" />
                         <span> Test</span>
                       </DCPTabsTrigger>
                     </DCPTabsList>
@@ -140,7 +140,7 @@ export const DCPForm = () => {
                         flushNow();
                       }}
                     >
-                      <FlaskConical className="h-3.5 w-3.5" />
+                      <FlaskIcon className="h-3.5 w-3.5" />
                       <span> Test</span>
                     </DCPTabsTrigger>
                   </DCPTabsList>
@@ -195,13 +195,13 @@ export const DCPForm = () => {
                       )}
                     >
                       <div className="absolute -top-3">
-                        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                        <span className="rounded-full bg-fill px-1.5 py-1 text-xs font-medium text-ink-2">
                           Outputs
                         </span>
                       </div>
                     </h3>
 
-                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                       {nodeConfig?.fields?.map((field) => {
                         // Check if the field should be rendered based on direction and renderIf conditions
                         if (!shouldRenderField("Output", field, watchedValues)) {

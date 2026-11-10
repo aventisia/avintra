@@ -76,7 +76,6 @@ public static class AccountsDbInitialSeed
                 // Seed Credit Plans
                 if (!await SeedCreditPlansAsync(_accountsDbContext, environmentConfig, superUser, logger)) return app;
 
-                // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
                 if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser, logger))
                     return app;
 
@@ -482,75 +481,29 @@ public static class AccountsDbInitialSeed
     {
         try
         {
-            // Define the name of the subscription plan to seed
-            var subscriptionPlanName = "Default";
-            var historyRetentionDays = environmentConfig.IsCommunityDeployment
-                ? 1
-                : environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Enterprise.ToString(), StringComparison.OrdinalIgnoreCase)
-                    ? 365
-                    : int.MaxValue;
-            var maxSpaces = environmentConfig.IsCommunityDeployment ? 1 : 0;
+            await ConvertLegacyDefaultPlanAsync(accountsDbContext, environmentConfig, superUser, logger);
 
-            // Check if the default subscription plan already exists in the database
-            var existingPlan = await accountsDbContext.SubscriptionPlans
-                .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
-                .SingleOrDefaultAsync();
+            var seedPlans = EditionSubscriptionPlanHelpers.GetSeedPlans(environmentConfig, superUser.Id);
+            var seedPlanUniqueNames = seedPlans.Select(p => p.UniqueName).ToList();
 
-            // IMPORTANT NOTE: a Community boot must never rewrite stored limits; only a paid
-            // deployment corrects drift between paid editions here.
-            if (existingPlan != null)
+            var existingPlans = await accountsDbContext.SubscriptionPlans
+                .Where(w => seedPlanUniqueNames.Contains(w.UniqueName))
+                .ToListAsync();
+
+            foreach (var seedPlan in seedPlans)
             {
-                if (!environmentConfig.IsCommunityDeployment &&
-                    (existingPlan.MaxPublishedItems != 0 ||
-                     existingPlan.MaxSpaces != maxSpaces ||
-                     existingPlan.MaxUsers != 0 ||
-                     existingPlan.StorageLimitMB != 0 ||
-                     existingPlan.HistoryRetentionDays != historyRetentionDays))
-                {
-                    existingPlan.MaxPublishedItems = 0;
-                    existingPlan.MaxSpaces = maxSpaces;
-                    existingPlan.MaxUsers = 0;
-                    existingPlan.StorageLimitMB = 0;
-                    existingPlan.HistoryRetentionDays = historyRetentionDays;
-                    existingPlan.LastModifiedByUserId = superUser.Id;
-                    await accountsDbContext.SaveChangesAsync();
-                    logger.LogWarning("Corrected subscription plan {PlanName} to the {TenantType} limits. MaxSpaces={MaxSpaces}, HistoryRetentionDays={HistoryRetentionDays}",
-                        subscriptionPlanName, environmentConfig.OnPremTenantType, maxSpaces, historyRetentionDays);
-                }
+                var matchingPlans = existingPlans.Where(p => p.UniqueName == seedPlan.UniqueName).ToList();
 
-                return true;
+                if (matchingPlans.Count == 0)
+                {
+                    await accountsDbContext.SubscriptionPlans.AddAsync(seedPlan);
+                }
+                else if (!matchingPlans.Any(p => p.IsDefault))
+                {
+                    PromoteToDefaultPlan(matchingPlans, superUser);
+                }
             }
 
-            // Prepare plan type based on tenant type: Commercial gets Pro; Enterprise and
-            // Community (single-tenant deployments) get None (effectively unlimited, unpaid).
-            SubscriptionPlanTypeEnum planType = environmentConfig.OnPremTenantType.Equals(OnPremTenantTypesEnum.Commercial.ToString(), StringComparison.InvariantCultureIgnoreCase) ?
-                SubscriptionPlanTypeEnum.Pro :
-                SubscriptionPlanTypeEnum.None;
-
-            // If the plan doesn't exist, create the default subscription plan
-            var newSubscriptionPlan = new SubscriptionPlan
-            {
-                Name = subscriptionPlanName,
-                Type = planType,
-                Currency = CurrencyTypesEnum.USD,
-                Frequency = SubscriptionFrequenciesEnum.Yearly,
-                Status = PlanStatusTypesEnum.Custom,
-                UniqueName = $"{planType}-{SubscriptionFrequenciesEnum.Yearly}-{CurrencyTypesEnum.INR}".ToLower(),
-                MaxPublishedItems = 0,
-                MaxSpaces = maxSpaces,
-                MaxUsers = 0,
-                StorageLimitMB = 0,
-                HistoryRetentionDays = historyRetentionDays,
-                Price = 0,
-                IsDefault = true,
-                CreatedByUserId = superUser.Id,
-                LastModifiedByUserId = superUser.Id,
-            };
-
-            // Add the newly created subscription plan to the database context
-            await accountsDbContext.SubscriptionPlans.AddAsync(newSubscriptionPlan);
-
-            // Save the changes to the database
             await accountsDbContext.SaveChangesAsync();
 
             return true;
@@ -560,6 +513,53 @@ public static class AccountsDbInitialSeed
             logger.LogError(ex, "An error occurred while seeding the subscription plan.");
             return false;
         }
+    }
+
+    private static void PromoteToDefaultPlan(List<SubscriptionPlan> matchingPlans, AccountUser superUser)
+    {
+        var plan = matchingPlans
+            .OrderBy(p => p.IsDisabled)
+            .ThenBy(p => p.Status != PlanStatusTypesEnum.Current)
+            .ThenBy(p => p.CreatedOn)
+            .First();
+
+        plan.IsDefault = true;
+        plan.IsDisabled = false;
+        plan.LastModifiedByUserId = superUser.Id;
+    }
+
+    // IMPORTANT NOTE: before #467 every edition seeded one shared "Default" plan that existing tenant
+    // subscriptions still reference, so it is converted in place into the edition's host plan.
+    private static async Task ConvertLegacyDefaultPlanAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
+    {
+        var hostPlan = EditionSubscriptionPlanHelpers.GetHostPlan(environmentConfig, superUser.Id);
+
+        var legacyPlan = await accountsDbContext.SubscriptionPlans
+            .Where(w => w.Name == "Default" && w.IsDefault && w.UniqueName != hostPlan.UniqueName)
+            .SingleOrDefaultAsync();
+
+        if (legacyPlan == null) return;
+
+        legacyPlan.Name = hostPlan.Name;
+        legacyPlan.Type = hostPlan.Type;
+        legacyPlan.Currency = hostPlan.Currency;
+        legacyPlan.Frequency = hostPlan.Frequency;
+        legacyPlan.UniqueName = hostPlan.UniqueName;
+
+        // IMPORTANT NOTE: a Community boot must never rewrite stored limits.
+        if (!environmentConfig.IsCommunityDeployment)
+        {
+            legacyPlan.MaxCredits = hostPlan.MaxCredits;
+            legacyPlan.MaxPublishedItems = hostPlan.MaxPublishedItems;
+            legacyPlan.MaxSpaces = hostPlan.MaxSpaces;
+            legacyPlan.MaxUsers = hostPlan.MaxUsers;
+            legacyPlan.StorageLimitMB = hostPlan.StorageLimitMB;
+            legacyPlan.HistoryRetentionDays = hostPlan.HistoryRetentionDays;
+        }
+
+        legacyPlan.LastModifiedByUserId = superUser.Id;
+        await accountsDbContext.SaveChangesAsync();
+        logger.LogWarning("Converted the legacy Default subscription plan for the {TenantType} edition.", environmentConfig.OnPremTenantType);
     }
 
     private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
@@ -577,17 +577,15 @@ public static class AccountsDbInitialSeed
                 return false;
             }
 
-            // Define the subscription plan name (could also be retrieved from config)
-            var subscriptionPlanName = "Default";
+            var subscriptionPlanUniqueName = EditionSubscriptionPlanHelpers.GetHostPlan(environmentConfig, superUser.Id).UniqueName;
 
-            // Get the default subscription plan to be associated with the tenant
             var subscriptionPlan = await accountsDbContext.SubscriptionPlans
-                .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
+                .Where(w => w.UniqueName == subscriptionPlanUniqueName && w.IsDefault)
                 .SingleOrDefaultAsync();
 
             if (subscriptionPlan == null)
             {
-                logger.LogError("Subscription plan {PlanName} not found.", subscriptionPlanName);
+                logger.LogError("Subscription plan {PlanUniqueName} not found.", subscriptionPlanUniqueName);
                 return false;
             }
 
@@ -615,8 +613,8 @@ public static class AccountsDbInitialSeed
                     existingSubscription.HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays;
                     existingSubscription.LastModifiedByUserId = superUser.Id;
                     await accountsDbContext.SaveChangesAsync();
-                    logger.LogWarning("Corrected the default tenant subscription {SubscriptionId} to the {PlanName} plan limits.",
-                        existingSubscription.Id, subscriptionPlanName);
+                    logger.LogWarning("Corrected the default tenant subscription {SubscriptionId} to the {PlanUniqueName} plan limits.",
+                        existingSubscription.Id, subscriptionPlanUniqueName);
                 }
 
                 return true;
@@ -627,11 +625,11 @@ public static class AccountsDbInitialSeed
             {
                 TenantId = defaultTenant.Id,
                 PlanId = subscriptionPlan.Id,
-                Frequency = SubscriptionFrequenciesEnum.Yearly,
+                Frequency = subscriptionPlan.Frequency,
                 IsActive = true,
                 Status = SubscriptionStatusTypesEnum.Active,
                 NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
-                MaxCredits = ulong.MaxValue,
+                MaxCredits = subscriptionPlan.MaxCredits,
                 MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
                 MaxSpaces = subscriptionPlan.MaxSpaces,
                 MaxUsers = subscriptionPlan.MaxUsers,
@@ -699,7 +697,7 @@ public static class AccountsDbInitialSeed
             {
                 TenantId = defaultTenant.Id,
                 SubscriptionId = tenantSubscription.Id,
-                AvailableCredits = ulong.MaxValue,
+                AvailableCredits = tenantSubscription.MaxCredits,
                 ExpiredOn = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
                 Type = CreditTypesEnum.Subscription,
                 CreatedByUserId = superUser.Id,

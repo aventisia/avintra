@@ -1,3 +1,4 @@
+import { cn } from "@avplatform/ui/lib";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 
@@ -61,32 +62,35 @@ const TauriAppFooter = () => {
     return null;
   }
 
+  const footerClass =
+    "fixed bottom-0 left-0 right-0 flex h-8 items-center justify-between border-t border-line bg-surface px-4 font-mono text-hint text-muted-foreground";
+
   if (isLoading) {
     return (
-      <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+      <footer className={footerClass}>
         <span>Loading metadata...</span>
       </footer>
     );
   }
 
   return (
-    <footer className="fixed font-mono bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
-      <span>
-        <span className="opacity-70">Version</span>{" "}
-        <span>{renderMetadata.app_version || "NA"}</span>
+    <footer className={footerClass}>
+      <span className="inline-flex items-center gap-1.5">
+        <span className={cn("size-1.5 rounded-full", metadata ? "bg-ok" : "bg-warn")} />
+        <span className="text-ink-2">v{renderMetadata.app_version || "NA"}</span>
       </span>
 
       <div className="flex items-center gap-3">
         <span>
-          <span className="opacity-70">Host:</span> <span>{renderMetadata.hostname || "NA"}</span>
+          host <span className="text-ink-2">{renderMetadata.hostname || "NA"}</span>
         </span>
-        <span className="opacity-40">·</span>
+        <span className="text-line-strong">·</span>
         <span>
-          <span className="opacity-70">User:</span> <span>{renderMetadata.username || "NA"}</span>
+          user <span className="text-ink-2">{renderMetadata.username || "NA"}</span>
         </span>
-        <span className="opacity-40">·</span>
+        <span className="text-line-strong">·</span>
         <span>
-          <span className="opacity-70">OS ID:</span> <span>{renderMetadata.os_id || "NA"}</span>
+          os <span className="text-ink-2">{renderMetadata.os_id || "NA"}</span>
         </span>
       </div>
     </footer>

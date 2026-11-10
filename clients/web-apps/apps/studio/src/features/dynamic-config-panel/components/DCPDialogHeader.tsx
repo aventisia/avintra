@@ -1,10 +1,12 @@
 import { Input } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
+import { ArrowSquareOutIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { iconMapper } from "@/components/icon-mapper";
+import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { PanelHeader, PanelTitle } from "@/components/panel/components/Panel";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
@@ -60,7 +62,7 @@ const DCPDialogHeader = () => {
       case "callAgentNode":
         if (nodeData?.selectedAgent) {
           href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${nodeData.selectedAgent?.flowId}&v=${nodeData.selectedAgent?.id}`;
-          label = "Open Agent";
+          label = "Open agent";
         } else {
           return null; // Don't render anything if there's no agent
         }
@@ -73,25 +75,51 @@ const DCPDialogHeader = () => {
 
     return (
       <a
-        className={cn(buttonVariants({ variant: "link" }), "gap-1 text-xs")}
+        className={cn(buttonVariants({ variant: "ghost", size: "icon7" }))}
         target="_blank"
         href={href}
+        aria-label={label}
+        title={label}
       >
-        {label}
-        <SquareArrowOutUpRightIcon className="h-2.5 w-2.5 stroke-[2.5]" />
+        <ArrowSquareOutIcon className="size-3.5" />
       </a>
     );
   };
 
+  const nodeIcon =
+    nodeData?.type === "callAgentNode" ? (
+      <NodeImage src="/assets/NewAgentIcon.svg" />
+    ) : nodeData?.type === "blockNode" ? (
+      <NodeImage src="/assets/BlockNodeIconLight.svg" />
+    ) : nodeData?.iconUrl ? (
+      <NodeImage src={nodeData.iconUrl} />
+    ) : nodeData?.icon && iconMapper[nodeData.icon] ? (
+      iconMapper[nodeData.icon]
+    ) : (
+      <NodeImage src={nodeData?.img} />
+    );
+
+  const description = nodeData?.description || "Node Configuration.";
+
   return (
-    <PanelHeader className="h-16 text-lg">
-      {/* Left side - Panel Heading and description */}
-      <div className="flex min-w-0 flex-col gap-[1px]">
-        <PanelTitle className="flex items-center !text-[0.91rem]">
+    <PanelHeader className="h-16 gap-3">
+      <div
+        aria-hidden
+        className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-md border border-line bg-sunken [&>div]:bg-transparent [&_img]:size-5 [&_img]:opacity-100 [&_svg]:size-4"
+      >
+        {nodeIcon}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col" title={description}>
+        <span className="truncate font-mono text-label uppercase text-muted-foreground">
+          {nodeData?.category || nodeData?.name || "Step"}
+        </span>
+        <PanelTitle className="flex min-w-0 items-center text-heading text-ink">
           {editing ? (
             <Input
               name="label"
-              className="h-5 w-[24rem] !max-w-[24rem] truncate !border-0 !border-none !p-0 !text-base !font-semibold !shadow-none !outline-none !ring-0"
+              fieldSize="xs"
+              className="w-full"
               value={nodeLabel}
               autoFocus
               onChange={(e) => setNodeLabel(e.target.value)}
@@ -110,45 +138,23 @@ const DCPDialogHeader = () => {
               onClick={() => {
                 if (!isAgentHistory) setEditing(true);
               }}
-              className="flex h-5 items-center gap-2"
+              className="group flex min-w-0 items-center gap-1.5"
             >
-              <span className="max-w-[24rem] overflow-hidden truncate text-[0.91rem]">
-                {nodeLabel}
-              </span>
-              {!isAgentHistory && <PencilIcon className="h-3 w-3 text-muted-foreground" />}
+              <span className="truncate">{nodeLabel}</span>
+              {!isAgentHistory && (
+                <PencilSimpleIcon className="size-3 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100" />
+              )}
             </div>
           )}
         </PanelTitle>
-        <div className="flex gap-1">
-          <p
-            className={cn(
-              "!inline !max-w-[24rem] !truncate text-xs tracking-normal text-muted-foreground",
-              nodeData?.name === "ConditionalBranchActivity" && "!max-w-[35rem]",
-              nodeData?.name === "LoopActivity" && "!max-w-[35rem]",
-              (nodeData?.name.includes("AIAgent") || nodeData?.name.includes("WorkItem")) &&
-                "!max-w-[calc(((100vw-(2*var(--header-padding)))/2)-8rem)]",
-            )}
-            title={nodeData?.description}
-          >
-            {nodeData?.description
-              ? nodeData?.description + (nodeData?.description?.endsWith(".") ? "" : ".")
-              : "Node Configuration."}
-          </p>
-          {renderInfoLink()}
-        </div>
       </div>
 
-      {/* Right side - explicit Close action */}
-      <Button
-        variant="ghost"
-        size="icon8"
-        onClick={handleClose}
-        aria-label="Close panel"
-        className="shrink-0"
-      >
-        <X className="h-5 w-5 text-[--icon-color]" />
-        <span className="sr-only">Close</span>
-      </Button>
+      <div className="flex shrink-0 items-center gap-0.5">
+        {renderInfoLink()}
+        <Button variant="ghost" size="icon7" onClick={handleClose} aria-label="Close panel">
+          <XIcon className="size-4" />
+        </Button>
+      </div>
     </PanelHeader>
   );
 };

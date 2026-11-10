@@ -8,17 +8,15 @@ import {
   FormMessage,
 } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { type LucideProps } from "lucide-react";
+import { type Icon, type IconProps } from "@phosphor-icons/react";
 import * as React from "react";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
-
-import Lucide, { type LucidIconName } from "../../Lucide";
 
 interface IconInputFieldProps extends React.ComponentPropsWithoutRef<typeof Input>, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
-  iconProps: LucideProps & {
-    icon: LucidIconName;
+  iconProps: IconProps & {
+    icon: Icon;
     position: "end" | "start";
     onClick?: () => void;
   };
@@ -61,9 +59,8 @@ const IconInputField = ({
                   "top-0 flex items-center",
                 )}
               >
-                <Lucide
-                  className={iconProps.className}
-                  icon={iconProps.icon}
+                <iconProps.icon
+                  className={cn("h-5 w-5", iconProps.className)}
                   onClick={iconProps.onClick}
                 />
               </div>

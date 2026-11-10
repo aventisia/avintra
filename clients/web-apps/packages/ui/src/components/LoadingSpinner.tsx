@@ -12,7 +12,7 @@ interface LoadingSpinnerProps {
 function LoadingSpinner({ className = "h-8 w-8" }: LoadingSpinnerProps) {
   return (
     <svg
-      className={cn("origin-center animate-spin duration-500", className)}
+      className={cn("origin-center animate-spin motion-reduce:animate-none", className)}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >

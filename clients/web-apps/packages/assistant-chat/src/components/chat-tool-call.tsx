@@ -2,12 +2,12 @@ import type { ToolCallMessagePartStatus } from "@assistant-ui/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@avplatform/ui/collapsible";
 import { cn } from "@avplatform/ui/lib";
 import {
-  BanIcon,
+  CaretRightIcon,
   CheckIcon,
-  ChevronRightIcon,
-  LoaderCircleIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
+  CircleNotchIcon,
+  ProhibitIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { humanizeToolLabel } from "../lib/tool-labels";
@@ -61,11 +61,11 @@ export const ChatToolCall = ({
   const hasDetails = Boolean(argsValue) || resultText !== null;
 
   const StatusIcon = isRunning
-    ? LoaderCircleIcon
+    ? CircleNotchIcon
     : isErrored
-      ? TriangleAlertIcon
+      ? WarningIcon
       : isCancelled
-        ? BanIcon
+        ? ProhibitIcon
         : CheckIcon;
 
   return (
@@ -73,13 +73,13 @@ export const ChatToolCall = ({
       open={open}
       onOpenChange={setOpen}
       className={cn(
-        "aui-chat-tool-call w-full overflow-hidden rounded-lg border border-border/60 bg-muted/20",
+        "aui-chat-tool-call w-full overflow-hidden rounded-lg border border-line/60 bg-sunken/20",
         className,
       )}
     >
       <CollapsibleTrigger
         className={cn(
-          "group/tool flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] text-muted-foreground transition-colors hover:bg-muted/50",
+          "group/tool flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] text-muted-foreground transition-colors hover:bg-hover/50",
           !hasDetails && "cursor-default hover:bg-transparent",
         )}
         disabled={!hasDetails}
@@ -88,26 +88,26 @@ export const ChatToolCall = ({
           className={cn(
             "size-3.5 shrink-0",
             isRunning && "animate-spin text-primary",
-            !isRunning && isErrored && "text-destructive",
+            !isRunning && isErrored && "text-bad",
             !isRunning && !isErrored && isCancelled && "text-muted-foreground",
-            !isRunning && !isErrored && !isCancelled && "text-emerald-600",
+            !isRunning && !isErrored && !isCancelled && "text-ok",
           )}
         />
         <span className={cn("min-w-0 flex-1 truncate", isCancelled && "line-through")}>
           {humanizeToolLabel(toolName)}
         </span>
         {hasDetails && (
-          <ChevronRightIcon className="size-3.5 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]/tool:rotate-90" />
+          <CaretRightIcon className="size-3.5 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]/tool:rotate-90" />
         )}
       </CollapsibleTrigger>
 
       {hasDetails && (
-        <CollapsibleContent className="border-t border-border/60">
+        <CollapsibleContent className="border-t border-line/60">
           <div className="space-y-2 px-3 py-2 text-xs">
             {argsValue && (
               <div>
                 <div className="mb-1 font-medium text-muted-foreground">Arguments</div>
-                <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-border/50 bg-background/60 p-2 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                <pre className="max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-line/50 bg-surface/60 p-2 font-mono text-[11px] leading-relaxed text-muted-foreground">
                   {argsValue}
                 </pre>
               </div>
@@ -117,17 +117,15 @@ export const ChatToolCall = ({
                 <div
                   className={cn(
                     "mb-1 font-medium",
-                    isErrored ? "text-destructive" : "text-muted-foreground",
+                    isErrored ? "text-bad" : "text-muted-foreground",
                   )}
                 >
                   {isErrored ? "Error" : "Result"}
                 </div>
                 <pre
                   className={cn(
-                    "max-h-64 overflow-auto whitespace-pre-wrap rounded-md border bg-background/60 p-2 font-mono text-[11px] leading-relaxed",
-                    isErrored
-                      ? "border-destructive/40 text-destructive"
-                      : "border-border/50 text-muted-foreground",
+                    "max-h-64 overflow-auto whitespace-pre-wrap rounded-md border bg-surface/60 p-2 font-mono text-[11px] leading-relaxed",
+                    isErrored ? "border-bad/40 text-bad" : "border-line/50 text-muted-foreground",
                   )}
                 >
                   {resultText}

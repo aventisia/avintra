@@ -1,6 +1,5 @@
 // import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-// import { CloudUploadIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useShallow } from "zustand/react/shallow";
 
@@ -53,7 +52,7 @@ const FileUploadStep = () => {
           "flex items-center  justify-center rounded-lg border-2 border-dashed p-2 cursor-pointer transition-colors",
           isDragActive
             ? "border-primary bg-primary/5"
-            : "border-gray-300 hover:border-primary hover:bg-primary/5",
+            : "border-line-strong hover:border-primary hover:bg-primary/5",
         )}
       >
         <input {...getInputProps()} />
@@ -63,7 +62,7 @@ const FileUploadStep = () => {
           ) : (
             <>
               {/* <CloudUploadIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
-              <span className="block text-sm font-medium text-gray-600">
+              <span className="block text-sm font-medium text-ink-2">
                 Drag & Drop or{" "}
                 <Button
                   autoFocus
@@ -78,7 +77,7 @@ const FileUploadStep = () => {
               <span className="text-muted-foreground text-2xs">
                 Supported formats: {SUPPORTED_FORMAT_LABEL}
               </span> */}
-              <span className="text-muted-foreground text-sm">Attach Files</span>
+              <span className="text-muted-foreground text-sm">Attach files</span>
             </>
           )}
         </div>

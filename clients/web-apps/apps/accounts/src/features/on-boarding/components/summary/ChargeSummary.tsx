@@ -24,19 +24,27 @@ const ChargeSummary = ({
       amount: total,
       taxRate: GST,
       frequency: planFrequency,
-      ...effectiveBilling,
+      firstName: effectiveBilling.firstName,
+      lastName: effectiveBilling.lastName,
+      addressLine1: effectiveBilling.addressLine1,
+      addressLine2: effectiveBilling.addressLine2,
+      city: effectiveBilling.city,
+      postalCode: effectiveBilling.postalCode,
+      state: effectiveBilling.state,
+      country: effectiveBilling.country,
+      gstNumber: effectiveBilling.gstNumber,
       isWillingToFileGst: !!effectiveBilling.isWillingToFileGst,
     });
   };
 
   return (
     <div className="rounded-lg border p-4">
-      <p className="font-semibold">Charge Summary:</p>
+      <p className="font-semibold">Charge summary</p>
       <Separator className="mt-2" />
 
       <div className="space-y-2 py-2 text-sm">
         <SummaryRow
-          label="Subscription Fee"
+          label="Subscription fee"
           value={formatCurrency(basePrice, plan?.currency ?? "USD")}
         />
         {isTaxApplicable && (
@@ -44,14 +52,14 @@ const ChargeSummary = ({
         )}
         <Separator />
         <SummaryRow
-          label="Amount Due"
+          label="Amount due"
           value={formatCurrency(total, plan?.currency ?? "USD")}
           className="font-medium"
         />
       </div>
 
       {total === 0 ? (
-        <Button className="mt-2 w-full" disabled={isPending} onClick={handleSubscription}>
+        <Button size="lg" className="mt-2 w-full" disabled={isPending} onClick={handleSubscription}>
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />
@@ -62,14 +70,14 @@ const ChargeSummary = ({
           )}
         </Button>
       ) : (
-        <Button disabled={isPending} onClick={handleSubscription} className="mt-2 w-full">
+        <Button size="lg" disabled={isPending} onClick={handleSubscription} className="mt-2 w-full">
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />
-              Initiating Payment...
+              Initiating payment...
             </>
           ) : (
-            "Make Payment"
+            "Make payment"
           )}
         </Button>
       )}

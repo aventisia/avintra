@@ -1,4 +1,5 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -119,7 +120,7 @@ export const useDefineSATForm = () => {
       tags: formData.tags,
       icons,
       schema: JSON.stringify(templateSchema),
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
     });
     // }

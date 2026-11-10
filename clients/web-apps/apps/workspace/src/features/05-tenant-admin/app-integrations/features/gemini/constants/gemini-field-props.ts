@@ -9,7 +9,7 @@ const hostProps: InputFieldProps = {
 
 const apiKeyProps: InputFieldProps = {
   name: "apiKey",
-  label: "API Key",
+  label: "API key",
   className: "text-sm resize-none",
   type: "password",
   isRequired: true,

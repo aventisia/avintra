@@ -1,4 +1,4 @@
-import { NoContentMessage } from "@avplatform/ui";
+import { EmptyState } from "@avplatform/ui";
 import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
@@ -18,13 +18,13 @@ export const ConfigSelectorContent = () => {
   return (
     <Command className="h-full">
       {/* Search Box */}
-      <div className="mx-3 rounded-lg bg-slate-100">
+      <div className="mx-3 rounded-lg bg-sunken">
         <CommandInput className="h-9 text-xs" placeholder="Search key..." autoFocus />
       </div>
 
       {/* No content message */}
       <CommandEmpty className="h-full">
-        <NoContentMessage
+        <EmptyState
           className="mt-5"
           primaryMessage="No key found"
           secondaryMessage="Try a different search term."

@@ -1,42 +1,16 @@
-// components/sidebar-branding-footer.tsx
-import { cn } from "@avplatform/ui/lib";
-import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { useShallow } from "zustand/react/shallow";
+const APP_VERSION = import.meta.env.VITE_APP_VERSION;
 
-/**
- * Branding footer displayed at the bottom of the sidebar.
- *
- * @returns {JSX.Element} The rendered SidebarBrandingFooter component.
- *
- * @remarks
- * - Reads `sidebarExpand` directly from `useBaseLayoutStore`.
- * - When collapsed, shows only the logo centered.
- * - When expanded, shows the full "Powered by Aventisia Technologies" label.
- */
-const SidebarBrandingFooter = (): JSX.Element => {
-  const sidebarExpand = useBaseLayoutStore(useShallow((state) => state.sidebarExpand));
-
-  return (
-    <div
-      className={cn(
-        "flex shrink-0 items-center gap-3 border-t justify-center  p-3 transition-all duration-500",
-        !sidebarExpand && "justify-center px-0",
-      )}
-    >
-      {sidebarExpand ? (
-        <>
-          <span className="truncate text-xs  text-muted-foreground">Powered by</span>
-          <img src="/workspace/logo.svg" alt="Aventisia Technologies" className="h-4  shrink-0" />
-        </>
-      ) : (
-        <img
-          src="/workspace/favicon.svg"
-          alt="Aventisia Technologies"
-          className="h-4 w-4 shrink-0"
-        />
-      )}
-    </div>
-  );
-};
+/** Version and branding line at the bottom of the expanded sidebar. */
+const SidebarBrandingFooter = (): JSX.Element => (
+  <p className="flex shrink-0 items-center gap-1.5 border-t border-line px-[18px] py-1 text-2xs text-muted-foreground">
+    <span className="truncate">Powered by Aventisia</span>
+    {APP_VERSION && (
+      <>
+        <span aria-hidden className="size-[3px] rounded-full bg-current" />
+        <span className="shrink-0 font-mono">v{APP_VERSION}</span>
+      </>
+    )}
+  </p>
+);
 
 export { SidebarBrandingFooter };

@@ -1,12 +1,15 @@
 import { NotFoundPage } from "@avplatform/layout";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
+
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -37,7 +40,6 @@ import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
-import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
 import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
@@ -56,7 +58,8 @@ import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
-import MyAccountPage from "./pages/MyAccountPage";
+import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
+import { MyNotificationsPage } from "./pages/MyNotificationsPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -64,6 +67,14 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
+      {
+        path: DESKTOP_DOWNLOAD_ROUTE,
+        element: <DesktopDownloadPage />,
+      },
+      {
+        path: NOTIFICATIONS_ROUTE,
+        element: <MyNotificationsPage />,
+      },
       // build section
       {
         path: "/agents",
@@ -76,10 +87,6 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
-      },
-      {
-        path: "/account",
-        element: <MyAccountPage />,
       },
       // configure section
       {
@@ -262,10 +269,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "overview",
             element: <TenantPage />,
-          },
-          {
-            path: "get-started",
-            element: <GetStartedPageLazy />,
           },
           {
             path: "preferences",

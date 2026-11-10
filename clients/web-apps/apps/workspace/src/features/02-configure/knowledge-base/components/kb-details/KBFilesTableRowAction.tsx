@@ -2,8 +2,8 @@ import { useActionLock } from "@avplatform/ui/action-lock";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
+import { CircleNotchIcon, TrashIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, Trash2Icon } from "lucide-react";
 
 import {
   deleteKnowledgeBaseFile,
@@ -69,9 +69,9 @@ export const KBFilesTableRowAction = ({
       disabled={isPending || locked}
     >
       {isPending ? (
-        <Loader2Icon className="h-4 w-4 animate-spin" />
+        <CircleNotchIcon className="h-4 w-4 animate-spin" />
       ) : (
-        <Trash2Icon className="h-4 w-4" />
+        <TrashIcon className="h-4 w-4" />
       )}
     </Button>
   );

@@ -56,19 +56,6 @@ export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
 };
 
 /**
- * assign machines to the agent
- */
-export const removeMachines = (assignMachineDto: AgentAssignMachineDto) => {
-  return axiosInstance
-    .post<IHttpResponse<boolean>>(
-      `${baseAPIURL}/${assignMachineDto.flowVersionId}/remove-machines`,
-      assignMachineDto.machineIds,
-      { headers: getSpaceHeaders() },
-    )
-    .then((res) => res.data);
-};
-
-/**
  * Updates an existing project.
  */
 export const updateAgent = (updatedAgent: AgentsTableDto) => {

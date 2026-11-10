@@ -5,12 +5,7 @@ import * as z from "zod";
 
 import FloatingLabelPasswordField from "../../../../components/ui/FloatingLabelPasswordField";
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
-import {
-  emailProps,
-  firstNameProps,
-  lastNameProps,
-  pwdProps,
-} from "../../constants/form-field-props";
+import { emailProps, pwdProps } from "../../constants/form-field-props";
 import { useCreateCodeMutation } from "../../hooks/useCreateCodeMutation";
 import { useDefineCreateAccountForm } from "../../hooks/useDefineCreateAccountForm";
 import { TermsOfServiceLabel } from "./TermsOfServiceLabel";
@@ -38,8 +33,6 @@ export const CreateAccountForm = () => {
   const onSubmit = (formData: z.infer<typeof createAccountZodSchema>) => {
     // Stash the create account data
     setCreateAccountData({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
       email: formData.email,
       pwd: formData.pwd,
     });
@@ -61,14 +54,6 @@ export const CreateAccountForm = () => {
       onSubmit={form.handleSubmit(onSubmit)}
       disabled={isSubmitting || isCodePending}
     >
-      <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
-        {/* First Name */}
-        <FloatingLabelInputField {...firstNameProps} />
-
-        {/* Last Name */}
-        <FloatingLabelInputField {...lastNameProps} />
-      </div>
-
       {/* Email */}
       <FloatingLabelInputField
         {...emailProps}
@@ -86,7 +71,7 @@ export const CreateAccountForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="!mt-5 h-11 w-full text-md"
+        className="!mt-5 h-control-lg w-full"
         primaryText="Create"
         isPending={isSubmitting || isCodePending}
         disabled={!isAvailable || isCheckPending}

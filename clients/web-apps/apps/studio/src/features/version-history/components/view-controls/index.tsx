@@ -1,7 +1,6 @@
 import { Separator } from "@avplatform/ui";
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { MinusIcon, PlusIcon, ScanIcon } from "@phosphor-icons/react";
 import { Panel } from "@xyflow/react";
-import { Scan } from "lucide-react";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -25,7 +24,7 @@ export const ViewControls = memo(() => {
         {zoomControls && (
           <VCBContainer>
             {/* Fit view button */}
-            <VCActionButton action="fitView" Icon={Scan} />
+            <VCActionButton action="fitView" Icon={ScanIcon} />
 
             {/* Separate from zoom in-out */}
             <Separator orientation="vertical" className="mx-1 w-[0.5px]" />

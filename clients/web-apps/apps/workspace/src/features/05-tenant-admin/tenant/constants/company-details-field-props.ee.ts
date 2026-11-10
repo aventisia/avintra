@@ -4,31 +4,31 @@ import { enumToArray } from "@avplatform/ui/utils";
 
 const organizationNameProps: InputFieldProps = {
   name: "organizationName",
-  label: "Organization Name",
+  label: "Organization name",
   isRequired: true,
 };
 
 const billingEmailProps: InputFieldProps = {
   name: "billingEmail",
-  label: "Billing Email",
+  label: "Billing email",
   isRequired: true,
 };
 
 const contactPersonProps: InputFieldProps = {
   name: "contactPerson",
-  label: "Contact Person",
+  label: "Contact person",
   isRequired: true,
 };
 
 const addressLine1Props: InputFieldProps = {
   name: "addressLine1",
-  label: "Address Line 1",
+  label: "Address line 1",
   isRequired: true,
 };
 
 const addressLine2Props: InputFieldProps = {
   name: "addressLine2",
-  label: "Address Line 2",
+  label: "Address line 2",
 };
 
 const cityProps: InputFieldProps = {
@@ -39,7 +39,7 @@ const cityProps: InputFieldProps = {
 
 const postalCodeProps: InputFieldProps = {
   name: "postalCode",
-  label: "Pin Code",
+  label: "Pin code",
   isRequired: true,
 };
 
@@ -64,7 +64,7 @@ const isWillingToFileGstProps: SwitchFieldProps = {
 
 const gstNumberProps: InputFieldProps = {
   name: "gstNumber",
-  label: "GST Number",
+  label: "GST number",
   isRequired: true,
 };
 

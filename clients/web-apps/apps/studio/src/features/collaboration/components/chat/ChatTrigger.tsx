@@ -2,12 +2,12 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { ChatsIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCollaborationStore } from "../../stores/collaboration-store";
 
-const CHAT_HEADING = "Live Chat";
+const CHAT_HEADING = "Live chat";
 
 /**
  * Renders the header trigger for the live chat popover, with an unread-count badge
@@ -27,14 +27,14 @@ export const ChatTrigger = () => {
       <PopoverTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon8" }),
-          "relative hover:bg-white/10",
-          isChatOpen && "hidden bg-white/10 md:flex",
+          "relative hover:bg-hover",
+          isChatOpen && "hidden bg-fill md:flex",
         )}
         onClick={() => setChatOpen(!isChatOpen)}
       >
-        <ChatBubbleLeftRightIcon className="h-[1.1rem] w-[1.1rem] text-white/80" />
+        <ChatsIcon className="h-[1.1rem] w-[1.1rem] text-ink-2" />
         {unreadCount > 0 && !isChatOpen ? (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-bad px-1 text-[9px] font-bold leading-none text-bad-foreground">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}

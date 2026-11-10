@@ -9,7 +9,7 @@ import { z } from "zod";
  * 1. Accepts plain domains (e.g., "chatgpt.com") or full URLs (e.g., "https://chatgpt.com").
  * 2. If the value doesn’t include a scheme ("http://", "https://"), we temporarily add "http://"
  *    so that `new URL(...)` can parse it.
- * 3. If parsing succeeds, the value is considered valid; otherwise, it fails.
+ * 3. The value is valid when it parses and its hostname looks like a domain (e.g., "example.com").
  * 4. In the transform step, any scheme ("http://", "https://") is stripped off so the final
  *    stored value is just the domain name (e.g., "chatgpt.com").
  *
@@ -22,18 +22,18 @@ import { z } from "zod";
 export const DomainSchema = z
   .string()
   .trim()
-  .min(1, reqError("Organization Domain"))
+  .min(1, reqError("Organization domain"))
   .refine(
     (val) => {
       try {
         // Add a dummy scheme if missing so `URL` parser can handle plain domains
-        new URL(val.includes("://") ? val : `http://${val}`);
-        return true;
+        const { hostname } = new URL(val.includes("://") ? val : `http://${val}`);
+        return /^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(hostname);
       } catch {
         return false; // Invalid URL/domain
       }
     },
-    { message: "Invalid domain" },
+    { message: "Enter a domain like example.com." },
   )
   .transform(
     (val) => val.replace(/^https?:\/\//, ""), // Strip scheme if present, keep only domain
@@ -42,8 +42,8 @@ export const DomainSchema = z
 export const companyInfoSchema = z.object({
   organizationName: z
     .string()
-    .min(1, { message: reqError("Organization Name") })
-    .max(255, { message: maxLenError("Organization Name", 255) }),
+    .min(1, { message: reqError("Organization name") })
+    .max(255, { message: maxLenError("Organization name", 255) }),
   domain: DomainSchema,
   numberOfEmployees: z.string().min(1, reqError("Number of Employees field")),
   country: z

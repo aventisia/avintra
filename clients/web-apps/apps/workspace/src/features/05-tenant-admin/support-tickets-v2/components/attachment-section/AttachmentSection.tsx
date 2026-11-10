@@ -1,6 +1,7 @@
+import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { DownloadSimpleIcon, PaperclipIcon, TrashIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DownloadIcon, PaperclipIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -50,7 +51,7 @@ export const AttachmentSection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Attachments ({attachments.length})</h2>
+        <h2 className="text-heading">Attachments ({attachments.length})</h2>
         {!isClosed && (
           <Button
             type="button"
@@ -59,19 +60,19 @@ export const AttachmentSection = ({
             onClick={() => setUploadDialogOpen(true)}
           >
             <PaperclipIcon className="mr-2 h-4 w-4" />
-            Add Attachment
+            Add attachment
           </Button>
         )}
       </div>
 
       {attachments.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No attachments yet.</p>
+        <EmptyState primaryMessage="No attachments yet" className="py-6" />
       ) : (
         <div className="space-y-2">
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="flex items-center justify-between rounded-lg border p-3"
+              className="flex items-center justify-between rounded-lg border border-line bg-surface p-3"
             >
               <div className="flex items-center gap-3">
                 <PaperclipIcon className="h-4 w-4 text-muted-foreground" />
@@ -97,7 +98,7 @@ export const AttachmentSection = ({
                     )
                   }
                 >
-                  <DownloadIcon className="h-4 w-4" />
+                  <DownloadSimpleIcon className="h-4 w-4" />
                 </Button>
                 {!isClosed && (
                   <Button
@@ -107,7 +108,7 @@ export const AttachmentSection = ({
                     onClick={() => deleteMutation.mutate(attachment.id || "")}
                     disabled={deleteMutation.isPending}
                   >
-                    <Trash2Icon className="h-4 w-4 text-destructive" />
+                    <TrashIcon className="h-4 w-4 text-bad" />
                   </Button>
                 )}
               </div>

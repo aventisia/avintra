@@ -47,15 +47,15 @@ export const FlowVersionNavLink = ({
 
   // Shared link styling
   const linkClassName = cn(
-    "group inline-flex h-5 w-auto text-sm cursor-pointer truncate font-normal text-foreground hover:text-primary",
+    "group inline-flex h-5 w-auto cursor-pointer truncate text-body-sm font-normal text-ink hover:text-primary-text",
     className,
   );
 
   const content = (
     <>
-      <span className="inline-flex font-medium items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
+      <span className="inline-flex font-medium items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary-text">
         <span className="truncate max-w-72">{flowName}</span>
-        <span className="bg-slate-100 border group-hover:border-primary-100 group-hover:text-primary text-2xs rounded-xl h-[1.1rem] px-1.5 text-muted-foreground">
+        <span className="inline-flex h-[18px] items-center rounded-sm border border-line bg-fill px-1.5 font-mono text-[11px] leading-none text-ink-2 group-hover:border-primary-text/35 group-hover:text-primary-text">
           {flowVersionNumber}
         </span>
       </span>

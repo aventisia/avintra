@@ -1,58 +1,36 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { NavLink } from "react-router-dom";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
+import { PROCESSING_MODE_LABELS } from "../constants/processing-mode-labels.constant";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
 
-/**
- * User-facing label for a queue's processing mode. The stored enum value for the
- * non-FIFO mode is "Manual", but it is branded as "Flexible" in the UI, so map it
- * to the display label instead of showing the raw stored value.
- */
-const processingModeLabel: Record<QueueProcessingModeEnum, string> = {
-  [QueueProcessingModeEnum.Fifo]: "Fifo",
-  [QueueProcessingModeEnum.Manual]: "Flexible",
-};
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<QueuesTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the queues table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<QueuesTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => {
       const queueId = row.original.id;
       const queueName = row.getValue<string>("name") ?? "";
@@ -66,7 +44,7 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
           >
             {row.getValue<string>("name")}
           </NavLink>
-          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-ink-2 rounded-sm">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>
         </div>
@@ -75,36 +53,29 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("type") ?? "--"}</div>
     ),
   },
   {
     accessorKey: "processingMode",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("processingMode")}
-      />
-    ),
+    meta: { label: getColumnName("processingMode") },
+    header: renderHeader("processingMode"),
     cell: ({ row }) => {
       const value = row.getValue<QueueProcessingModeEnum | null>("processingMode");
       return (
         <div className="w-auto truncate font-medium">
-          {value ? (processingModeLabel[value] ?? value) : "--"}
+          {value ? (PROCESSING_MODE_LABELS[value] ?? value) : "--"}
         </div>
       );
     },
   },
   {
     accessorKey: "agentsNames",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("agentsNames")} />
-    ),
+    meta: { label: getColumnName("agentsNames") },
+    header: renderHeader("agentsNames"),
     cell: ({ row }) => {
       const agents = row.getValue<string[]>("agentsNames") ?? [];
       return (
@@ -116,25 +87,24 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
   },
   {
     accessorKey: "total",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("total")} />
-    ),
+    meta: { label: getColumnName("total") },
+    header: renderHeader("total"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("total") ?? 0}</div>
     ),
   },
   {
     accessorKey: "lastModifiedOn",
+    meta: { label: getColumnName("lastModifiedOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        label={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {row.getValue("lastModifiedOn")
           ? format(row.getValue("lastModifiedOn"), "dd MMM yyyy, h:mm a")
           : "--"}
@@ -143,35 +113,36 @@ export const queuesTableColumns = (): ColumnDef<QueuesTableDto>[] => [
   },
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
-  createDTActionsColumn<QueuesTableDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<QueuesTableDto>({
+    actions: ({ row }) => (
       <QueueRowActions
-        rowId={row.id ?? "rowId"}
-        queueName={row.name ?? ""}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess || false}
-        isResourceAccessRestricted={row.isResourceAccessRestricted || false}
+        rowId={row.original.id ?? "rowId"}
+        queueName={row.original.name ?? ""}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        isResourceAccessRestricted={row.original.isResourceAccessRestricted || false}
       />
     ),
   }),

@@ -7,11 +7,11 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { IByokModelUsage, IByokProviderUsage } from "../dtos/byok-usage-dto.ee";
@@ -61,8 +61,8 @@ const ByokModelCharts = () => {
   return (
     <div className="min-h-[33vh] rounded-lg pb-4">
       {/* Model Provider selector */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg bg-white px-6 py-4">
-        <p className="text-sm font-medium">Model Provider</p>
+      <div className="mb-4 flex items-center gap-3 rounded-lg bg-surface px-6 py-4">
+        <p className="text-sm font-medium">Model provider</p>
         <Select
           value={activeProvider ?? ""}
           onValueChange={(value) => {
@@ -85,7 +85,7 @@ const ByokModelCharts = () => {
 
       {/* Per-model charts for the selected provider */}
       {activeProvider && (
-        <div className="grid grid-cols-2 gap-4 rounded-lg bg-white px-6 py-6">
+        <div className="grid grid-cols-2 gap-4 rounded-lg bg-surface px-6 py-6">
           {currentModels.map((model) => (
             <ModelChart
               key={model.model}
@@ -114,7 +114,7 @@ const ByokModelCharts = () => {
       {currentModels.length > 0 && (
         <div className="mt-5 flex items-center justify-end space-x-6 px-6 lg:space-x-8">
           <div className="hidden items-center space-x-2 xs:flex">
-            <p className="text-sm font-medium">Charts per page</p>
+            <p className="whitespace-nowrap text-hint text-muted-foreground">Charts per page</p>
             <Select
               value={`${itemsPerPage}`}
               onValueChange={(value) => {
@@ -135,7 +135,7 @@ const ByokModelCharts = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          <div className="flex w-[100px] items-center justify-center whitespace-nowrap text-hint text-muted-foreground">
             Page {currentPage} of {totalPages}
           </div>
           <div className="flex items-center space-x-2">
@@ -146,7 +146,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to first page</span>
-              <ChevronDoubleLeftIcon className="h-4 w-4" />
+              <CaretDoubleLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -155,7 +155,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === 1}
             >
               <span className="sr-only">Go to previous page</span>
-              <ChevronLeftIcon className="h-4 w-4" />
+              <CaretLeftIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -164,7 +164,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to next page</span>
-              <ChevronRightIcon className="h-4 w-4" />
+              <CaretRightIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -173,7 +173,7 @@ const ByokModelCharts = () => {
               disabled={currentPage === totalPages}
             >
               <span className="sr-only">Go to last page</span>
-              <ChevronDoubleRightIcon className="h-4 w-4" />
+              <CaretDoubleRightIcon className="h-4 w-4" />
             </Button>
           </div>
         </div>

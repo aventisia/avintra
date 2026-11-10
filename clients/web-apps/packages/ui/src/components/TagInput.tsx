@@ -1,4 +1,4 @@
-import { X as RemoveIcon } from "lucide-react";
+import { XIcon as RemoveIcon } from "@phosphor-icons/react";
 import { type Dispatch, type SetStateAction, forwardRef, useState } from "react";
 
 import { Input, type InputProps } from "@/ui/components";
@@ -25,15 +25,17 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     return (
       <div
         className={cn(
-          "flex min-h-10 flex-wrap items-center gap-1.5 rounded-lg border border-input bg-background p-1 py-1.5 pl-1.5 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
-          disabled ? "cursor-not-allowed opacity-80" : "cursor-auto opacity-100",
+          "flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-line-strong bg-surface p-1 text-body text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28] motion-reduce:transition-none",
+          disabled
+            ? "cursor-not-allowed border-line bg-sunken text-muted-foreground"
+            : "cursor-auto",
         )}
       >
         {value.map((item, index) => (
           <Badge
             key={index}
             className={cn(
-              "flex h-6 cursor-default items-center gap-1 py-0 pl-3 pr-2",
+              "flex h-5 cursor-default items-center gap-1 rounded-sm py-0 pl-1.5 pr-1",
               disabled ? "cursor-not-allowed" : "cursor-auto",
             )}
             variant={"secondary"}
@@ -53,7 +55,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
               <RemoveIcon
                 className={cn(
                   "h-4 w-4",
-                  disabled ? "cursor-not-allowed" : "cursor-auto hover:stroke-destructive",
+                  disabled ? "cursor-not-allowed" : "cursor-auto hover:text-bad",
                 )}
               />
             </button>
@@ -79,7 +81,7 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
             }
           }}
           className={cn(
-            "ml-1.5 h-6 min-w-[4rem] flex-1 border-none p-0 outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
+            "ml-1.5 h-6 min-w-[4rem] flex-1 border-none bg-transparent p-0 outline-none focus-visible:ring-0 disabled:bg-transparent",
             className,
           )}
           {...props}

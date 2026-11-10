@@ -1,7 +1,7 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle } from "lucide-react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -56,7 +56,7 @@ export const EnableAgentRowAction: React.FC<DTEditRowActionProps> = ({ rowId, si
     <SimpleDDMenuItem
       size={size}
       content="Enable"
-      Icon={CheckCircle}
+      Icon={CheckCircleIcon}
       onClick={() => {
         handleEnable();
       }}

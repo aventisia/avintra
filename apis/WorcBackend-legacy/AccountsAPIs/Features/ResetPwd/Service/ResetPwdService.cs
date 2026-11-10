@@ -138,7 +138,7 @@ public class ResetPwdService : IResetPwdService
             }
 
             // Create placeholder values for email template
-            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", user.FirstName } };
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(user.FirstName, user.Email) } };
 
             // Failed to send PwdReset email
             if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.PwdReset, user.Email, placeholderValues))

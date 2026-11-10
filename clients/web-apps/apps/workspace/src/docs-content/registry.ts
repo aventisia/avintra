@@ -2,10 +2,12 @@
  * Registry for in-app documentation guides.
  *
  * Each guide is a standalone Markdown file in `guides/` plus a metadata entry
- * below. Guides are keyed by a stable `id` that is referenced from the page
- * headings via the `HelpButton` component. `docsSiteUrl` provides the hybrid
- * "View full docs" link to the external docs site.
+ * below. The help panel opens the guide whose `routes` match the current page;
+ * a `HelpButton` can open any guide by its stable `id`. `docsSiteUrl` provides
+ * the hybrid "View full docs" link to the external docs site.
  */
+import { isRouteWithin } from "@avplatform/ui/utils";
+
 // Guides are imported statically (as raw strings) so they are bundled with the
 // app and render instantly.
 import agentRiskRegistry from "./guides/agent-risk-registry.md?raw";
@@ -48,7 +50,7 @@ const guides: HelpGuideContent[] = [
   // Build
   {
     id: "get-started",
-    title: "Get Started",
+    title: "Get started",
     summary:
       "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",
     section: "tenant-admin",
@@ -58,6 +60,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "agents",
+    routes: ["/agents"],
     title: "Agents",
     summary: "Build, edit, and manage your AI agents.",
     section: "build",
@@ -67,6 +70,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "library",
+    routes: ["/library"],
     title: "Library",
     summary: "Start agents quickly from reusable templates.",
     section: "build",
@@ -76,6 +80,7 @@ const guides: HelpGuideContent[] = [
   // Configure
   {
     id: "queues",
+    routes: ["/configure/queues"],
     title: "Queues",
     summary: "Create and manage queues that hold work items for your agents.",
     section: "configure",
@@ -84,6 +89,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "triggers",
+    routes: ["/configure/triggers"],
     title: "Triggers",
     summary: "Start agents automatically on time, email, message, or webhook events.",
     section: "configure",
@@ -92,7 +98,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "time-triggers",
-    title: "Time Triggers",
+    routes: ["/configure/triggers/time"],
+    title: "Time triggers",
     summary: "Run an agent on a schedule.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -100,7 +107,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "email-triggers",
-    title: "Email Triggers",
+    routes: ["/configure/triggers/email"],
+    title: "Email triggers",
     summary: "Start an agent when an email is received.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -108,7 +116,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "message-triggers",
-    title: "Message Triggers",
+    routes: ["/configure/triggers/message"],
+    title: "Message triggers",
     summary: "Start an agent when a message arrives in a channel.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -116,7 +125,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "webhook-triggers",
-    title: "Webhook Triggers",
+    routes: ["/configure/triggers/webhook"],
+    title: "Webhook triggers",
     summary: "Start an agent when an external system calls a webhook URL.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
@@ -124,7 +134,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "configstore",
-    title: "Key Store",
+    routes: ["/configure/configstore"],
+    title: "Key store",
     summary: "Manage API keys and configuration values referenced by agents.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/config-store",
@@ -132,6 +143,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "vault",
+    routes: ["/configure/vault"],
     title: "Vault",
     summary: "Store and manage encrypted secrets that are protected and audited.",
     section: "configure",
@@ -141,7 +153,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "knowledge-bases",
-    title: "Knowledge Bases",
+    routes: ["/configure/knowledge-base"],
+    title: "Knowledge bases",
     summary: "Create corpora of documents your agents can search and retrieve from.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -149,6 +162,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "skills",
+    routes: ["/configure/skill-registry"],
     title: "Skills",
     summary: "Create reusable units of capability that agents can call.",
     section: "configure",
@@ -157,6 +171,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "tools",
+    routes: ["/configure/tools"],
     title: "Tools",
     summary: "Connect agents to external systems and APIs.",
     section: "configure",
@@ -166,7 +181,8 @@ const guides: HelpGuideContent[] = [
   // Orchestrator
   {
     id: "agent-risk-registry",
-    title: "Agent Risk Registry",
+    routes: ["/orchestrator/agent-risk-registry"],
+    title: "Agent risk registry",
     summary: "Assess, review, and govern the AI agents published in your workspace.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -174,7 +190,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "published-agents",
-    title: "Published Agents",
+    routes: ["/orchestrator/published-agents"],
+    title: "Published agents",
     summary: "Manage the agents that are live in production.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -182,6 +199,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "machines",
+    routes: ["/orchestrator/machines"],
     title: "Machines",
     summary: "Register and monitor the machines that execute your agents.",
     section: "orchestrator",
@@ -190,6 +208,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "jobs",
+    routes: ["/orchestrator/jobs"],
     title: "Jobs",
     summary: "Track agent executions, their status, and retry or cancel them.",
     section: "orchestrator",
@@ -198,6 +217,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "conversations",
+    routes: ["/orchestrator/conversations"],
     title: "Conversations",
     summary: "Review the interactions your agents have with end users.",
     section: "orchestrator",
@@ -206,7 +226,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "api-keys",
-    title: "API Keys",
+    routes: ["/orchestrator/api-keys"],
+    title: "API keys",
     summary: "Generate and manage API keys used to call agent endpoints.",
     section: "orchestrator",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
@@ -215,7 +236,8 @@ const guides: HelpGuideContent[] = [
   // Assist
   {
     id: "assist-agents",
-    title: "Assist — Agents",
+    routes: ["/assist/agents"],
+    title: "Assist — agents",
     summary: "Interact with the agents available to you.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -223,7 +245,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "assist-queues",
-    title: "Assist — Queues",
+    routes: ["/assist/queues"],
+    title: "Assist — queues",
     summary: "Process the work items assigned to you.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -231,7 +254,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "assist-chats",
-    title: "Assist — Chats",
+    routes: ["/assist/chats"],
+    title: "Assist — chats",
     summary: "Review and continue your conversations with agents.",
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
@@ -240,6 +264,7 @@ const guides: HelpGuideContent[] = [
   // Tenant Admin
   {
     id: "tenant",
+    routes: ["/tenant/overview"],
     title: "Tenant",
     summary: "Manage your tenant's profile, plan, and billing.",
     section: "tenant-admin",
@@ -248,6 +273,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "users",
+    routes: ["/tenant/users"],
     title: "Users",
     summary: "Invite, manage, and remove users and assign roles.",
     section: "tenant-admin",
@@ -257,6 +283,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "spaces",
+    routes: ["/tenant/spaces"],
     title: "Spaces",
     summary: "Organize users and resources into spaces.",
     section: "tenant-admin",
@@ -266,6 +293,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "models",
+    routes: ["/tenant/model-providers"],
     title: "Models",
     summary: "Configure the model providers used by your agents.",
     section: "tenant-admin",
@@ -275,6 +303,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "usage",
+    routes: ["/tenant/usage"],
     title: "Usage",
     summary: "Monitor your tenant's consumption and credits.",
     section: "tenant-admin",
@@ -283,6 +312,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "support",
+    routes: ["/tenant/support", "/sa/support"],
     title: "Support",
     summary: "Raise and track support tickets.",
     section: "tenant-admin",
@@ -291,6 +321,7 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "tenant-notifications",
+    routes: ["/tenant/notifications", "/sa/notifications"],
     title: "Notifications",
     summary:
       "Broadcast manual notifications and configure automatic notifications for your tenant.",
@@ -301,6 +332,7 @@ const guides: HelpGuideContent[] = [
   // Super Admin
   {
     id: "tenants",
+    routes: ["/sa/tenants"],
     title: "Tenants",
     summary: "View and manage all tenants in the deployment.",
     section: "super-admin",
@@ -309,7 +341,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "subscription-plans",
-    title: "Subscription Plans",
+    routes: ["/sa/subscription-plans"],
+    title: "Subscription plans",
     summary: "Define the plans available to tenants.",
     section: "super-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
@@ -317,7 +350,8 @@ const guides: HelpGuideContent[] = [
   },
   {
     id: "credit-plans",
-    title: "Credit Plans",
+    routes: ["/sa/credit-plans"],
+    title: "Credit plans",
     summary: "Manage credit plans and pricing.",
     section: "super-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
@@ -333,4 +367,16 @@ export function getGuide(id: string): HelpGuideContent | undefined {
 /** Returns all guides (metadata + content). */
 export function getAllGuides(): HelpGuideContent[] {
   return guides;
+}
+
+/** Returns the guide for the page at `pathname`, matching its most specific route. */
+export function getGuideForPath(pathname: string): HelpGuideContent | undefined {
+  let match: { guide: HelpGuideContent; length: number } | undefined;
+  for (const guide of guides) {
+    for (const route of guide.routes ?? []) {
+      if (isRouteWithin(pathname, route) && route.length > (match?.length ?? 0))
+        match = { guide, length: route.length };
+    }
+  }
+  return match?.guide;
 }

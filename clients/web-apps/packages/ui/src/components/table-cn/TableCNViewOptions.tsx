@@ -1,5 +1,5 @@
+import { CheckIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { type Column, type Table } from "@tanstack/react-table";
-import { Check, Settings2 } from "lucide-react";
 
 import { Button } from "@/ui/components/buttons";
 import {
@@ -52,7 +52,7 @@ export const TableCNViewOptions = <TData,>({
           size="xs"
           className={cn("hidden lg:flex", TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME, className)}
         >
-          <Settings2 />
+          <SlidersHorizontalIcon />
           View
         </Button>
       </PopoverTrigger>
@@ -62,19 +62,19 @@ export const TableCNViewOptions = <TData,>({
         className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-56 overflow-hidden")}
       >
         <Command>
-          <div className="border-b border-slate-100">
+          <div className="border-b border-line">
             <CommandInput
               placeholder="Search columns..."
               className={TABLE_CN_COMMAND_INPUT_CLASS_NAME}
             />
           </div>
           <CommandList>
-            <CommandEmpty className="py-6 text-center text-sm text-slate-500">
+            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
               No columns found.
             </CommandEmpty>
             <CommandGroup
               heading={hiddenCount > 0 ? `${hiddenCount} hidden` : "Columns"}
-              className="p-1.5"
+              className="p-1"
             >
               {columns.map((column) => (
                 <CommandItem
@@ -84,9 +84,9 @@ export const TableCNViewOptions = <TData,>({
                   className={TABLE_CN_COMMAND_ITEM_CLASS_NAME}
                 >
                   <span className="truncate">{getColumnLabel(column)}</span>
-                  <Check
+                  <CheckIcon
                     className={cn(
-                      "ml-auto size-3.5 shrink-0 text-indigo-600",
+                      "ml-auto size-3.5 shrink-0 text-primary-text",
                       column.getIsVisible() ? "opacity-100" : "opacity-0",
                     )}
                   />

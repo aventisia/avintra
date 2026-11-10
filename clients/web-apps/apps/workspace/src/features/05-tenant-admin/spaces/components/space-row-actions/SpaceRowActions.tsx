@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { ResourceUserAccessRowAction } from "@/features/resource-user-access/components/common-row-actions/ResourceUserAccessRowAction";
 import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
@@ -18,12 +19,12 @@ export const SpaceRowActions = ({ rowId, row }: SpaceRowActionsProps) => {
 
   return (
     // Dropdown menu for Space table row action
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open space actions">
       {/* View the Space details */}
-      <DTRowAction rowId={rowId} crudAction="read" entity="space" />
+      <CrudRowAction rowId={rowId} crudAction="read" entity="space" />
 
       {/* Edit Space details */}
-      <DTRowAction rowId={rowId} crudAction="update" entity="space" disabled={isDefault} />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="space" disabled={isDefault} />
 
       {/* Share Space access */}
       <ResourceUserAccessRowAction
@@ -38,6 +39,6 @@ export const SpaceRowActions = ({ rowId, row }: SpaceRowActionsProps) => {
 
       {/* Triggers Space delete alert dialog */}
       <SpaceRowDeleteAction rowId={rowId} row={row} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

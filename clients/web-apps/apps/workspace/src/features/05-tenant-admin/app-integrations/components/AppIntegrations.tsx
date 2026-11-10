@@ -12,7 +12,7 @@ export const AppIntegrations = () => {
   return (
     <>
       <div className="space-y-5 py-4">
-        <p className="text-lg font-medium">Integrations</p>
+        <p className="text-title text-ink">Integrations</p>
         <ConnectedIntegrations />
         <AvailableIntegrationsDialog>
           <AvailableIntegrations />

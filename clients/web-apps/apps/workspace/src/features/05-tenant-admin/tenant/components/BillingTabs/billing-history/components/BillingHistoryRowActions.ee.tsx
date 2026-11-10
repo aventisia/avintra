@@ -1,7 +1,7 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { Download } from "lucide-react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 interface BillingRowActionsProps {
   rowId: string;
@@ -15,7 +15,7 @@ export const BillingHistoryRowActions = ({ rowId }: BillingRowActionsProps) => {
         className={cn(buttonVariants({ variant: "ghost", size: "xs" }))}
         onClick={() => console.log(rowId)}
       >
-        <Download className="h-4 w-4" />
+        <DownloadSimpleIcon className="h-4 w-4" />
       </div>
       {/* </Button> */}
     </Tooltip>

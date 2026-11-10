@@ -6,18 +6,6 @@ namespace AccountsAPIs.DTOs;
 public class CreateAccountDto : BaseEmailProperty
 {
     /// <summary>
-    /// Gets or sets the user's first name. Maximum length is 50 characters.
-    /// </summary>
-    [StringLength(50)]
-    public required string FirstName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the user's last name. Maximum length is 50 characters.
-    /// </summary>
-    [StringLength(50)]
-    public required string LastName { get; set; }
-
-    /// <summary>
     /// Gets or sets the password for the user account. Minimum length is 8 characters and maximum length is 16 characters.
     /// </summary>
     [StringLength(16, MinimumLength = 8, ErrorMessage = "{0} must meet length requirements")]

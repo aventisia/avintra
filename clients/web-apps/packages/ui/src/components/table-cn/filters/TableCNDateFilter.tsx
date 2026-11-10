@@ -1,5 +1,5 @@
+import { CalendarIcon } from "@phosphor-icons/react";
 import { type Column } from "@tanstack/react-table";
-import { CalendarIcon } from "lucide-react";
 import type * as React from "react";
 import { type DateRange } from "react-day-picker";
 
@@ -84,7 +84,7 @@ export const TableCNDateFilter = <TData, TValue>({
           <Calendar mode="single" autoFocus selected={toDate(from)} onSelect={onSelectDate} />
         )}
         {isActive && (
-          <div className="border-t border-slate-100 p-2">
+          <div className="border-t border-line p-2">
             <Button
               aria-label={`Clear ${title} filter`}
               variant="ghost"

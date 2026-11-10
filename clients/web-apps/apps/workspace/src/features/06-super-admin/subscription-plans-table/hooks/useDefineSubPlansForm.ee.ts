@@ -1,6 +1,7 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -45,9 +46,9 @@ export const useDefineSubPlansForm = ({ rowId, crudAction }: UseDefineSubPlansFo
       frequency: "Monthly",
       status: "Current",
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -84,10 +85,9 @@ export const useDefineSubPlansForm = ({ rowId, crudAction }: UseDefineSubPlansFo
       status: subPlanData?.status ?? "Current",
       isDisabled: subPlanData?.isDisabled ?? false,
       // Read (view) only fields
-      createdBy: subPlanData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: subPlanData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: subPlanData?.createdOn ? new Date(subPlanData?.createdOn) : new Date(),
-      lastModifiedBy:
-        subPlanData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: subPlanData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: subPlanData?.lastModifiedOn
         ? new Date(subPlanData?.lastModifiedOn)
         : new Date(),

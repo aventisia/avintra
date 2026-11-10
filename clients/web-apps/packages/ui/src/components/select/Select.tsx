@@ -1,5 +1,5 @@
+import { CaretDownIcon, CaretUpIcon, CheckIcon } from "@phosphor-icons/react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/ui/lib";
@@ -20,19 +20,19 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex w-full items-center justify-between rounded-lg border border-input bg-background shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-ring disabled:cursor-not-allowed disabled:opacity-80 [&>span]:line-clamp-1",
-      size === "xs" && "h-7 pl-[0.45rem] pr-1 text-2xs",
-      size === "sm" && "h-8 pl-[0.55rem] pr-1.5 text-xs",
-      size === "base" && "h-10 pl-3 pr-2.5 text-sm",
+      "flex w-full items-center justify-between gap-2 rounded-md border border-line-strong bg-surface text-left text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus:outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-focus/[0.28] data-[state=open]:border-focus data-[state=open]:ring-[3px] data-[state=open]:ring-focus/[0.28] aria-[invalid=true]:border-bad data-[placeholder]:text-muted-foreground disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken disabled:text-muted-foreground motion-reduce:transition-none [&>span]:line-clamp-1",
+      size === "xs" && "h-6 pl-2 pr-1 text-hint",
+      size === "sm" && "h-7 pl-2.5 pr-1.5 text-body-sm",
+      size === "base" && "h-8 pl-[11px] pr-2 text-body",
       className,
     )}
     {...props}
   >
     {children}
-    <SelectPrimitive.Icon className="bg-red-0" asChild>
-      <ChevronDown
+    <SelectPrimitive.Icon asChild>
+      <CaretDownIcon
         className={cn(
-          "opacity-50",
+          "shrink-0 text-muted-foreground",
           size === "xs" && "h-3 w-3",
           size === "sm" && "h-3.5 w-3.5",
           size === "base" && "h-4 w-4",
@@ -52,7 +52,7 @@ const SelectScrollUpButton = React.forwardRef<
     className={cn("flex cursor-default items-center justify-center py-1", className)}
     {...props}
   >
-    <ChevronUp className="h-4 w-4" />
+    <CaretUpIcon className="h-4 w-4" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -66,7 +66,7 @@ const SelectScrollDownButton = React.forwardRef<
     className={cn("flex cursor-default items-center justify-center py-1", className)}
     {...props}
   >
-    <ChevronDown className="h-4 w-4" />
+    <CaretDownIcon className="h-4 w-4" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
@@ -81,7 +81,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg bg-surface text-ink shadow-pop data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className,
@@ -112,7 +112,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("py-1.5 pl-8 pr-2 text-sm font-medium text-muted-foreground", className)}
+    className={cn("px-2 pb-1 pt-2 font-mono text-label uppercase text-muted-foreground", className)}
     {...props}
   />
 ));
@@ -128,18 +128,18 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "flex w-full cursor-default select-none flex-col rounded-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "flex w-full cursor-default select-none flex-col justify-center rounded-sm text-ink outline-none focus:bg-hover data-[highlighted]:bg-hover data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground",
       size === "xs" && "px-1 py-1 text-2xs",
       size === "sm" && "px-1.5 py-1 text-xs",
-      size === "base" && "px-2 py-1.5 text-sm",
+      size === "base" && "min-h-8 px-2 py-1 text-body-sm",
       className,
     )}
     {...props}
   >
     <div className="flex w-full items-center gap-1 justify-between">
       <SelectPrimitive.ItemText className="grow">{children}</SelectPrimitive.ItemText>
-      <SelectPrimitive.ItemIndicator>
-        <Check
+      <SelectPrimitive.ItemIndicator className="text-primary-text">
+        <CheckIcon
           className={cn(
             size === "xs" && "h-3 w-3",
             size === "sm" && "h-3.5 w-3.5",
@@ -163,7 +163,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    className={cn("-mx-1 my-1 h-px bg-line", className)}
     {...props}
   />
 ));

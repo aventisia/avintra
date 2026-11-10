@@ -1,19 +1,16 @@
-import {
-  DTPagination,
-  DTSearchBox,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
-import { DETAIL_TABLE_KEY } from "../../constants";
-import { columnVisibilityState } from "../../constants/kb-files-column-visibility-state";
+import {
+  DETAIL_TABLE_KEY,
+  KB_FILES_INITIAL_STATE,
+  KB_FILES_PAGE_SIZE_OPTIONS,
+  KB_FILES_ROW_LABELS,
+} from "../../constants";
 import { useFetchKBFiles } from "../../hooks/useFetchKBFiles";
 import { useFetchKnowledgeBase } from "../../hooks/useFetchKnowledgeBase";
 import AddFileDD from "./AddFileDropDown";
@@ -23,6 +20,11 @@ import { getKBFilesTableColumns } from "./KBFilesTableColumns";
 import { KBMetadataSummary } from "./KBMetadataSummary";
 import { KBRetrievalSection } from "./KBRetrievalSection";
 import { TableHeading } from "./TableHeading";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: KB_FILES_PAGE_SIZE_OPTIONS,
+  rowLabels: KB_FILES_ROW_LABELS,
+};
 
 /**
  * Renders a table of KBFilesFiles.
@@ -34,12 +36,6 @@ export const KBFilesTable = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const kbName = searchParams.get("kb") ?? "KB not found";
-
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    DETAIL_TABLE_KEY,
-    columnVisibilityState,
-  );
 
   // Fetch KBFilesFiles data
   const { data, isLoading } = useFetchKBFiles(knowledgeBaseId);
@@ -76,44 +72,38 @@ export const KBFilesTable = () => {
     return columns.filter((column) => column.id !== "actions");
   }, [columns, hasOnlyReadAccess]);
 
-  // Create a React table for KBFiles data
-  const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: filteredColumns,
+    initialState: KB_FILES_INITIAL_STATE,
+    persistKey: DETAIL_TABLE_KEY,
+    searchColumns: ["fileName"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered table.
   return (
     <>
       {data ? (
-        // <div className='h-[calc(100vh-2.5*var(--header-height))] grid grid-cols-10 gap-5'>
-
         <div className="space-y-4 h-full   pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <TableHeading kbName={kbName} />
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["fileName"]} placeholder="Search..." />
-              {!hasOnlyReadAccess && <AddFileDD />}
-            </div>
+            <div className="flex items-center gap-2">{!hasOnlyReadAccess && <AddFileDD />}</div>
           </div>
           <div className="grid grid-cols-9 h-[calc(100vh-2.7*var(--header-height))] gap-3">
             <div className="col-span-6 space-y-4">
               <KBMetadataSummary knowledgeBase={knowledgeBase} />
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={columns.length} />
-
-              {/* Data table Pagination component */}
-              <DTPagination table={table} singularLabel="File" pluralLabel="Files" />
-              {/* <div className="h-fit">
-                <FileUploader
-                  hideFooter
-                  disclaimer={<FileUploadDisclaimer />}
-                  acceptedTypes={{
-                    "application/pdf": [".pdf"],
-                    "image/jpeg": [".jpg", ".jpeg"],
-                  }}
+              {/* Data table with its toolbar and pagination footer */}
+              <TableCN table={table} label="Files" paginationProps={PAGINATION_PROPS}>
+                <TableCNToolbar
+                  table={table}
+                  searchPlaceholder="Search..."
+                  withViewOptions={false}
                 />
-              </div> */}
+              </TableCN>
             </div>
-            <div className="col-span-3 border bg-background rounded-lg">
+            <div className="col-span-3 border border-line bg-surface rounded-lg">
               <KBRetrievalSection
                 knowledgeBaseId={knowledgeBaseId}
                 knowledgeBaseName={kbName}
@@ -128,8 +118,8 @@ export const KBFilesTable = () => {
           />
         </div>
       ) : (
-        // Show data table skeleton while fetching the WorkItems data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the KB files data
+        <TableCNSkeleton columnCount={6} withSearch withViewOptions={false} />
       )}
     </>
   );

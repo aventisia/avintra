@@ -1,9 +1,10 @@
+import { Switch } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { Card } from "@avplatform/ui/cards";
 import { cn } from "@avplatform/ui/lib";
+import { RecordSection } from "@avplatform/ui/record-sheet";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { useShallow } from "zustand/react/shallow";
+import { InfoIcon, LockKeyIcon, PlugsConnectedIcon, WarningIcon } from "@phosphor-icons/react";
 
 import { ROLE_TA } from "@/constants/roles";
 import {
@@ -41,149 +42,140 @@ const SsoConnectionCard = () => {
     isTogglePending,
   } = useSsoConnectionCard();
 
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({ userSession: state.userSession })),
+  const isTenantAdmin = useUserSessionStore((state) =>
+    Boolean(state.userSession?.userRoles?.includes(ROLE_TA)),
   );
 
-  const isTenantAdmin = Boolean(userSession?.userRoles?.includes(ROLE_TA));
   const isConnectBlocked = !isConnected && !persistedSsoEnabled;
   const isToggleDisabled = isTogglePending || isConnectBlocked;
-  const ssoToggleTooltip = isSSOEnabled ? ssoEnabledTooltip : ssoDisabledTooltip;
 
   if (isLoading) return <TabLoader />;
   if (!isSSOAvailable && !persistedSsoEnabled) return null;
 
   if (!isTenantAdmin) {
     return (
-      <Card className="mb-6 p-4">
-        <p className="text-sm text-muted-foreground">{ssoAdminOnlyNotice}</p>
-      </Card>
+      <RecordSection title="Single sign-on">
+        <p className="flex items-start gap-2.5 rounded-lg bg-surface p-4 text-[12.5px] text-muted-foreground ring-1 ring-line">
+          <LockKeyIcon className="mt-px size-4 shrink-0" />
+          {ssoAdminOnlyNotice}
+        </p>
+      </RecordSection>
     );
   }
 
   return (
-    <Card className="mb-6 overflow-hidden hover:shadow-md">
-      <div className="flex items-start gap-3.5 p-5">
-        <div className="shrink-0 rounded-[10px] border border-amber-200 bg-amber-50 p-2.5">
-          <img src={azureLogoUrl} alt="" className="h-6 w-6" />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-            <h3 className="text-sm font-semibold leading-none">Microsoft Entra ID</h3>
-            <Tooltip content={ssoProviderInfoTooltip}>
+    <RecordSection title="Single sign-on">
+      <div className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+        <div className="space-y-4 p-4">
+          <div className="flex items-start gap-3">
+            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-surface shadow-sm ring-1 ring-line">
+              <img src={azureLogoUrl} alt="" className="size-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <h3 className="text-[13.5px] font-semibold text-ink">Microsoft Entra ID</h3>
+                <Tooltip content={ssoProviderInfoTooltip}>
+                  <InfoIcon
+                    tabIndex={0}
+                    aria-label={ssoProviderInfoTooltip}
+                    className="size-3.5 cursor-help text-muted-foreground outline-none focus-visible:text-ink"
+                  />
+                </Tooltip>
+              </div>
               <span
-                role="img"
-                tabIndex={0}
-                aria-label={ssoProviderInfoTooltip}
-                className="cursor-help text-xs leading-none text-muted-foreground"
+                className={cn(
+                  "mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11.5px] font-medium ring-1 ring-inset",
+                  isConnected
+                    ? "bg-ok/10 text-ok ring-ok/25"
+                    : "bg-sunken text-muted-foreground ring-line",
+                )}
               >
-                ⓘ
+                <span className="size-1.5 rounded-full bg-current" />
+                {isConnected ? ssoStatusConnectedLabel : "Not connected"}
               </span>
-            </Tooltip>
-            {isConnected && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-2xs font-medium text-green-700">
-                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                {ssoStatusConnectedLabel}
-              </span>
-            )}
+            </div>
           </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+
+          <p className="text-[12.5px] leading-5 text-ink-2">
             Let members of your company domain sign in with your organization account.
           </p>
-        </div>
-      </div>
 
-      {(emailDomain || ssoDisableWarning) && (
-        <div className="px-5 pb-4">
           {isConnected && emailDomain && (
-            <dl className="grid gap-1 text-sm">
-              <div className="flex gap-2">
-                <dt className="text-muted-foreground">{ssoEmailDomainLabel}</dt>
-                <dd className="font-medium">{emailDomain}</dd>
-              </div>
+            <dl className="flex items-center justify-between gap-3 rounded-md bg-sunken/60 px-3 py-2 text-[12.5px] ring-1 ring-line">
+              <dt className="text-muted-foreground">{ssoEmailDomainLabel}</dt>
+              <dd className="truncate font-mono text-ink">{emailDomain}</dd>
             </dl>
           )}
 
           {ssoDisableWarning && (
-            <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-              <p className="font-medium">{ssoDisableWarningTitle}</p>
-              <p>
-                {ssoDisableWarning.affectedUserCount} user(s) have no password and cannot sign in
-                until they set one.
-                {ssoDisableWarning.affectedAdmins.length > 0 &&
-                  ` Affected admins: ${ssoDisableWarning.affectedAdmins.join(", ")}.`}
-              </p>
-              {ssoDisableWarning.recoveryHint && (
-                <p className="mt-1">{ssoDisableWarning.recoveryHint}</p>
-              )}
+            <div className="flex gap-2.5 rounded-md bg-warn/10 px-3 py-2.5 text-[12.5px] leading-5 text-ink ring-1 ring-warn/25">
+              <WarningIcon className="mt-0.5 size-4 shrink-0 text-warn" />
+              <div>
+                <p className="font-medium">{ssoDisableWarningTitle}</p>
+                <p className="text-ink-2">
+                  {ssoDisableWarning.affectedUserCount} user(s) have no password and cannot sign in
+                  until they set one.
+                  {ssoDisableWarning.affectedAdmins.length > 0 &&
+                    ` Affected admins: ${ssoDisableWarning.affectedAdmins.join(", ")}.`}
+                </p>
+                {ssoDisableWarning.recoveryHint && (
+                  <p className="mt-1 text-ink-2">{ssoDisableWarning.recoveryHint}</p>
+                )}
+              </div>
             </div>
           )}
         </div>
-      )}
 
-      <div className="flex flex-wrap items-center justify-end gap-y-2 border-t bg-muted/40 px-5 py-3">
-        <div className="mr-auto flex items-center gap-2.5">
-          <Tooltip content={ssoToggleTooltip}>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={isSSOEnabled}
-              aria-labelledby="sso-toggle-label"
-              aria-describedby={isConnectBlocked ? "sso-toggle-hint" : undefined}
-              disabled={isToggleDisabled}
-              onClick={() => toggleSsoHandler(!isSSOEnabled)}
-              className={cn(
-                "relative h-5 w-[34px] shrink-0 rounded-full transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                isSSOEnabled ? "bg-emerald-600" : "bg-slate-200 dark:bg-slate-700",
-                isToggleDisabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
-              )}
-            >
-              <span
-                aria-hidden="true"
+        <div className="space-y-3 border-t border-line bg-sunken/60 px-4 py-3">
+          <div className="flex items-start gap-2.5">
+            <Tooltip content={isSSOEnabled ? ssoEnabledTooltip : ssoDisabledTooltip}>
+              <span className="mt-px">
+                <Switch
+                  checked={isSSOEnabled}
+                  disabled={isToggleDisabled}
+                  onCheckedChange={toggleSsoHandler}
+                  aria-labelledby="sso-toggle-label"
+                  aria-describedby={isConnectBlocked ? "sso-toggle-hint" : undefined}
+                />
+              </span>
+            </Tooltip>
+            <div className="min-w-0">
+              <p
+                id="sso-toggle-label"
                 className={cn(
-                  "absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-[left] duration-150",
-                  isSSOEnabled ? "left-[16px]" : "left-0.5",
+                  "text-[13px] leading-5",
+                  isSSOEnabled && !isConnectBlocked
+                    ? "font-medium text-ink"
+                    : "text-muted-foreground",
                 )}
-              />
-            </button>
-          </Tooltip>
-
-          <div>
-            <p
-              id="sso-toggle-label"
-              className={cn(
-                "text-sm leading-none",
-                isSSOEnabled && !isConnectBlocked
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              {ssoToggleLabel}
-            </p>
-            {isConnectBlocked && (
-              <p id="sso-toggle-hint" className="mt-0.5 text-xs text-muted-foreground">
-                {ssoConnectRequiredHint}
+              >
+                {ssoToggleLabel}
               </p>
-            )}
+              {isConnectBlocked && (
+                <p id="sso-toggle-hint" className="text-[12px] leading-4 text-muted-foreground">
+                  {ssoConnectRequiredHint}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
 
-        {isSSOAvailable && (
-          <Button
-            type="button"
-            onClick={connectHandler}
-            disabled={isConnectPending}
-            variant={isConnected ? "outline" : "default"}
-            size="sm"
-            className="shrink-0"
-          >
-            {isConnected ? ssoReconnectLabel : ssoConnectLabel}
-          </Button>
-        )}
+          {isSSOAvailable && (
+            <Button
+              type="button"
+              onClick={connectHandler}
+              disabled={isConnectPending}
+              aria-busy={isConnectPending}
+              variant={isConnected ? "outline" : "default"}
+              size="sm"
+              className="w-full gap-1.5"
+            >
+              <PlugsConnectedIcon className="size-4" />
+              {isConnected ? ssoReconnectLabel : ssoConnectLabel}
+            </Button>
+          )}
+        </div>
       </div>
-    </Card>
+    </RecordSection>
   );
 };
 

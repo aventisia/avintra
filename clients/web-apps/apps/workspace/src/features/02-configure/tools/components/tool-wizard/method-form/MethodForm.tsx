@@ -1,7 +1,19 @@
+import { crudDialogFieldClasses } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@avplatform/ui/select";
 import { isBodyCapableMethod } from "@avplatform/ui/utils";
-import { Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { useId, useState } from "react";
 
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import {
@@ -9,7 +21,6 @@ import {
   ManualToolOperationHeader,
   ManualToolOperationParameter,
 } from "../../../dtos";
-import { FieldLabel } from "../FieldLabel";
 
 const METHOD_OPTIONS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
 
@@ -18,9 +29,6 @@ const createEmptyOperation = (): ManualToolOperation => ({
   method: "GET",
   endpoint: "/",
 });
-
-const inputClass =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
 type MethodFormProps = {
   initialOperation?: ManualToolOperation;
@@ -46,6 +54,11 @@ export const MethodForm = ({
     initialOperation ?? createEmptyOperation(),
   );
   const [showValidation, setShowValidation] = useState(false);
+  const fieldId = useId();
+  const nameId = `${fieldId}-name`;
+  const descriptionId = `${fieldId}-description`;
+  const methodId = `${fieldId}-method`;
+  const endpointId = `${fieldId}-endpoint`;
 
   const updateOperation = (patch: Partial<ManualToolOperation>) =>
     setOperation((previous) => ({ ...previous, ...patch }));
@@ -87,218 +100,235 @@ export const MethodForm = ({
     });
   };
 
+  const nameError =
+    isDuplicateName && operation.name.trim()
+      ? "This method name is already in use."
+      : showValidation && !operation.name.trim()
+        ? "Method name is required."
+        : null;
+  const endpointError =
+    showValidation && !operation.endpoint.trim() ? "Endpoint is required." : null;
+
   return (
-    <div className="rounded-lg border bg-background p-4 shadow-sm">
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <FieldLabel label="Name" isRequired />
-          <input
-            value={operation.name}
-            onChange={(event) => updateOperation({ name: event.target.value })}
-            placeholder="e.g. get_current_weather"
-            disabled={initialOperation !== undefined}
-            autoFocus
-            className={inputClass}
-          />
-          {showValidation && !operation.name.trim() && (
-            <p className="text-xs text-destructive">Method name is required.</p>
-          )}
-          {isDuplicateName && operation.name.trim() && (
-            <p className="text-xs text-destructive">This method name is already in use.</p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <FieldLabel label="Description" />
-          <input
-            value={operation.description ?? ""}
-            onChange={(event) => updateOperation({ description: event.target.value })}
-            placeholder="What this method does"
-            className={inputClass}
-          />
-        </div>
-
-        <div className="grid grid-cols-[7rem_1fr] gap-2">
-          <div className="space-y-1.5">
-            <FieldLabel label="Method" />
-            <select
-              value={operation.method}
-              onChange={(event) =>
-                updateOperation({ method: event.target.value as ManualToolOperation["method"] })
-              }
-              className={inputClass}
-            >
-              {METHOD_OPTIONS.map((method) => (
-                <option key={method} value={method}>
-                  {method}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <FieldLabel label="Endpoint" isRequired />
+    <div className="overflow-hidden rounded-md bg-popover p-4 ring-1 ring-border">
+      <div className="space-y-3.5">
+        <div className="grid gap-3.5 sm:grid-cols-2">
+          <FormField htmlFor={nameId} label="Name" error={nameError}>
             <input
+              id={nameId}
+              value={operation.name}
+              onChange={(event) => updateOperation({ name: event.target.value })}
+              placeholder="e.g. get_current_weather"
+              disabled={initialOperation !== undefined}
+              autoFocus
+              aria-invalid={Boolean(nameError)}
+              className={cn(getFieldInputClassName(Boolean(nameError)), "h-9 disabled:bg-sunken")}
+            />
+          </FormField>
+
+          <FormField htmlFor={descriptionId} label="Description" isOptional>
+            <input
+              id={descriptionId}
+              value={operation.description ?? ""}
+              onChange={(event) => updateOperation({ description: event.target.value })}
+              placeholder="What this method does"
+              className={cn(getFieldInputClassName(false), "h-9")}
+            />
+          </FormField>
+        </div>
+
+        <div className="grid grid-cols-[7.5rem_1fr] gap-3">
+          <FormField htmlFor={methodId} label="Method">
+            <Select
+              value={operation.method}
+              onValueChange={(value) =>
+                updateOperation({ method: value as ManualToolOperation["method"] })
+              }
+            >
+              <SelectTrigger
+                id={methodId}
+                className={cn(crudDialogFieldClasses.selectTrigger, "h-9")}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {METHOD_OPTIONS.map((method) => (
+                  <SelectItem key={method} value={method}>
+                    {method}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField htmlFor={endpointId} label="Endpoint" error={endpointError}>
+            <input
+              id={endpointId}
               value={operation.endpoint}
               onChange={(event) => updateOperation({ endpoint: event.target.value })}
               placeholder="/forecast"
-              className={`${inputClass} font-mono`}
+              aria-invalid={Boolean(endpointError)}
+              className={cn(getFieldInputClassName(Boolean(endpointError)), "h-9 font-mono")}
             />
-            {showValidation && !operation.endpoint.trim() && (
-              <p className="text-xs text-destructive">Endpoint is required.</p>
-            )}
-          </div>
+          </FormField>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <FieldLabel label="Headers" />
-            <span className="text-xs text-muted-foreground">optional</span>
-          </div>
-          {(operation.headers ?? []).length === 0 ? (
-            <p className="text-xs text-muted-foreground">No headers added yet.</p>
-          ) : (
-            (operation.headers ?? []).map((header, headerIndex) => (
-              <div key={headerIndex} className="flex items-center gap-2">
-                <input
-                  value={header.key}
-                  onChange={(event) => updateHeader(headerIndex, { key: event.target.value })}
-                  placeholder="Header name"
-                  className={inputClass}
-                />
-                <input
-                  value={header.description ?? ""}
-                  onChange={(event) =>
-                    updateHeader(headerIndex, { description: event.target.value })
-                  }
-                  placeholder="Description"
-                  className={inputClass}
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateOperation({
-                      headers: (operation.headers ?? []).filter(
-                        (_, index) => index !== headerIndex,
-                      ),
-                    })
-                  }
-                  aria-label="Remove header"
-                  className="rounded p-1 text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2Icon className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))
-          )}
-          <button
-            type="button"
-            onClick={() =>
-              updateOperation({
-                headers: [...(operation.headers ?? []), { key: "", description: "" }],
-              })
-            }
-            className="rounded-md border border-dashed border-input px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            + Add header
-          </button>
-        </div>
+        <KeyValueList
+          title="Headers"
+          emptyText="No headers yet."
+          addLabel="Add header"
+          rows={(operation.headers ?? []).map((header) => ({
+            key: header.key,
+            description: header.description ?? "",
+          }))}
+          keyPlaceholder="Header name"
+          onAdd={() =>
+            updateOperation({
+              headers: [...(operation.headers ?? []), { key: "", description: "" }],
+            })
+          }
+          onChangeKey={(index, key) => updateHeader(index, { key })}
+          onChangeDescription={(index, description) => updateHeader(index, { description })}
+          onRemove={(headerIndex) =>
+            updateOperation({
+              headers: (operation.headers ?? []).filter((_, index) => index !== headerIndex),
+            })
+          }
+        />
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <FieldLabel label="Parameters" />
-            <span className="text-xs text-muted-foreground">optional</span>
-          </div>
-          {(operation.parameters ?? []).length === 0 ? (
-            <p className="text-xs text-muted-foreground">No parameters added yet.</p>
-          ) : (
-            (operation.parameters ?? []).map((parameter, parameterIndex) => (
-              <div key={parameterIndex} className="flex items-center gap-2">
-                <input
-                  value={parameter.name}
-                  onChange={(event) =>
-                    updateParameter(parameterIndex, { name: event.target.value })
-                  }
-                  placeholder="Parameter name"
-                  className={inputClass}
-                />
-                <input
-                  value={parameter.description ?? ""}
-                  onChange={(event) =>
-                    updateParameter(parameterIndex, { description: event.target.value })
-                  }
-                  placeholder="Description"
-                  className={inputClass}
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateOperation({
-                      parameters: (operation.parameters ?? []).filter(
-                        (_, index) => index !== parameterIndex,
-                      ),
-                    })
-                  }
-                  aria-label="Remove parameter"
-                  className="rounded p-1 text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2Icon className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            ))
-          )}
-          <button
-            type="button"
-            onClick={() =>
-              updateOperation({
-                parameters: [
-                  ...(operation.parameters ?? []),
-                  { name: "", in: "query", description: "" },
-                ],
-              })
-            }
-            className="rounded-md border border-dashed border-input px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            + Add parameter
-          </button>
-        </div>
+        <KeyValueList
+          title="Parameters"
+          emptyText="No parameters yet."
+          addLabel="Add parameter"
+          rows={(operation.parameters ?? []).map((parameter) => ({
+            key: parameter.name,
+            description: parameter.description ?? "",
+          }))}
+          keyPlaceholder="Parameter name"
+          onAdd={() =>
+            updateOperation({
+              parameters: [
+                ...(operation.parameters ?? []),
+                { name: "", in: "query", description: "" },
+              ],
+            })
+          }
+          onChangeKey={(index, name) => updateParameter(index, { name })}
+          onChangeDescription={(index, description) => updateParameter(index, { description })}
+          onRemove={(parameterIndex) =>
+            updateOperation({
+              parameters: (operation.parameters ?? []).filter(
+                (_, index) => index !== parameterIndex,
+              ),
+            })
+          }
+        />
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <FieldLabel label="JSON payload" />
-            <span className="text-xs text-muted-foreground">optional</span>
-          </div>
+        <div>
+          <p className="mb-1.5 text-[12.5px] font-semibold text-ink-2">
+            JSON payload
+            <span className="ml-1.5 font-normal text-muted-foreground">Optional</span>
+          </p>
           {isBodyCapableMethod(operation.method) ? (
             <JsonEditor
               value={operation.jsonPayload ?? ""}
               onChange={(value) => updateOperation({ jsonPayload: value })}
               placeholder={'{\n  "key": "value"\n}'}
-              className="min-h-[7rem]"
+              className={cn(crudDialogFieldClasses.jsonEditor, "min-h-[7rem]")}
             />
           ) : (
-            <p className="text-xs text-muted-foreground">
-              JSON payload applies to POST, PUT, PATCH and DELETE methods.
+            <p className="text-[12px] text-muted-foreground">
+              A JSON payload applies to POST, PUT, PATCH and DELETE methods.
             </p>
           )}
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md border border-input px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-muted/50"
-        >
+      <div className="-mx-4 -mb-4 mt-4 flex justify-end gap-2 border-t border-line bg-sunken/70 px-4 py-2.5">
+        <CardDialogButton onClick={onCancel} className="h-8">
           Cancel
-        </button>
-        <button
-          type="button"
+        </CardDialogButton>
+        <CardDialogButton
+          variant="primary"
           onClick={handleSubmit}
           disabled={!isValid}
-          className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-8"
         >
           {submitLabel}
-        </button>
+        </CardDialogButton>
       </div>
     </div>
   );
 };
+
+type KeyValueListProps = {
+  title: string;
+  emptyText: string;
+  addLabel: string;
+  rows: { key: string; description: string }[];
+  keyPlaceholder: string;
+  onAdd: () => void;
+  onChangeKey: (index: number, value: string) => void;
+  onChangeDescription: (index: number, value: string) => void;
+  onRemove: (index: number) => void;
+};
+
+const KeyValueList = ({
+  title,
+  emptyText,
+  addLabel,
+  rows,
+  keyPlaceholder,
+  onAdd,
+  onChangeKey,
+  onChangeDescription,
+  onRemove,
+}: KeyValueListProps) => (
+  <div>
+    <div className="mb-1.5 flex items-baseline justify-between gap-3">
+      <p className="text-[12.5px] font-semibold text-ink-2">
+        {title}
+        <span className="ml-1.5 font-normal text-muted-foreground">Optional</span>
+      </p>
+      <button
+        type="button"
+        onClick={onAdd}
+        className="flex items-center gap-1 text-[12px] font-medium text-primary-text outline-none hover:underline focus-visible:underline"
+      >
+        <PlusIcon className="size-3.5" />
+        {addLabel}
+      </button>
+    </div>
+    {rows.length === 0 ? (
+      <p className="text-[12px] text-muted-foreground">{emptyText}</p>
+    ) : (
+      <div className="space-y-2">
+        {rows.map((row, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <input
+              value={row.key}
+              onChange={(event) => onChangeKey(index, event.target.value)}
+              placeholder={keyPlaceholder}
+              aria-label={keyPlaceholder}
+              className={cn(getFieldInputClassName(false), "h-9")}
+            />
+            <input
+              value={row.description}
+              onChange={(event) => onChangeDescription(index, event.target.value)}
+              placeholder="Description"
+              aria-label="Description"
+              className={cn(getFieldInputClassName(false), "h-9")}
+            />
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              aria-label={`Remove ${title.toLowerCase().replace(/s$/, "")}`}
+              className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <TrashIcon className="size-3.5" />
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);

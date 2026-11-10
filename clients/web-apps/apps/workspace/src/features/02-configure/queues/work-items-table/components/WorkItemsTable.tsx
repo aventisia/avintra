@@ -1,12 +1,4 @@
-import {
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { useEffect, useMemo } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -14,13 +6,13 @@ import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { useFetchAllQueues } from "../../queues-table/hooks/useFetchQueues";
-import { TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import { TABLE_KEY, WORK_ITEMS_INITIAL_STATE, WORK_ITEMS_PAGE_SIZE_OPTIONS } from "../constants";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
 import { PayloadTableHeading } from "./TableHeading";
 import { WorkItemBulkActions } from "./WorkItemBulkActions";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
+
+const PAGINATION_PROPS = { pageSizeOptions: WORK_ITEMS_PAGE_SIZE_OPTIONS };
 
 /**
  * Renders a table of WorkItems.
@@ -35,10 +27,6 @@ export const WorkItemsTable = () => {
   // Set the document title
   // useDocumentTitle(TABLE_HEADING);
   const navigate = useNavigate();
-
-  // Get data-table preferences from local storage (persisted column visibility,
-  // including the optional Source Work Item Id / Retry columns).
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch WorkItems data
   const { data } = useFetchQueuesWorkItems();
@@ -67,38 +55,42 @@ export const WorkItemsTable = () => {
     return isProd ? !actions.update : queue.accessLevel === "View";
   }, [queue, isProd, actions.update]);
 
-  const filteredColumns = useMemo(() => {
+  const columns = useMemo(() => {
     if (!hasOnlyReadAccess) return workItemsTableColumns(name);
 
     return workItemsTableColumns(name).filter((column) => column.id !== "actions");
   }, [hasOnlyReadAccess, name]);
 
-  // Create a React table for WorkItems data
-  const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns,
+    initialState: WORK_ITEMS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["workItemId"],
+  });
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
+          {/* Page heading */}
           <div className="flex items-center justify-between">
             <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["workItemId"]} placeholder="Search..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-            </div>
           </div>
-          {/* Data table to render data */}
-          <DataTable table={table} columnsLength={filteredColumns.length} />
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-          {/* Bulk actions for selected work items (edit access only) */}
-          {!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
+          {/* Table with its toolbar and pagination footer */}
+          <TableCN
+            table={table}
+            label={name}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search..." />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the WorkItems data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the WorkItems data
+        <TableCNSkeleton columnCount={7} />
       )}
     </>
   );

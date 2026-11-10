@@ -1,42 +1,23 @@
-import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { ToolRowActions } from "@/features/02-configure/tools/components/tool-row-actions/ToolRowActions";
 import { getColumnName } from "@/features/02-configure/tools/constants/tools-column-display-names";
 import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "@/features/02-configure/tools/constants/tools-display-names.constant";
 import { ToolDto } from "@/features/02-configure/tools/dtos/index";
 import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
 
-export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
-    ),
-    enableSorting: false,
-  },
+export const toolsTableColumns = (): ColumnDef<ToolDto>[] => [
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: ({ column }) => <TableCNColumnHeader column={column} label={getColumnName("name")} />,
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
+        <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </span>
       </div>
@@ -44,8 +25,9 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
   },
   {
     accessorKey: "description",
+    meta: { label: getColumnName("description") },
     header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("description")} />
+      <TableCNColumnHeader column={column} label={getColumnName("description")} />
     ),
     cell: ({ row }) => (
       <div className="truncate max-w-60 text-muted-foreground">
@@ -55,15 +37,15 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: ({ column }) => <TableCNColumnHeader column={column} label={getColumnName("type")} />,
     cell: ({ row }) => <div>{getEnumValueByKey(ComponentTypeEnum, row.getValue("type"))}</div>,
   },
   {
     accessorKey: "baseUrl",
+    meta: { label: getColumnName("baseUrl") },
     header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("baseUrl")} />
+      <TableCNColumnHeader column={column} label={getColumnName("baseUrl")} />
     ),
     cell: ({ row }) => (
       <div className="truncate max-w-60">{(row.getValue("baseUrl") as string) ?? "-"}</div>
@@ -71,12 +53,9 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
   },
   {
     accessorKey: "authenticationType",
+    meta: { label: getColumnName("authenticationType") },
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        tableKey="tools"
-        title={getColumnName("authenticationType")}
-      />
+      <TableCNColumnHeader column={column} label={getColumnName("authenticationType")} />
     ),
     cell: ({ row }) => {
       const value = row.getValue("authenticationType") as ToolAuthenticationTypeEnum | undefined;
@@ -85,8 +64,9 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
   },
   {
     accessorKey: "isActive",
+    meta: { label: getColumnName("isActive") },
     header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isActive")} />
+      <TableCNColumnHeader column={column} label={getColumnName("isActive")} />
     ),
     cell: ({ row }) => (
       <Badge variant={row.getValue("isActive") ? "default" : "secondary"}>
@@ -96,50 +76,32 @@ export const toolsTableColumns = (isPlatformTab: boolean): ColumnDef<ToolDto>[] 
   },
   {
     accessorKey: "isVerified",
+    meta: { label: getColumnName("isVerified") },
     header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isVerified")} />
+      <TableCNColumnHeader column={column} label={getColumnName("isVerified")} />
     ),
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className={
-          row.getValue("isVerified")
-            ? "border-green-200 bg-green-50 text-green-700"
-            : "border-orange-200 bg-orange-50 text-orange-700"
-        }
-      >
+      <Badge variant={row.getValue("isVerified") ? "completed" : "draft"}>
         {row.getValue("isVerified") ? "Verified" : "Draft"}
       </Badge>
     ),
   },
   {
     accessorKey: "isTenantWideAccess",
+    meta: { label: getColumnName("isTenantWideAccess") },
     header: ({ column }) => (
-      <DTColumnHeader
-        column={column}
-        tableKey="tools"
-        title={getColumnName("isTenantWideAccess")}
-      />
+      <TableCNColumnHeader column={column} label={getColumnName("isTenantWideAccess")} />
     ),
     cell: ({ row }) => <div>{row.getValue("isTenantWideAccess") ? "Yes" : "No"}</div>,
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("createdOn")} />
+      <TableCNColumnHeader column={column} label={getColumnName("createdOn")} />
     ),
-    cell: ({ row }) => <div>{formatDate(row.getValue("createdOn"))}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono tabular-nums">{formatDate(row.getValue("createdOn"))}</div>
+    ),
   },
-  createDTActionsColumn<ToolDto>({
-    renderCell: (row) => (
-      <ToolRowActions
-        rowId={row.id ?? ""}
-        name={row.name}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess}
-        isResourceAccessRestricted={row.isResourceAccessRestricted}
-        isPlatformTool={isPlatformTab}
-      />
-    ),
-  }),
 ];

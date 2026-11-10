@@ -1,12 +1,17 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { RadioGroup } from "@avplatform/ui/radio-group";
+import { RecordEmpty, RecordSection } from "@avplatform/ui/record-sheet";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { ArrowLeft, Check, InfoIcon } from "lucide-react";
+import { ArrowLeftIcon, InfoIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+} from "@/components/segmented-tabs.constant";
 import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails.ee";
 import { useFetchSubscriptionPlans } from "@/features/05-tenant-admin/tenant/hooks/useFetchSubscriptionPlans.ee";
 import { useUpgradePlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/upgrade-plan-dialog.store.ee";
@@ -18,6 +23,13 @@ import CurrencySelect from "./CurrencySelect.ee";
 import { PlanItem } from "./choose-plan/PlanItem.ee";
 
 // import TopUp from "./TopUp.ee";
+
+const FREQUENCIES = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+];
+
+const EXCLUDED_PLAN_TYPES = ["Starter", "Enterprise"];
 
 const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean }) => {
   const {
@@ -39,9 +51,6 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
       setPlanFrequency: state.setPlanFrequency,
     })),
   );
-
-  //Plans to exclude from upgrade plan list
-  const excludePlans = ["Starter", "Enterprise"];
 
   const [selectedPlan, setSelectedPlan] = useState("");
   const [selectedPlanName, setSelectedPlanName] = useState("");
@@ -92,6 +101,8 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
     }
   }, [billingData?.data]);
 
+  const plans = data?.data?.filter((plan) => !EXCLUDED_PLAN_TYPES.includes(plan.type)) ?? [];
+
   if (isLoading || isBillingDataLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center space-y-5 px-8 py-10 pt-3">
@@ -101,96 +112,86 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
   }
 
   return (
-    <div className="space-y-4 p-4 pt-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {isFrequencyChange ? (
-            planFrequency == "monthly" && (
-              <div className="flex items-center gap-3 rounded-lg bg-orange-100 px-3 py-2 text-[0.85rem] text-orange-600">
-                <InfoIcon className="h-4 w-4 text-orange-400" />
-                The change to monthly billing will take effect after your current billing cycle ends
-              </div>
-            )
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {isFrequencyChange ? (
+          planFrequency == "monthly" ? (
+            <p className="flex items-center gap-2 rounded-md bg-warn/10 px-3 py-1.5 text-[12.5px] font-medium text-warn ring-1 ring-warn/25">
+              <InfoIcon className="size-4 shrink-0" />
+              The change to monthly billing will take effect after your current billing cycle ends
+            </p>
           ) : (
-            <>
-              <Button
-                onClick={() => {
-                  setChosenPlan(null);
-                  clearTopUp();
-                }}
-                variant={"ghost"}
-                className="p-1.5"
-                size={"icon9"}
-              >
-                <ArrowLeft className="mt-[2px] h-5 w-5" />
-              </Button>
-              <h2 className="text-lg font-semibold">Choose Plan</h2>
-            </>
-          )}
-        </div>
+            <p className="text-[13px] text-ink-2">Switch to yearly billing.</p>
+          )
+        ) : (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                setChosenPlan(null);
+                clearTopUp();
+              }}
+              variant="ghost"
+              size="icon"
+              aria-label="Back to deployment options"
+            >
+              <ArrowLeftIcon className="size-4" />
+            </Button>
+            <h3 className="text-[15px] font-semibold text-ink">Choose a Pro plan</h3>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           {!(isFrequencyChange || billingData?.data.country === "India") && (
-            <CurrencySelect value={currency} onChange={setCurrency} />
-          )}{" "}
+            <CurrencySelect value={currency} onChange={setCurrency} className="h-8" />
+          )}
           <Tabs
             value={planFrequency}
             onValueChange={(value: string) => setPlanFrequency(value as PlanFrequency)}
           >
-            <TabsList className="rounded-full">
-              <TabsTrigger
-                disabled={isFrequencyChange}
-                value="monthly"
-                className="rounded-full px-8"
-                onClick={() => {
-                  setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
-                }}
-              >
-                Monthly
-              </TabsTrigger>
-              <TabsTrigger
-                disabled={isFrequencyChange}
-                value="yearly"
-                className="rounded-full px-8"
-                onClick={() => {
-                  setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
-                }}
-              >
-                Yearly
-              </TabsTrigger>
+            <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
+              {FREQUENCIES.map(({ value, label }) => (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  disabled={isFrequencyChange}
+                  className={SEGMENTED_TABS_TRIGGER_CLASS}
+                  onClick={() => {
+                    setSelectedPlan(""); // TODO: Temporary fix to avoid ui bug. @vaibhav fix it properly
+                  }}
+                >
+                  {label}
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-4">
-        <div className="col-span-4 space-y-4">
-          <div className="rounded-lg border">
-            <ScrollArea className="h-[calc(100vh-22rem)] p-3">
+      <div className="grid items-start gap-6 md:grid-cols-7">
+        <div className="md:col-span-4">
+          <RecordSection title="Plans" count={plans.length}>
+            <ScrollArea className="h-[calc(100dvh-30rem)] min-h-64">
               <RadioGroup
+                className="gap-2.5 p-0.5"
                 value={selectedPlan}
                 onValueChange={(val) => {
                   setSelectedPlan(val);
                   setPlanFrequency(planFrequency);
                 }}
               >
-                {data?.data
-                  ?.filter((plan) => !excludePlans.includes(plan.type))
-                  ?.map((plan) => (
-                    <PlanItem
-                      key={plan.id}
-                      plan={plan}
-                      planFrequency={planFrequency as PlanFrequency}
-                      selectedId={selectedPlan}
-                    />
-                  ))}
+                {plans.map((plan) => (
+                  <PlanItem
+                    key={plan.id}
+                    plan={plan}
+                    planFrequency={planFrequency as PlanFrequency}
+                    selectedId={selectedPlan}
+                  />
+                ))}
               </RadioGroup>
             </ScrollArea>
-          </div>
-          {/* <TopUp planFrequency={planFrequency as PlanFrequency} /> */}
+          </RecordSection>
         </div>
 
-        {/* Right hand side */}
-        <div className="col-span-3 space-y-4">
+        <div className="space-y-6 md:col-span-3">
           <BillingDetails billingData={billingData?.data} />
 
           {selectedPlan || topUp.history || topUp.spaces || topUp.storage ? (
@@ -200,7 +201,11 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
               billingData={billingData?.data}
               isFrequencyChange={isFrequencyChange}
             />
-          ) : null}
+          ) : (
+            <RecordSection title="Charge summary">
+              <RecordEmpty>Select a plan to see what you’ll pay.</RecordEmpty>
+            </RecordSection>
+          )}
         </div>
       </div>
     </div>
@@ -208,11 +213,3 @@ const ChoosePlan = ({ isFrequencyChange = false }: { isFrequencyChange?: boolean
 };
 
 export default ChoosePlan;
-
-export const CheckMark = () => {
-  return (
-    <div className="mt-[2px] rounded-full bg-green-500 p-[2px]">
-      <Check className="h-3 w-3 text-white" />
-    </div>
-  );
-};

@@ -1,22 +1,19 @@
 import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { Button } from "@avplatform/ui/buttons";
-import {
-  DTPagination,
-  DTSearchBox,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
-import { DownloadIcon } from "lucide-react";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 
 import { downloadSkillZip } from "../../apis/skill-registry-file.apis";
-import { DETAIL_TABLE_KEY } from "../../constants";
-import { columnVisibilityState } from "../../constants/skill-files-column-visibility-state.constant";
+import {
+  DETAIL_TABLE_KEY,
+  SKILL_FILES_INITIAL_STATE,
+  SKILL_FILES_PAGE_SIZE_OPTIONS,
+  SKILL_FILES_ROW_LABELS,
+} from "../../constants";
 import { useFetchSkillById } from "../../hooks/useFetchSkillById.hook";
 import { useFetchSkillFiles } from "../../hooks/useFetchSkillFiles.hook";
 import { useTableTab } from "../../hooks/useTableTab.hook";
@@ -25,6 +22,11 @@ import { SkillFileUploadDialog } from "./SkillFileUploadDialog";
 import { getSkillFilesTableColumns } from "./SkillFilesTableColumns";
 import { SkillMetadataSummary } from "./SkillMetadataSummary";
 import { TableHeading } from "./TableHeading";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: SKILL_FILES_PAGE_SIZE_OPTIONS,
+  rowLabels: SKILL_FILES_ROW_LABELS,
+};
 
 /**
  * Renders a table of skill files.
@@ -36,12 +38,6 @@ export const SkillFilesTable = () => {
 
   // Adding skill files creates sub-resources, which is disabled in Prod.
   const { locked } = useActionLock();
-
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    DETAIL_TABLE_KEY,
-    columnVisibilityState,
-  );
 
   // Yours/Platform tab state from URL
   const { isReadOnly } = useTableTab();
@@ -70,8 +66,14 @@ export const SkillFilesTable = () => {
     return columns.filter((column) => column.id !== "actions");
   }, [columns, canManageFiles]);
 
-  // Create a React table for skill files data
-  const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: filteredColumns,
+    initialState: SKILL_FILES_INITIAL_STATE,
+    persistKey: DETAIL_TABLE_KEY,
+    searchColumns: ["fileName"],
+  });
 
   const { setShowDialog } = useSkillFilesDialogStore();
 
@@ -88,7 +90,6 @@ export const SkillFilesTable = () => {
     });
   };
 
-  // Return the rendered DataTable component.
   return (
     <>
       {data ? (
@@ -97,33 +98,31 @@ export const SkillFilesTable = () => {
           <div className="flex items-center justify-between">
             <TableHeading skillName={skillName} />
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["fileName"]} placeholder="Search..." />
               {canManageFiles && (
                 <LockedActionTooltip>
                   <Button size="xs" disabled={locked} onClick={() => setShowDialog(true)}>
-                    Add File
+                    Add file
                   </Button>
                 </LockedActionTooltip>
               )}
               <Button size="xs" variant="outline" onClick={handleDownload}>
-                <DownloadIcon className="h-3.5 w-3.5 mr-1" />
+                <DownloadSimpleIcon className="h-3.5 w-3.5 mr-1" />
                 Download
               </Button>
             </div>
           </div>
           <div className="space-y-4">
             <SkillMetadataSummary skill={skill} />
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={columns.length} />
-
-            {/* Data table Pagination component */}
-            <DTPagination table={table} singularLabel="File" pluralLabel="Files" />
+            {/* Table with its toolbar and pagination footer */}
+            <TableCN table={table} label="Files" paginationProps={PAGINATION_PROPS}>
+              <TableCNToolbar table={table} searchPlaceholder="Search..." withViewOptions={false} />
+            </TableCN>
           </div>
           <SkillFileUploadDialog skillId={skillId} skillName={skillName} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the skill files data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the skill files data
+        <TableCNSkeleton columnCount={5} withViewOptions={false} />
       )}
     </>
   );

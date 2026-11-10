@@ -1,10 +1,10 @@
 import { Badge } from "@avplatform/ui/badge";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon } from "@phosphor-icons/react";
 
 export const TrueEdgeLabel = () => {
   return (
-    <Badge className="nodrag nopan gap-0.5 border-green-300 bg-green-100 px-1.5 py-[0.2rem] text-green-600">
-      <CheckCircleIcon className="h-3.5 w-3.5 stroke-[2]" />
+    <Badge className="nodrag nopan gap-0.5 border-ok/30 bg-ok/10 px-1.5 py-[0.2rem] text-ok">
+      <CheckCircleIcon className="h-3.5 w-3.5" />
       True
     </Badge>
   );

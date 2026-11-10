@@ -1,7 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Download } from "lucide-react";
-
-import { HelpButton } from "@/components/help/HelpButton";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 import { useExportDialogStore } from "../store/export-dialog-store.ee";
 import { AvailableCredits } from "./AvailableCredits.ee";
@@ -15,8 +13,7 @@ const ChartsHeader = () => {
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <p className="text-lg font-medium">Usage</p>
-          <HelpButton guideId="usage" />
+          <p className="text-title text-ink">Usage</p>
         </div>
         <AvailableCredits />
       </div>
@@ -36,7 +33,7 @@ const ChartsHeader = () => {
         >
           Export
           <span className="ml-2">
-            <Download className="h-4 w-4" />
+            <DownloadSimpleIcon className="h-4 w-4" />
           </span>
         </Button>
       </div>

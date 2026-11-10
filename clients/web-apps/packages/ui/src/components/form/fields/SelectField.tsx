@@ -1,6 +1,7 @@
 import * as React from "react";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
 import { FormControl, FormField, FormItem, FormLabelExt, FormMessage } from "@/ui/components/form";
 import type { BaseFieldProps } from "@/ui/components/form";
 import {
@@ -10,7 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/ui/components/select";
+import { cn } from "@/ui/lib";
 import { type ISelectOption } from "@/ui/types";
+
+import { crudDialogFieldClasses } from "../crud-dialog-field-classes";
 
 interface SelectFieldProps
   extends React.ComponentPropsWithoutRef<typeof SelectTrigger>, BaseFieldProps {
@@ -44,13 +48,14 @@ const SelectField = ({
 }: SelectFieldProps) => {
   // Get the form context
   const { control } = useFormContext<FieldValues>();
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
 
   // Render the SelectField component
   return (
     <FormField
       {...{ name, control }}
       render={({ field }) => (
-        <FormItem {...{ size }}>
+        <FormItem size={size} className={cn(isInDialog && crudDialogFieldClasses.item)}>
           {label && <FormLabelExt {...{ size, label, disabled, isRequired, description }} />}
           <FormControl>
             <Select
@@ -59,8 +64,14 @@ const SelectField = ({
               defaultValue={field.value}
               value={field.value}
             >
-              <SelectTrigger size={size} {...field} ref={field.ref} {...props}>
-                <SelectValue placeholder={placeholder ? "Select" : placeholder} />
+              <SelectTrigger
+                size={size}
+                {...field}
+                ref={field.ref}
+                {...props}
+                className={cn(isInDialog && crudDialogFieldClasses.selectTrigger, props.className)}
+              >
+                <SelectValue placeholder={placeholder ?? "Select"} />
               </SelectTrigger>
 
               <SelectContent matchTriggerWidth={matchPopoverWidth}>

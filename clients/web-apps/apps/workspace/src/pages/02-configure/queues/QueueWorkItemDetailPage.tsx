@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the QueueWorkItemDetail component.
@@ -16,7 +16,7 @@ const QueueWorkItemDetail = lazy(() =>
  */
 export const QueueWorkItemDetailPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <QueueWorkItemDetail />
     </Suspense>
   );

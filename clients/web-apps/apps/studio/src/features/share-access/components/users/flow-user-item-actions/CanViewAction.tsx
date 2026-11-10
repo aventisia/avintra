@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon } from "@phosphor-icons/react";
 
 import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
 import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";
@@ -18,6 +18,6 @@ export const CanViewAction = ({ item }: CanViewActionProps) => {
   };
   // Return the component
   return (
-    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can View" Icon={EyeIcon} />
+    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can view" Icon={EyeIcon} />
   );
 };

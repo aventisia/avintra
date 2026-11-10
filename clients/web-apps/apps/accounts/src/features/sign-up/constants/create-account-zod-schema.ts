@@ -1,5 +1,5 @@
-import { maxLenError, minLenError, nameError, pwdError, reqError } from "@avplatform/ui/utils";
-import { nameRegex, pwdRegex } from "@avplatform/ui/utils";
+import { maxLenError, minLenError, pwdError, reqError } from "@avplatform/ui/utils";
+import { pwdRegex } from "@avplatform/ui/utils";
 import * as z from "zod";
 
 export const emailSchema = z
@@ -9,20 +9,6 @@ export const emailSchema = z
 
 export const createAccountZodSchema = z
   .object({
-    firstName: z
-      .string()
-      .min(1, { message: reqError("First name") })
-      .max(255, { message: maxLenError("First name", 255) })
-      .regex(nameRegex, {
-        message: nameError("First name"),
-      }),
-    lastName: z
-      .string()
-      .min(1, { message: reqError("Last name") })
-      .max(255, { message: maxLenError("Last name", 255) })
-      .regex(nameRegex, {
-        message: nameError("Last name"),
-      }),
     email: emailSchema,
     pwd: z
       .string()
@@ -34,5 +20,5 @@ export const createAccountZodSchema = z
   })
   .refine((data) => data.termsAgreement, {
     path: ["termsAgreement"],
-    message: "You must accept our Terms of Service",
+    message: "Accept the Terms of Service to continue.",
   });

@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { NotePencilIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
@@ -34,7 +34,7 @@ export const FVIDraftAction = ({ flowId, versionId }: FVIDraftActionProps) => {
     <SimpleDDMenuItem
       size="sm"
       content="Use as draft"
-      Icon={PencilSquareIcon}
+      Icon={NotePencilIcon}
       onClick={() => {
         closePopover(false);
         guardUnsavedChanges(() => {

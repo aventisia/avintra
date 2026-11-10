@@ -6,7 +6,7 @@ import {
   CollapsibleTrigger,
 } from "@avplatform/ui/components/collapsible";
 import { cn } from "@avplatform/ui/lib";
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -59,7 +59,7 @@ export function ChatAgentListItem({
     <Collapsible open={isExpanded} onOpenChange={onToggle} className="flex relative flex-col">
       {/* Continuous Timeline */}
       {isExpanded && (
-        <div className="pointer-events-none absolute left-9 bottom-0 top-[4.5rem] w-0.5 rounded-full bg-neutral-200" />
+        <div className="pointer-events-none absolute left-9 bottom-0 top-[4.5rem] w-0.5 rounded-full bg-fill" />
       )}
 
       {/* Main Agent Button (Navigates). Styles now react to isSelected, not isExpanded */}
@@ -72,8 +72,8 @@ export function ChatAgentListItem({
         }}
         onClick={handleBodyClick}
         className={cn(
-          "group flex relative items-center justify-between px-4 py-3.5 w-full text-left transition-colors rounded-xl cursor-pointer outline-none focus-visible:bg-accent",
-          isSelected ? "bg-accent" : "hover:bg-accent",
+          "group flex relative items-center justify-between px-4 py-3.5 w-full text-left transition-colors rounded-md cursor-pointer outline-none focus-visible:bg-hover",
+          isSelected ? "bg-selected" : "hover:bg-hover",
         )}
       >
         <div className="flex flex-1 items-center gap-3 overflow-hidden">
@@ -85,13 +85,13 @@ export function ChatAgentListItem({
               <p
                 className={cn(
                   "text-sm font-semibold truncate ",
-                  isSelected ? "text-primary" : "text-gray-800", // Text color reacts to isSelected
+                  isSelected ? "text-primary-text" : "text-ink", // Text color reacts to isSelected
                 )}
                 title={agent.name}
               >
                 {agent.name}
               </p>
-              <Badge className="px-2 py-0 rounded-full text-2xs bg-slate-200 text-secondary font-medium">
+              <Badge variant="outline" className="tabular-nums">
                 v{agent.versionNumber}
               </Badge>
             </div>
@@ -107,10 +107,10 @@ export function ChatAgentListItem({
             <Button
               variant="ghost"
               size="icon7"
-              className="w-8 h-8  ml-1 flex-shrink-0 text-gray-400 hover:text-gray-700 hover:bg-black/5"
+              className="w-8 h-8  ml-1 flex-shrink-0 text-muted-foreground hover:text-ink-2 hover:bg-hover"
               onClick={(e) => e.stopPropagation()}
             >
-              <ChevronDown
+              <CaretDownIcon
                 className={cn(
                   "w-4 h-4 transition-transform duration-200",
                   isExpanded && "rotate-180",
@@ -122,7 +122,7 @@ export function ChatAgentListItem({
         )}
       </div>
 
-      <CollapsibleContent className="bg-white data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
+      <CollapsibleContent className="bg-surface data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
         {agent.conversations.map((conv) => (
           <ConversationListItem
             key={conv.id}

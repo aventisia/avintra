@@ -1,45 +1,25 @@
 import { LoadingSpinner } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
 
 import { cn } from "@/ui/lib";
 
 import { useFetchAvailableCredits } from "./useFetchAvailableCredits.ee";
 
-/**
- * Displays the user's available credits inside a styled badge.
- * Fetches the available credits using the `useFetchAvailableCredits` hook.
- * Shows a loading spinner while the credits are being fetched.
- *
- * @returns {JSX.Element} A badge component displaying the available credits or a loading spinner.
- */
+/** Shows the tenant's available credits in the app header. */
 const AvailableCredits = () => {
-  // Get available credits
   const { data, isLoading } = useFetchAvailableCredits();
+  const availableCredits = data?.data?.availableCredits ?? 0;
 
   return (
-    <Badge variant={"outline"} className="border-none hidden md:flex bg-secondary px-4 py-2">
-      <p className="flex items-center gap-1 text-xs font-semibold text-secondary-foreground">
-        Credits <span className="font-normal opacity-60">-</span>{" "}
-        {isLoading ? (
-          <LoadingSpinner className="text-primary-300 size-3" />
-        ) : (
-          <span
-            className={cn(
-              "font-mono",
-              data?.data?.availableCredits && data?.data?.availableCredits < 0
-                ? "text-destructive"
-                : "",
-            )}
-          >
-            {data
-              ? data?.data?.availableCredits.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })
-              : "0"}
-          </span>
-        )}
-      </p>
-    </Badge>
+    <span className="hidden h-control-sm items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 font-mono text-code tabular-nums text-ink-2 md:inline-flex">
+      {isLoading ? (
+        <LoadingSpinner className="size-3 text-muted-foreground" />
+      ) : (
+        <span className={cn("text-ink", availableCredits < 0 && "text-bad")}>
+          {availableCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+        </span>
+      )}
+      credits
+    </span>
   );
 };
 

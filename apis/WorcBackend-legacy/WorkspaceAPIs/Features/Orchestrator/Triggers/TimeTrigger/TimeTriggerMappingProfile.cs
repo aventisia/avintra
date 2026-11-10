@@ -65,10 +65,13 @@ public class TimeTriggerMappingProfile : IRegister
                 src => src.LastModifiedByUser != null
                     ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
                     : null)
+            .Map(dest => dest.LastModifiedOn,
+                src => src.FlowVersion != null ? src.FlowVersion.LastModifiedOn : src.LastModifiedOn)
             .Map(dest => dest.CreatedByUserInitials,
                 src => src.CreatedByUser != null
                     ? $"{src.CreatedByUser.FirstName.First()}{src.CreatedByUser.LastName.First()}"
-                    : null);
+                    : null)
+            .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty);
 
         // Mapping: TimeTriggerDto → Trigger entity
         // Used for creating/updating time-based triggers

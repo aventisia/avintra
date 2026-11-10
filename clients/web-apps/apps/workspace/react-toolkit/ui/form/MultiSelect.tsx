@@ -14,8 +14,8 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { ScrollArea, ScrollBar } from "@avplatform/ui/scroll";
+import { CaretDownIcon, CheckIcon, MagicWandIcon, XCircleIcon, XIcon } from "@phosphor-icons/react";
 import { type VariantProps, cva } from "class-variance-authority";
-import { CheckIcon, ChevronDown, WandSparkles, XCircle, XIcon } from "lucide-react";
 import * as React from "react";
 
 /**
@@ -23,7 +23,7 @@ import * as React from "react";
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
 const multiSelectVariants = cva(
-  "m-1 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300",
+  "m-1 transition ease-in-out hover:-translate-y-1 hover:scale-110 duration-[120ms]",
   {
     variants: {
       variant: {
@@ -199,7 +199,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                       >
                         {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
                         {option?.label}
-                        <XCircle
+                        <XCircleIcon
                           className="ml-2 h-4 w-4 cursor-pointer"
                           onClick={(event) => {
                             event.stopPropagation();
@@ -306,7 +306,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
           </Command>
         </PopoverContent>
         {animation > 0 && selectedValues.length > 0 && (
-          <WandSparkles
+          <MagicWandIcon
             className={cn(
               "my-2 h-3 w-3 cursor-pointer bg-background text-foreground",
               isAnimating ? "" : "text-muted-foreground",
@@ -345,7 +345,7 @@ const RestSelected = ({
     style={{ animationDuration: `${animation}s` }}
   >
     {`+ ${restCount - maxCount} more`}
-    <XCircle
+    <XCircleIcon
       className="ml-2 h-4 w-4 cursor-pointer"
       onClick={(event) => {
         event.stopPropagation();
@@ -358,7 +358,7 @@ const RestSelected = ({
 const MiltiSelectorPlaceholder = ({ placeholder }: { placeholder?: string }) => (
   <div className="mx-auto flex w-full items-center justify-between">
     <span className="mx-3 text-sm text-muted-foreground">{placeholder}</span>
-    <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
+    <CaretDownIcon className="mx-2 h-4 cursor-pointer text-muted-foreground" />
   </div>
 );
 
@@ -372,6 +372,6 @@ const MiltiSelectorClearButton = ({ onClearClick }: { onClearClick?: () => void 
       }}
     />
     <Separator orientation="vertical" className="flex h-full min-h-6" />
-    <ChevronDown className="mx-2 h-4 cursor-pointer text-muted-foreground" />
+    <CaretDownIcon className="mx-2 h-4 cursor-pointer text-muted-foreground" />
   </div>
 );

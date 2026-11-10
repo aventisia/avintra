@@ -1,6 +1,7 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -47,9 +48,9 @@ export const useDefineSpaceForm = ({ rowId }: UseDefineSpaceFormOptions) => {
       totalPublishedAgents: 0,
       totalExecutionTime: 0,
       totalMachinesAttached: 0,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -80,10 +81,9 @@ export const useDefineSpaceForm = ({ rowId }: UseDefineSpaceFormOptions) => {
       totalPublishedAgents: spaceData?.totalPublishedAgents ?? 0,
       totalExecutionTime: spaceData?.totalExecutionTime ?? 0,
       totalMachinesAttached: spaceData?.totalMachinesAttached ?? 0,
-      createdBy: spaceData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: spaceData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: spaceData?.createdOn ? new Date(spaceData?.createdOn) : new Date(),
-      lastModifiedBy:
-        spaceData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: spaceData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: spaceData?.lastModifiedOn ? new Date(spaceData?.lastModifiedOn) : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);

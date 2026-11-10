@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { RotateCcwIcon, RotateCwIcon } from "lucide-react";
+import { ArrowClockwiseIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react";
 
 import { useRotateControls } from "../../stores/file-viewer-store";
 
@@ -15,7 +15,7 @@ const RotateControl = () => {
         title="Rotate left 90°"
         aria-label="Rotate left"
       >
-        <RotateCcwIcon className="h-4 w-4" />
+        <ArrowCounterClockwiseIcon className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -24,7 +24,7 @@ const RotateControl = () => {
         title="Rotate right 90°"
         aria-label="Rotate right"
       >
-        <RotateCwIcon className="h-4 w-4" />
+        <ArrowClockwiseIcon className="h-4 w-4" />
       </Button>
     </div>
   );

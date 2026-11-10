@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { RotateCcw } from "lucide-react";
+import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react";
 
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
 import { useRestoreAgentVersion } from "@/features/version-history/hooks/useRestoreAgentVersion";
@@ -17,7 +17,7 @@ export default function RestoreAction({ id }: { id: string }) {
 
   return (
     <SimpleDDMenuItem
-      Icon={RotateCcw}
+      Icon={ArrowCounterClockwiseIcon}
       size="sm"
       content={"Restore"}
       disabled={restoreMutation.isPending}

@@ -239,7 +239,7 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
             // Map DTO to entity and assign creator/modifier IDs
             var newSubscriptionPlan = subscriptionPlanDto.Adapt<SubscriptionPlan>();
-            newSubscriptionPlan.UniqueName = $"{newSubscriptionPlan.Type}-{newSubscriptionPlan.Frequency}-{newSubscriptionPlan.Currency}".ToLower();
+            newSubscriptionPlan.UniqueName = EditionSubscriptionPlanHelpers.BuildUniqueName(newSubscriptionPlan.Type, newSubscriptionPlan.Frequency, newSubscriptionPlan.Currency);
             newSubscriptionPlan.CreatedByUserId = _userId;
             newSubscriptionPlan.LastModifiedByUserId = _userId;
 
@@ -363,6 +363,12 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 return serviceResponse;
             }
 
+            if (existingPlan.IsDefault && subscriptionPlanDto.IsDisabled == true)
+            {
+                serviceResponse.Message = "Default subscription plans cannot be disabled.";
+                return serviceResponse;
+            }
+
             // Trim all string properties in the DTO to remove leading/trailing whitespace
             subscriptionPlanDto = TrimDtoStringPropsUtil.TrimDtoStringProps(subscriptionPlanDto);
 
@@ -435,6 +441,12 @@ public class SubscriptionPlanService : ISubscriptionPlanService
                 return serviceResponse;
             }
 
+            if (plan.IsDefault)
+            {
+                serviceResponse.Message = "Default subscription plans cannot be deleted.";
+                return serviceResponse;
+            }
+
             // Check if the plan has any active tenant subscriptions
             if (plan.TenantSubscriptions.Count != 0)
             {
@@ -489,6 +501,12 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             {
                 _logger.LogWarning("No matching subscription plans found to delete.");
                 serviceResponse.Message = "No matching subscription plans found.";
+                return serviceResponse;
+            }
+
+            if (plans.Any(p => p.IsDefault))
+            {
+                serviceResponse.Message = "Default subscription plans cannot be deleted.";
                 return serviceResponse;
             }
 

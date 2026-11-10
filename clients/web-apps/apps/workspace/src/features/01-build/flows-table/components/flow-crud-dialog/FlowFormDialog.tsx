@@ -1,16 +1,17 @@
 import { Switch } from "@avplatform/ui";
-import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { type CustomFormMessage } from "@avplatform/ui/types";
-import { CircleCheck, LoaderCircle } from "lucide-react";
 import { useEffect, useId } from "react";
 import { z } from "zod";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
+import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { flowOptimisticMutationFn } from "../../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../../constants";
@@ -18,36 +19,12 @@ import { flowZodSchema } from "../../constants/flow-zod-schema";
 import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
 import { useFetchFolders } from "../../hooks/useFetchFolders.hook";
-import { getFieldInputClassName } from "../../utils/field-input.util";
-import { FormField } from "../folder-dialogs/FormField";
 import { FlowTypePicker } from "./FlowTypePicker";
 
 const FLOW_NAME_MAX_LENGTH = 255;
 const FLOW_DESCRIPTION_MAX_LENGTH = 500;
 
 const EYEBROWS = { create: "New agent", update: "Edit agent", read: "Agent" } as const;
-
-const AvailabilityHint = ({ message }: { message: CustomFormMessage | null }) => {
-  if (!message) return null;
-
-  const isChecking = message.type === "Gray";
-
-  return (
-    <span
-      className={cn(
-        "flex items-center gap-1.5 pt-1.5 text-[12px]",
-        isChecking ? "text-muted-foreground" : "text-emerald-600",
-      )}
-    >
-      {isChecking ? (
-        <LoaderCircle className="size-3.5 shrink-0 animate-spin" />
-      ) : (
-        <CircleCheck className="size-3.5 shrink-0" />
-      )}
-      {message.message}
-    </span>
-  );
-};
 
 /**
  * Create, edit or view an agent's name, type and description in the card dialog style.
@@ -124,15 +101,10 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
       onClose={onClose}
       isDismissLocked={isSaving}
       isOutsideClickLocked={isDirty}
-      mark={
-        <AgentAvatar
-          size="lg"
-          className="size-12 rounded-2xl shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)] [&>svg]:size-6"
-        />
-      }
+      mark={<AgentAvatar size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
       eyebrow={EYEBROWS[crudAction]}
       title={
-        <span className={cn(!trimmedName && "text-slate-300")}>
+        <span className={cn(!trimmedName && "text-muted-foreground")}>
           {trimmedName || "Untitled agent"}
         </span>
       }
@@ -159,7 +131,7 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
       }
     >
       <form id={formId} onSubmit={handleSubmit} noValidate className="space-y-4">
-        <fieldset disabled={isReadMode} className="space-y-4">
+        <fieldset disabled={isReadMode} className="min-w-0 space-y-4">
           <FormField
             htmlFor={nameId}
             label="Name"
@@ -212,11 +184,9 @@ export const FlowFormDialog = ({ isOpen, crudAction, rowId, onClose }: CrudCusto
           </FormField>
 
           {!isCreating && (
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-slate-50/80 px-3.5 py-3 ring-1 ring-slate-900/[0.05]">
+            <div className="flex items-center justify-between gap-4 rounded-md bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
               <label htmlFor={disabledId} className="min-w-0">
-                <span className="block text-[13px] font-semibold text-slate-900">
-                  Disable agent
-                </span>
+                <span className="block text-[13px] font-semibold text-ink">Disable agent</span>
                 <span className="block text-[12px] text-muted-foreground">
                   Turn it off when it’s outdated or no longer needed
                 </span>

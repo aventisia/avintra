@@ -1,6 +1,6 @@
+import { XIcon } from "@phosphor-icons/react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
 import * as React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
@@ -55,14 +55,14 @@ const PopoverDefaultHeader = ({ heading, className, children }: PopoverDefaultHe
   return (
     <div className={cn("relative flex items-center justify-between border-b px-2 py-2", className)}>
       {/* Left side - Popover Heading */}
-      <h2 className="ml-2 flex items-center text-base font-semibold text-foreground">{heading}</h2>
+      <h2 className="ml-2 flex items-center text-heading text-ink">{heading}</h2>
       {/* Right side - Popover action buttons */}
       <div className="flex items-center">
         {/* Extras */}
         {children}
         {/* Close popover */}
         <PopoverPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-          <X className="h-5 w-5 text-[--icon-color]" />
+          <XIcon className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </PopoverPrimitive.Close>
       </div>

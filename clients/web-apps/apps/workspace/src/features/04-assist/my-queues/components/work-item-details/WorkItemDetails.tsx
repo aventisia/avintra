@@ -8,6 +8,7 @@ import {
 } from "@avplatform/ui/breadcrumb";
 import { Button, CopyButton } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -92,7 +93,7 @@ export const WorkItemDetails = () => {
   // In FIFO mode, a user may only close the item they actually claimed via the
   // "Get Next Item" button (which sets the assignee to the current user). This
   // prevents a user from closing an arbitrary item in the list regardless of age.
-  const currentUserDisplayName = userSession?.firstName + " " + userSession?.lastName;
+  const currentUserDisplayName = getUserDisplayName(userSession);
   const canClose = !isFifo || workItemData?.data.assignee === currentUserDisplayName;
 
   const handleClose = () => {
@@ -161,7 +162,7 @@ export const WorkItemDetails = () => {
         eventType: QueueTransactionEventEnum.StatusChange,
         data: "In Progress",
         createdOn: new Date().toISOString(),
-        createdBy: userSession?.firstName + " " + userSession?.lastName,
+        createdBy: currentUserDisplayName,
       });
     }
 
@@ -172,8 +173,7 @@ export const WorkItemDetails = () => {
     isViewOnly,
     myCurrentQueue,
     workItemData?.data.status,
-    userSession?.firstName,
-    userSession?.lastName,
+    currentUserDisplayName,
     workItemId,
   ]);
 
@@ -197,7 +197,7 @@ export const WorkItemDetails = () => {
     <div className="space-y-4 h-full pt-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -232,7 +232,7 @@ export const WorkItemDetails = () => {
             workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
               <SearchableSelect
                 options={buildDispositionOptions(myCurrentQueue)}
-                placeholder="Disposition Status"
+                placeholder="Disposition status"
                 value={selectedDisposition}
                 onValueChange={handleDispositionChange}
                 className="w-60"

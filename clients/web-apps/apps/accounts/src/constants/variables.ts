@@ -36,7 +36,19 @@ const SSO_DISABLED = "SSO disabled - set your password";
  */
 const BILLING_INFO_KEY = "billingInfo";
 
+/**
+ * Local storage key for the tenant's country; while set, ChoosePlan locks India to INR pricing.
+ */
+const COUNTRY_LS_KEY = "country";
+
+/**
+ * Organization name sent for Individual tenants; the backend names them after the user's email instead.
+ */
+const INDIVIDUAL_ORGANIZATION_NAME = "Individual Users";
+
 export {
+  COUNTRY_LS_KEY,
+  INDIVIDUAL_ORGANIZATION_NAME,
   TWO_FA_ENABLED,
   PWD_EXPIRED,
   ADD_TENANT,

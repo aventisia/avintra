@@ -1,5 +1,5 @@
+import { XIcon } from "@phosphor-icons/react";
 import { type Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
 import * as React from "react";
 import { createPortal } from "react-dom";
 
@@ -46,7 +46,7 @@ export const TableCNActionBar = <TData,>({
       aria-label="Selected rows actions"
       aria-orientation="horizontal"
       className={cn(
-        "fixed bottom-6 left-1/2 z-50 flex items-center gap-1.5 rounded-xl bg-background p-1.5 text-sm shadow-[0_18px_44px_-12px_rgba(15,23,42,0.35)] ring-1 ring-slate-900/[0.08]",
+        "fixed bottom-6 left-1/2 z-50 flex items-center gap-1.5 rounded-lg border border-line bg-surface p-1.5 text-body-sm shadow-pop",
         "duration-200 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-4 motion-reduce:animate-none",
         className,
       )}
@@ -63,20 +63,20 @@ export const TableCNActionBar = <TData,>({
  * Selected row count with a button that clears the selection.
  */
 export const TableCNActionBarSelection = <TData,>({ table }: { table: Table<TData> }) => (
-  <div className="flex h-8 items-center gap-1.5 rounded-lg border border-border pl-2.5 pr-1">
-    <span className="font-semibold tabular-nums text-slate-900">
+  <div className="flex h-8 items-center gap-1.5 rounded-md border border-line pl-2.5 pr-1">
+    <span className="font-semibold tabular-nums text-ink">
       {table.getFilteredSelectedRowModel().rows.length}
     </span>
-    <span className="text-slate-500">selected</span>
+    <span className="text-muted-foreground">selected</span>
     <span aria-hidden="true" className="ml-0.5 h-4 w-px bg-border" />
     <Tooltip content="Clear selection" shortcut="Esc" side="top">
       <button
         type="button"
         aria-label="Clear selection"
         onClick={() => table.toggleAllRowsSelected(false)}
-        className="grid size-6 place-items-center rounded-md text-slate-400 outline-none transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50"
+        className="grid size-6 place-items-center rounded-md text-muted-foreground outline-none transition-colors hover:bg-hover hover:text-ink-2 focus-visible:shadow-focus"
       >
-        <X className="size-3.5" />
+        <XIcon className="size-3.5" />
       </button>
     </Tooltip>
   </div>
@@ -103,8 +103,8 @@ export const TableCNActionBarItem = React.forwardRef<HTMLButtonElement, TableCNA
       className={cn(
         "h-8 gap-1.5 px-2.5 text-sm font-medium",
         tone === "destructive"
-          ? "text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-          : "text-slate-700 data-[state=open]:bg-muted data-[state=open]:text-slate-900",
+          ? "text-bad hover:bg-bad/10 hover:text-bad"
+          : "text-ink-2 data-[state=open]:bg-hover data-[state=open]:text-ink",
         className,
       )}
       {...props}

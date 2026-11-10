@@ -1,3 +1,4 @@
+import { useThemeStore } from "@avplatform/ui/stores";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 
 export default function MarkdownEditorInput({
@@ -7,6 +8,7 @@ export default function MarkdownEditorInput({
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const isDark = useThemeStore((state) => state.isDark);
   return (
     <MarkdownEditor
       value={value}
@@ -23,8 +25,8 @@ export default function MarkdownEditorInput({
         foldGutter: false,
         highlightActiveLine: false,
       }}
-      className="text-wrap rounded-lg border-0 bg-slate-50 p-0 text-sm text-foreground"
-      theme="light"
+      className="text-wrap rounded-lg border-0 bg-sunken p-0 text-sm text-foreground"
+      theme={isDark ? "dark" : "light"}
     />
   );
 }

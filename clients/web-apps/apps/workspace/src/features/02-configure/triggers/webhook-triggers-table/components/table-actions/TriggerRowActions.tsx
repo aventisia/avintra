@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
 import { RemoveResourceRowAction } from "@/features/resource-user-access/components/common-row-actions/RemoveResourceRowAction";
@@ -30,11 +31,13 @@ export const TriggerRowActions = ({
 
   return (
     // Dropdown menu for Trigger table row action */}
-    <DataTableRowActions className="w-36 min-w-36">
+    <TableCNRowActionsMenu ariaLabel="Open trigger actions" contentClassName="w-36 min-w-36">
       {/* View the Trigger details */}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="webhookTrigger" />}
+      {actions?.read && <CrudRowAction rowId={rowId} crudAction="read" entity="webhookTrigger" />}
       {/* Edit Trigger details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="webhookTrigger" />}
+      {actions?.update && (
+        <CrudRowAction rowId={rowId} crudAction="update" entity="webhookTrigger" />
+      )}
       {/* Share Access */}
       {resourceActions.share && (
         <ResourceUserAccessRowAction
@@ -53,6 +56,6 @@ export const TriggerRowActions = ({
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
         <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
       )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

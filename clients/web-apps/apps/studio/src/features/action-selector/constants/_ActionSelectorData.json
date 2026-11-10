@@ -137,7 +137,7 @@
           {
             "type": "callAgentNode",
             "name": "CallAgentNode",
-            "label": "Call Agent",
+            "label": "Call agent",
             "description": "Use this to call another agent within the current agent",
             "icon": "CallAgentIcon",
             "docsLink": "https://docs.aventisia.com",
@@ -146,7 +146,7 @@
           {
             "type": "blockNode",
             "name": "CallBlockNode",
-            "label": "Call Block",
+            "label": "Call block",
             "description": "Use to add custom block",
             "icon": "BlockNodeIcon",
             "docsLink": "https://docs.aventisia.com",

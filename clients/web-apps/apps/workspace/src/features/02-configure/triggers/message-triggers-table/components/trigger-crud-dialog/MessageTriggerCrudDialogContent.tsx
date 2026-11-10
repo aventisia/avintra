@@ -1,5 +1,6 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
+import { MessageTriggerView } from "./MessageTriggerView";
 import { TriggerCrudForm } from "./TriggerCrudForm";
 
 interface MessageTriggerCrudDialogContentProps {
@@ -11,5 +12,7 @@ export const MessageTriggerCrudDialogContent = ({
   crudAction,
   rowId,
 }: MessageTriggerCrudDialogContentProps) => {
-  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update" | "read"} />;
+  if (crudAction === "read") return <MessageTriggerView rowId={rowId} />;
+
+  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update"} />;
 };

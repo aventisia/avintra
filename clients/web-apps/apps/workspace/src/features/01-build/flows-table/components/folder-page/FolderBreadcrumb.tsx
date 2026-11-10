@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import { NavLink } from "react-router-dom";
 
 import { TABLE_HEADING } from "../../constants";
@@ -37,11 +37,11 @@ export const FolderBreadcrumb = ({ current, summaries }: FolderBreadcrumbProps) 
         {...getAgentDropHandlers(moveToTopLevel, isInFolder)}
         data-drop-ready={isDropReady || undefined}
         title={isDropReady ? "Drop to take the agent out of this folder" : undefined}
-        className="rounded-lg px-1.5 py-0.5 text-lg font-medium text-slate-500 outline-none outline-offset-2 transition hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[drop-active=true]:bg-indigo-50 data-[drop-ready=true]:outline-dashed data-[drop-ready=true]:outline-[1.5px] data-[drop-ready=true]:outline-indigo-300 data-[drop-active=true]:text-indigo-700 data-[drop-active=true]:outline-indigo-500"
+        className="rounded-md px-1.5 py-0.5 text-lg font-medium text-muted-foreground outline-none outline-offset-2 transition hover:text-ink focus-visible:ring-2 focus-visible:ring-focus data-[drop-active=true]:bg-selected data-[drop-ready=true]:outline-dashed data-[drop-ready=true]:outline-[1.5px] data-[drop-ready=true]:outline-primary/30 data-[drop-active=true]:text-primary-text data-[drop-active=true]:outline-primary"
       >
         {TABLE_HEADING}
       </NavLink>
-      <ChevronRight className="size-4 shrink-0 text-slate-300" />
+      <CaretRightIcon className="size-4 shrink-0 text-muted-foreground" />
       <FolderSwitcher current={current} summaries={summaries} />
     </nav>
   );

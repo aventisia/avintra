@@ -1,6 +1,5 @@
-import { cn } from "@avplatform/ui/lib";
-import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { CaretUpDownIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -15,12 +14,17 @@ import { useFetchSpaceOptions } from "@/features/05-tenant-admin/spaces/hooks/us
 import { CENTRAL_SPACE_VALUE, useCurrentSpaceStore } from "@/stores/current-space-store";
 
 /**
- * Renders a Space selector dropdown for the ribbon.
+ * Space selector dropdown; fills the width of its container.
  * Lists the spaces the current user has access to and persists the selection.
  * The "Central" space is always the default and can never be blank.
- * Styled to match the dark ribbon and aligned with the left menu line.
  */
-export const SpaceSelector = () => {
+export const SpaceSelector = ({
+  className,
+  showLabel = false,
+}: {
+  className?: string;
+  showLabel?: boolean;
+}) => {
   // Fetch space options
   const { data } = useFetchSpaceOptions();
 
@@ -48,13 +52,6 @@ export const SpaceSelector = () => {
     }
   }, [userSession?.email, rehydrateForUser]);
 
-  // Get sidebar expand state to align with the left menu line
-  const { sidebarExpand } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-    })),
-  );
-
   const spaceOptions = data?.data || [];
 
   // The Select value. Central (null) is represented by the sentinel so the
@@ -62,12 +59,7 @@ export const SpaceSelector = () => {
   const selectValue = currentSpace ? currentSpace.id : CENTRAL_SPACE_VALUE;
 
   return (
-    <div
-      className={cn(
-        "ml-2 transition-[margin] duration-500 md:ml-0",
-        sidebarExpand ? "md:ml-[--sidebar-max-width]" : "md:ml-[--sidebar-min-width]",
-      )}
-    >
+    <div className={className}>
       <Select
         value={selectValue}
         onValueChange={(value) => {
@@ -82,12 +74,27 @@ export const SpaceSelector = () => {
           }
         }}
       >
-        <SelectTrigger
-          size="sm"
-          className="h-[2.1rem] w-[10rem] border-transparent bg-white/10 text-white shadow-none transition-all duration-300 hover:bg-white/20 focus:border-transparent focus:ring-white/30 [&>span]:text-white/80"
-        >
-          <SelectValue placeholder="Select Space" />
-        </SelectTrigger>
+        {showLabel ? (
+          <SelectTrigger
+            size="sm"
+            className="h-auto w-full gap-2 rounded-md border-line bg-ink/[0.04] px-[9px] py-[3px] text-left text-[13px] font-semibold text-ink shadow-none hover:bg-ink/[0.06] [&>svg:last-child]:hidden"
+          >
+            <div className="min-w-0">
+              <small className="block text-[11px] font-medium text-muted-foreground">Space</small>
+              <div className="truncate">
+                <SelectValue placeholder="Select space" />
+              </div>
+            </div>
+            <CaretUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
+          </SelectTrigger>
+        ) : (
+          <SelectTrigger
+            size="sm"
+            className="h-[34px] w-full border-line bg-sunken text-[13px] font-semibold text-ink shadow-none hover:bg-hover"
+          >
+            <SelectValue placeholder="Select space" />
+          </SelectTrigger>
+        )}
         <SelectContent>
           {/* Central is always the first, default option and can never be blank. */}
           <SelectItem value={CENTRAL_SPACE_VALUE}>Central</SelectItem>

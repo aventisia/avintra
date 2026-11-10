@@ -1,10 +1,16 @@
-import { Button } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import {
+  CrudDialogActions,
+  useCrudDialogDirty,
+  useCrudDialogRecordNameSetter,
+} from "@avplatform/ui/crud-dialog";
+import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { type DialogCrudAction } from "@avplatform/ui/types";
+import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
@@ -59,6 +65,78 @@ const persistPendingVerifications = async (
   return { hasFailure, skippedOperationIds };
 };
 
+const createEmptyDraft = (): ToolDto => ({
+  id: crypto.randomUUID(),
+  name: "",
+  description: "",
+  iconUrl: "",
+  type: ComponentTypeEnum.Custom,
+  baseUrl: "",
+  openApiSpec: "",
+  isTenantWideAccess: false,
+  isResourceAccessRestricted: false,
+  isActive: false,
+  isVerified: false,
+  accessLevel: ResourceAccessTypeEnum.Owner,
+});
+
+type WizardStepperProps = {
+  labels: readonly string[];
+  currentIndex: number;
+  onSelect: (index: number) => void;
+};
+
+const WizardStepper = ({ labels, currentIndex, onSelect }: WizardStepperProps) => (
+  <ol aria-label="Steps" className="mb-5 flex items-center gap-2">
+    {labels.map((label, index) => {
+      const isDone = index < currentIndex;
+      const isCurrent = index === currentIndex;
+      const isLast = index === labels.length - 1;
+
+      return (
+        <li key={label} className={cn("flex min-w-0 items-center gap-2", !isLast && "flex-1")}>
+          <button
+            type="button"
+            onClick={() => onSelect(index)}
+            disabled={index > currentIndex}
+            aria-current={isCurrent ? "step" : undefined}
+            className="flex min-w-0 items-center gap-2 rounded-md text-[12.5px] outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-default"
+          >
+            <span
+              className={cn(
+                "grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold tabular-nums ring-1 transition-colors",
+                isDone && "bg-primary text-primary-foreground ring-primary",
+                isCurrent && "bg-selected text-primary-text ring-primary",
+                !isDone && !isCurrent && "bg-sunken text-muted-foreground ring-line",
+              )}
+            >
+              {isDone ? <CheckIcon weight="bold" className="size-3.5" /> : index + 1}
+            </span>
+            <span
+              className={cn(
+                "truncate font-semibold",
+                isDone || isCurrent ? "text-ink" : "text-muted-foreground",
+              )}
+            >
+              {label}
+            </span>
+          </button>
+          {!isLast && (
+            <span
+              aria-hidden="true"
+              className={cn("h-px min-w-4 flex-1", isDone ? "bg-primary" : "bg-line")}
+            />
+          )}
+        </li>
+      );
+    })}
+  </ol>
+);
+
+/**
+ * Create or edit a custom API tool in three steps: methods, authentication and a playground
+ * that verifies each operation.
+ */
 export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const {
     currentStep,
@@ -73,8 +151,11 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     setDraftSaved,
   } = useToolWizardStore();
   const { onCloseConfirmed, setIsDirty } = useCrudDialogDirty();
+  const setRecordName = useCrudDialogRecordNameSetter();
   const queryClient = useQueryClient();
   const { queryKey } = useTableTab();
+  const [baselineDraft, setBaselineDraft] = useState<ToolDto>();
+  const [isSavePending, setIsSavePending] = useState(false);
 
   const isCreate = crudAction === "create";
 
@@ -85,20 +166,9 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
 
     if (isCreate || !rowId) {
       reset();
-      setDraftTool({
-        id: crypto.randomUUID(),
-        name: "",
-        description: "",
-        iconUrl: "",
-        type: ComponentTypeEnum.Custom,
-        baseUrl: "",
-        openApiSpec: "",
-        isTenantWideAccess: false,
-        isResourceAccessRestricted: false,
-        isActive: false,
-        isVerified: false,
-        accessLevel: ResourceAccessTypeEnum.Owner,
-      });
+      const emptyDraft = createEmptyDraft();
+      setBaselineDraft(emptyDraft);
+      setDraftTool(emptyDraft);
       return;
     }
 
@@ -117,7 +187,9 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
 
       if (!tool) return;
 
-      setDraftTool({ ...tool, manualOperations: toManualOperations(tool) });
+      const loadedDraft = { ...tool, manualOperations: toManualOperations(tool) };
+      setBaselineDraft(loadedDraft);
+      setDraftTool(loadedDraft);
       setDraftSaved(true);
     };
 
@@ -138,6 +210,18 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     queryKey,
   ]);
 
+  const isDirty = Boolean(draftTool && baselineDraft) && draftTool !== baselineDraft;
+
+  useEffect(() => {
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
+
+  useEffect(() => {
+    setRecordName(draftTool?.name ?? "");
+  }, [draftTool?.name, setRecordName]);
+
+  useEffect(() => () => setRecordName(undefined), [setRecordName]);
+
   const isIngestValid = Boolean(
     draftTool?.name?.trim() &&
     draftTool?.baseUrl?.trim() &&
@@ -148,7 +232,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const canProceed = isIngestValid && isNameValidForSubmit;
 
   const steps = [
-    { key: "ingest", label: "Ingest Spec", component: <StepIngestSpec crudAction={crudAction} /> },
+    { key: "ingest", label: "Details", component: <StepIngestSpec crudAction={crudAction} /> },
     { key: "authenticate", label: "Authenticate", component: <StepAuthenticate /> },
     {
       key: "playground",
@@ -158,12 +242,15 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   ] as const;
 
   const currentIndex = steps.findIndex((s) => s.key === currentStep);
+  const isLastStep = currentIndex === steps.length - 1;
 
-  useEffect(() => {
-    setIsDirty(true);
-  }, [setIsDirty]);
-
-  const [isSavePending, setIsSavePending] = useState(false);
+  const closeAfterSave = () => {
+    queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: DETAIL_DATA_QUERY_KEY });
+    reset();
+    setIsDirty(false);
+    onCloseConfirmed();
+  };
 
   const handleFinish = () => {
     if (!draftTool) return;
@@ -195,11 +282,7 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
           }
         }
 
-        queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
-        queryClient.invalidateQueries({ queryKey: DETAIL_DATA_QUERY_KEY });
-        reset();
-        setIsDirty(false);
-        onCloseConfirmed();
+        closeAfterSave();
       } catch {
         // IMPORTANT NOTE: the shared axios interceptor already surfaces the save failure.
       } finally {
@@ -212,62 +295,56 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
       return;
     }
 
-    queryClient.invalidateQueries({ queryKey: DATA_QUERY_KEY });
-    queryClient.invalidateQueries({ queryKey: DETAIL_DATA_QUERY_KEY });
-    reset();
-    setIsDirty(false);
-    onCloseConfirmed();
+    closeAfterSave();
   };
 
+  const finishLabel = isSavePending
+    ? isCreate
+      ? "Creating"
+      : "Saving"
+    : isCreate
+      ? "Create tool"
+      : "Save changes";
+
   return (
-    <form onSubmit={(e: FormEvent) => e.preventDefault()}>
-      <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          {steps.map((step, index) => (
-            <Button
-              key={step.key}
-              variant={currentStep === step.key ? "default" : "outline"}
-              onClick={() => setCurrentStep(step.key)}
-              disabled={index > currentIndex}
-              type="button"
-            >
-              {index + 1}. {step.label}
-            </Button>
-          ))}
-        </div>
+    <div>
+      <WizardStepper
+        labels={steps.map((step) => step.label)}
+        currentIndex={currentIndex}
+        onSelect={(index) => setCurrentStep(steps[index].key)}
+      />
 
-        <div className="rounded-lg border p-4">{steps[currentIndex].component}</div>
+      {steps[currentIndex].component}
 
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            disabled={currentIndex === 0}
+      <CrudDialogActions>
+        {currentIndex > 0 && (
+          <CardDialogButton
             onClick={() => setCurrentStep(steps[currentIndex - 1].key)}
-            type="button"
+            disabled={isSavePending}
           >
             Previous
-          </Button>
-          <div className="flex gap-2">
-            {currentIndex < steps.length - 1 ? (
-              <Button
-                disabled={currentIndex === steps.length - 1 || !canProceed}
-                onClick={() => setCurrentStep(steps[currentIndex + 1].key)}
-                type="button"
-              >
-                Next
-              </Button>
-            ) : (
-              <Button
-                onClick={handleFinish}
-                disabled={!draftTool || isSavePending || !canProceed}
-                type="button"
-              >
-                {isSavePending ? (isCreate ? "Creating..." : "Updating...") : "Finish"}
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </form>
+          </CardDialogButton>
+        )}
+        {isLastStep ? (
+          <CardDialogButton
+            variant="primary"
+            onClick={handleFinish}
+            disabled={!draftTool || isSavePending || !canProceed}
+            isBusy={isSavePending}
+          >
+            {finishLabel}
+          </CardDialogButton>
+        ) : (
+          <CardDialogButton
+            variant="primary"
+            onClick={() => setCurrentStep(steps[currentIndex + 1].key)}
+            disabled={!canProceed}
+          >
+            Next
+            <ArrowRightIcon className="size-4" />
+          </CardDialogButton>
+        )}
+      </CrudDialogActions>
+    </div>
   );
 };

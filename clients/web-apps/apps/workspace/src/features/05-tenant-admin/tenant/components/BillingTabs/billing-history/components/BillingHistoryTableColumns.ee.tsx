@@ -1,57 +1,38 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
-import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names.ee";
 import { BillingHistoryDTO } from "../dtos/billing-history-dto.ee";
 import { BillingHistoryRowActions } from "./BillingHistoryRowActions.ee";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<BillingHistoryDTO, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the model table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
   // Invoice
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => {
       return <div className="w-auto font-medium">{row.getValue("name") || "N/A"}</div>;
     },
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => {
       return <div className="w-auto font-medium">{row.getValue("type") || "N/A"}</div>;
     },
@@ -60,13 +41,12 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   // Paid on
   {
     accessorKey: "paidOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("paidOn")} />
-    ),
+    meta: { label: getColumnName("paidOn") },
+    header: renderHeader("paidOn"),
     cell: ({ row }) => {
       const paidOnValue = row.getValue("paidOn") as Date;
       return (
-        <div className="w-auto font-medium">
+        <div className="font-mono tabular-nums w-auto font-medium">
           {paidOnValue ? format(paidOnValue, "dd MMM yyyy, hh:mm a") : "N/A"}
         </div>
       );
@@ -75,21 +55,23 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
   // Amount
   {
     accessorKey: "amount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("amount")} />
-    ),
+    meta: { label: getColumnName("amount") },
+    header: renderHeader("amount"),
     cell: ({ row }) => {
       const amount = (row.getValue("amount") || 0) as number;
       const currency = row.original?.currency || "USD";
-      return <div className="w-auto font-medium">{formatCurrency(amount, currency) || "N/A"}</div>;
+      return (
+        <div className="font-mono tabular-nums w-auto font-medium">
+          {formatCurrency(amount, currency) || "N/A"}
+        </div>
+      );
     },
   },
   // Status
   {
     accessorKey: "paymentStatus",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("paymentStatus")} />
-    ),
+    meta: { label: getColumnName("paymentStatus") },
+    header: renderHeader("paymentStatus"),
     cell: ({ row }) => {
       return (
         <div className="w-24 rounded-md px-2 py-1 text-center font-medium">
@@ -98,8 +80,8 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
       );
     },
   },
-  createDTActionsColumn<BillingHistoryDTO>({
-    renderCell: (row) => <BillingHistoryRowActions rowId={row.id || "rowId"} />,
+  getRowActionsColumn<BillingHistoryDTO>({
+    actions: ({ row }) => <BillingHistoryRowActions rowId={row.original.id || "rowId"} />,
   }),
 ];
 

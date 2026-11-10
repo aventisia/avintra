@@ -1,6 +1,7 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useConfigureResourceAccessActions } from "@/features/02-configure/hooks/useConfigureResourceAccessActions.hook";
@@ -42,10 +43,10 @@ export const SkillRowActions = ({
 
   return (
     // Dropdown menu for skill table row action
-    <DataTableRowActions className="w-36 min-w-36">
+    <TableCNRowActionsMenu ariaLabel="Open skill actions" contentClassName="w-36 min-w-36">
       {actions?.read && (
         <SimpleDDMenuItem
-          Icon={ArrowTopRightOnSquareIcon}
+          Icon={ArrowSquareOutIcon}
           onClick={(e) => {
             e.stopPropagation();
             navigate(
@@ -59,7 +60,7 @@ export const SkillRowActions = ({
       )}
       {/* Edit skill details (not available for platform default skills) */}
       {!readOnly && actions?.update && (
-        <DTRowAction rowId={rowId} crudAction="update" entity="skill" />
+        <CrudRowAction rowId={rowId} crudAction="update" entity="skill" />
       )}
       {!readOnly && actions?.update && (
         <ResourceFlowAccessRowAction
@@ -91,6 +92,6 @@ export const SkillRowActions = ({
         accessLevel !== ResourceAccessTypeEnum.Personal && (
           <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
         )}
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

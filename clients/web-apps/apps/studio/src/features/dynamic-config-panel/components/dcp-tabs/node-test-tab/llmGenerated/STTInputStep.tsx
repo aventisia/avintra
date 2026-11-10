@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { FileMusicIcon } from "lucide-react";
+import { FileAudioIcon } from "@phosphor-icons/react";
 import { useDropzone } from "react-dropzone";
 
 import { STTInputMode } from "@/features/dynamic-config-panel/dtos/stt-model-dto";
@@ -64,7 +64,7 @@ const STTInputStep = ({ file, onFileChange }: STTInputStepProps) => {
             "flex items-center h-[10rem] justify-center rounded-lg border-2 border-dashed p-4 cursor-pointer transition-colors",
             isDragActive
               ? "border-primary bg-primary/5"
-              : "border-gray-300 hover:border-primary hover:bg-primary/5",
+              : "border-line-strong hover:border-primary hover:bg-primary/5",
           )}
         >
           <input {...getInputProps()} />
@@ -73,8 +73,8 @@ const STTInputStep = ({ file, onFileChange }: STTInputStepProps) => {
               <span className="text-sm text-primary">Drop files here...</span>
             ) : (
               <>
-                <FileMusicIcon className="text-muted-foreground size-8 stroke-[1.4] opacity-50" />
-                <span className="text-sm font-medium text-gray-600 block">
+                <FileAudioIcon className="text-muted-foreground size-8 opacity-50" />
+                <span className="text-sm font-medium text-ink-2 block">
                   Drag & Drop or{" "}
                   <Button
                     autoFocus

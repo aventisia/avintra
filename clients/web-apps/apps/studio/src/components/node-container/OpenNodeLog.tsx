@@ -1,12 +1,9 @@
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
+import { RepeatIcon } from "@phosphor-icons/react";
 import React from "react";
-import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
-import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import { getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
 import { NODE_DETAIL_PANEL_ID } from "@/features/execution-logs/constants";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
@@ -16,21 +13,9 @@ interface OpenNodeLogProps {
   nodeId: string;
   children: React.ReactNode;
   className?: string;
-  showIcon?: boolean;
-  showBorder?: boolean;
-  isDisabled?: boolean;
 }
 
-export default function OpenNodeLog({
-  nodeId,
-  children,
-  className,
-  showIcon = true,
-  showBorder = true,
-  isDisabled = false,
-}: OpenNodeLogProps) {
-  const [searchParams] = useSearchParams();
-  const subflowCallerId = searchParams.get("ci") || "";
+export default function OpenNodeLog({ nodeId, children, className }: OpenNodeLogProps) {
   const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
     useExecutionStore(
       useShallow((state) => ({
@@ -48,27 +33,8 @@ export default function OpenNodeLog({
   const log = history[pathKey];
   const pathHistory = executionHistoryMap[nodeId]?.[pathKey] || [];
 
-  const isSuccess = log?.isSuccess === true;
-  const isError = log?.isSuccess === false;
-
   const isExecutionLog = useIsExecutionLogsRoute();
   const { openPanel } = usePanelStore(useShallow((state) => ({ openPanel: state.openPanel })));
-
-  // Live status for a running local (unpublished) flow, driven by the RunnerApp over the
-  // Tauri WebSocket. Only shows on the design canvas (not the execution-log route).
-  // Disabled nodes are not executed, so suppress any live status (especially the running
-  // spinner) that may still be broadcast for them.
-  const liveStatus = useLiveExecutionStore((state) =>
-    isDisabled ? undefined : state.liveExecutionMap[nodeId],
-  );
-  const { liveActiveIteration, liveLoopIndex } = useLiveExecutionStore(
-    useShallow((state) => ({
-      liveActiveIteration: state.liveActiveIteration,
-      liveLoopIndex: state.liveLoopIndex,
-    })),
-  );
-  const liveNodeLog = getLiveNodeLog(liveLoopIndex, subflowCallerId, nodeId, liveActiveIteration);
-  const selectedLiveStatus = liveNodeLog ? liveStatus : undefined;
 
   // Attempt history for the currently active execution, ordered by retry sequence.
   // Used only for the retry badge count; the panel resolves its data reactively.
@@ -94,72 +60,21 @@ export default function OpenNodeLog({
     openPanel(NODE_DETAIL_PANEL_ID, "right");
   };
 
-  return (
-    <>
-      {isExecutionLog ? (
-        <div
-          className={cn(
-            "relative border rounded-lg",
-            isExecutionLog && isSuccess && showBorder && "border-green-500",
-            isExecutionLog && isError && showBorder && "border-red-500",
-            log && "cursor-pointer",
-            className,
-          )}
-          onClick={handleOpenLog}
-        >
-          {showIcon && log && (
-            <>
-              {/* Success/Error Icon (Top Right) */}
-              {isSuccess ? (
-                <CheckCircle2Icon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-green-600" />
-              ) : (
-                <CircleXIcon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-red-500" />
-              )}
+  if (!isExecutionLog) return <>{children}</>;
 
-              {/* 2. Retry Icon & Count (Bottom Left) */}
-              {retryCount > 0 && (
-                <div
-                  className="absolute bottom-1 left-1 flex h-3 items-center justify-center gap-0.5 rounded-full border text-muted-foreground px-1.5"
-                  aria-label={`Retried ${retryCount} time${retryCount > 1 ? "s" : ""}`}
-                  title={`Retried ${retryCount} time${retryCount > 1 ? "s" : ""}`}
-                >
-                  <RepeatIcon className="h-2 w-2 shrink-0" />
-                  {/* Small y-offset compensates for numeral optical alignment against the icon's bounding box */}
-                  <span className="text-[0.5rem] font-medium leading-none  translate-y-[0.5px]">
-                    {retryCount}
-                  </span>
-                </div>
-              )}
-            </>
-          )}
-          {children}
-        </div>
-      ) : selectedLiveStatus ? (
+  return (
+    <div className={cn("relative", log && "cursor-pointer", className)} onClick={handleOpenLog}>
+      {retryCount > 0 && (
         <div
-          className={cn(
-            "relative border rounded-lg",
-            selectedLiveStatus === "running" && showBorder && "border-blue-500",
-            selectedLiveStatus === "success" && showBorder && "border-green-500",
-            selectedLiveStatus === "failed" && showBorder && "border-red-500",
-            className,
-          )}
+          className="absolute -bottom-2 left-2 z-10 flex h-4 items-center gap-0.5 rounded-full border border-line bg-surface px-1.5 text-muted-foreground"
+          aria-label={`Retried ${retryCount} time${retryCount > 1 ? "s" : ""}`}
+          title={`Retried ${retryCount} time${retryCount > 1 ? "s" : ""}`}
         >
-          {showIcon && (
-            <>
-              {selectedLiveStatus === "running" ? (
-                <Loader2 className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] animate-spin text-blue-600" />
-              ) : selectedLiveStatus === "success" ? (
-                <CheckCircle2Icon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-green-600" />
-              ) : (
-                <CircleXIcon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-red-500" />
-              )}
-            </>
-          )}
-          {children}
+          <RepeatIcon className="size-2.5 shrink-0" />
+          <span className="text-[0.625rem] font-medium leading-none">{retryCount}</span>
         </div>
-      ) : (
-        <>{children}</>
       )}
-    </>
+      {children}
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useActionLock } from "@avplatform/ui/action-lock";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { Upload } from "lucide-react";
+import { UploadSimpleIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useQueueUploadItemsStore } from "../../stores/queues-upload-item-store";
@@ -28,8 +28,8 @@ export const UploadItemsRowAction = ({ rowId }: { rowId: string }) => {
         setRowId(rowId);
         setShowDialog(true);
       }}
-      content="Upload Items"
-      Icon={Upload}
+      content="Upload items"
+      Icon={UploadSimpleIcon}
     />
   );
 };

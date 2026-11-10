@@ -1,7 +1,7 @@
 import { Separator } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { FileMagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 /**
@@ -33,10 +33,10 @@ const NotFoundPage = () => {
           : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
       )}
     >
-      <DocumentMagnifyingGlassIcon className="h-[25%] stroke-1 text-slate-100 opacity-40 mlg:h-[40%]" />
-      <h2 className="text-3xl text-primary">404</h2>
-      <Separator orientation="vertical" className="hidden h-10 w-[1px] rounded-full mlg:flex" />
-      <p className="text-base">Page not found</p>
+      <FileMagnifyingGlassIcon className="size-10 text-muted-foreground" />
+      <h2 className="text-title font-semibold text-ink">404</h2>
+      <Separator orientation="vertical" className="hidden h-10 w-px bg-line mlg:flex" />
+      <p className="text-body text-muted-foreground">Page not found</p>
     </div>
   );
 };

@@ -1,7 +1,8 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -48,9 +49,9 @@ export const useDefineSkillForm = ({ rowId, crudAction }: UseDefineSkillFormOpti
       name: "",
       description: "",
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -82,10 +83,9 @@ export const useDefineSkillForm = ({ rowId, crudAction }: UseDefineSkillFormOpti
       name: skillData?.name ?? "",
       description: skillData?.description ?? "",
       isDisabled: skillData?.isDisabled ?? false,
-      createdBy: skillData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: skillData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: skillData?.createdOn ? new Date(skillData?.createdOn) : new Date(),
-      lastModifiedBy:
-        skillData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: skillData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: skillData?.lastModifiedOn ? new Date(skillData?.lastModifiedOn) : new Date(),
     });
   }, [rowId, form, queryClient, userSession, queryKey]);

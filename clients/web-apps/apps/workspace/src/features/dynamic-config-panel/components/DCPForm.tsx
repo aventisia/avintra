@@ -1,7 +1,8 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { CrudDialogActions } from "@avplatform/ui/crud-dialog";
 import { Form } from "@avplatform/ui/form";
-import { SearchCodeIcon } from "lucide-react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -51,12 +52,12 @@ export const DCPForm = () => {
   return (
     <>
       {isLoading ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
+        <div className="flex items-center justify-center gap-2 py-12 text-[13px] text-muted-foreground">
           <LoadingSpinner className="h-5 w-5 text-primary" />
         </div>
       ) : !isFormReady ? (
-        <div className="flex h-[calc(100vh-9rem)] items-center justify-center gap-2 text-sm">
-          <SearchCodeIcon className="text-icon h-5 w-5" />
+        <div className="flex items-center justify-center gap-2 py-12 text-[13px] text-muted-foreground">
+          <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (
@@ -66,7 +67,6 @@ export const DCPForm = () => {
             e.preventDefault();
             onSubmit(form.getValues());
           }}
-          className="px-2.5 pb-5"
           // disabled={isPublished}
         >
           {/* Input fields */}
@@ -92,11 +92,13 @@ export const DCPForm = () => {
           {showOuputFields ? (
             <>
               <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-                <span className="rounded-full bg-accent px-1.5 text-indigo-600">Outputs</span>
-                <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
+                <span className="font-mono text-label uppercase text-muted-foreground">
+                  Outputs
+                </span>
+                <span className="h-px flex-grow bg-line"></span>
               </h3>
 
-              <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+              <div className="space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                 {nodeConfig.map((field) => {
                   // Check if the field should be rendered based on direction and renderIf conditions
                   if (!shouldRenderField("Output", field, watchedValues)) {
@@ -115,12 +117,11 @@ export const DCPForm = () => {
             </>
           ) : null}
 
-          {/* Save button */}
-          <div className="!mt-5 flex w-full justify-end">
+          <CrudDialogActions>
             <Button type="submit" className="min-w-[5rem]">
               Save
             </Button>
-          </div>
+          </CrudDialogActions>
         </Form>
       )}
     </>

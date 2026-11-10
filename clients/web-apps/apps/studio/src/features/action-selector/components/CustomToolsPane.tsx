@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon, Loader2Icon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon, CircleNotchIcon, PlusIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useMemo, useState } from "react";
 
 import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
@@ -64,24 +64,24 @@ export const CustomToolsPane = ({
 
   return (
     <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
-      <div className="flex min-h-0 flex-col border-r bg-background">
-        <div className="flex shrink-0 items-center border-b p-2">
+      <div className="flex min-h-0 flex-col border-r border-line bg-surface">
+        <div className="flex h-12 shrink-0 items-center border-b border-line px-2">
           <Button
             ref={backButtonRef}
             variant="ghost"
             size="icon8"
             onClick={onBack}
             onKeyDown={onBackKeyDown}
-            className="mr-2 outline-none focus-visible:bg-accent"
+            className="mr-1"
             aria-label="Go back"
           >
             <ArrowLeftIcon className="h-4 w-4" />
           </Button>
-          <h2 className="truncate text-sm font-medium">{title}</h2>
+          <h2 className="truncate text-body-sm font-semibold text-ink">{title}</h2>
           <Tooltip content="Add custom tool">
             <Button
               onClick={handleAddCustomTool}
-              className="ml-auto rounded-full"
+              className="ml-auto"
               size="icon8"
               variant="ghost"
               aria-label="Add custom tool"
@@ -93,22 +93,22 @@ export const CustomToolsPane = ({
 
         {isCatalogLoading ? (
           <div className="flex flex-1 items-center justify-center">
-            <Loader2Icon
+            <CircleNotchIcon
               className="h-4 w-4 animate-spin text-muted-foreground"
               aria-hidden="true"
             />
           </div>
         ) : isCatalogError ? (
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
-            <p className="text-sm font-medium">Couldn’t load custom tools</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body-sm font-semibold text-ink">Couldn’t load custom tools</p>
+            <p className="text-body-sm text-muted-foreground">
               The tool catalog request failed. Close this dialog and try again.
             </p>
           </div>
         ) : customTools.length === 0 ? (
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
-            <p className="text-sm font-medium">Create your first custom tool</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body-sm font-semibold text-ink">Create your first custom tool</p>
+            <p className="text-body-sm text-muted-foreground">
               Custom tools let your agents call your own APIs. Click “+” to open the tool builder.
             </p>
           </div>
@@ -125,16 +125,14 @@ export const CustomToolsPane = ({
                     tabIndex={0}
                     onClick={() => setSelectedToolId(tool.id)}
                     className={cn(
-                      "mb-1 flex w-full items-start gap-3 rounded-lg p-2 text-left outline-none transition-colors",
-                      isSelected
-                        ? "bg-accent text-accent-foreground"
-                        : "hover:bg-accent hover:text-accent-foreground",
+                      "mb-1 flex w-full items-start gap-3 rounded-md p-2 text-left outline-none transition-colors focus-visible:shadow-focus",
+                      isSelected ? "bg-selected text-ink" : "hover:bg-hover",
                     )}
                   >
                     <CustomToolIcon icon={tool.icon} iconUrl={tool.iconUrl} className="mt-0.5" />
                     <div className="grow overflow-hidden">
                       <div className="flex items-center gap-1.5">
-                        <h3 className="truncate text-xs font-medium text-foreground">
+                        <h3 className="truncate text-[13px] font-medium text-ink">
                           {getToolName(tool)}
                         </h3>
                       </div>
@@ -147,12 +145,12 @@ export const CustomToolsPane = ({
         )}
       </div>
 
-      <div className="flex min-h-0 flex-col overflow-hidden bg-background">
+      <div className="flex min-h-0 flex-col overflow-hidden bg-surface">
         {selectedTool ? (
           customToolActions.length === 0 ? (
             <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
-              <p className="text-sm font-medium">No actions found</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-body-sm font-semibold text-ink">No actions found</p>
+              <p className="text-body-sm text-muted-foreground">
                 This tool’s OpenAPI spec exposes no endpoints yet.
               </p>
             </div>
@@ -172,8 +170,8 @@ export const CustomToolsPane = ({
           )
         ) : (
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 p-6 text-center">
-            <p className="text-sm font-medium">Select a tool</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body-sm font-semibold text-ink">Select a tool</p>
+            <p className="text-body-sm text-muted-foreground">
               Choose a custom tool on the left to see its available actions.
             </p>
           </div>

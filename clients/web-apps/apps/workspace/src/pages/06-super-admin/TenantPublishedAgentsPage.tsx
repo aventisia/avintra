@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the TenantPublishedAgentsDialog component.
@@ -16,7 +16,7 @@ const TenantPublishedAgentsDialog = lazy(() =>
  */
 export const TenantPublishedAgentsPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <TenantPublishedAgentsDialog />
     </Suspense>
   );

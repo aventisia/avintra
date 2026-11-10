@@ -1,5 +1,5 @@
 import { Alert } from "@avplatform/ui/alert";
-import { CheckCircle2Icon, ClockIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, ClockIcon, XCircleIcon } from "@phosphor-icons/react";
 
 import { StatusType } from "../dto/prompt-template-dto";
 
@@ -15,7 +15,7 @@ export const StatusAlert: React.FC<StatusAlertProps> = ({ status, remark, approv
       return (
         <Alert
           variant="success"
-          icon={CheckCircle2Icon}
+          icon={CheckCircleIcon}
           title="Approved"
           description={`The template has been approved by ${approvedBy}`}
         />

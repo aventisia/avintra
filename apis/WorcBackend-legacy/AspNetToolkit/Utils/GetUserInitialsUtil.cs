@@ -20,4 +20,12 @@ public static class GetUserInitialsUtil
             return "--";
         }
     }
+
+    /// <summary>
+    /// Returns the user's initials, or the first letter of their email when both names are blank.
+    /// </summary>
+    public static string GetUserInitials(string firstName, string lastName, string? email) =>
+        string.IsNullOrWhiteSpace(firstName) && string.IsNullOrWhiteSpace(lastName) && !string.IsNullOrEmpty(email)
+            ? email[..1].ToUpper()
+            : GetUserInitials(firstName, lastName);
 }

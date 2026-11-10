@@ -1,30 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DTPagination, DataTable } from "@avplatform/ui/data-table";
-import { useDataTable } from "@avplatform/ui/hooks";
-import { ColumnDef, VisibilityState } from "@tanstack/react-table";
+import { TableCN } from "@avplatform/ui/table-cn";
+import { Table } from "@tanstack/react-table";
+import { type ReactNode } from "react";
 
-const UploadedItemsDT = ({
-  columns,
-  columnsVisibilityState,
-  data,
-}: {
-  columns: ColumnDef<any>[];
-  data: any[];
-  columnsVisibilityState: VisibilityState;
-}) => {
-  // Initialize the table
-  const table = useDataTable(columns, data, columnsVisibilityState, [], true);
+const UPLOADED_ITEMS_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
 
-  return (
-    <div className="space-y-3">
-      {/* Match the dialog's fixed width so the table fills it; DataTable's own
-          ScrollArea shows a horizontal scrollbar when columns exceed it. */}
-      <div className="max-w-[57rem]">
-        <DataTable table={table} columnsLength={columns.length} />
-      </div>
-      <DTPagination table={table} />
+const UPLOADED_ITEMS_ROW_LABELS = { singular: "item", plural: "items" };
+
+const UploadedItemsDT = ({ table, actionBar }: { table: Table<any>; actionBar?: ReactNode }) => (
+  <div className="space-y-3">
+    {/* IMPORTANT NOTE: Match the dialog's fixed width so the table fills it; TableCN's own
+        ScrollArea shows a horizontal scrollbar when columns exceed it. */}
+    <div className="max-w-[57rem]">
+      <TableCN
+        table={table}
+        actionBar={actionBar}
+        paginationProps={{
+          pageSizeOptions: UPLOADED_ITEMS_PAGE_SIZE_OPTIONS,
+          rowLabels: UPLOADED_ITEMS_ROW_LABELS,
+        }}
+      />
     </div>
-  );
-};
+  </div>
+);
 
 export default UploadedItemsDT;

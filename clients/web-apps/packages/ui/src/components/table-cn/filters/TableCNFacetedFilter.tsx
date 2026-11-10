@@ -1,5 +1,5 @@
+import { CheckIcon } from "@phosphor-icons/react";
 import { type Column } from "@tanstack/react-table";
-import { Check } from "lucide-react";
 import * as React from "react";
 
 import {
@@ -25,18 +25,25 @@ import { TableCNFilterTrigger, TableCNFilterValue } from "./TableCNFilterTrigger
 
 const MAX_LISTED_SELECTIONS = 2;
 
-const OptionMark = ({ isSelected, multiple }: { isSelected: boolean; multiple: boolean }) => (
+/** Check or radio mark of a filter option. */
+export const TableCNOptionMark = ({
+  isSelected,
+  multiple,
+}: {
+  isSelected: boolean;
+  multiple: boolean;
+}) => (
   <span
     aria-hidden="true"
     className={cn(
       "grid size-4 shrink-0 place-items-center border transition-colors",
-      multiple ? "rounded-[5px]" : "rounded-full",
+      multiple ? "rounded-sm" : "rounded-full",
       isSelected
-        ? "border-indigo-600 bg-indigo-600 text-white"
-        : "border-slate-300 bg-background text-transparent",
+        ? "border-indicator bg-indicator text-primary-foreground"
+        : "border-line-strong bg-surface text-transparent",
     )}
   >
-    <Check className="size-3 stroke-[3]" />
+    <CheckIcon weight="bold" className="size-3" />
   </span>
 );
 
@@ -105,17 +112,17 @@ export const TableCNFacetedFilter = <TData, TValue>({
         className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-60 overflow-hidden")}
       >
         <Command>
-          <div className="border-b border-slate-100">
+          <div className="border-b border-line">
             <CommandInput
               placeholder={`Filter by ${title.toLowerCase()}...`}
               className={TABLE_CN_COMMAND_INPUT_CLASS_NAME}
             />
           </div>
           <CommandList className="max-h-full">
-            <CommandEmpty className="py-6 text-center text-sm text-slate-500">
+            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
               No results found.
             </CommandEmpty>
-            <CommandGroup className="max-h-[18.75rem] overflow-y-auto overflow-x-hidden p-1.5">
+            <CommandGroup className="max-h-[18.75rem] overflow-y-auto overflow-x-hidden p-1">
               {options.map((option) => {
                 const isSelected = selectedValues.includes(option.value);
                 const count = option.count ?? facets?.get(option.value) ?? 0;
@@ -127,11 +134,15 @@ export const TableCNFacetedFilter = <TData, TValue>({
                     onSelect={() => onSelectOption(option.value)}
                     className={TABLE_CN_COMMAND_ITEM_CLASS_NAME}
                   >
-                    <OptionMark isSelected={isSelected} multiple={multiple} />
-                    {option.icon && <option.icon className="size-4 shrink-0 text-slate-500" />}
+                    <TableCNOptionMark isSelected={isSelected} multiple={multiple} />
+                    {option.icon && (
+                      <option.icon className="size-4 shrink-0 text-muted-foreground" />
+                    )}
                     <span className="flex-1 truncate">{option.label}</span>
                     {showFacetCounts && (
-                      <span className="ml-auto text-xs tabular-nums text-slate-400">{count}</span>
+                      <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+                        {count}
+                      </span>
                     )}
                   </CommandItem>
                 );
@@ -139,8 +150,8 @@ export const TableCNFacetedFilter = <TData, TValue>({
             </CommandGroup>
             {selectedValues.length > 0 && (
               <>
-                <CommandSeparator className="mx-0 bg-slate-100" />
-                <CommandGroup className="p-1.5">
+                <CommandSeparator className="mx-0 bg-line" />
+                <CommandGroup className="p-1">
                   <CommandItem
                     onSelect={() => onReset()}
                     className={cn(TABLE_CN_COMMAND_ITEM_CLASS_NAME, "justify-center")}

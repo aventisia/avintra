@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
 import { InputField } from "@avplatform/ui/form";
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
 
 import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
@@ -23,7 +23,7 @@ const OutputFields = ({
   return (
     <div
       key={field.id}
-      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-slate-50 p-4"
+      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-sunken p-4"
     >
       <div className="col-span-2 flex justify-between">
         <span className="text-sm">Output {index + 1}</span>
@@ -32,9 +32,9 @@ const OutputFields = ({
           type="button"
           size="xs"
           onClick={() => remove(index)}
-          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+          className="text-bad hover:bg-bad/10 hover:text-bad"
         >
-          <Trash2 className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
 

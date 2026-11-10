@@ -18,7 +18,7 @@ export const useFetchTenants = () => {
   );
 
   const from = format(dateRange!.from!, "yyyy-MM-dd");
-  const to = format(dateRange!.to!, "yyyy-MM-dd");
+  const to = format(dateRange!.to ?? dateRange!.from!, "yyyy-MM-dd");
   // Get tenants using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: [...DATA_QUERY_KEY, from, to],

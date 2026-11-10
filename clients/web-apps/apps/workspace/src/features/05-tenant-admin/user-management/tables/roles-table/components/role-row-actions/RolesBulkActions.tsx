@@ -1,6 +1,12 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 
 import { roleOptimisticMutationFn } from "../../apis/roles-table-apis";
@@ -14,6 +20,7 @@ interface RolesBulkActionsProps {
 export function RolesBulkActions({ table }: Readonly<RolesBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -29,32 +36,35 @@ export function RolesBulkActions({ table }: Readonly<RolesBulkActionsProps>) {
   >(selectedRowIds, roleOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              // Show alert dialog to confirm delete
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected configs
-                  deleteMultiplePricingPlans({
-                    crudAction: "delete-multiple",
-                    payload: selectedRowIds,
-                  });
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={TrashIcon}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            // Show alert dialog to confirm delete
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected configs
+                deleteMultiplePricingPlans({
+                  crudAction: "delete-multiple",
+                  payload: selectedRowIds,
+                });
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "configs" : "config"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "configs" : "config"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

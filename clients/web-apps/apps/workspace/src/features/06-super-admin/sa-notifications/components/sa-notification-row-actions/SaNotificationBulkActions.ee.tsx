@@ -1,8 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { NotificationStatusEnum } from "@avplatform/ui/enums";
-import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
-import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import { useShowAlertHandler, useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 
 import { deleteMultipleSaNotifications } from "../../apis/sa-notification-apis.ee";
@@ -16,6 +21,7 @@ interface SaNotificationBulkActionsProps {
 export function SaNotificationBulkActions({ table }: SaNotificationBulkActionsProps) {
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get rowIds of selected rows, excluding sent notifications (they are immutable and cannot be deleted)
   const selectedRowIds = table
@@ -37,29 +43,32 @@ export function SaNotificationBulkActions({ table }: SaNotificationBulkActionsPr
   );
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showCustomAlertDialog({
-                confirmActionFn: () => {
-                  // Delete selected notifications
-                  mutate(selectedRowIds);
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={TrashIcon}
+          tone="destructive"
+          disabled={locked || selectedRowIds.length === 0}
+          onClick={() => {
+            showCustomAlertDialog({
+              confirmActionFn: () => {
+                // Delete selected notifications
+                mutate(selectedRowIds);
 
-                  // Remove selection
-                  table.toggleAllRowsSelected(false);
-                },
-                confirmBtnText: `Yes, delete ${entityName}`,
-                title: `Delete ${entityName}?`,
-                description: `Are you sure you want to delete the selected ${entityName}?`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+                // Remove selection
+                table.toggleAllRowsSelected(false);
+              },
+              confirmBtnText: `Yes, delete ${entityName}`,
+              title: `Delete ${entityName}?`,
+              description: `Are you sure you want to delete the selected ${entityName}?`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

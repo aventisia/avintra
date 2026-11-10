@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/_components/ui/cards";
-import { Copy, Tag } from "lucide-react";
+import { CopyIcon, TagIcon } from "@phosphor-icons/react/ssr";
 
 import { useViewTemplate } from "../hooks/useViewTemplate";
 import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";
@@ -96,7 +96,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
             variant="outline"
             className="mt-2 flex w-fit border-border text-xs items-center gap-1 bg-slate-100 dark:bg-background py-0.5 sm:py-1 px-2"
           >
-            <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <TagIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             <span className="leading-3">
               {transformTemplateType(template?.type)}
             </span>
@@ -126,7 +126,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           {/* Usage count with clipboard copy button */}
           {template.type !== "Prompt" && (
             <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground flex-shrink-0">
-              <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <CopyIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <p>{template.usagesCount}</p>
             </div>
           )}

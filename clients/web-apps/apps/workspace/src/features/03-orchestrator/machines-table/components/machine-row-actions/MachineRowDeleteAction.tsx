@@ -29,7 +29,7 @@ export const MachineRowDeleteAction = ({ rowId }: MachineRowDeleteActionProps) =
         showCustomAlertDialog({
           confirmActionFn: () => mutate(rowId),
           confirmBtnText: "Yes, delete machine",
-          title: "Delete Machine?",
+          title: "Delete machine?",
           description:
             "Are you sure you want to delete this machine? This action will unassign any agents connected to it, which may affect your workflows.",
         });

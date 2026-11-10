@@ -1,5 +1,4 @@
 // import { Sidebar } from "@avplatform/layout";
-import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useEffect, useState } from "react";
@@ -7,27 +6,32 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
-import { DotPattern } from "@/components/layout/DotPattern";
-import { ROLE_TA } from "@/constants/roles";
+import { HelpPanel } from "@/components/help/HelpPanel";
+import { ROLE_SA } from "@/constants/roles";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
+import { GetStartedDialog } from "@/features/05-tenant-admin/get-started";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus.ee";
+import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
+import { AccountDialog } from "@/features/my-account";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
+import { UnreadNotificationsPoller } from "@/react-toolkit/features/unread-notifications/components/UnreadNotificationsPoller";
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
-import { useOnboardingStore } from "@/stores/onboarding-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppHeader from "./AppHeader";
 import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { HubNav } from "./HubNav";
 import { PreventNavigationBlocker } from "./PreventNavigationBlocker";
 import { Sidebar } from "./Sidebar";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
@@ -43,10 +47,9 @@ export const AppLayout = () => {
   const location = useLocation();
 
   // Get the state and actions from the base layout store
-  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
+  const { setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
     useBaseLayoutStore(
       useShallow((state) => ({
-        sidebarExpand: state.sidebarExpand,
         setViteEnvVars: state.setViteEnvVars,
         setSidebarMenuSections: state.setSidebarMenuSections,
         selectedRoles: state.selectedRoles,
@@ -92,13 +95,6 @@ export const AppLayout = () => {
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();
 
-  const { isOnboardingComplete, rehydrateOnboarding } = useOnboardingStore(
-    useShallow((state) => ({
-      isOnboardingComplete: state.isComplete,
-      rehydrateOnboarding: state.rehydrateForUser,
-    })),
-  );
-
   // Establish websocket connection and expose ref
   const { connection, isReady } = useWebSocket({
     url: getWebSocketUrl({
@@ -131,12 +127,14 @@ export const AppLayout = () => {
     // user's roles on first login. Only set the store if it hasn't been initialized
     // yet for this session to avoid clobbering a user's in-session selection.
     if (selectedRoles.length === 0) {
-      const storedRoles = localStorage.getItem(SELECTED_ROLES_STORAGE_KEY);
-      const initialRoles =
-        storedRoles && storedRoles.length > 0
-          ? storedRoles.split(",")
-          : (userSession?.userRoles ?? []);
-      setSelectedRoles(initialRoles);
+      const userRoles = userSession.userRoles ?? [];
+      /* IMPORTANT NOTE: Only super admins can pick roles, so anyone else always gets all their roles, even with a stale selection stored before the picker was hidden. */
+      const storedRoles = userRoles.includes(ROLE_SA)
+        ? (localStorage.getItem(SELECTED_ROLES_STORAGE_KEY)?.split(",") ?? []).filter((role) =>
+            userRoles.includes(role),
+          )
+        : [];
+      setSelectedRoles(storedRoles.length > 0 ? storedRoles : userRoles);
     }
   }, [isPending, selectedRoles.length, setSelectedRoles, setViteEnvVars, userSession]);
 
@@ -149,7 +147,6 @@ export const AppLayout = () => {
     const filteredSidebarMenu = getSidebarMenuBasedOnPermissions(
       selectedRoles,
       userSession?.deploymentType,
-      isOnboardingComplete,
     );
     // Set the sidebar menu sections
     setSidebarMenuSections(filteredSidebarMenu);
@@ -162,11 +159,10 @@ export const AppLayout = () => {
       ]),
     );
 
-    setAllowedRoutes([...allowedRoutes, "/account"]);
+    setAllowedRoutes([...allowedRoutes, DESKTOP_DOWNLOAD_ROUTE, NOTIFICATIONS_ROUTE]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
-    isOnboardingComplete,
     isPending,
     selectedRoles,
     setAllowedRoutes,
@@ -175,25 +171,12 @@ export const AppLayout = () => {
     userSession,
   ]);
 
-  // Re-hydrate the onboarding progress for the current user once a session is available.
-  useEffect(() => {
-    if (isPending || !userSession) return;
-    rehydrateOnboarding();
-  }, [isPending, rehydrateOnboarding, userSession]);
-
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
     if (location?.pathname == "/") {
-      // First-run redirect: a Tenant Admin who has not yet completed the Get
-      // Started guide is sent to it before the normal landing page.
-      const isTenantAdmin = userSession?.userRoles?.includes(ROLE_TA);
-      if (isTenantAdmin && !isOnboardingComplete) {
-        navigate("/tenant/get-started");
-        return;
-      }
       navigate(landingUrl);
     }
-  }, [isOnboardingComplete, landingUrl, location?.pathname, navigate, userSession]);
+  }, [landingUrl, location?.pathname, navigate]);
 
   // Routes protection by getting allowed routes form side bar menu section
   useEffect(() => {
@@ -230,27 +213,24 @@ export const AppLayout = () => {
       {isPending || !userSession ? (
         <AppRedirectPage />
       ) : (
-        <div className="relative min-h-screen overflow-hidden">
-          <DotPattern
-            className={cn(
-              "z-[-10] mt-2 [mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]",
-            )}
-          />
-          <AppHeader />
+        <div className="relative flex h-screen overflow-hidden bg-bg">
           <Sidebar />
-          <ScrollArea className="h-[calc(100vh-var(--header-height)-var(--header-padding))]">
-            <main
-              className={cn(
-                "px-3 md:px-7 py-0 transition-all duration-500",
-                sidebarExpand
-                  ? "md:ml-[--sidebar-max-width] md:w-[calc(100vw-var(--sidebar-max-width))]"
-                  : "md:ml-[--sidebar-min-width] md:w-[calc(100vw-var(--sidebar-min-width))]",
-              )}
-            >
-              <Outlet />
-            </main>
-          </ScrollArea>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <AppHeader />
+            <div className="flex min-h-0 flex-1">
+              <HubNav />
+              <ScrollArea className="min-w-0 flex-1" viewportClassName="[&>div]:!block">
+                <main className="px-3 py-0 md:px-7">
+                  <Outlet />
+                </main>
+              </ScrollArea>
+              <HelpPanel />
+            </div>
+          </div>
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
+          <UnreadNotificationsPoller />
+          <AccountDialog />
+          <GetStartedDialog />
         </div>
       )}
       <WorkspaceCrudDialogProvider />

@@ -1,10 +1,14 @@
 import {
+  type CrudCustomDialogProps,
+  type CrudDialogEntityConfig,
   CrudDialogProvider,
   type CrudDialogRegistry,
-  DataTableSkeleton,
-} from "@avplatform/ui/data-table";
+} from "@avplatform/ui/crud-dialog";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
+import { BuildingsIcon, HardDrivesIcon } from "@phosphor-icons/react";
 import { Suspense, lazy } from "react";
 
+import { CrudCardDialog, type CrudCardDialogConfig } from "@/components/card-dialog/CrudCardDialog";
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/global-admin/on-prem-tenant-instance/constants";
 import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/global-admin/on-prem-tenant/constants";
 
@@ -20,22 +24,28 @@ const TenantInstanceCrudDialogContent = lazy(() =>
   ),
 );
 
+const cardDialog = (config: CrudCardDialogConfig): CrudDialogEntityConfig => ({
+  Dialog: (props: CrudCustomDialogProps) => <CrudCardDialog {...props} {...config} />,
+});
+
 const crudDialogRegistry: CrudDialogRegistry = {
-  onPremTenant: {
-    maxWidth: "!max-w-[32rem]",
+  onPremTenant: cardDialog({
+    Icon: BuildingsIcon,
+    widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getOnPremTenantDialogHeadingDescription,
     Content: OnPremTenantCrudDialogContent,
-  },
-  tenantInstance: {
-    maxWidth: "!max-w-[32rem]",
+  }),
+  tenantInstance: cardDialog({
+    Icon: HardDrivesIcon,
+    widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getTenantInstanceDialogHeadingDescription,
     Content: TenantInstanceCrudDialogContent,
-  },
+  }),
 };
 
 export function GlobalAdminCrudDialogProvider() {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <CrudDialogProvider registry={crudDialogRegistry} />
     </Suspense>
   );

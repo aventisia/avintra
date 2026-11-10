@@ -2,7 +2,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -17,9 +17,12 @@ import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
+import { countActions } from "../utils/count-actions.util";
 import ActionsList from "./ActionsList";
 import { CustomToolsPane } from "./CustomToolsPane";
 import { FallbackImageIcon } from "./FallbackImageIcon";
+import { HighlightMatch } from "./HighlightMatch";
+import { NoActionsMessage } from "./NoActionsMessage";
 
 type ActionCategoryListProps = {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -205,7 +208,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
 
   if (isOriginReplaceTrigger) {
     return (
-      <ScrollArea className="h-full p-2">
+      <ScrollArea className="h-full p-1.5">
         <ActionsList
           items={triggersList}
           nodeSelectionHandler={handleSelectNode}
@@ -235,97 +238,112 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   }
 
   if (actionCategories.length === 0) {
-    return <div className="p-4 text-center text-sm text-muted-foreground">No actions found.</div>;
+    return <NoActionsMessage />;
   }
 
-  return (
-    <div className="grid h-full grid-cols-[35%_65%] overflow-hidden">
-      <div className="flex min-h-0 flex-col border-r bg-background">
-        {!query && (
-          <div className="flex shrink-0 items-center border-b p-2">
-            <Button
-              ref={setBackButtonRef}
-              variant="ghost"
-              size="icon8"
-              onClick={handleBack}
-              onKeyDown={handleBackKeyDown}
-              className="mr-2 outline-none focus-visible:bg-accent"
-              aria-label="Go back"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-            </Button>
-            <h2 className="truncate text-sm font-medium">{primaryCategoryLabel}</h2>
-          </div>
-        )}
+  const totalActions = countActions(
+    actionSelectorData.flatMap((primary) => primary.actionCategories),
+  );
 
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="space-y-1 p-2" role="tablist" aria-orientation="vertical">
-            {actionCategories.map((item, idx) => {
-              const isActiveRow = leftIndex === idx;
-              const hasCorsairAction = item.actions?.some((action) =>
-                action.name?.includes("Corsair"),
-              );
-              const hasCamelAction = item.actions?.some((action) => action.name?.includes("Camel"));
-              return (
-                <button
-                  key={item.label}
-                  ref={(el) => {
-                    leftRefs.current[idx] = el;
-                    if (idx === 0 && query) firstItemRef.current = el;
-                  }}
-                  role="tab"
-                  aria-selected={isActiveRow}
-                  tabIndex={isActiveRow && activePane === "left" ? 0 : -1}
-                  onClick={() => {
-                    setLeftIndex(idx);
-                    setActivePane("left");
-                  }}
-                  onKeyDown={(e) => handleLeftPaneKeyDown(e, idx)}
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm outline-none transition-colors",
-                    isActiveRow && "bg-muted font-medium text-foreground",
-                    !isActiveRow && "text-foreground hover:bg-muted",
-                  )}
-                >
-                  {item.icon
-                    ? iconMapper[item.icon]
-                    : item.img && <FallbackImageIcon className="h-5 w-5" src={item.img} />}
-                  {item.label}
-                  {import.meta.env.MODE !== "production" && hasCorsairAction && (
-                    <Badge
-                      variant="outline"
-                      className="bg-muted text-3xs font-medium text-muted-foreground "
-                    >
-                      Corsair
-                    </Badge>
-                  )}
-                  {import.meta.env.MODE !== "production" && hasCamelAction && (
-                    <Badge
-                      variant="outline"
-                      className="bg-muted text-3xs font-medium text-muted-foreground "
-                    >
-                      Camel
-                    </Badge>
-                  )}
-                </button>
-              );
-            })}
+  return (
+    <div className="flex h-full flex-col">
+      <div className="grid min-h-0 flex-1 grid-cols-[35%_65%] overflow-hidden">
+        <div className="flex min-h-0 flex-col border-r border-line bg-surface">
+          {!query && (
+            <div className="flex h-12 shrink-0 items-center border-b border-line px-2">
+              <Button
+                ref={setBackButtonRef}
+                variant="ghost"
+                size="icon7"
+                onClick={handleBack}
+                onKeyDown={handleBackKeyDown}
+                className="mr-1"
+                aria-label="Go back"
+              >
+                <ArrowLeftIcon className="size-4" />
+              </Button>
+              <h2 className="truncate text-body-sm font-semibold text-ink">
+                {primaryCategoryLabel}
+              </h2>
+            </div>
+          )}
+
+          <ScrollArea className="min-h-0 flex-1">
+            <div className="grid gap-px p-1.5" role="tablist" aria-orientation="vertical">
+              {actionCategories.map((item, idx) => {
+                const isActiveRow = leftIndex === idx;
+                const hasCorsairAction = item.actions?.some((action) =>
+                  action.name?.includes("Corsair"),
+                );
+                const hasCamelAction = item.actions?.some((action) =>
+                  action.name?.includes("Camel"),
+                );
+                return (
+                  <button
+                    key={item.label}
+                    ref={(el) => {
+                      leftRefs.current[idx] = el;
+                      if (idx === 0 && query) firstItemRef.current = el;
+                    }}
+                    role="tab"
+                    aria-selected={isActiveRow}
+                    tabIndex={isActiveRow && activePane === "left" ? 0 : -1}
+                    onClick={() => {
+                      setLeftIndex(idx);
+                      setActivePane("left");
+                    }}
+                    onKeyDown={(e) => handleLeftPaneKeyDown(e, idx)}
+                    className={cn(
+                      "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-[13px] font-medium text-ink outline-none transition-colors focus-visible:shadow-focus [&_img]:size-4 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-ink-2",
+                      isActiveRow ? "bg-selected" : "hover:bg-hover",
+                    )}
+                  >
+                    {item.icon
+                      ? iconMapper[item.icon]
+                      : item.img && <FallbackImageIcon className="h-4 w-4" src={item.img} />}
+                    <span className="min-w-0 truncate">
+                      <HighlightMatch text={item.label} query={query} />
+                    </span>
+                    {import.meta.env.MODE !== "production" && hasCorsairAction && (
+                      <Badge variant="outline">Corsair</Badge>
+                    )}
+                    {import.meta.env.MODE !== "production" && hasCamelAction && (
+                      <Badge variant="outline">Camel</Badge>
+                    )}
+                    <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+                      {countActions([item])}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+
+        <ScrollArea className="min-h-0 bg-surface" id="actions-panel" role="tabpanel">
+          <div className="grid gap-px p-1.5" role="listbox">
+            <ActionsList
+              items={activeActions}
+              nodeSelectionHandler={handleSelectNode}
+              rightRefs={rightRefs}
+              rightIndex={rightIndex}
+              handleRightPaneKeyDown={handleRightPaneKeyDown}
+              isFocusedPane={activePane === "right"}
+            />
           </div>
         </ScrollArea>
       </div>
-
-      <ScrollArea className="min-h-0 bg-background" id="actions-panel" role="tabpanel">
-        <div className="p-2" role="listbox">
-          <ActionsList
-            items={activeActions}
-            nodeSelectionHandler={handleSelectNode}
-            rightRefs={rightRefs}
-            rightIndex={rightIndex}
-            handleRightPaneKeyDown={handleRightPaneKeyDown}
-            isFocusedPane={activePane === "right"}
-          />
+      {query && (
+        <div className="flex shrink-0 items-center gap-2 border-t border-line py-2.5 pl-4 pr-3 font-mono text-[12.5px] text-muted-foreground">
+          <span className="mr-auto">
+            {countActions(actionCategories)} of {totalActions} actions
+          </span>
+          <kbd className="grid h-[18px] min-w-[18px] place-items-center rounded-sm border border-line bg-fill px-1 text-[11px] font-medium leading-none">
+            ↵
+          </kbd>
+          to add
         </div>
-      </ScrollArea>
+      )}
     </div>
   );
 };

@@ -102,7 +102,7 @@ export const WorkItemOutputPane = ({
     return (
       <div key={path} className="flex w-full items-start gap-2">
         <label
-          className={`shrink-0 line-clamp-2 break-words pt-2 text-left text-xs font-medium text-foreground ${
+          className={`shrink-0 line-clamp-2 break-words pt-2 text-left text-xs font-medium text-ink ${
             depth > 0 ? "w-1/3" : "w-1/3"
           }`}
         >
@@ -156,7 +156,7 @@ export const WorkItemOutputPane = ({
       return (
         <div key={path} className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-foreground">{label}</span>
+            <span className="text-xs font-semibold text-ink">{label}</span>
             <span className="text-xs text-muted-foreground">(0 items)</span>
           </div>
           <p className="text-xs text-muted-foreground">No items</p>
@@ -172,7 +172,7 @@ export const WorkItemOutputPane = ({
       return (
         <div key={path} className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-foreground">{label}</span>
+            <span className="text-xs font-semibold text-ink">{label}</span>
             <span className="text-xs text-muted-foreground">
               ({value.length} item{value.length === 1 ? "" : "s"})
             </span>
@@ -190,9 +190,9 @@ export const WorkItemOutputPane = ({
 
     // Plain object: render each key as a nested field.
     return (
-      <div key={path} className="space-y-2 rounded-lg border border-input/60 bg-muted/30 p-2">
+      <div key={path} className="space-y-2 rounded-lg border border-line bg-sunken p-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-foreground">{label}</span>
+          <span className="text-xs font-semibold text-ink">{label}</span>
         </div>
         {Object.entries(value as Record<string, unknown>).map(([key, child]) =>
           renderNode(
@@ -209,11 +209,11 @@ export const WorkItemOutputPane = ({
   };
 
   return (
-    <ScrollArea className="h-[calc(100vh-4.5rem-var(--header-height)-2*var(--header-padding))] border rounded-lg bg-background p-3">
+    <ScrollArea className="h-[calc(100vh-4.5rem-var(--header-height)-2*var(--header-padding))] border border-line rounded-lg bg-surface p-3">
       <div className="space-y-3">
         <div>
           <div className="flex items-center justify-between px-1 pb-2">
-            <h3 className="text-xs font-semibold">Extracted Output</h3>
+            <h3 className="text-xs font-semibold">Extracted output</h3>
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>JSON</span>
               <Switch
@@ -229,7 +229,7 @@ export const WorkItemOutputPane = ({
           {viewMode === "json" ? (
             <JsonEditor onChange={setExtractedData} value={extractedData} disabled={isReadOnly} />
           ) : (
-            <div className="rounded-lg border border-input bg-background p-3">
+            <div className="rounded-lg border border-line bg-surface p-3">
               {(inputSchema ?? []).length > 0 ? (
                 <div className="grid grid-cols-1 gap-x-4 gap-y-3">
                   {inputSchema?.map((field) =>

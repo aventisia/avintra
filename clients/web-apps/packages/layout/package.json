@@ -19,14 +19,14 @@
     "format": "prettier --write . && eslint --fix .",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc -b",
+    "test": "vitest run",
     "pregit": "prettier --write . && eslint --fix . && tsc -b"
   },
   "dependencies": {
-    "@avplatform/ui": "*"
+    "@avplatform/ui": "*",
+    "@phosphor-icons/react": "^2.1.10"
   },
   "peerDependencies": {
-    "@heroicons/react": "^2.1.5",
-    "lucide-react": "^0.428.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
@@ -39,6 +39,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "vitest": "^2.1.9"
   }
 }

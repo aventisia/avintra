@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { Download } from "lucide-react";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
 
 import { useExportFlow } from "../../hooks/useExportFlow.hook";
 
@@ -13,7 +13,7 @@ export const FlowRowExportAction = ({ rowId }: FlowRowExportActionProps) => {
   return (
     <SimpleDDMenuItem
       content="Export"
-      Icon={Download}
+      Icon={DownloadSimpleIcon}
       onClick={exportFlow}
       disabled={isExporting}
     />

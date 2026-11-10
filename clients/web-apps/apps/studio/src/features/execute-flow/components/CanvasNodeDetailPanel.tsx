@@ -1,7 +1,7 @@
 import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { LogsIcon, X } from "lucide-react";
+import { ListDashesIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -230,8 +230,8 @@ export const CanvasNodeDetailPanel = () => {
                 yet and would otherwise show a card full of fallback placeholders. */}
             {selectedLiveLog && nodeLogPayload && (
               <ViewInfoRowsCard
-                title="Node Log"
-                icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
+                title="Node log"
+                icon={<ListDashesIcon className="size-3.5 text-muted-foreground" />}
                 action={
                   <div className="flex items-center gap-1 pr-1">
                     {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
@@ -239,7 +239,7 @@ export const CanvasNodeDetailPanel = () => {
                       className="h-6 w-6 p-0 -mr-1.5 text-muted-foreground/60 opacity-60 hover:text-primary hover:opacity-100"
                       aria-label="Close panel"
                     >
-                      <X className="size-[1.2rem]" />
+                      <XIcon className="size-[1.2rem]" />
                     </PanelClose>
                   </div>
                 }

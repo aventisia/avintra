@@ -1,7 +1,7 @@
 import { UsableToolDto } from "@/features/dynamic-config-panel/dtos/tool.dto";
 
 export const DEFAULT_TOOL_ICON_KEY = "WrenchIcon";
-export const DEFAULT_TOOL_NODE_COLOR = "#4f46e5";
+export const DEFAULT_TOOL_NODE_COLOR = "var(--primary)";
 
 type CustomToolIconSource = Pick<UsableToolDto, "icon" | "iconUrl">;
 

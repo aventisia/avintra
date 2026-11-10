@@ -33,15 +33,10 @@ interface QueueSummaryCardProps {
 }
 
 const statusColors: Record<QueueTransactionStatusTypesEnum, string> = {
-  [QueueTransactionStatusTypesEnum.Pending]: "text-orange-700",
-  [QueueTransactionStatusTypesEnum.InProgress]: "text-slate-700",
-  [QueueTransactionStatusTypesEnum.Completed]: "text-green-700",
-  [QueueTransactionStatusTypesEnum.Failed]: "text-red-700",
-};
-
-const processingModeBadge: Record<QueueProcessingModeEnum, string> = {
-  [QueueProcessingModeEnum.Fifo]: "bg-sky-100 text-sky-700",
-  [QueueProcessingModeEnum.Manual]: "bg-sky-100 text-sky-700",
+  [QueueTransactionStatusTypesEnum.Pending]: "text-warn",
+  [QueueTransactionStatusTypesEnum.InProgress]: "text-ink-2",
+  [QueueTransactionStatusTypesEnum.Completed]: "text-ok",
+  [QueueTransactionStatusTypesEnum.Failed]: "text-bad",
 };
 
 /**
@@ -88,20 +83,15 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
     <button
       type="button"
       onClick={onOpen}
-      className="group flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-card p-5 text-left shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md"
+      className="group flex cursor-pointer flex-col gap-4 rounded-lg border border-line bg-surface p-5 text-left transition-colors duration-200 hover:border-line-strong"
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <h3 className="truncate text-sm font-semibold text-accent-foreground group-hover:text-primary">
+          <h3 className="truncate text-sm font-semibold text-ink group-hover:text-primary-text">
             {queueName}
           </h3>
           {processingMode && (
-            <Badge
-              className={cn(
-                "shrink-0 rounded-full px-2 py-0 text-2xs font-medium",
-                processingModeBadge[processingMode],
-              )}
-            >
+            <Badge variant="secondary" className="shrink-0">
               {processingModeLabel[processingMode] ?? processingMode}
             </Badge>
           )}
@@ -113,11 +103,7 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
         <span className="text-xs text-muted-foreground">Agents:</span>
         {agentsNames && agentsNames.length > 0 ? (
           agentsNames.map((agent) => (
-            <Badge
-              key={agent}
-              variant="outline"
-              className="rounded-full px-2 py-0 text-2xs font-medium text-primary"
-            >
+            <Badge key={agent} variant="outline">
               {agent}
             </Badge>
           ))
@@ -130,9 +116,14 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
         {counts.map((count) => (
           <div
             key={count.label}
-            className="flex flex-col gap-1 rounded-lg border border-border/70 bg-muted/30 p-2.5"
+            className="flex flex-col gap-1 rounded-md border border-line bg-sunken p-2.5"
           >
-            <span className={cn("text-xl font-bold leading-none", statusColors[count.status])}>
+            <span
+              className={cn(
+                "font-mono text-xl font-bold leading-none tabular-nums",
+                statusColors[count.status],
+              )}
+            >
               {count.value}
             </span>
             <span className="text-xs text-muted-foreground">{count.label}</span>
@@ -140,16 +131,16 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 border-t border-border/70 pt-3">
+      <div className="grid grid-cols-2 gap-2 border-t border-line pt-3">
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-muted-foreground">Avg Age (Active)</span>
-          <span className="text-sm font-semibold text-accent-foreground">
+          <span className="font-mono text-code font-semibold tabular-nums text-ink">
             {formatDuration(averageAgeSeconds)}
           </span>
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-muted-foreground">Avg Processing (Completed)</span>
-          <span className="text-sm font-semibold text-accent-foreground">
+          <span className="font-mono text-code font-semibold tabular-nums text-ink">
             {formatDuration(averageProcessingTimeSeconds)}
           </span>
         </div>

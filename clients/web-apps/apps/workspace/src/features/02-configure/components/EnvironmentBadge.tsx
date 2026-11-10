@@ -15,10 +15,10 @@ export const EnvironmentBadge = ({ className }: { className?: string }) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-widest",
+        "inline-flex items-center rounded-sm border px-1.5 py-0.5 text-3xs font-semibold uppercase tracking-widest",
         isProd
-          ? "border-amber-500/40 bg-amber-500/15 text-amber-700"
-          : "border-slate-300 bg-slate-100 text-slate-500",
+          ? "border-warn/35 bg-warn/10 text-warn"
+          : "border-line-strong bg-hover text-muted-foreground",
         className,
       )}
     >

@@ -15,6 +15,7 @@ import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIs
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import { EdgeLabelContainer } from "./EdgeLabelContainer";
 import "./override-edge-style.css";
+import { useEdgeRunState } from "./useEdgeRunState";
 
 export const CustomStepEdge = memo(
   ({
@@ -86,8 +87,7 @@ export const CustomStepEdge = memo(
 
     const isAgentHistory = useIsVersionHistoryRoute();
 
-    const stroke = isLivePathActive ? "#22c55e" : "#94a3b8";
-    const statusClass = isLivePathActive ? "edge-success" : "";
+    const { stroke, className: statusClass } = useEdgeRunState(source, target, isLivePathActive);
 
     return (
       <>
@@ -99,7 +99,7 @@ export const CustomStepEdge = memo(
           path={edgePath}
           markerEnd={markerEnd}
           style={style}
-          className={cn("stroke-1 ", statusClass)}
+          className={cn("stroke-1", statusClass)}
         />
         {label && !isAgentHistory ? (
           <EdgeLabelContainer

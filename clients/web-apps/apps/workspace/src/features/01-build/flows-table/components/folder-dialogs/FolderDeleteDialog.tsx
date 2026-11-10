@@ -1,4 +1,4 @@
-import { TriangleAlert } from "lucide-react";
+import { WarningIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useMatch, useNavigate } from "react-router-dom";
 
@@ -23,15 +23,15 @@ const FLOWING_DOTS = [0, 1, 2];
 
 const AgentsFlowArrow = ({ count }: { count: number }) => (
   <div className="flex flex-col items-center gap-1.5">
-    <span className="rounded-full bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-slate-600 shadow-sm ring-1 ring-border">
+    <span className="rounded-sm bg-popover px-2 py-0.5 text-[11px] font-semibold tabular-nums text-ink-2 ring-1 ring-border">
       {count} {pluralize(count, "agent")}
     </span>
     <div className="relative h-1.5 w-20 overflow-hidden" aria-hidden="true">
-      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-slate-200" />
+      <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-fill" />
       {FLOWING_DOTS.map((index) => (
         <motion.span
           key={index}
-          className="absolute top-0 size-1.5 rounded-full bg-indigo-400"
+          className="absolute top-0 size-1.5 rounded-full bg-primary"
           initial={{ x: -6, opacity: 0 }}
           animate={{ x: [-6, 80], opacity: [0, 1, 1, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, delay: index * 0.6, ease: "easeInOut" }}
@@ -42,10 +42,10 @@ const AgentsFlowArrow = ({ count }: { count: number }) => (
 );
 
 const ImpactDiagram = ({ folder, count }: { folder: FoldersTableRowDto; count: number }) => (
-  <div className="flex items-end justify-center gap-4 rounded-xl bg-slate-50/80 px-4 pb-3.5 pt-4 ring-1 ring-slate-900/[0.05]">
+  <div className="flex items-end justify-center gap-4 rounded-md bg-sunken/80 px-4 pb-3.5 pt-4 ring-1 ring-line">
     <figure className="flex w-24 flex-col items-center gap-1.5">
       <FolderMark color={getFolderColor(folder)} size="lg" />
-      <figcaption className="max-w-full truncate text-[12px] font-medium text-slate-600">
+      <figcaption className="max-w-full truncate text-[12px] font-medium text-ink-2">
         {folder.name}
       </figcaption>
     </figure>
@@ -56,7 +56,7 @@ const ImpactDiagram = ({ folder, count }: { folder: FoldersTableRowDto; count: n
         </div>
         <figure className="flex w-24 flex-col items-center gap-1.5">
           <AgentsRootMark size="lg" />
-          <figcaption className="text-[12px] font-medium text-slate-600">Agents</figcaption>
+          <figcaption className="text-[12px] font-medium text-ink-2">Agents</figcaption>
         </figure>
       </>
     )}
@@ -96,20 +96,14 @@ export const FolderDeleteDialog = ({
       isOpen={isOpen}
       onClose={onClose}
       isDismissLocked={isDeleting}
-      mark={
-        <FolderMark
-          color={getFolderColor(folder)}
-          size="lg"
-          className="shadow-[0_1px_2px_rgba(15,23,42,0.06),0_6px_16px_-4px_rgba(15,23,42,0.1)]"
-        />
-      }
+      mark={<FolderMark color={getFolderColor(folder)} size="lg" />}
       eyebrow="Delete folder"
-      eyebrowClassName="text-rose-600"
+      eyebrowClassName="text-bad"
       title={folder.name}
       footer={
         <>
           <p className="flex min-w-0 items-center gap-2 text-[12.5px] text-muted-foreground">
-            <TriangleAlert className="size-4 shrink-0 text-amber-600" />
+            <WarningIcon className="size-4 shrink-0 text-warn" />
             <span className="truncate">The folder can’t be restored</span>
           </p>
           <div className="flex shrink-0 items-center gap-2">
@@ -124,16 +118,16 @@ export const FolderDeleteDialog = ({
       }
     >
       <ImpactDiagram folder={folder} count={agentCount} />
-      <p className="mt-4 text-[13px] leading-5 text-slate-600">
+      <p className="mt-4 text-[13px] leading-5 text-ink-2">
         {agentCount === 0 ? (
           "This folder is empty, so nothing else changes."
         ) : (
           <>
             Its{" "}
-            <span className="font-semibold text-slate-900">
+            <span className="font-semibold text-ink">
               {agentCount} {pluralize(agentCount, "agent")}
             </span>{" "}
-            move back to <span className="font-semibold text-slate-900">Agents</span>. No agent is
+            move back to <span className="font-semibold text-ink">Agents</span>. No agent is
             deleted, and who can access each agent stays the same.
           </>
         )}

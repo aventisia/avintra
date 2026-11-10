@@ -1,6 +1,8 @@
-/** Column visibility initial state for the configs table. */
+/** Column visibility initial state for the My Agents table. */
 export const columnVisibilityState = {
-  id: false,
   name: true,
-  versionNumber: true,
+  type: true,
+  supportedPlatform: true,
+  queues: true,
+  status: true,
 };

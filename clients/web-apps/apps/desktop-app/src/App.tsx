@@ -1,3 +1,5 @@
+import { ThemeSwitcher } from "@avplatform/layout/header";
+import { useThemeStore } from "@avplatform/ui/stores";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 
@@ -24,6 +26,17 @@ const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
 function App() {
   return <SetupFlow />;
+}
+
+function AppHeader() {
+  const isDark = useThemeStore((state) => state.isDark);
+
+  return (
+    <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
+      <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
+      <ThemeSwitcher className="px-0" />
+    </header>
+  );
 }
 
 function SetupFlow() {
@@ -127,22 +140,18 @@ function SetupFlow() {
 
   if (isResuming) {
     return (
-      <div className="relative flex min-h-screen flex-col bg-background">
-        <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
-          <img src="/logo.svg" alt="Aventisia" className="h-7" />
-        </header>
+      <div className="relative flex min-h-screen flex-col bg-bg text-ink">
+        <AppHeader />
         <div className="flex flex-1 items-center justify-center p-6">
-          <span className="text-muted-foreground">Resuming setup...</span>
+          <span className="text-body text-muted-foreground">Resuming setup...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
-      <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
-        <img src="/logo.svg" alt="Aventisia" className="h-7" />
-      </header>
+    <div className="relative flex min-h-screen flex-col bg-bg pb-8 text-ink">
+      <AppHeader />
 
       {step === "service-url" ? (
         <ServiceUrlPage onContinue={handleServiceUrlContinue} />

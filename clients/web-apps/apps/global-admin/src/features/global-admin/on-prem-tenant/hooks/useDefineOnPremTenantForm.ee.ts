@@ -1,7 +1,8 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -58,9 +59,9 @@ export const useDefineOnPremTenantForm = ({ rowId }: UseDefineOnPremTenantFormOp
       isLoginDisabled: false,
       isSsoAllowed: false,
       isBrandingAllowed: false,
-      createdByUser: userSession?.firstName + " " + userSession?.lastName,
+      createdByUser: getUserDisplayName(userSession),
       createdOn: currDate,
-      lastModifiedByUser: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedByUser: getUserDisplayName(userSession),
       lastModifiedOn: currDate,
     },
   });
@@ -102,12 +103,9 @@ export const useDefineOnPremTenantForm = ({ rowId }: UseDefineOnPremTenantFormOp
       isSsoAllowed: onPremTenantData?.isSsoAllowed ?? false,
       isBrandingAllowed: onPremTenantData?.isBrandingAllowed ?? false,
       // Read (view) only fields
-      createdByUser:
-        onPremTenantData?.createdByUser ?? userSession?.firstName + " " + userSession?.lastName,
+      createdByUser: onPremTenantData?.createdByUser ?? getUserDisplayName(userSession),
       createdOn: onPremTenantData?.createdOn ? new Date(onPremTenantData?.createdOn) : currDate,
-      lastModifiedByUser:
-        onPremTenantData?.lastModifiedByUser ??
-        userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedByUser: onPremTenantData?.lastModifiedByUser ?? getUserDisplayName(userSession),
       lastModifiedOn: onPremTenantData?.lastModifiedOn
         ? new Date(onPremTenantData?.lastModifiedOn)
         : currDate,

@@ -7,7 +7,7 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { CopyButton } from "@avplatform/ui/buttons";
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { useMemo, useState } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
@@ -65,7 +65,7 @@ export const QueueWorkItemDetail = () => {
   };
 
   if (isLoading) {
-    return <DataTableSkeleton />;
+    return <TableCNSkeleton />;
   }
 
   if (!workItem) {
@@ -80,7 +80,7 @@ export const QueueWorkItemDetail = () => {
     <div className="space-y-4 h-full pt-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>

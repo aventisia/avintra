@@ -1,4 +1,6 @@
 import { Input, LoadingSpinner } from "@avplatform/ui";
+import { RecordSection } from "@avplatform/ui/record-sheet";
+import { CoinsIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -58,58 +60,49 @@ const CreditTopUp = () => {
   };
 
   return (
-    <div className="space-y-4 p-4 pt-2">
-      <div className="grid grid-cols-7 gap-4">
-        {/* Left Side */}
-        <div className="col-span-4 space-y-4">
-          <div className="rounded-lg border">
-            <div className="flex items-center justify-between border-b p-3">
-              <div className="text-base font-medium">Top-up</div>
-              {billingData?.data.country !== "India" && (
-                <CurrencySelect value={currency} onChange={setCurrency} />
-              )}
-            </div>
-            <div className="space-y-3 p-3 text-sm">
-              <div className="flex items-center justify-between rounded-lg border p-3">
-                <div>
-                  <p>Credits</p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatCurrency(pricePer500Credits ?? 0, currency)} = 500 credits
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Credits must be in multiples of 500
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="Enter credits"
-                    className="w-32"
-                    type="number"
-                    max={2354000}
-                    step={500}
-                    min={0}
-                    value={topUp.credits || ""}
-                    onChange={handleCreditsChange}
-                  />
-                  <Input
-                    value={formatCurrency(
-                      ((topUp.credits || 0) / 500) * pricePer500Credits,
-                      currency,
-                    )}
-                    disabled
-                    className="w-32"
-                  />
-                </div>
+    <div className="grid items-start gap-6 md:grid-cols-7">
+      <div className="space-y-6 md:col-span-4">
+        <RecordSection
+          title="Top-up"
+          action={
+            billingData?.data.country !== "India" && (
+              <CurrencySelect value={currency} onChange={setCurrency} className="h-7" />
+            )
+          }
+        >
+          <div className="rounded-lg bg-surface ring-1 ring-line">
+            <div className="flex flex-wrap items-end gap-3 p-4">
+              <label className="min-w-0 flex-1 space-y-1.5">
+                <span className="block text-[12.5px] font-medium text-ink">Credits</span>
+                <Input
+                  placeholder="Enter credits"
+                  type="number"
+                  max={2354000}
+                  step={500}
+                  min={0}
+                  value={topUp.credits || ""}
+                  onChange={handleCreditsChange}
+                />
+              </label>
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <span className="block text-[12.5px] font-medium text-ink">Price</span>
+                <p className="flex h-8 items-center rounded-md bg-sunken px-3 font-mono text-[13px] tabular-nums text-ink ring-1 ring-inset ring-line">
+                  {formatCurrency(((topUp.credits || 0) / 500) * pricePer500Credits, currency)}
+                </p>
               </div>
             </div>
+            <p className="flex items-center gap-2 border-t border-line bg-sunken/60 px-4 py-2.5 text-[12px] text-ink-2">
+              <CoinsIcon className="size-3.5 shrink-0 text-muted-foreground" />
+              {formatCurrency(pricePer500Credits ?? 0, currency)} per 500 credits · buy in multiples
+              of 500
+            </p>
           </div>
-          <BillingDetails billingData={billingData?.data} />
-        </div>
+        </RecordSection>
+        <BillingDetails billingData={billingData?.data} />
+      </div>
 
-        {/* Right hand side */}
-        <div className="col-span-3 space-y-4">
-          {<ChargeSummary billingData={billingData?.data} isTopUp />}
-        </div>
+      <div className="md:col-span-3">
+        <ChargeSummary billingData={billingData?.data} isTopUp />
       </div>
     </div>
   );

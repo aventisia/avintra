@@ -18,7 +18,7 @@ import { SectionLayout } from "./SectionLayout";
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -40,7 +40,7 @@ const renderLinkedChips = (items: string[] | undefined) =>
   ) : (
     <div className="flex flex-wrap gap-1.5">
       {items.map((item) => (
-        <Badge key={item} variant="outline" className="bg-muted/40">
+        <Badge key={item} variant="outline" className="bg-sunken/40">
           {item}
         </Badge>
       ))}
@@ -76,10 +76,10 @@ export const AiModelsUsedSection = () => {
     return (
       <SectionLayout
         eyebrow="Section 04"
-        title="AI Models Used"
+        title="AI models used"
         description="Models used by the agent, resolved automatically from the agent definition."
       >
-        <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted-foreground">
           No AI models detected for this agent.
         </div>
       </SectionLayout>
@@ -89,12 +89,12 @@ export const AiModelsUsedSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 04"
-      title="AI Models Used"
-      description="Assess each model used by the Agent for validation status, risks, and governance."
+      title="AI models used"
+      description="Assess each model used by the agent for validation status, risks, and governance."
     >
       <div className="space-y-4">
         {aiModels.map((model, index) => (
-          <div key={index} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+          <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{model.provider}</Badge>
               <span className="text-sm font-semibold">{model.model}</span>
@@ -107,19 +107,19 @@ export const AiModelsUsedSection = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Node Name" info="The flow node that uses this model.">
+              <Field label="Node name" info="The flow node that uses this model.">
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   value={model.nodeName}
                   readOnly
                 />
               </Field>
               <Field
-                label="Model Type"
+                label="Model type"
                 info="The type of the model, resolved from the agent definition: Conversation, Inferencing, or Generative."
               >
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                   value={modelTypeLabel(model.modelType)}
                   readOnly
                 />
@@ -127,20 +127,20 @@ export const AiModelsUsedSection = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <Field label="Linked Knowledge Bases" info="Knowledge bases linked to this node.">
+              <Field label="Linked knowledge bases" info="Knowledge bases linked to this node.">
                 {renderLinkedChips(model.linkedKnowledgeBases)}
               </Field>
-              <Field label="Linked Skills" info="Skills linked to this node.">
+              <Field label="Linked skills" info="Skills linked to this node.">
                 {renderLinkedChips(model.linkedSkills)}
               </Field>
-              <Field label="Linked Tools" info="Tools linked to this node.">
+              <Field label="Linked tools" info="Tools linked to this node.">
                 {renderLinkedChips(model.linkedTools)}
               </Field>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <Field
-                label="Risk Rating"
+                label="Risk rating"
                 required
                 info="Overall risk rating of this model for this agent's use case (Low, Medium, or High)."
               >
@@ -149,7 +149,7 @@ export const AiModelsUsedSection = () => {
                 )}
               </Field>
               <Field
-                label="Output Consumed By"
+                label="Output consumed by"
                 info="Who consumes the output of this model (multi-select)."
               >
                 <MultiSelect
@@ -165,22 +165,22 @@ export const AiModelsUsedSection = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <Field
-                label="Monitoring Plan"
+                label="Monitoring plan"
                 info="Describe ongoing monitoring for this model, e.g. drift/quality checks and frequency."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Monitoring plan (e.g. drift checks, frequency)"
                   value={model.monitoringPlan}
                   onChange={(e) => updateRow(index, { monitoringPlan: e.target.value })}
                 />
               </Field>
               <Field
-                label="Usage Restrictions"
+                label="Usage restrictions"
                 info="Allowed use cases or guardrails for this model."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Usage restrictions / guardrails"
                   value={model.usageRestrictions}
                   onChange={(e) => updateRow(index, { usageRestrictions: e.target.value })}
@@ -194,7 +194,7 @@ export const AiModelsUsedSection = () => {
                 info="List the specific risks posed by this model, such as output variability, bias, hallucination risk, or data-privacy concerns."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Risks specific to this model"
                   value={model.risks}
                   onChange={(e) => updateRow(index, { risks: e.target.value })}
@@ -205,7 +205,7 @@ export const AiModelsUsedSection = () => {
                 info="Describe the controls in place to address the risks above, e.g. output verification, confidence thresholds, or periodic re-validation."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Mitigations for the above"
                   value={model.mitigations}
                   onChange={(e) => updateRow(index, { mitigations: e.target.value })}

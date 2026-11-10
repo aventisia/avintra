@@ -14,8 +14,7 @@ import {
   SelectField,
 } from "@avplatform/ui/form";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { XCircleIcon } from "lucide-react";
+import { WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { Controller } from "react-hook-form";
 
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
@@ -81,8 +80,8 @@ export const SaveAsTemplateForm = () => {
         {!areAllTemplatesApproved(validationStatus) && (
           <Alert
             variant="warning"
-            icon={ExclamationCircleIcon}
-            title="Ensure all child Agents Blocks and AI Nodes are published and approved as templates."
+            icon={WarningCircleIcon}
+            title="Ensure all child agents blocks and AI nodes are published and approved as templates."
             children={
               <>
                 <div className="mt-2 flex flex-wrap gap-3">
@@ -165,7 +164,7 @@ export const SaveAsTemplateForm = () => {
 
             <Button disabled={isPending || isUpdatePending || !validationStatus} type="submit">
               {isPending || isUpdatePending ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
-              Submit For Approval
+              Submit for approval
             </Button>
           </div>
         )}

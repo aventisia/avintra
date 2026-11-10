@@ -1,12 +1,31 @@
-import { Header, HeaderContainer, SearchBox } from "@avplatform/layout";
+import { Header, HeaderBreadcrumbs, JobsPill, SearchBox } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
-import { type IUserSessionStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { Button } from "@avplatform/ui/buttons";
+import { IS_TAURI } from "@avplatform/ui/constants";
+import { cn } from "@avplatform/ui/lib";
+import {
+  type IUserSessionStore,
+  useBaseLayoutStore,
+  useUserSessionStore,
+} from "@avplatform/ui/stores";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import {
+  BellIcon,
+  DownloadSimpleIcon,
+  QuestionIcon,
+  RocketIcon,
+  UserIcon,
+} from "@phosphor-icons/react";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
-import { DownloadDialog } from "@/features/desktop-download";
-import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
-import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
+import { useHelpPanelStore } from "@/components/help/help-panel.store";
+import { ROLE_TA } from "@/constants/roles";
+import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
+import { useAccountDialogUrlState } from "@/features/my-account";
+import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
+import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { AppLogo } from "./AppLogo";
 import { SpaceSelector } from "./SpaceSelector";
@@ -19,34 +38,77 @@ const AppHeader: React.FC = () => {
       userSession: state.userSession,
     })),
   );
+  const sidebarExpand = useBaseLayoutStore((state) => state.sidebarExpand);
+  const { isHelpOpen, toggleHelp } = useHelpPanelStore(
+    useShallow((state) => ({ isHelpOpen: state.isOpen, toggleHelp: state.toggleOpen })),
+  );
+  const { openAccountDialog } = useAccountDialogUrlState();
+  const openGetStartedGuide = useOnboardingStore((state) => state.openGuide);
+  const navigate = useNavigate();
 
   return (
-    <HeaderContainer>
-      <Header>
-        <div className="flex flex-grow items-center">
-          <SidebarOnDialog
-            appLogo={<AppLogo logoSrc="/app_logo_dark.svg" />}
-            className="flex md:hidden"
-          />
+    <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
+      <div className="flex min-w-0 flex-1 basis-0 items-center gap-3">
+        <SidebarOnDialog
+          appLogo={<AppLogo />}
+          footer={
+            <div className="px-2.5 py-2">
+              <SidebarAccountMenu />
+            </div>
+          }
+          className="flex md:hidden"
+        />
+        <div className="md:hidden">
           <AppLogo />
-          <SpaceSelector />
-          {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==
-            "read_only" && <TenantSwitchBadge />}
         </div>
-        {import.meta.env.MODE !== "production" ? <SearchBox /> : null}
-        <div className="ml-4 flex items-center gap-4">
-          {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
-            <TrustLocalhostSSLButton />
-          )}
-          {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}
-          <div className="flex items-center gap-2.5">
-            <DownloadDialog />
-            <UnreadNotifications />
-          </div>
-          <UserAccountModal />
-        </div>
-      </Header>
-    </HeaderContainer>
+        <SpaceSelector className={cn("w-40 shrink-0", sidebarExpand && "md:hidden")} />
+        {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==
+          "read_only" && <TenantSwitchBadge />}
+        <HeaderBreadcrumbs />
+      </div>
+      <SearchBox
+        className="h-[34px] w-full max-w-[380px] flex-1"
+        actions={[
+          { label: "My account", Icon: UserIcon, onSelect: openAccountDialog },
+          {
+            label: "Notifications",
+            Icon: BellIcon,
+            onSelect: () => navigate(NOTIFICATIONS_ROUTE),
+          },
+          ...(userSession?.userRoles?.includes(ROLE_TA)
+            ? [{ label: "Get started guide", Icon: RocketIcon, onSelect: openGetStartedGuide }]
+            : []),
+          ...(IS_TAURI
+            ? []
+            : [
+                {
+                  label: "Download desktop app",
+                  Icon: DownloadSimpleIcon,
+                  onSelect: () => navigate(DESKTOP_DOWNLOAD_ROUTE),
+                },
+              ]),
+        ]}
+      />
+      <div className="flex flex-1 basis-0 items-center justify-end gap-2">
+        {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
+        <JobsPill to="/orchestrator/jobs" />
+        {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
+          <TrustLocalhostSSLButton />
+        )}
+        <Tooltip content="Help" shortcut="?">
+          <Button
+            variant="ghost"
+            size="icon8"
+            aria-label="Help"
+            aria-pressed={isHelpOpen}
+            onClick={() => toggleHelp()}
+            className="text-ink-2 aria-pressed:bg-hover aria-pressed:text-ink"
+          >
+            <QuestionIcon className="size-[18px]" />
+          </Button>
+        </Tooltip>
+      </div>
+    </Header>
   );
 };
 

@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { EraserIcon } from "@phosphor-icons/react";
 import { Panel } from "@xyflow/react";
-import { Eraser } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
@@ -83,11 +83,11 @@ export const ClearRunResultsPanel = () => {
         <Button
           variant="secondary"
           size="sm"
-          className="flex items-center gap-2 shadow"
+          className="flex items-center gap-2 shadow-pop"
           onClick={handleClear}
         >
-          <Eraser className="h-4 w-4" />
-          Clear Results
+          <EraserIcon className="h-4 w-4" />
+          Clear results
         </Button>
       </Tooltip>
     </Panel>

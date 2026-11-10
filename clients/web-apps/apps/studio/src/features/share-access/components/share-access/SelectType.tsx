@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
-import { Edit2Icon, EyeIcon } from "lucide-react";
+import { EyeIcon, PencilSimpleIcon } from "@phosphor-icons/react";
 
 import { selectOptions } from "../../constants";
 
@@ -20,7 +20,7 @@ export const SelectType: React.FC<Props> = ({ value, onChange }) => {
 
   const iconMapper: { [key: string]: JSX.Element } = {
     Viewer: <EyeIcon className="h-3 w-3" />,
-    Editor: <Edit2Icon className="h-3 w-3" />,
+    Editor: <PencilSimpleIcon className="h-3 w-3" />,
   };
 
   return (

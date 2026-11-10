@@ -1,5 +1,4 @@
 import { Checkbox } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import {
   Command,
   CommandEmpty,
@@ -11,12 +10,14 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { CheckIcon, ChevronDownIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { CaretRightIcon, ShieldCheckIcon } from "@phosphor-icons/react";
+import { type PointerEvent, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { SELECTED_ROLES_STORAGE_KEY } from "@/components/layout/AppLayout";
 import { getRoleLabel } from "@/constants/roles";
+
+import { AccountMenuAction } from "./AccountMenuAction";
 
 interface RoleSelectorProps {
   /** Additional class name to override the nested popover content container style */
@@ -34,6 +35,17 @@ interface RoleSelectorProps {
  */
 const RoleSelector = ({ className }: RoleSelectorProps) => {
   const [open, setOpen] = useState(false);
+  const closeTimer = useRef<number>();
+
+  const openNow = () => {
+    window.clearTimeout(closeTimer.current);
+    setOpen(true);
+  };
+  const openOnHover = (event: PointerEvent) => event.pointerType === "mouse" && openNow();
+  const closeOnLeave = (event: PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    closeTimer.current = window.setTimeout(() => setOpen(false), 150);
+  };
 
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({ userSession: state.userSession })),
@@ -63,16 +75,30 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          className="h-9 w-full justify-start gap-2 rounded-sm align-middle font-normal"
+        <AccountMenuAction
+          className="w-full"
+          onPointerEnter={openOnHover}
+          onPointerLeave={closeOnLeave}
+          onClick={(event) => {
+            event.preventDefault();
+            openNow();
+          }}
         >
-          <ShieldCheckIcon className="h-4 w-4" />
+          <ShieldCheckIcon />
           <span className="flex-1 text-left">Roles</span>
-          <ChevronDownIcon className="h-4 w-4" />
-        </Button>
+          <span className="font-mono text-2xs text-muted-foreground">
+            {selectedRoles.length}/{assignedRoles.length}
+          </span>
+          <CaretRightIcon />
+        </AccountMenuAction>
       </PopoverTrigger>
-      <PopoverContent align="start" side="left" className={cn("w-64 p-0", className)}>
+      <PopoverContent
+        align="start"
+        side="right"
+        onPointerEnter={openOnHover}
+        onPointerLeave={closeOnLeave}
+        className={cn("w-64 p-0", className)}
+      >
         <Command>
           <CommandInput placeholder="Search roles..." />
           <CommandList>
@@ -93,7 +119,6 @@ const RoleSelector = ({ className }: RoleSelectorProps) => {
                       className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                     />
                     <span className="flex-1">{getRoleLabel(role)}</span>
-                    {isSelected && <CheckIcon className="h-4 w-4 text-primary" />}
                   </CommandItem>
                 );
               })}

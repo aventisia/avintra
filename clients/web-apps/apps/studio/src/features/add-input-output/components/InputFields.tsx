@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { Trash2 } from "lucide-react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Control, Controller, UseFieldArrayRemove, useWatch } from "react-hook-form";
 
 import { FieldItemFormValues } from "../constants/inputs-outputs-zod-schema";
@@ -29,7 +29,7 @@ const InputFields = ({
   return (
     <div
       key={field.id}
-      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-slate-50 p-4"
+      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-sunken p-4"
     >
       <div className="col-span-2 flex justify-between">
         <span className="text-sm">Input {index + 1}</span>
@@ -38,9 +38,9 @@ const InputFields = ({
           type="button"
           size="xs"
           onClick={() => remove(index)}
-          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+          className="text-bad hover:bg-bad/10 hover:text-bad"
         >
-          <Trash2 className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
 
@@ -77,7 +77,7 @@ const InputFields = ({
             {...field}
             fieldSize="xs"
             description="Initial value for the field"
-            label="Default Value"
+            label="Default value"
           />
         )}
       />
@@ -88,7 +88,7 @@ const InputFields = ({
         render={({ field }) => (
           <SelectField
             {...field}
-            label="Field Type"
+            label="Field type"
             description="Select the input type"
             size="xs"
             selectOptions={[
@@ -110,7 +110,7 @@ const InputFields = ({
                 {...field}
                 fieldSize="xs"
                 description="Enter semicolon-separated options for the select input (e.g., 'Red; Green; Blue')"
-                label="Select Options"
+                label="Select options"
               />
             )}
           />
@@ -123,7 +123,7 @@ const InputFields = ({
           control={control}
           render={({ field: { value, onChange, ...rest } }) => (
             <SwitchField
-              label="Is Required"
+              label="Is required"
               size="xs"
               description="Mark this field as required"
               value={value ? "true" : "false"} // convert to string

@@ -1,29 +1,16 @@
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
-import { Tooltip } from "@avplatform/ui/tooltip";
+import { ArrowSquareOutIcon, PackageIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
-import {
-  CheckCircle2Icon,
-  CircleXIcon,
-  ExpandIcon,
-  ExternalLinkIcon,
-  Loader2,
-  ShrinkIcon,
-} from "lucide-react";
 import { memo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
-import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
-import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { buildSubFlowNavigationParams } from "@/features/execute-flow/utils/sub-flow-navigation";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useNodeHover } from "@/hooks/useNodeHover";
 import { useBreadcrumbStore } from "@/stores/breadcrumb-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -31,10 +18,8 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 import { NodeDataType } from "@/types/node-data-type";
 
-import OpenNodeLog from "../node-container/OpenNodeLog";
-import { NodeHeading } from "../node-container/node-header/NodeHeading";
-import { NodeImage } from "../node-container/node-header/NodeImage";
-import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
+import { useNodeRunState } from "../node-container/useNodeRunState";
+import BaseNode from "./BaseNode";
 import { SubflowProgressPopup } from "./subflow-progress-popup/SubflowProgressPopup";
 
 type BlockNodeType = Node<NodeDataType, "blockNode">;
@@ -58,18 +43,10 @@ export const BlockNode = memo(
       })),
     );
 
-    const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
-    // Collaboration: a node locked by another user is non-interactive and shows an overlay.
-    const { lockedByOther } = useNodeLockedByOther(id);
-
     const isExecutionLog = useIsExecutionLogsRoute();
-    const isAgentHistory = useIsVersionHistoryRoute();
-
-    const liveStatus = useLiveExecutionStore((state) =>
-      data?.isDisabled ? undefined : state.liveExecutionMap[id],
-    );
+    const runState = useNodeRunState(id, data?.isDisabled);
 
     // When this block is currently running a sub-flow the user hasn't navigated into, show
     // the metadata of the sub-flow-internal node being processed ("Processing: <name>").
@@ -81,7 +58,7 @@ export const BlockNode = memo(
 
     const handleOpenSubFlow = () => {
       if (isSavePending) {
-        toast.warning("Please save changes before opening a subflow");
+        toast.warning("Save your changes before opening the block");
         return;
       }
 
@@ -135,119 +112,53 @@ export const BlockNode = memo(
     useEffect(() => {
       if (data.type !== "blockNode") return;
 
-      const isNewNode = data.label === "Call Block";
+      const isNewNode = ["Call block", "Call Block"].includes(data.label);
 
       if (data.selectedBlock || isNewNode) {
         updateNodeData(id, {
-          label: data.selectedBlock?.name ?? "Call Block",
+          label: data.selectedBlock?.name ?? "Call block",
         });
       }
     }, [data.type, data.label, data.selectedBlock, id, updateNodeData]);
 
-    const statusBorderClass =
-      liveStatus === "running"
-        ? "border-blue-500"
-        : liveStatus === "success"
-          ? "border-green-500"
-          : liveStatus === "failed"
-            ? "border-red-500"
-            : "border-[#1E1B4B]";
-
     return (
-      <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled} showIcon={false} showBorder={false}>
-        <div
-          className={cn(
-            "custom-drag-handle relative flex h-16 w-16 rounded-full border-2 bg-[#1E1B4B] hover:ring hover:ring-ring",
-            statusBorderClass,
-            selected && "ring ring-ring",
-            data?.isDisabled && "opacity-50",
-            data?.isCut && "border-red-400 opacity-60",
-            isExecutionLog && "border-0 ring-0",
-            lockedByOther && "pointer-events-none opacity-70",
-          )}
+      <>
+        <BaseNode
+          selected={selected}
+          nodeData={data}
+          nodeId={id}
+          glyph={<PackageIcon />}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
-            <div className="flex h-full w-full items-center justify-center">
-              <NodeImage src="/assets/BlockNodeIconLight.svg" />
+          <InputHandle position={targetPosition} />
+          <OutputHandle position={sourcePosition} />
+        </BaseNode>
 
-              {/* <BoxesIcon className="h-6 w-6 text-white" /> */}
-              <NodeHeading className="text-2xs">{data.label}</NodeHeading>
-              <InputHandle position={targetPosition} />
-              <OutputHandle position={sourcePosition} />
-            </div>
-          </OpenNodeConfig>
+        {subflowProgressNode && runState === "running" && (
+          <SubflowProgressPopup node={subflowProgressNode} />
+        )}
 
-          {lockedByOther && <LockedNodeOverlay nodeId={id} className="rounded-full" />}
-
-          {liveStatus === "running" && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
-              <Loader2 className="size-4 animate-spin text-white" />
-            </div>
-          )}
-          {liveStatus === "success" && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
-              <CheckCircle2Icon className="size-4 text-green-500" />
-            </div>
-          )}
-          {liveStatus === "failed" && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
-              <CircleXIcon className="size-4 text-red-500" />
-            </div>
-          )}
-
-          {subflowProgressNode && liveStatus === "running" && (
-            <SubflowProgressPopup node={subflowProgressNode} />
-          )}
-
-          <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
-            {data?.selectedBlock && (
-              <button
-                onClick={handleOpenSubFlow}
-                className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary transition-colors flex items-center gap-1 text-xs font-medium"
-                title="Open Block"
-              >
-                <ExternalLinkIcon size={14} />
-                <span>Open</span>
-              </button>
-            )}
-            {!isExecutionLog && !isAgentHistory && data?.isGroupHead && (
-              <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>
-                <Button
-                  variant="outline"
-                  size="icon6"
-                  className={cn(
-                    "group z-10 mt-1 rounded-full",
-                    "hover:bg-primary",
-                    "aria-[expanded=true]:bg-primary aria-[expanded=true]:opacity-100",
-                    "nodrag nopan",
-                  )}
-                  onClick={() => toggleGroupExpand(data.groupId || "")}
-                >
-                  {data?.isExpanded ? (
-                    <ShrinkIcon
-                      className={cn(
-                        "h-3.5 w-3.5 stroke-[1.5] text-[--icon-color] opacity-50",
-                        "group-hover:text-white group-hover:opacity-100",
-                        "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
-                      )}
-                    />
-                  ) : (
-                    <ExpandIcon
-                      className={cn(
-                        "h-3.5 w-3.5 stroke-[2.5] text-[--icon-color] opacity-50",
-                        "group-hover:text-white group-hover:opacity-100",
-                        "group-aria-[expanded=true]:text-white group-aria-[expanded=true]:opacity-100",
-                      )}
-                    />
-                  )}
-                </Button>
-              </Tooltip>
-            )}
+        {data?.selectedBlock && (
+          <NodeToolbar
+            offset={16}
+            isVisible={isHovered}
+            position={Position.Top}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+          >
+            <Button
+              variant="outline"
+              size="xs"
+              className="nodrag nopan"
+              onClick={handleOpenSubFlow}
+            >
+              <ArrowSquareOutIcon className="size-3.5" />
+              Open block
+            </Button>
           </NodeToolbar>
-        </div>
-      </OpenNodeLog>
+        )}
+      </>
     );
   },
 );

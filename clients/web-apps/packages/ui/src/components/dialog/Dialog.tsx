@@ -1,6 +1,6 @@
+import { XIcon } from "@phosphor-icons/react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
 import * as React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
@@ -25,7 +25,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/20 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-scrim data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none",
       className,
     )}
     {...props}
@@ -58,7 +58,7 @@ DialogContent.displayName = DialogPrimitive.Content.displayName;
 // ------------------------------------------------------------------------------------------------
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
+  <div className={cn("flex flex-col gap-1 text-center sm:text-left", className)} {...props} />
 );
 DialogHeader.displayName = "DialogHeader";
 
@@ -66,7 +66,10 @@ DialogHeader.displayName = "DialogHeader";
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
+    className={cn(
+      "flex flex-col-reverse gap-2 border-t border-line px-5 py-3 sm:flex-row sm:justify-end",
+      className,
+    )}
     {...props}
   />
 );
@@ -80,7 +83,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("flex items-center text-base font-semibold text-foreground", className)}
+    className={cn("flex items-center text-heading text-ink", className)}
     {...props}
   />
 ));
@@ -94,7 +97,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-body-sm text-muted-foreground", className)}
     {...props}
   />
 ));
@@ -116,16 +119,16 @@ const DialogDefaultHeader = ({
 }: DialogDefaultHeaderProps) => (
   <div
     className={cn(
-      "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide",
+      "relative flex items-center justify-between gap-3 border-b border-line py-3 pl-5 pr-3",
       className,
     )}
   >
     {/* Left side - Dialog Heading and description */}
-    <div className="ml-2 flex flex-col">
-      <DialogPrimitive.Title className="flex items-center font-semibold text-foreground">
+    <div className="flex min-w-0 flex-col gap-1">
+      <DialogPrimitive.Title className="flex items-center text-heading text-ink">
         {heading}
       </DialogPrimitive.Title>
-      <DialogPrimitive.Description className="text-sm tracking-normal text-muted-foreground">
+      <DialogPrimitive.Description className="text-body-sm text-muted-foreground">
         {description}
       </DialogPrimitive.Description>
     </div>
@@ -136,7 +139,7 @@ const DialogDefaultHeader = ({
       {/* Close Dialog */}
       <Tooltip content={"Close"} shortcut="Esc">
         <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-          <X className="h-5 w-5 text-[--icon-color]" />
+          <XIcon className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </Tooltip>

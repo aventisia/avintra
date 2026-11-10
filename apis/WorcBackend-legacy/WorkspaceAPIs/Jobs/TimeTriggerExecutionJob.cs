@@ -125,21 +125,12 @@ public class TimeTriggerExecutionJob : IJob
 
     private static bool IsDue(JsonElement metadata, DateTimeOffset currentUtcTime, DateTimeOffset endOfCurrentMinute)
     {
-        var nextTriggerTime = metadata.TryGetProperty("NextTriggerTime", out var ntt)
-            ? ntt.GetDateTimeOffset()
-            : DateTimeOffset.MinValue;
+        var triggerModel = metadata.Deserialize<TimeTriggerModel>(TimeTriggerMetadataHelpers.JsonOptions)!;
 
-        var effectiveDate = metadata.TryGetProperty("EffectiveDate", out var ed)
-            ? ed.GetDateTimeOffset()
-            : DateTimeOffset.MinValue;
+        var isWithinSchedule = triggerModel.EffectiveDate <= currentUtcTime
+            && (triggerModel.EndDate == null || triggerModel.EndDate >= currentUtcTime);
 
-        var endDate = metadata.TryGetProperty("EndDate", out var endDateProp) && endDateProp.ValueKind != JsonValueKind.Null
-            ? endDateProp.GetDateTimeOffset()
-            : (DateTimeOffset?)null;
-
-        var isWithinSchedule = effectiveDate <= currentUtcTime && (endDate == null || endDate >= currentUtcTime);
-
-        return isWithinSchedule && nextTriggerTime < endOfCurrentMinute;
+        return isWithinSchedule && triggerModel.NextTriggerTime < endOfCurrentMinute;
     }
 
     private Task<Dictionary<Guid, Guid?>> GetLatestFlowVersionHistoryIdsAsync(List<Trigger> triggers)

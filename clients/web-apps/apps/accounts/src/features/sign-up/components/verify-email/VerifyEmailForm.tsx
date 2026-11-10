@@ -28,8 +28,6 @@ export const VerifyEmailForm = () => {
     // Create account
     createAccountMutation({
       email: createAccountData.email,
-      firstName: createAccountData.firstName,
-      lastName: createAccountData.lastName,
       pwd: createAccountData.pwd,
       verificationCodeId: verifyEmailData.codeId,
       secretCode: formData.verificationCode,
@@ -52,7 +50,7 @@ export const VerifyEmailForm = () => {
 
       {/* Submit button */}
       <SubmitButton
-        className="text-md !mt-5 h-11 w-full"
+        className="!mt-5 h-control-lg w-full"
         primaryText="Verify code"
         isPending={isSubmitting || isCreationPending}
       />

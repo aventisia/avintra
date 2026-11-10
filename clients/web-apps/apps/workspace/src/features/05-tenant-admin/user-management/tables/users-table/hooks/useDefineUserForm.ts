@@ -1,7 +1,8 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -56,9 +57,9 @@ export const useDefineUserForm = ({ rowId, crudAction }: UseDefineUserFormOption
       lockoutEnd: undefined,
       emailConfirmed: false,
       pwdSetOn: undefined,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -96,10 +97,9 @@ export const useDefineUserForm = ({ rowId, crudAction }: UseDefineUserFormOption
       lockoutEnd: userData?.lockoutEnd ? new Date(userData?.lockoutEnd) : undefined,
       emailConfirmed: userData?.emailConfirmed ?? false,
       pwdSetOn: userData?.pwdSetOn ? new Date(userData?.pwdSetOn) : undefined,
-      createdBy: userData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: userData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: userData?.createdOn ? new Date(userData?.createdOn) : new Date(),
-      lastModifiedBy:
-        userData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: userData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: userData?.lastModifiedOn ? new Date(userData?.lastModifiedOn) : new Date(),
     });
   }, [rowId, form, queryClient, userSession, crudAction]);

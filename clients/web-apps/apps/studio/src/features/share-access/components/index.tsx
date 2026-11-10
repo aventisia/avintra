@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { ArrowLeftIcon, UserPlusIcon } from "lucide-react";
+import { ArrowLeftIcon, UserPlusIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -44,7 +44,7 @@ const ShareAccessDialog = () => {
                   <ArrowLeftIcon />
                 </Button>
               ) : null}
-              <span>Share Access</span>
+              <span>Share access</span>
             </div>
             {view == "Users" ? (
               <Button onClick={() => setView("Search")} variant={"ghost"} size={"icon7"}>

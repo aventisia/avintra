@@ -1,13 +1,19 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { UsersTableDto } from "../dtos/users-table-dto";
 import { UserRowActions } from "./user-row-actions/UserRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<UsersTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the users table.
@@ -18,42 +24,22 @@ import { UserRowActions } from "./user-row-actions/UserRowActions";
 export const usersTableColumns = (
   spaceIdToName: Map<string, string> = new Map(),
 ): ColumnDef<UsersTableDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<UsersTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "firstName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("firstName")} />
-    ),
+    meta: { label: getColumnName("firstName") },
+    header: renderHeader("firstName"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("firstName")}</div>
     ),
   },
   {
     accessorKey: "lastName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("lastName")} />
-    ),
+    meta: { label: getColumnName("lastName") },
+    header: renderHeader("lastName"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("lastName")}</div>
     ),
@@ -61,16 +47,14 @@ export const usersTableColumns = (
 
   {
     accessorKey: "email",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("email")} />
-    ),
+    meta: { label: getColumnName("email") },
+    header: renderHeader("email"),
     cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("email")}</div>,
   },
   {
     accessorKey: "userRoles",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("userRoles")} />
-    ),
+    meta: { label: getColumnName("userRoles") },
+    header: renderHeader("userRoles"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
         {row.getValue<string[]>("userRoles")?.slice(-1)}
@@ -79,9 +63,8 @@ export const usersTableColumns = (
   },
   {
     accessorKey: "spaces",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("spaces")} />
-    ),
+    meta: { label: getColumnName("spaces") },
+    header: renderHeader("spaces"),
     cell: ({ row }) => {
       const spaceIds = row.getValue<string[]>("spaces") || [];
       const names = spaceIds.map((id) => spaceIdToName.get(id) ?? id).filter(Boolean);
@@ -95,19 +78,21 @@ export const usersTableColumns = (
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-mono font-medium tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
-  createDTActionsColumn<UsersTableDto>({
-    renderCell: (row) => <UserRowActions rowId={row.id || "rowId"} />,
+  getRowActionsColumn<UsersTableDto>({
+    actions: ({ row }) => <UserRowActions rowId={row.original.id || "rowId"} />,
   }),
 ];

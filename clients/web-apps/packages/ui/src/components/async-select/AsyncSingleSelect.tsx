@@ -1,9 +1,11 @@
-import { CircleXIcon, SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Input } from "@/ui/components/Input";
 import { LoadingSpinner } from "@/ui/components/LoadingSpinner";
 import { Button } from "@/ui/components/buttons";
+import { useIsInsideCrudDialog } from "@/ui/components/crud-dialog/CrudDialogContext";
+import { crudDialogFieldClasses } from "@/ui/components/form/crud-dialog-field-classes";
 import { ScrollArea } from "@/ui/components/scroll";
 import { cn } from "@/ui/lib";
 
@@ -38,6 +40,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const isInDialog = useIsInsideCrudDialog() && size === "base";
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
@@ -156,10 +159,11 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
       }}
     >
       <div className="relative">
-        <SearchIcon
+        <MagnifyingGlassIcon
           className={cn(
             "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground",
             size === "base" && "left-2.5 size-4",
+            isInDialog && crudDialogFieldClasses.searchIcon,
             size === "sm" && "left-2 size-3.5",
             size === "xs" && "left-[0.45rem] size-3",
           )}
@@ -172,6 +176,7 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
           disabled={disabled}
           className={cn(
             size === "base" && "pl-8 pr-8",
+            isInDialog && crudDialogFieldClasses.searchInput,
             size === "sm" && "pl-7 pr-7",
             size === "xs" && "pl-[1.36rem] pr-[1.36rem]",
           )}
@@ -213,15 +218,10 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
             type="button"
             variant="ghost"
             size={size === "base" ? "icon7" : size === "sm" ? "icon6" : "icon5"}
-            className={cn(
-              "absolute top-1/2 -translate-y-1/2",
-              size === "base" && "right-[0.36rem]",
-              size === "sm" && "right-[0.2rem]",
-              size === "xs" && "right-[0.17rem]",
-            )}
+            className={cn("absolute right-0.5 top-1/2 -translate-y-1/2")}
             onClick={handleClear}
           >
-            <CircleXIcon
+            <XCircleIcon
               className={cn(
                 "text-muted-foreground",
                 size === "base" && "size-4",
@@ -234,10 +234,10 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
       </div>
 
       {shouldShowDropdown && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg bg-surface text-ink shadow-pop">
           <div
             className={cn(
-              "border-b px-3 py-2 text-muted-foreground",
+              "border-b border-line px-3 py-2 text-muted-foreground",
               size === "base" && "px-3 py-2 text-xs",
               size === "sm" && "px-2.5 py-1.5 text-2xs",
               size === "xs" && "px-2.5 py-1.5 text-3xs",
@@ -273,9 +273,9 @@ export const AsyncSingleSelect = <TItem, TFilters = undefined>({
                       data-item
                       type="button"
                       className={cn(
-                        "flex w-full items-center rounded-md text-left transition-colors hover:bg-accent",
-                        isHighlighted && "bg-accent outline-none ring-1 ring-inset ring-ring",
-                        size === "base" && "px-2.5 py-1.5 text-sm",
+                        "flex w-full items-center rounded-sm text-left transition-colors duration-[120ms] ease-out hover:bg-hover",
+                        isHighlighted && "bg-hover outline-none ring-1 ring-inset ring-focus",
+                        size === "base" && "min-h-8 px-2 py-1 text-body-sm",
                         size === "sm" && "px-[0.55rem] py-[0.34rem] text-xs",
                         size === "xs" && "px-[0.45rem] py-[0.25rem] text-2xs",
                       )}

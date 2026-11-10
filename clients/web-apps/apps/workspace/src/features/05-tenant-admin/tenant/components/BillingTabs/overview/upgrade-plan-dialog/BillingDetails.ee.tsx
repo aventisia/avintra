@@ -1,3 +1,4 @@
+import { RecordPanel, RecordSection } from "@avplatform/ui/record-sheet";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
@@ -9,14 +10,6 @@ const BillingDetails = ({ billingData }: { billingData: CompanyDetailsDTO | unde
   );
 
   const isIndividualUser = userSession?.tenantName == userSession?.email;
-
-  const renderRow = (label: string, value: string | undefined) =>
-    value ? (
-      <div className="grid grid-cols-3 gap-4 text-sm">
-        <div className="col-span-1 font-medium text-muted-foreground">{label}</div>
-        <div className="col-span-2">{value}</div>
-      </div>
-    ) : null;
 
   const {
     organizationName,
@@ -34,17 +27,27 @@ const BillingDetails = ({ billingData }: { billingData: CompanyDetailsDTO | unde
       .filter(Boolean)
       .join(", ") + (postalCode ? ` - ${postalCode}` : "");
 
+  const rows = [
+    isIndividualUser
+      ? { label: "Name", value: `${userSession?.firstName} ${userSession?.lastName}` }
+      : { label: "Company", value: organizationName },
+    { label: "Address", value: fullAddress },
+    { label: "GST number", value: gstNumber },
+  ].filter((row) => row.value);
+
   return (
-    <div className="rounded-lg border">
-      <div className="border-b p-4 text-base font-medium">Billing Details</div>
-      <div className="space-y-3 p-4">
-        {isIndividualUser
-          ? renderRow("Name", `${userSession?.firstName} ${userSession?.lastName}`)
-          : renderRow("Company Name", organizationName)}
-        {renderRow("Billing Address", fullAddress)}
-        {renderRow("GST Number", gstNumber)}
-      </div>
-    </div>
+    <RecordSection title="Billing details">
+      <RecordPanel>
+        <dl className="grid grid-cols-[6rem_1fr] gap-x-3 gap-y-2 text-[12.5px]">
+          {rows.map(({ label, value }) => (
+            <div key={label} className="contents">
+              <dt className="text-muted-foreground">{label}</dt>
+              <dd className="min-w-0 break-words text-ink">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </RecordPanel>
+    </RecordSection>
   );
 };
 

@@ -22,7 +22,7 @@ export const MiniMapExt = memo(() => {
     <>
       {miniMap && (
         <div onContextMenu={(e) => e.preventDefault()}>
-          <MiniMap ariaLabel={null} className="rounded-lg bg-white" zoomable pannable />
+          <MiniMap ariaLabel={null} className="rounded-lg bg-surface" zoomable pannable />
         </div>
       )}
     </>

@@ -2,6 +2,8 @@ import { Calendar, UpgradeDialog } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME } from "@avplatform/ui/table-cn";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import {
   differenceInCalendarDays,
   format,
@@ -10,7 +12,6 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -98,8 +99,8 @@ export const DateRangeFilter = () => {
   //  Presets
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     {
       label: historyLimitDays === 1 ? "Last 1 day" : "Last 7 days",
       value: historyLimitDays === 1 ? 1 : 7,
@@ -139,9 +140,14 @@ export const DateRangeFilter = () => {
           setShowRangePicker(open);
         }}
       >
-        <PopoverTrigger disabled={isCurrentTab}>
-          <Button disabled={isCurrentTab} size="xs" variant="outline">
-            <CalendarDays className="mr-2 h-3.5 w-3.5" />
+        <PopoverTrigger asChild disabled={isCurrentTab}>
+          <Button
+            disabled={isCurrentTab}
+            variant="outline"
+            size="xs"
+            className={TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME}
+          >
+            <CalendarDotsIcon />
             {format(selectedRange.from!, "MMM d, yyyy")} -{" "}
             {format(selectedRange.to!, "MMM d, yyyy")}
           </Button>
@@ -169,7 +175,7 @@ export const DateRangeFilter = () => {
                       setSelectedRange(range);
                     }}
                     className={`justify-start border-none shadow-none ${
-                      isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                      isSelected ? "bg-selected text-primary-text" : ""
                     }`}
                   >
                     {preset.label}

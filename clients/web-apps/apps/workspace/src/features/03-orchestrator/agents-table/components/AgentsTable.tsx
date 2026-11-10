@@ -1,22 +1,24 @@
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
-  DTHeading,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+  TableCN,
+  TableCNHeading,
+  TableCNSkeleton,
+  TableCNSortMenu,
+  TableCNToolbar,
+  useTableCN,
+} from "@avplatform/ui/table-cn";
+import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
-import { DATA_QUERY_KEY, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
+import {
+  AGENTS_INITIAL_STATE,
+  AGENTS_PAGE_SIZE_OPTIONS,
+  DATA_QUERY_KEY,
+  TABLE_KEY,
+} from "../constants";
 import { useFetchAgents } from "../hooks/useFetchAgents";
 import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
@@ -24,6 +26,11 @@ import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 import DisableAgentDialog from "./table-actions/DisableAgentDialog";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: AGENTS_PAGE_SIZE_OPTIONS,
+  rowLabels: { singular: "agent", plural: "agents" },
+};
 
 /**
  * Renders a table of agents.
@@ -34,9 +41,6 @@ export const AgentsTable = () => {
   // Set the document title
   useDocumentTitle("Published");
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch agents data
   const { data } = useFetchAgents();
 
@@ -45,49 +49,53 @@ export const AgentsTable = () => {
     useShallow((state) => ({ currentSpace: state.currentSpace })),
   );
 
-  // Create a React table for agents data
-  const table = useDataTable(
-    agentsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Controlled search so the name cell can highlight matches, like the Agents page
+  const [searchText, setSearchText] = useState("");
+  const columns = useMemo(() => agentsTableColumns({ searchText }), [searchText]);
 
-  // Return the rendered DataTable component.
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns,
+    getRowId: (row) => row.id,
+    initialState: AGENTS_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+    globalFilter: searchText,
+    onGlobalFilterChange: setSearchText,
+  });
+
   return (
     <>
       {data ? (
-        <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Table toolbar */}
-          <div className="flex items-center justify-between">
-            {/* <AgentsTableHeading /> */}
-            <div className="flex items-center gap-2">
-              <DTHeading heading="Published" />
-              <HelpButton guideId="published-agents" />
+        <div className="space-y-4 pb-6 pt-6">
+          {/* Page heading */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <TableCNHeading heading="Published" />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+            {/* Table with its toolbar, pagination footer, and bulk actions */}
+            <div className="flex flex-col gap-2">
+              <AgentStats data={data?.data} />
+              <TableCN
+                table={table}
+                label="Published"
+                paginationProps={PAGINATION_PROPS}
+                actionBar={<AgentsBulkActions table={table} />}
+              >
+                <TableCNToolbar table={table} searchPlaceholder="Search agents...">
+                  <TableCNSortMenu table={table} />
+                </TableCNToolbar>
+              </TableCN>
             </div>
           </div>
-
-          {/* Data table to render data */}
-          <div className="flex flex-col gap-2">
-            <AgentStats data={data?.data} />
-            <DataTable table={table} columnsLength={agentsTableColumns.length} />
-          </div>
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <AgentsBulkActions table={table} />
         </div>
       ) : (
-        // Show data table skeleton while fetching the agents data
-        <DataTableSkeleton />
+        // Show a table-shaped placeholder while fetching the agents data
+        <TableCNSkeleton columnCount={9} filterCount={2} withSearch className="py-5" />
       )}
       <AssignMachinesDialog />
       <ResourceUserAccessDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />

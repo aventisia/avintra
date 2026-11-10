@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCreateAccountStore } from "../../stores/create-account-store";

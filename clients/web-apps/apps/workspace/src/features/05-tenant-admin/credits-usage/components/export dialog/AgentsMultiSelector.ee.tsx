@@ -4,7 +4,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 import { AgentModelDTO } from "../../dtos/agents-models-dto.ee";
@@ -83,7 +83,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();
@@ -95,7 +95,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
             {selectedItems.map((item) => (
               <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
                 {/* <Avatar className={cn("flex h-5 w-5")}>
-                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-secondary text-white">
+                <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-primary-foreground">
                   {`${item.firstName?.charAt(0)}${item.lastName?.charAt(0)}`}
                 </AvatarFallback>
               </Avatar> */}
@@ -114,7 +114,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
                   className="rounded-full"
                   onClick={() => onItemRemove(item.id)}
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </Badge>
             ))}
@@ -143,13 +143,13 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
           className="ml-1 h-6 w-6 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          {isOpen ? <CaretUpIcon className="h-4 w-4" /> : <CaretDownIcon className="h-4 w-4" />}
         </Button>
       </div>
 
       {/* Dropdown Results */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-surface shadow-pop">
           <div className="p-2">
             {isLoading && (
               <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
@@ -158,7 +158,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
               </div>
             )}
             {isError && (
-              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+              <div className="p-4 text-center text-sm text-bad">Error loading results</div>
             )}
             {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">
@@ -176,7 +176,7 @@ export const AgentsMultiSelector: React.FC<AgentsMultiSelectorProps> = ({
                   <div
                     key={result.id}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}

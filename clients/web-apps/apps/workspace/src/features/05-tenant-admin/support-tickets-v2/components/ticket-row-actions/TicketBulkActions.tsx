@@ -1,6 +1,12 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 
 import { ticketOptimisticMutationFn } from "../../apis/ticket-apis";
@@ -13,6 +19,7 @@ interface TicketBulkActionsProps {
 
 export function TicketBulkActions({ table }: Readonly<TicketBulkActionsProps>) {
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   const selectedRowIds = table
     .getFilteredSelectedRowModel()
@@ -28,28 +35,31 @@ export function TicketBulkActions({ table }: Readonly<TicketBulkActionsProps>) {
   >(selectedRowIds, ticketOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  deleteTickets({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
-                  clearSelection();
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "tickets" : "ticket"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={TrashIcon}
+          tone="destructive"
+          disabled={locked}
+          onClick={() => {
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                deleteTickets({
+                  payload: selectedRowIds,
+                  crudAction: "delete-multiple",
+                });
+                clearSelection();
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "tickets" : "ticket"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

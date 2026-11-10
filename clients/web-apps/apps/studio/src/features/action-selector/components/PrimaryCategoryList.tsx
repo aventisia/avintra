@@ -70,8 +70,8 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
   };
 
   return (
-    <ScrollArea className="h-full bg-background p-3">
-      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary Categories">
+    <ScrollArea className="h-full bg-surface p-3">
+      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary categories">
         {actionSelectorData.map((item, index) => {
           const isDisabled = item.disabled;
           return (
@@ -91,10 +91,10 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
               onKeyDown={(e) => handleKeyDown(e, index)}
               onFocus={() => !isDisabled && setActiveIndex(index)}
               className={cn(
-                "group flex h-48 w-full flex-col justify-between rounded-2xl border p-4 text-left text-foreground outline-none transition-all",
+                "group flex h-44 w-full flex-col justify-between rounded-lg border p-4 text-left text-ink outline-none transition-colors",
                 isDisabled
-                  ? "cursor-not-allowed border-border bg-muted/30 opacity-70"
-                  : "cursor-pointer border-indigo-100 bg-background shadow-sm hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus-visible:border-primary",
+                  ? "cursor-not-allowed border-line bg-sunken opacity-70"
+                  : "cursor-pointer border-line bg-surface hover:border-line-strong hover:bg-hover focus-visible:shadow-focus",
               )}
               aria-label={`Select ${item.label}`}
             >

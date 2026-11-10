@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { FloatingLabelInputField } from "@avplatform/ui/form";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { useId, useMemo, useState } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
@@ -49,10 +49,10 @@ export default function FloatingLabelPasswordField({ ...props }: FloatingLabelPa
 
   const getStrengthColor = (score: number) => {
     if (score === 0) return "bg-border";
-    if (score <= 2) return "bg-red-500";
-    if (score === 3) return "bg-orange-500";
-    if (score === 4) return "bg-amber-500";
-    return "bg-emerald-500"; // score === 5
+    if (score <= 2) return "bg-bad";
+    if (score === 3) return "bg-warn";
+    if (score === 4) return "bg-warn";
+    return "bg-ok"; // score === 5
   };
 
   const getStrengthText = (score: number) => {
@@ -70,15 +70,15 @@ export default function FloatingLabelPasswordField({ ...props }: FloatingLabelPa
         onChangeCapture={(e) => setPassword(e.currentTarget.value)}
       />
       {password && (
-        <div className="mt-3 border rounded-lg p-3 bg-slate-50">
+        <div className="mt-3 border rounded-lg p-3 bg-sunken">
           {/* Strength bar */}
           <div className="mb-2">
             <div className="flex gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 flex-1 rounded-full transition-colors duration-300 ease-in-out ${
-                    i < strengthScore ? getStrengthColor(strengthScore) : "bg-gray-200"
+                  className={`h-1 flex-1 rounded-full transition-colors duration-200 ease-in-out ${
+                    i < strengthScore ? getStrengthColor(strengthScore) : "bg-fill"
                   }`}
                 />
               ))}
@@ -95,13 +95,11 @@ export default function FloatingLabelPasswordField({ ...props }: FloatingLabelPa
             {strength.map((req, index) => (
               <li key={index} className="flex items-center gap-2">
                 {req.met ? (
-                  <CheckIcon size={16} className="text-emerald-500" aria-hidden="true" />
+                  <CheckIcon size={16} className="text-ok" aria-hidden="true" />
                 ) : (
                   <XIcon size={16} className="text-muted-foreground/80" aria-hidden="true" />
                 )}
-                <span
-                  className={`text-xs ${req.met ? "text-emerald-600" : "text-muted-foreground"}`}
-                >
+                <span className={`text-xs ${req.met ? "text-ok" : "text-muted-foreground"}`}>
                   {req.text}
                   <span className="sr-only">
                     {req.met ? " - Requirement met" : " - Requirement not met"}

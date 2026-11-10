@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { UsersIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCollaborationStore } from "../../stores/collaboration-store";
@@ -64,7 +64,7 @@ export const ChatRecipientSelect = ({ value, onChange }: ChatRecipientSelectProp
   };
 
   return (
-    <div className="flex items-center gap-2 border-b px-3 py-2">
+    <div className="flex items-center gap-2 border-b border-line px-3 py-2">
       <UsersIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
       <Select value={active.key} onValueChange={handleChange}>
         <SelectTrigger size="sm" className="h-8 w-full">
@@ -74,26 +74,26 @@ export const ChatRecipientSelect = ({ value, onChange }: ChatRecipientSelectProp
           {recipients.map((r) => {
             const presenceUser = presence.find((p) => p.email === r.key);
             const ringColor = presenceUser
-              ? (colorMap[presenceUser.userId]?.border ?? "border-gray-300")
-              : "border-gray-300";
+              ? (colorMap[presenceUser.userId]?.border ?? "border-line-strong")
+              : "border-line-strong";
             const unread = unreadByConversation[r.key] ?? 0;
             return (
               <SelectItem key={r.key} value={r.key} size="sm">
                 <div className="flex w-full items-center gap-2">
                   {r.recipientUserId ? (
-                    <Avatar className={`h-5 w-5 rounded-full border-2 ${ringColor} bg-primary-200`}>
-                      <AvatarFallback className="border-none bg-primary-200 text-[8px] font-bold uppercase text-secondary">
+                    <Avatar className={`h-5 w-5 rounded-full border-2 ${ringColor} bg-sunken`}>
+                      <AvatarFallback className="border-none bg-sunken text-[8px] font-bold uppercase text-ink-2">
                         {getInitials(presenceUser?.displayName, presenceUser?.email)}
                       </AvatarFallback>
                     </Avatar>
                   ) : (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-bold">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sunken text-[10px] font-bold">
                       #
                     </span>
                   )}
                   <span className="grow truncate">{r.label}</span>
                   {unread > 0 ? (
-                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-bold leading-none text-white">
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-bad px-1 text-[9px] font-bold leading-none text-bad-foreground">
                       {unread > 99 ? "99+" : unread}
                     </span>
                   ) : null}

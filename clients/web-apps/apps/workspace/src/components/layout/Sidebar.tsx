@@ -1,14 +1,19 @@
-import { SidebarMenuItems } from "@avplatform/layout";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftCircleIcon, ArrowRightCircleIcon } from "@heroicons/react/24/solid";
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
+import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
+
+import { AppLogo } from "./AppLogo";
 import { SidebarBrandingFooter } from "./SidebarBrandingFooter";
+import { SidebarNav } from "./SidebarNav";
+import { SpaceSelector } from "./SpaceSelector";
 
 interface SidebarProps {
   className?: string;
@@ -23,10 +28,10 @@ interface SidebarProps {
  * @returns {JSX.Element} The rendered Sidebar component.
  *
  * @remarks
+ * - Full-height column holding the brand and space selector, the menu, the credits, the account
+ *   menu, and the branding footer.
  * - The sidebar's state (expanded or collapsed) is managed using `useBaseLayoutStore`.
  * - Width transitions smoothly between `--sidebar-min-width` and `--sidebar-max-width`.
- * - Accounts for an optional app banner by adjusting top offset and height via CSS vars.
- * - `ScrollArea` grows to fill available space; `SidebarBrandingFooter` is pinned at the bottom.
  *
  * @example
  * ```tsx
@@ -34,10 +39,9 @@ interface SidebarProps {
  * ```
  */
 const Sidebar = ({ className }: SidebarProps) => {
-  const { sidebarExpand, appBanner, setSidebarExpand } = useBaseLayoutStore(
+  const { sidebarExpand, setSidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
       sidebarExpand: state.sidebarExpand,
-      appBanner: state.appBanner,
       setSidebarExpand: state.setSidebarExpand,
     })),
   );
@@ -48,41 +52,54 @@ const Sidebar = ({ className }: SidebarProps) => {
     })),
   );
 
-  // Return the sidebar component
+  const isCommercial = userSession?.deploymentType == "Commercial";
+
   return (
-    <div
+    <aside
       className={cn(
-        "fixed left-0 z-10 hidden border-r  transition-[width] duration-500 md:flex md:flex-col",
-        appBanner
-          ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height))] h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
-          : "top-[calc(var(--header-height)+var(--header-padding))] h-[calc(100vh-var(--header-height)-var(--header-padding))]",
+        "relative z-10 hidden h-full shrink-0 border-r border-line bg-bg transition-[width] duration-200 motion-reduce:transition-none md:flex md:flex-col",
         className,
         sidebarExpand ? "w-[--sidebar-max-width]" : "w-[--sidebar-min-width]",
       )}
     >
+      <div
+        className={cn("flex h-14 shrink-0 items-center", sidebarExpand ? "px-4" : "justify-center")}
+      >
+        {sidebarExpand ? <AppLogo /> : <AppLogo iconOnly className="size-6" />}
+      </div>
+      {sidebarExpand && <SpaceSelector showLabel className="px-2.5 pb-1.5" />}
       <Tooltip content={sidebarExpand ? "Collapse" : "Expand"} side="right">
         <Button
           variant="ghost"
           size="icon5"
-          className="absolute -right-2.5 top-2 z-10 rounded-full border-none bg-white text-indigo-100 shadow-none hover:text-primary"
+          aria-label={sidebarExpand ? "Collapse sidebar" : "Expand sidebar"}
+          className="absolute -right-2.5 top-[18px] z-10 rounded-full border border-line bg-bg text-muted-foreground shadow-none hover:border-line-strong hover:bg-bg hover:text-ink"
           onClick={() => setSidebarExpand(!sidebarExpand)}
         >
           {sidebarExpand ? (
-            <ArrowLeftCircleIcon className="h-5 w-5" />
+            <CaretLeftIcon className="h-3 w-3" />
           ) : (
-            <ArrowRightCircleIcon className="h-5 w-5" />
+            <CaretRightIcon className="h-3 w-3" />
           )}
         </Button>
       </Tooltip>
 
       <ScrollArea className="flex-1 py-1">
         <nav className="h-auto">
-          <SidebarMenuItems />
+          <SidebarNav />
         </nav>
       </ScrollArea>
 
-      {userSession?.deploymentType == "Commercial" && <SidebarBrandingFooter />}
-    </div>
+      {isCommercial && sidebarExpand && (
+        <div className="px-2.5 pt-2">
+          <AvailableCredits />
+        </div>
+      )}
+      <div className="px-2.5 py-2">
+        <SidebarAccountMenu />
+      </div>
+      {isCommercial && sidebarExpand && <SidebarBrandingFooter />}
+    </aside>
   );
 };
 

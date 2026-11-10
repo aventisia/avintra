@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { LogsIcon } from "lucide-react";
+import { ListDashesIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useCarryParams } from "../../hooks/useForwardQueryParams";
@@ -21,6 +21,11 @@ export const ExecutionLogsTrigger = () => {
   };
 
   return (
-    <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution Logs" onClick={handleClick} />
+    <SimpleDDMenuItem
+      size="md"
+      Icon={ListDashesIcon}
+      content="Execution logs"
+      onClick={handleClick}
+    />
   );
 };

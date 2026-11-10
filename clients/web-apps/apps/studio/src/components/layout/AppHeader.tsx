@@ -1,8 +1,9 @@
 import { Header, HeaderContainer } from "@avplatform/layout";
+import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useAlertDialogStore, useBrandingStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -14,16 +15,17 @@ import { ExecuteFlow } from "@/features/execute-flow";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
+import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
 import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
-import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
 import SearchCommandTrigger from "./Search";
+import { StudioViewSwitch } from "./StudioViewSwitch";
 import { TenantSwitchBadge } from "./TenantSwitchBadge";
 import ViewOnlyVersionSelector from "./ViewOnlyVersionSelector";
 import { HeaderActionMenu } from "./header-menu-actions";
@@ -48,8 +50,8 @@ const AppHeader: React.FC = () => {
   // ChatAgent flows hide search, flow settings, and studio preferences.
   const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
 
-  // Persistent watcher for the publish alert dialog close. The Publish button lives inside
-  // a dropdown that unmounts when closed, so this header component watches the alert dialog
+  // Persistent watcher for the publish alert dialog close. The Publish button does not own
+  // the dialog lifecycle, so this header component watches the alert dialog
   // open state and releases the publish lock when the dialog closes (cancel or confirm).
   const isAlertDialogOpen = useAlertDialogStore((state) => state.isAlertDialogOpen);
   const wasAlertDialogOpenRef = useRef(isAlertDialogOpen);
@@ -65,18 +67,19 @@ const AppHeader: React.FC = () => {
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
-    <HeaderContainer className="bg-slate-200">
+    <HeaderContainer>
       <Header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-0">
-        <div className="flex min-w-0 items-center gap-3 text-primary-foreground">
+        <div className="flex min-w-0 items-center gap-2 text-ink">
           {/* Back Button */}
           <Tooltip content="Back to Workspace">
             <Button
-              size="icon8"
+              size="icon7"
               variant="ghost"
-              className="shrink-0 hover:bg-primary-foreground/10"
+              className="shrink-0"
+              aria-label="Back to Workspace"
               onClick={() => goBack()}
             >
-              <ArrowLeftIcon className="h-4 w-4 text-primary-foreground/80" />
+              <ArrowLeftIcon className="size-4" />
             </Button>
           </Tooltip>
 
@@ -84,7 +87,7 @@ const AppHeader: React.FC = () => {
           <AppLogo label={headerLabel} />
 
           {/* separator */}
-          <span className="rotate-12 text-primary-foreground/50">/</span>
+          <span className="rotate-12 text-line-strong">/</span>
 
           {/* Agent name */}
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
@@ -93,42 +96,35 @@ const AppHeader: React.FC = () => {
           {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
-        <div className="flex min-w-0 shrink-0 items-center justify-center">
+        <div className="flex min-w-0 shrink-0 items-center justify-center gap-2">
+          <StudioViewSwitch />
           {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}{" "}
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex min-w-0 items-center justify-end">
-            <div className="mx-4 flex min-w-0 items-center gap-1 text-primary-foreground">
+            <div className="mr-2 flex min-w-0 items-center gap-1 text-ink">
               <PresenceAvatars />
 
-              <ExecuteFlow />
-
               {!isChatAgent && <SearchCommandTrigger />}
-
-              <VersionHistoryTrigger />
 
               {!isChatAgent && import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
               {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
               <Chat className="mt-0 mlg:mt-4" />
             </div>
-            <SaveFlow />
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <SaveFlow />
+              <ExecuteFlow />
+              <PublishFlow />
               <HeaderActionMenu />
             </div>
           </div>
         ) : (
           <div className="flex min-w-0 items-center justify-end gap-1">
             {!isChatAgent && <SearchCommandTrigger />}
-            <Button
-              variant={"ghost"}
-              size={"xs"}
-              className={
-                "group flex h-7 max-w-[15rem] shrink-0 gap-2 rounded-full bg-primary-foreground/10 pl-3 pr-2.5 font-bold text-primary-foreground/80 hover:bg-primary-foreground/20 hover:text-primary-foreground/80"
-              }
-            >
-              View Only
-            </Button>
+            <Badge variant="outline" className="shrink-0">
+              View only
+            </Badge>
             {isAgentHistory && <VersionHistoryCloseButton />}{" "}
           </div>
         )}

@@ -1,8 +1,9 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -13,7 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { isTenantNameAvailable } from "../apis/tenants-table-apis.ee";
 import { DATA_QUERY_KEY } from "../constants";
-import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schema.ee";
+import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schema.constant.ee";
 import { TenantsTableDto } from "../dtos/tenants-table-dto.ee";
 import { useDateRangePickerStore } from "../stores/date-range-store.ee";
 
@@ -45,7 +46,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
   );
 
   const from = format(dateRange!.from!, "yyyy-MM-dd");
-  const to = format(dateRange!.to!, "yyyy-MM-dd");
+  const to = format(dateRange!.to ?? dateRange!.from!, "yyyy-MM-dd");
   // Get query client
   const queryClient = useQueryClient();
 
@@ -66,7 +67,6 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       isChangeRequestEnabled: false,
       isPwdEnabled: true,
       isSSOEnabled: false,
-      ssoConfigJson: undefined,
       isPwdNeverExpiresEnabled: true,
       daysBeforePwdExpires: "730",
       isIdleSessionTimeoutEnabled: true,
@@ -78,9 +78,9 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       dbHost: undefined,
       dbPort: undefined,
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -126,7 +126,6 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,
-      ssoConfigJson: undefined,
       // Group
       isPwdNeverExpiresEnabled: tenantData?.isPwdNeverExpiresEnabled ?? true,
       daysBeforePwdExpires: tenantData?.daysBeforePwdExpires?.toString() ?? "730",
@@ -145,10 +144,9 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       // Single field
       isDisabled: tenantData?.isDisabled ?? false,
       // Group (read-only)
-      createdBy: tenantData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: tenantData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: tenantData?.createdOn ? new Date(tenantData?.createdOn) : new Date(),
-      lastModifiedBy:
-        tenantData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: tenantData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: tenantData?.lastModifiedOn
         ? new Date(tenantData?.lastModifiedOn)
         : new Date(),
@@ -172,11 +170,8 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof tenantZodSchema>) => {
-    const refinedFormData = { ...formData };
-    delete refinedFormData.ssoConfigJson;
-
     return {
-      ...refinedFormData,
+      ...formData,
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

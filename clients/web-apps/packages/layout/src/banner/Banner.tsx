@@ -1,7 +1,7 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { XIcon } from "lucide-react";
+import { XIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -59,7 +59,7 @@ const Banner = React.forwardRef<HTMLDivElement, BannerProps>(
               <Button
                 variant="ghost"
                 size="icon7"
-                className="-my-1.5 -me-2 shrink-0 hover:bg-white/10"
+                className="-my-1.5 -me-2 shrink-0 hover:bg-secondary-foreground/10"
                 onClick={() => {
                   setAppBanner(false);
                   if (onClose) onClose();
@@ -67,8 +67,7 @@ const Banner = React.forwardRef<HTMLDivElement, BannerProps>(
                 aria-label="Close banner"
               >
                 <XIcon
-                  size={18}
-                  strokeWidth={2}
+                  size={16}
                   className="text-secondary-foreground opacity-60"
                   aria-hidden="true"
                 />
@@ -83,7 +82,7 @@ const Banner = React.forwardRef<HTMLDivElement, BannerProps>(
       <div
         ref={ref}
         className={cn(
-          "relative w-full bg-secondary px-4 py-2 text-secondary-foreground md:h-[--banner-height]",
+          "relative w-full bg-secondary px-4 py-2 text-body-sm text-secondary-foreground md:h-[--banner-height]",
           className,
         )}
         {...props}

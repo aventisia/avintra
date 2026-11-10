@@ -1,15 +1,7 @@
-import { Separator, Switch } from "@avplatform/ui";
-import { Input } from "@avplatform/ui";
+import { Switch } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { Button } from "@avplatform/ui/buttons";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogPrimitive,
-  DialogTitle,
-  DialogWrapper,
-} from "@avplatform/ui/dialog";
+import { crudDialogFieldClasses } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
 import {
   Select,
   SelectContent,
@@ -20,11 +12,16 @@ import {
 import { toast } from "@avplatform/ui/sonner";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
+import { CircleNotchIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { getLlmModelsV2, upsertModelProvider } from "../apis/model-provider-apis";
 import {
@@ -47,6 +44,9 @@ type Step = "credential" | "models";
 export const ModelProviderSetupDialog = () => {
   const { isOpen, closeDialog, provider, config } = useModelProviderDialogStore();
   const queryClient = useQueryClient();
+  const fieldId = useId();
+  const credentialFieldId = `${fieldId}-credential`;
+  const disabledId = `${fieldId}-disabled`;
 
   const [step, setStep] = useState<Step>("credential");
   const [credentialOptions, setCredentialOptions] = useState<{ value: string; label: string }[]>(
@@ -193,191 +193,182 @@ export const ModelProviderSetupDialog = () => {
     });
   }, [providerModels, modelSearch]);
 
+  const isSaving = upsertMutation.isPending;
+  const enabledCount = enabledModelIds.length;
+
+  const credentialSelect = (
+    <FormField htmlFor={credentialFieldId} label="Credential">
+      <Select
+        value={selectedCredentialName}
+        onValueChange={(value) => setSelectedCredentialName(value)}
+        disabled={isCredentialLoading}
+      >
+        <SelectTrigger
+          id={credentialFieldId}
+          className={cn("w-full", crudDialogFieldClasses.selectTrigger)}
+        >
+          <SelectValue
+            placeholder={
+              step === "credential" && isCredentialLoading
+                ? "Loading credentials..."
+                : "Select credential"
+            }
+          />
+        </SelectTrigger>
+        <SelectContent>
+          {credentialOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </FormField>
+  );
+
   return (
-    <DialogWrapper open={isOpen} onOpenChangeFn={handleClose}>
-      <DialogContent className="w-full max-w-[38rem]">
-        <DialogHeader className="px-6 py-4 pb-2">
-          <DialogTitle className="justify-between">
-            <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-accent p-2">
-                <img
-                  src={provider ? getProviderIcon(provider) : undefined}
-                  alt={provider?.label}
-                  className="h-6 w-6"
-                />
-              </div>
-              <p>{provider?.label} — Setup</p>
-            </div>
-            <DialogPrimitive.Close asChild>
-              <Button variant="ghost" size="icon8">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DialogPrimitive.Close>
-          </DialogTitle>
-          <DialogDescription className="pr-4">
+    <CardDialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      isDismissLocked={isSaving}
+      isOutsideClickLocked={Boolean(selectedCredentialName)}
+      widthClassName="w-[min(38rem,calc(100vw-2rem))]"
+      mark={
+        <span className="inline-grid size-12 shrink-0 place-items-center rounded-lg bg-sunken ring-1 ring-inset ring-line">
+          <img src={provider ? getProviderIcon(provider) : undefined} alt="" className="size-6" />
+        </span>
+      }
+      eyebrow={config ? "Edit model provider" : "Set up model provider"}
+      title={provider?.label}
+      footer={
+        <>
+          <StatusLine tone={step === "models" && enabledCount > 0 ? "open" : "idle"}>
             {step === "credential"
-              ? "Select the vault credential for this provider."
-              : "Enable the models you want to use for this provider."}
-          </DialogDescription>
-        </DialogHeader>
-        <Separator />
+              ? "Step 1 of 2 · Choose a credential"
+              : `${enabledCount} ${pluralize(enabledCount, "model")} enabled`}
+          </StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            {step === "models" && (
+              <CardDialogButton onClick={() => setStep("credential")} disabled={isSaving}>
+                Back
+              </CardDialogButton>
+            )}
+            <CardDialogButton onClick={handleClose} disabled={isSaving}>
+              Cancel
+            </CardDialogButton>
+            {step === "credential" ? (
+              <CardDialogButton
+                variant="primary"
+                onClick={handleNext}
+                disabled={!selectedCredentialName}
+              >
+                Next
+              </CardDialogButton>
+            ) : (
+              <CardDialogButton
+                variant="primary"
+                onClick={handleSave}
+                disabled={isSaving || (!selectedCredentialName && !config?.credentialId)}
+                isBusy={isSaving}
+              >
+                {isSaving ? "Saving" : "Save"}
+              </CardDialogButton>
+            )}
+          </div>
+        </>
+      }
+    >
+      <p className="mb-4 text-[13px] leading-5 text-ink-2">
+        {step === "credential"
+          ? "Select the vault credential for this provider."
+          : "Enable the models you want to use for this provider."}
+      </p>
 
-        <div className="px-6 py-4">
-          {step === "credential" ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Credential</label>
-                <Select
-                  value={selectedCredentialName}
-                  onValueChange={(value) => setSelectedCredentialName(value)}
-                  disabled={isCredentialLoading}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue
-                      placeholder={
-                        isCredentialLoading ? "Loading credentials..." : "Select credential"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {credentialOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+      {step === "credential" ? (
+        credentialSelect
+      ) : (
+        <div className="space-y-4">
+          {credentialSelect}
 
-              <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button onClick={handleNext} disabled={!selectedCredentialName}>
-                  Next
-                </Button>
-              </div>
+          <div className="flex items-center justify-between gap-4 rounded-md bg-sunken/80 px-3.5 py-3 ring-1 ring-line">
+            <label htmlFor={disabledId} className="min-w-0">
+              <span className="block text-[13px] font-semibold text-ink">Disable provider</span>
+              <span className="block text-[12px] text-muted-foreground">
+                Disabled providers will not be available to use.
+              </span>
+            </label>
+            <Switch
+              id={disabledId}
+              checked={isDisabled}
+              onCheckedChange={(checked) => setIsDisabled(checked)}
+              size="sm"
+            />
+          </div>
+
+          {isProvidersLoading ? (
+            <div className="flex items-center justify-center gap-2 py-8 text-[13px] text-muted-foreground">
+              <CircleNotchIcon className="size-4 animate-spin" />
+              Loading models...
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Credential</label>
-                <Select
-                  value={selectedCredentialName}
-                  onValueChange={(value) => setSelectedCredentialName(value)}
-                  disabled={isCredentialLoading}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select credential" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {credentialOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between rounded-lg border px-3 py-2">
-                <div>
-                  <p className="text-sm font-medium">Disable provider</p>
-                  <p className="text-xs text-muted-foreground">
-                    Disabled providers will not be available to use.
-                  </p>
-                </div>
-                <Switch
-                  checked={isDisabled}
-                  onCheckedChange={(checked) => setIsDisabled(checked)}
-                  size="sm"
+            <>
+              <div className="relative flex h-control-lg items-center rounded-md bg-popover ring-1 ring-border transition-shadow focus-within:ring-focus">
+                <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
+                <input
+                  value={modelSearch}
+                  onChange={(e) => setModelSearch(e.target.value)}
+                  aria-label="Search models"
+                  placeholder="Search by model or capability..."
+                  className="h-full w-full bg-transparent pl-10 pr-3 text-[13.5px] text-ink outline-none placeholder:text-muted-foreground"
                 />
               </div>
 
-              {isProvidersLoading ? (
-                <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading models...
-                </div>
+              {filteredModels.length === 0 ? (
+                <p className="py-8 text-center text-[13px] text-muted-foreground">
+                  No models match your search.
+                </p>
               ) : (
-                <>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={modelSearch}
-                      onChange={(e) => setModelSearch(e.target.value)}
-                      placeholder="Search by model or capability..."
-                      className="pl-8"
-                    />
-                  </div>
+                <ul className="max-h-[320px] divide-y divide-line overflow-y-auto overscroll-contain rounded-md ring-1 ring-line">
+                  {filteredModels.map((model) => {
+                    const capabilityLabel = formatCapabilityLabel(model.capability);
+                    const supportedModalities = getSupportedModalities(model);
 
-                  {filteredModels.length === 0 ? (
-                    <p className="py-8 text-center text-sm italic text-muted-foreground">
-                      No models match your search.
-                    </p>
-                  ) : (
-                    <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
-                      {filteredModels.map((model) => {
-                        const capabilityLabel = formatCapabilityLabel(model.capability);
-                        const supportedModalities = getSupportedModalities(model);
+                    const capabilityBadge = capabilityLabel ? (
+                      <Badge variant="secondary">{capabilityLabel}</Badge>
+                    ) : null;
 
-                        const capabilityBadge = capabilityLabel ? (
-                          <Badge className="bg-slate-200 text-slate-600">{capabilityLabel}</Badge>
-                        ) : null;
-
-                        return (
-                          <div
-                            key={model.id}
-                            className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2"
-                          >
-                            <div className="flex min-w-0 items-center gap-2">
-                              <span className="truncate text-sm">{model.id}</span>
-                              {supportedModalities && capabilityBadge ? (
-                                <Tooltip
-                                  content={`Supported modalities: ${supportedModalities.join(", ")}`}
-                                >
-                                  <div className="inline-flex">{capabilityBadge}</div>
-                                </Tooltip>
-                              ) : (
-                                capabilityBadge
-                              )}
-                            </div>
-                            <Switch
-                              checked={enabledModelIds.includes(model.id)}
-                              onCheckedChange={() => toggleModel(model)}
-                              size="sm"
-                            />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
+                    return (
+                      <li
+                        key={model.id}
+                        className="flex items-center justify-between gap-2 px-3.5 py-2.5"
+                      >
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="truncate text-[13px] text-ink">{model.id}</span>
+                          {supportedModalities && capabilityBadge ? (
+                            <Tooltip
+                              content={`Supported modalities: ${supportedModalities.join(", ")}`}
+                            >
+                              <div className="inline-flex">{capabilityBadge}</div>
+                            </Tooltip>
+                          ) : (
+                            capabilityBadge
+                          )}
+                        </div>
+                        <Switch
+                          aria-label={`Enable ${model.id}`}
+                          checked={enabledModelIds.includes(model.id)}
+                          onCheckedChange={() => toggleModel(model)}
+                          size="sm"
+                        />
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
-
-              <div className="flex items-center justify-between gap-2">
-                <Button variant="ghost" onClick={() => setStep("credential")}>
-                  Back
-                </Button>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" onClick={handleClose}>
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSave}
-                    disabled={
-                      upsertMutation.isPending || (!selectedCredentialName && !config?.credentialId)
-                    }
-                  >
-                    {upsertMutation.isPending ? "Saving..." : "Save"}
-                  </Button>
-                </div>
-              </div>
-            </div>
+            </>
           )}
         </div>
-      </DialogContent>
-    </DialogWrapper>
+      )}
+    </CardDialog>
   );
 };

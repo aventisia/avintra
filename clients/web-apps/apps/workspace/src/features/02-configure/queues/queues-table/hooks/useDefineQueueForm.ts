@@ -1,8 +1,9 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { ISelectOption } from "@avplatform/ui/types";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -62,7 +63,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     {
       name: "submittedOn",
       description: "Date the request was submitted",
-      label: "Submitted On",
+      label: "Submitted on",
       type: "Date",
       isRequired: false,
       isUsedForUniqueIdentifier: false,
@@ -133,9 +134,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       // outputDataSchemaFile: undefined,
 
       isDisabled: false,
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -183,7 +184,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     form.reset({
       crudAction: CrudActionTypeConverter(crudAction),
       id: rowId,
-      name: queueData?.name,
+      name: queueData?.name ?? "",
       description: queueData?.description,
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
@@ -201,10 +202,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
       isDisabled: queueData?.isDisabled,
       // Read (view) only fields
-      createdBy: queueData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: queueData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: queueData?.createdOn ? new Date(queueData?.createdOn) : new Date(),
-      lastModifiedBy:
-        queueData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: queueData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: queueData?.lastModifiedOn ? new Date(queueData?.lastModifiedOn) : new Date(),
     });
   }, [

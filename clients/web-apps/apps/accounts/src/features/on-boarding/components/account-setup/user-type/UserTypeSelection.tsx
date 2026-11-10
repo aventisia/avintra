@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { RadioGroup } from "@avplatform/ui/radio-group";
-import { Building2, User } from "lucide-react";
+import { BuildingsIcon, UserIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomRadioItem from "@/components/ui/CustomRadioItem";
@@ -40,14 +40,14 @@ export default function UserTypeSelection() {
           selected={userType}
           className="flex flex-col items-center justify-center space-y-2 text-center py-14"
         >
-          <div className="bg-slate-100 p-2 rounded-lg">
-            <User
+          <div className="bg-sunken p-2 rounded-lg">
+            <UserIcon
               className={`w-7 h-7 ${
                 userType === "individual" ? "text-primary" : "text-muted-foreground"
               }`}
             />
           </div>
-          <div className="font-semibold text-md text-gray-900">Individual</div>
+          <div className="font-semibold text-md text-ink">Individual</div>
           <span className="font-normal leading-3.5 text-muted-foreground">
             For personal use or managing your own projects.
           </span>
@@ -58,14 +58,14 @@ export default function UserTypeSelection() {
           selected={userType}
           className="flex flex-col items-center justify-center space-y-2 text-center py-14"
         >
-          <div className="bg-slate-100 p-2 rounded-lg">
-            <Building2
+          <div className="bg-sunken p-2 rounded-lg">
+            <BuildingsIcon
               className={`w-7 h-7 ${
                 userType === "organization" ? "text-primary" : "text-muted-foreground"
               }`}
             />
           </div>
-          <div className="font-semibold text-md text-gray-900">Organization</div>
+          <div className="font-semibold text-md text-ink">Organization</div>
           <span className="font-normal leading-3.5 text-muted-foreground ">
             For companies, teams, or groups managing multiple users.
           </span>
@@ -73,7 +73,7 @@ export default function UserTypeSelection() {
       </RadioGroup>
 
       {/* Proceed Button */}
-      <Button className="w-full mt-5" onClick={handleProceed} disabled={!userType}>
+      <Button size="lg" className="w-full mt-5" onClick={handleProceed} disabled={!userType}>
         Continue
       </Button>
     </ContentContainer>

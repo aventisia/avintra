@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
@@ -35,52 +35,39 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
     <>
       <div className="flex w-full items-start justify-between gap-2">
         <div className="flex items-center gap-3">
-          <div
-            className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl transition-colors ${
-              isDisabled
-                ? "bg-muted"
-                : "bg-gradient-to-br from-primary/10 to-primary/5 group-hover:from-primary group-hover:to-primary-600 group-hover:text-primary-foreground"
-            }`}
-          >
+          <div className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-sunken text-ink-2 [&_svg]:text-ink-2">
             {data.icon ? (
               iconMapper[data.icon]
             ) : (
-              <FallbackImageIcon className="h-12 w-12" src={data.img} />
+              <FallbackImageIcon className="h-6 w-6" src={data.img} />
             )}
           </div>
 
           <div className="flex flex-col items-start gap-1">
             <h2
-              className={`text-[1rem] font-semibold leading-tight tracking-tight transition-colors ${
+              className={`text-[15px]/5 font-semibold tracking-[-0.01em] text-ink transition-colors ${
                 isDisabled
-                  ? "text-foreground"
-                  : "text-foreground group-hover:text-primary group-focus-visible:text-primary"
+                  ? ""
+                  : "group-hover:text-primary-text group-focus-visible:text-primary-text"
               }`}
             >
               {data.label}
             </h2>
-            {isDisabled && (
-              <Badge
-                variant="outline"
-                className="bg-amber-100/70 text-3xs font-medium text-amber-700 ring-amber-200"
-              >
-                Coming soon
-              </Badge>
-            )}
+            {isDisabled && <Badge variant="review">Coming soon</Badge>}
           </div>
         </div>
 
         <ArrowRightIcon
-          className={`stroke-1.5 h-5 w-5 shrink-0 transition-colors ${
+          className={`size-4 shrink-0 transition-colors ${
             isDisabled
               ? "text-muted-foreground/60"
-              : "text-foreground/70 group-hover:text-primary group-focus-visible:text-primary"
+              : "text-muted-foreground group-hover:text-primary-text group-focus-visible:text-primary-text"
           }`}
         />
       </div>
 
       <p
-        className={`text-sm leading-relaxed ${
+        className={`text-body-sm ${
           isDisabled ? "text-muted-foreground/80" : "text-muted-foreground"
         }`}
       >
@@ -88,14 +75,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
       </p>
 
       <div className="flex items-center gap-2">
-        <Badge
-          variant={"outline"}
-          className={
-            isDisabled
-              ? "bg-muted/50 font-normal text-muted-foreground/70"
-              : "bg-muted font-normal text-muted-foreground"
-          }
-        >
+        <span className="font-mono text-[11.5px] text-muted-foreground">
           {isCustomToolsL1
             ? customToolNodesCount === null
               ? "…"
@@ -103,7 +83,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
             : isDisabled
               ? "Coming soon"
               : `${totalActions} nodes`}
-        </Badge>
+        </span>
       </div>
     </>
   );

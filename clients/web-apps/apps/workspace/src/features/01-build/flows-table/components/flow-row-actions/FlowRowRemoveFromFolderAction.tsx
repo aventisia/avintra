@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { FolderOutput } from "lucide-react";
+import { FoldersIcon } from "@phosphor-icons/react";
 
 import { useMoveFlowToFolder } from "../../hooks/useMoveFlowToFolder.hook";
 
@@ -17,7 +17,7 @@ export const FlowRowRemoveFromFolderAction = ({
   return (
     <SimpleDDMenuItem
       content="Remove from folder"
-      Icon={FolderOutput}
+      Icon={FoldersIcon}
       onClick={() => moveFlow({ flowId: rowId, flowName: name, folder: null })}
     />
   );

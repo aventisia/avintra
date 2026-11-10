@@ -17,26 +17,30 @@ const MarkdownViewer = ({
     // Headers with custom styling
     h1: ({ children }) => (
       <h2
-        className={`border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
-          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
-        }`}
+        className={
+          compact
+            ? "mb-1.5 mt-5 font-mono text-label uppercase text-muted-foreground first:mt-0"
+            : "mb-4 mt-10 border-b border-line pb-1 text-3xl font-semibold tracking-tight text-ink"
+        }
       >
         {children}
       </h2>
     ),
     h2: ({ children }) => (
       <h2
-        className={`border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
-          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
-        }`}
+        className={
+          compact
+            ? "mb-1.5 mt-5 font-mono text-label uppercase text-muted-foreground first:mt-0"
+            : "mb-4 mt-10 border-b border-line pb-1 text-3xl font-semibold tracking-tight text-ink"
+        }
       >
         {children}
       </h2>
     ),
     h3: ({ children }) => (
       <h3
-        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-2 text-base" : "mt-8 text-2xl"
+        className={`mb-2 font-semibold tracking-tight text-ink ${
+          compact ? "mt-4 text-body-sm first:mt-0" : "mt-8 text-2xl"
         }`}
       >
         {children}
@@ -44,8 +48,8 @@ const MarkdownViewer = ({
     ),
     h4: ({ children }) => (
       <h4
-        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-2 text-sm" : "mt-7 text-xl"
+        className={`mb-2 font-semibold tracking-tight text-ink ${
+          compact ? "mt-3 text-body-sm" : "mt-7 text-xl"
         }`}
       >
         {children}
@@ -53,8 +57,8 @@ const MarkdownViewer = ({
     ),
     h5: ({ children }) => (
       <h5
-        className={`mb-1 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-2 text-sm" : "mt-6 text-lg"
+        className={`mb-1 font-semibold tracking-tight text-ink ${
+          compact ? "mt-3 text-body-sm" : "mt-6 text-lg"
         }`}
       >
         {children}
@@ -62,8 +66,8 @@ const MarkdownViewer = ({
     ),
     h6: ({ children }) => (
       <h6
-        className={`mb-1 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-2 text-sm" : "mt-5 text-base"
+        className={`mb-1 font-semibold tracking-tight text-ink ${
+          compact ? "mt-3 text-body-sm" : "mt-5 text-base"
         }`}
       >
         {children}
@@ -72,18 +76,14 @@ const MarkdownViewer = ({
     // Paragraphs
     p: ({ children }) => (
       <p
-        className={`text-gray-700 dark:text-gray-300 ${
-          compact ? "not-first:mt-2 text-[0.8125rem] leading-5" : "not-first:mt-6 leading-7"
-        }`}
+        className={`text-ink-2 ${compact ? "text-body-sm [&+*]:mt-2" : "not-first:mt-6 leading-7"}`}
       >
         {children}
       </p>
     ),
 
     // Strong text
-    strong: ({ children }) => (
-      <strong className="font-semibold text-slate-900 dark:text-slate-100">{children}</strong>
-    ),
+    strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
 
     code({ className, children, ...props }) {
       const value = String(children).replace(/\n$/, "");
@@ -93,12 +93,12 @@ const MarkdownViewer = ({
       if (language) {
         return (
           <div className="not-prose my-4">
-            <pre className="relative overflow-x-auto rounded-lg bg-zinc-900 p-4 font-mono text-sm leading-relaxed dark:bg-zinc-950">
-              <code className="text-zinc-100 dark:text-zinc-200" {...props}>
+            <pre className="relative overflow-x-auto rounded-lg border border-line bg-sunken p-4 font-mono text-code">
+              <code className="text-ink" {...props}>
                 {value}
               </code>
               {language && (
-                <span className="absolute right-2 top-2 text-xs uppercase tracking-wider text-zinc-400">
+                <span className="absolute right-2 top-2 font-mono text-label uppercase text-muted-foreground">
                   {language}
                 </span>
               )}
@@ -110,7 +110,7 @@ const MarkdownViewer = ({
       // Inline code
       return (
         <code
-          className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[0.875em] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+          className="rounded-md bg-sunken px-1.5 py-0.5 font-mono text-[0.875em] font-medium text-ink-2"
           {...props}
         >
           {value}
@@ -126,43 +126,37 @@ const MarkdownViewer = ({
     thead: ({ children }) => <thead>{children}</thead>,
     tbody: ({ children }) => <tbody>{children}</tbody>,
     tr: ({ children }) => (
-      <tr className="m-0 border-t border-gray-300 bg-background p-0 even:bg-slate-50 dark:border-gray-600 even:dark:bg-gray-600/20">
-        {children}
-      </tr>
+      <tr className="m-0 border-t border-line bg-background p-0 even:bg-sunken">{children}</tr>
     ),
     th: ({ children }) => (
-      <th className="m-0 border border-gray-300 px-4 py-2 text-left font-semibold dark:border-gray-600">
-        {children}
-      </th>
+      <th className="m-0 border border-line px-4 py-2 text-left font-semibold">{children}</th>
     ),
-    td: ({ children }) => (
-      <td className="m-0 border border-gray-300 px-4 py-2 dark:border-gray-600">{children}</td>
-    ),
+    td: ({ children }) => <td className="m-0 border border-line px-4 py-2">{children}</td>,
 
     // Lists
     ul: ({ children }) => (
       <ul
-        className={`list-disc ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+        className={`list-disc ${compact ? "mt-2 space-y-1 pl-4 marker:text-muted-foreground [&+*]:mt-2" : "not-first:mt-6 space-y-2"}`}
       >
         {children}
       </ul>
     ),
     ol: ({ children }) => (
       <ol
-        className={`list-decimal ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}
+        className={`list-decimal ${compact ? "mt-2 space-y-1 pl-4 marker:text-muted-foreground [&+*]:mt-2" : "not-first:mt-6 space-y-2"}`}
       >
         {children}
       </ol>
     ),
     li: ({ children }) => (
-      <li className={`dark:text-gray-300 ${compact ? "my-0" : "my-2"}`}>{children}</li>
+      <li className={`text-ink-2 ${compact ? "my-0 pl-0.5 text-body-sm" : "my-2"}`}>{children}</li>
     ),
 
     // Blockquotes (for callouts/notes)
     blockquote: ({ children }) => (
       <div
-        className={`flex overflow-x-auto rounded-lg border border-blue-200 bg-blue-100 py-2 pe-4 text-blue-900 dark:border-blue-200/30 dark:bg-blue-900/30 dark:text-blue-200 ${
-          compact ? "mt-2 text-[0.8125rem]" : "mt-6"
+        className={`flex overflow-x-auto rounded-lg border border-line bg-sunken py-2 pe-4 text-ink-2 ${
+          compact ? "mt-2 text-body-sm" : "mt-6"
         }`}
       >
         <div className="w-full min-w-0 leading-7">{children}</div>
@@ -171,7 +165,7 @@ const MarkdownViewer = ({
 
     a: (props) => (
       <a
-        className="focus-visible:nextra-focus text-primary-600 hover:text-primary/80 font-medium text-primary underline decoration-from-font underline-offset-2 [text-underline-position:from-font] hover:no-underline"
+        className="focus-visible:nextra-focus hover:text-primary-text/80 font-medium text-primary-text underline decoration-from-font underline-offset-2 [text-underline-position:from-font] hover:no-underline"
         {...props}
       >
         {props.children}

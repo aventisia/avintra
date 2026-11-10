@@ -1,8 +1,8 @@
-import { LoadingSpinner, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { FileXIcon, WarningIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { AlertTriangleIcon, FileWarningIcon } from "lucide-react";
 import { type ComponentType, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -71,11 +71,11 @@ const VIEWER_REGISTRY: Record<FileType, ViewerRegistryEntry> = {
 
 // Empty state
 
-const EmptyState = () => (
-  <NoContentMessage
+const NoFilesState = () => (
+  <EmptyState
     primaryMessage="No files available"
     secondaryMessage="Upload a file to get started"
-    Icon={FileWarningIcon}
+    Icon={FileXIcon}
   />
 );
 
@@ -186,7 +186,7 @@ export default function FileViewer({
   return (
     <div className="h-[calc(100vh-4.5rem-var(--header-height)-2*var(--header-padding))] flex flex-col">
       {files.length === 0 || !activeFile ? (
-        <EmptyState />
+        <NoFilesState />
       ) : (
         <>
           <FileViewerHeader
@@ -195,7 +195,7 @@ export default function FileViewer({
             allowDelete={allowDelete}
           />
 
-          <div className="relative flex-1 overflow-hidden bg-background">
+          <div className="relative flex-1 overflow-hidden bg-surface">
             {viewerReady && (
               <>
                 {fileType === FILE_TYPE.UNSUPPORTED ? (
@@ -207,10 +207,10 @@ export default function FileViewer({
             )}
 
             {isLoadingFile && activeFile && (
-              <div className="absolute inset-0 flex items-center justify-center bg-background/80 px-4">
-                <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-background/90 px-4 py-5 text-center shadow-lg">
+              <div className="absolute inset-0 flex items-center justify-center bg-surface/80 px-4">
+                <div className="flex flex-col items-center gap-2 rounded-lg border border-line bg-surface/90 px-4 py-5 text-center shadow-pop">
                   <LoadingSpinner className="h-6 w-6 text-primary" />
-                  <p className="text-sm font-semibold text-foreground">Fetching file…</p>
+                  <p className="text-sm font-semibold text-ink">Fetching file…</p>
                   <p className="text-xs text-muted-foreground">
                     Please wait while the file is retrieved.
                   </p>
@@ -220,13 +220,13 @@ export default function FileViewer({
 
             {hasError && activeFile && (
               <div
-                className="absolute inset-0 flex items-center justify-center bg-background/80 px-4"
+                className="absolute inset-0 flex items-center justify-center bg-surface/80 px-4"
                 role="alert"
                 aria-live="assertive"
               >
-                <div className="flex flex-col items-center gap-2 rounded-lg border border-amber-200 bg-background/90 px-5 py-6 text-center shadow-lg">
-                  <AlertTriangleIcon className="size-6 text-amber-500" />
-                  <p className="text-sm font-semibold text-foreground">Unable to load file</p>
+                <div className="flex flex-col items-center gap-2 rounded-lg border border-warn/30 bg-surface/90 px-5 py-6 text-center shadow-pop">
+                  <WarningIcon className="size-6 text-warn" />
+                  <p className="text-sm font-semibold text-ink">Unable to load file</p>
                   <p className="text-xs text-muted-foreground">
                     {activeFile.error ?? "Try again to download the file."}
                   </p>

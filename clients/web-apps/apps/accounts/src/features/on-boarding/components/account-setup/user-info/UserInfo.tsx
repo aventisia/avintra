@@ -6,13 +6,13 @@ import { UserInfoForm } from "./UserInfoForm";
 
 export const UserInfo = () => {
   // Set dcoument title
-  useDocumentTitle("User Info");
+  useDocumentTitle("User info");
 
   // Return component
   return (
     <ContentContainer className="fadeInRTL">
       <ContentHeader
-        biggerHeading="Select Your Country or Region"
+        biggerHeading="Select your country or region"
         smallerHeading="We'll show plans and pricing available in your area"
       />
 

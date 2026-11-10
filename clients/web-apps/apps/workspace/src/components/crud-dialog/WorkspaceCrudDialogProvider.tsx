@@ -1,17 +1,41 @@
 import {
+  type CrudCustomDialogProps,
+  type CrudDialogEntityConfig,
   CrudDialogProvider,
   type CrudDialogRegistry,
   useCrudDialogUrlState,
-} from "@avplatform/ui/data-table";
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+} from "@avplatform/ui/crud-dialog";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { type CrudEntityKey } from "@avplatform/ui/types";
+import {
+  BellIcon,
+  BookOpenTextIcon,
+  ChatIcon,
+  ClockIcon,
+  CurrencyCircleDollarIcon,
+  EnvelopeIcon,
+  FolderSimpleUserIcon,
+  IdentificationCardIcon,
+  ListIcon,
+  MoneyIcon,
+  MonitorIcon,
+  MonitorPlayIcon,
+  PasswordIcon,
+  PuzzlePieceIcon,
+  QuestionIcon,
+  ShieldIcon,
+  UserGearIcon,
+  UserIcon,
+  WebhooksLogoIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
+import { CrudCardDialog, type CrudCardDialogConfig } from "@/components/card-dialog/CrudCardDialog";
 import { ROLE_OM } from "@/constants/roles";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
-import { getDialogHeadingDescription as getConfigStoreDialogHeadingDescription } from "@/features/02-configure/config-store-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
 import { getDialogHeadingDescription as getSkillsDialogHeadingDescription } from "@/features/02-configure/skill-registry/constants";
@@ -61,9 +85,9 @@ const QueueCrudDialogContent = lazy(() =>
     (m) => ({ default: m.QueueCrudDialogContent }),
   ),
 );
-const ConfigStoreCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/config-store-table/components/config-store-crud-dialog/ConfigStoreCrudDialogContent").then(
-    (m) => ({ default: m.ConfigStoreCrudDialogContent }),
+const ConfigStoreFormDialog = lazy(() =>
+  import("@/features/02-configure/config-store-table/components/config-store-crud-dialog/ConfigStoreFormDialog").then(
+    (m) => ({ default: m.ConfigStoreFormDialog }),
   ),
 );
 const KBCrudDialogContent = lazy(() =>
@@ -162,128 +186,141 @@ const SaNotificationCrudDialogContent = lazy(() =>
   ),
 );
 
+const cardDialog = (config: CrudCardDialogConfig): CrudDialogEntityConfig => ({
+  Dialog: (props: CrudCustomDialogProps) => <CrudCardDialog {...props} {...config} />,
+});
+
 const crudDialogRegistry: CrudDialogRegistry = {
-  machine: {
-    maxWidth: "!max-w-[36rem]",
+  machine: cardDialog({
+    Icon: MonitorIcon,
     getHeader: getMachineDialogHeadingDescription,
     Content: MachineCrudDialogContent,
-  },
-  job: {
-    maxWidth: "!max-w-[42rem]",
+  }),
+  job: cardDialog({
+    Icon: MonitorPlayIcon,
+    widthClassName: "w-[min(42rem,calc(100vw-2rem))]",
     getHeader: getJobDialogHeadingDescription,
     Content: JobCrudDialogContent,
-  },
+  }),
   flow: {
     Dialog: FlowFormDialog,
   },
   folder: {
     Dialog: FolderCrudDialog,
   },
-  queue: {
-    maxWidth: "!max-w-[36rem]",
+  queue: cardDialog({
+    Icon: ListIcon,
     getHeader: getQueueDialogHeadingDescription,
     Content: QueueCrudDialogContent,
-  },
+  }),
   configstore: {
-    maxWidth: "!max-w-[36rem]",
-    getHeader: getConfigStoreDialogHeadingDescription,
-    Content: ConfigStoreCrudDialogContent,
+    Dialog: ConfigStoreFormDialog,
   },
-  knowledgeBase: {
-    maxWidth: "!max-w-[36rem]",
+  knowledgeBase: cardDialog({
+    Icon: BookOpenTextIcon,
     getHeader: getKBDialogHeadingDescription,
     Content: KBCrudDialogContent,
-  },
-  skill: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  skill: cardDialog({
+    Icon: PuzzlePieceIcon,
     getHeader: getSkillsDialogHeadingDescription,
     Content: SkillsCrudDialogContent,
-  },
-  tool: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  tool: cardDialog({
+    Icon: WrenchIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getToolsDialogHeadingDescription,
     Content: ToolCrudDialogContent,
-  },
-  vault: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  vault: cardDialog({
+    Icon: ShieldIcon,
     getHeader: getVaultCredentialDialogHeadingDescription,
     Content: VaultCredentialCrudDialogContent,
-  },
-  emailTrigger: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  emailTrigger: cardDialog({
+    Icon: EnvelopeIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getEmailTriggerDialogHeadingDescription,
     Content: EmailTriggerCrudDialogContent,
-  },
-  messageTrigger: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  messageTrigger: cardDialog({
+    Icon: ChatIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getMessageTriggerDialogHeadingDescription,
     Content: MessageTriggerCrudDialogContent,
-  },
-  timeTrigger: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  timeTrigger: cardDialog({
+    Icon: ClockIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getTimeTriggerDialogHeadingDescription,
     Content: TimeTriggerCrudDialogContent,
-  },
-  webhookTrigger: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  webhookTrigger: cardDialog({
+    Icon: WebhooksLogoIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getWebhookTriggerDialogHeadingDescription,
     Content: WebhookTriggerCrudDialogContent,
-  },
-  creditPlan: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  creditPlan: cardDialog({
+    Icon: MoneyIcon,
     getHeader: getCreditPlanDialogHeadingDescription,
     Content: CreditPlanCrudDialogContent,
-  },
-  subscriptionPlan: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  subscriptionPlan: cardDialog({
+    Icon: CurrencyCircleDollarIcon,
     getHeader: getSubPlansDialogHeadingDescription,
     Content: SubPlansCrudDialogContent,
-  },
-  tenant: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  tenant: cardDialog({
+    Icon: IdentificationCardIcon,
     getHeader: getTenantDialogHeadingDescription,
     Content: TenantCrudDialogContent,
-  },
-  ticket: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  ticket: cardDialog({
+    Icon: QuestionIcon,
     getHeader: getTicketDialogHeadingDescription,
     Content: TicketCrudDialogContent,
-  },
-  saSupportTicket: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  saSupportTicket: cardDialog({
+    Icon: QuestionIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getSaTicketDialogHeadingDescription,
     Content: SaTicketCrudDialogContent,
-  },
-  user: {
-    maxWidth: "!max-w-[32rem]",
+  }),
+  user: cardDialog({
+    Icon: UserIcon,
+    widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getUserDialogHeadingDescription,
     Content: UserCrudDialogContent,
-  },
-  role: {
-    maxWidth: "!max-w-[40rem]",
+  }),
+  role: cardDialog({
+    Icon: UserGearIcon,
+    widthClassName: "w-[min(40rem,calc(100vw-2rem))]",
     getHeader: getRoleDialogHeadingDescription,
     Content: RoleCrudDialogContent,
-  },
-  space: {
-    maxWidth: "!max-w-[32rem]",
+  }),
+  space: cardDialog({
+    Icon: FolderSimpleUserIcon,
+    widthClassName: "w-[min(32rem,calc(100vw-2rem))]",
     getHeader: getSpaceDialogHeadingDescription,
     Content: SpaceCrudDialogContent,
-  },
-  apiKey: {
-    maxWidth: "!max-w-[34rem]",
+  }),
+  apiKey: cardDialog({
+    Icon: PasswordIcon,
+    widthClassName: "w-[min(34rem,calc(100vw-2rem))]",
     getHeader: getApiKeyDialogHeadingDescription,
     Content: ApiKeyCrudDialogContent,
-  },
-  notification: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  notification: cardDialog({
+    Icon: BellIcon,
     getHeader: getNotificationDialogHeadingDescription,
     Content: NotificationCrudDialogContent,
-  },
-  saNotification: {
-    maxWidth: "!max-w-[36rem]",
+  }),
+  saNotification: cardDialog({
+    Icon: BellIcon,
     getHeader: getSaNotificationDialogHeadingDescription,
     Content: SaNotificationCrudDialogContent,
-  },
+  }),
 };
 
 /**
@@ -374,11 +411,11 @@ export function WorkspaceCrudDialogProvider() {
   ]);
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       {isBlockedAction || isPendingProdEditAuth || isPendingInviteAuth ? null : (
         <CrudDialogProvider
           registry={crudDialogRegistry}
-          contentBanner={showEnvBanner ? <ConfigureProdEnvBanner className="mx-2" /> : undefined}
+          contentBanner={showEnvBanner ? <ConfigureProdEnvBanner /> : undefined}
         />
       )}
     </Suspense>
