@@ -2,13 +2,19 @@ import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { type ChatModelSelection } from "@avplatform/assistant-chat";
 import { ChatModelPicker, ChatThread } from "@avplatform/chat";
 import { useBranding } from "@avplatform/ui/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
+
+import { HOME_CHAT_FILE_QUERY_KEY } from "../constants/home-chat.constant";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
+import { useHomeChatFiles } from "../hooks/useHomeChatFiles.hook";
 import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
+import { HomeChatPreview } from "./HomeChatPreview";
 import { HomeChatWelcome } from "./HomeChatWelcome";
 
 type HomeChatThreadProps = {
@@ -41,6 +47,22 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   const starters = useHomeChatStarters(destinations);
   const navigate = useNavigate();
 
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const files = useHomeChatFiles(props.conversationId, setPreviewId);
+  const conversationIdRef = useRef(props.conversationId);
+  conversationIdRef.current = props.conversationId;
+  const preview = useQuery({
+    queryKey: [...HOME_CHAT_FILE_QUERY_KEY, previewId],
+    queryFn: async () => (await getChatArtifact(previewId!)).data,
+    enabled: !!previewId,
+  });
+  const previewFile = preview.data && {
+    name: preview.data.name,
+    contentType: preview.data.contentType,
+    sizeBytes: preview.data.sizeBytes,
+    url: preview.data.blobPath.startsWith("data:") ? preview.data.blobPath : null,
+  };
+
   const runtime = useHomeChatRuntime({
     ...props,
     getModelSelection: () => modelSelectionRef.current,
@@ -49,23 +71,36 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         route,
         label: `${section} › ${label}`,
       })),
+    onReplyComplete: (text) => files.saveFromReply(conversationIdRef.current, text),
   });
   const { companyName } = useBranding();
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <ChatThread
-        placeholder={`Ask ${companyName ?? "anything"}…`}
-        welcome={<HomeChatWelcome />}
-        starters={starters}
-        destinations={destinations}
-        onNavigate={navigate}
-        composerTools={
-          groups.length > 0 && (
-            <ChatModelPicker groups={groups} value={modelKey} onChange={selectModel} />
-          )
-        }
-      />
+      <div className="flex h-full min-h-0">
+        <div className="min-w-0 flex-1">
+          <ChatThread
+            placeholder={`Ask ${companyName ?? "anything"}…`}
+            welcome={<HomeChatWelcome />}
+            starters={starters}
+            destinations={destinations}
+            onNavigate={navigate}
+            files={files.handlers}
+            composerTools={
+              groups.length > 0 && (
+                <ChatModelPicker groups={groups} value={modelKey} onChange={selectModel} />
+              )
+            }
+          />
+        </div>
+        {previewId && (
+          <HomeChatPreview
+            file={previewFile ?? null}
+            isLoading={preview.isLoading}
+            onClose={() => setPreviewId(null)}
+          />
+        )}
+      </div>
     </AssistantRuntimeProvider>
   );
 };

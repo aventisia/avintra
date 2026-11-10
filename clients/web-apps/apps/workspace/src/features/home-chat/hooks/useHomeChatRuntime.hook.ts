@@ -28,6 +28,8 @@ type HomeChatRuntimeInput = {
   getModelSelection: () => ChatModelSelection | null;
   /** Pages the assistant may send the user to, read on every send. */
   getDestinations: () => readonly ChatDestination[];
+  /** Receives each finished reply's full text. */
+  onReplyComplete: (text: string) => void;
 };
 
 /**
@@ -41,6 +43,7 @@ export const useHomeChatRuntime = ({
   onConversationMissing,
   getModelSelection,
   getDestinations,
+  onReplyComplete,
 }: HomeChatRuntimeInput) => {
   const isMountedRef = useRef(false);
   useEffect(() => {
@@ -73,6 +76,7 @@ export const useHomeChatRuntime = ({
         getModelSelection,
         getDestinations,
         onTextDelta: () => refreshHistory(true),
+        onTextComplete: onReplyComplete,
         onRunFinished: () => refreshHistory(false),
       }),
     ),

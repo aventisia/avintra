@@ -2,6 +2,7 @@ import { AuiIf, ThreadPrimitive, useAui, useAuiState } from "@assistant-ui/react
 import { ArrowDownIcon } from "@phosphor-icons/react";
 import { type CSSProperties, type ReactNode, useMemo, useRef, useState } from "react";
 
+import { ChatFileContext, type ChatFileHandlers } from "../constants/chat-file.constant";
 import { ChatIntentContext } from "../constants/chat-intent.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
 import type { ChatDestinationOption } from "../utils/chat-intent.util";
@@ -22,6 +23,8 @@ export type ChatThreadProps = {
   destinations?: readonly ChatDestinationOption[];
   /** Opens a suggested page; without it no page is offered. */
   onNavigate?: (route: string) => void;
+  /** Turns files in replies into cards; without it they render as code. */
+  files?: ChatFileHandlers;
 };
 
 const columnStyle = { "--chat-column": "46rem" } as CSSProperties;
@@ -58,6 +61,7 @@ export const ChatThread = ({
   placeholder = "Message",
   destinations = NO_DESTINATIONS,
   onNavigate,
+  files,
 }: ChatThreadProps) => {
   const [mountedAt] = useState(Date.now);
   const aui = useAui();
@@ -71,38 +75,40 @@ export const ChatThread = ({
   const intent = useMemo(() => ({ destinations, onNavigate }), [destinations, onNavigate]);
 
   return (
-    <ChatIntentContext.Provider value={intent}>
-      <ChatThreadMountedAtContext.Provider value={mountedAt}>
-        <ThreadPrimitive.Root
-          data-chat
-          style={columnStyle}
-          className="flex h-full min-h-0 flex-col bg-surface text-ink dark:bg-bg"
-        >
-          <ThreadPrimitive.Viewport
-            turnAnchor="top"
-            scrollToBottomOnInitialize
-            scrollToBottomOnThreadSwitch
-            className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-4 [scrollbar-gutter:stable] sm:px-6"
+    <ChatFileContext.Provider value={files ?? null}>
+      <ChatIntentContext.Provider value={intent}>
+        <ChatThreadMountedAtContext.Provider value={mountedAt}>
+          <ThreadPrimitive.Root
+            data-chat
+            style={columnStyle}
+            className="flex h-full min-h-0 flex-col bg-surface text-ink dark:bg-bg"
           >
-            <AuiIf condition={(s) => s.thread.isEmpty}>
-              <div className="mx-auto flex w-full max-w-[var(--chat-column)] flex-1 flex-col justify-end pb-10 pt-10">
-                {welcome}
-              </div>
-            </AuiIf>
-            <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
-            <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-4 pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
-              <ScrollToLatest />
-              <ChatComposer placeholder={placeholder} inputRef={inputRef} tools={composerTools} />
-            </ThreadPrimitive.ViewportFooter>
-            <AuiIf condition={(s) => s.thread.isEmpty}>
-              <div className="mx-auto w-full max-w-[var(--chat-column)] flex-1 pb-10">
-                {starters && <ChatStarters groups={starters} onPick={fillComposer} />}
-              </div>
-            </AuiIf>
-          </ThreadPrimitive.Viewport>
-          <RunAnnouncer />
-        </ThreadPrimitive.Root>
-      </ChatThreadMountedAtContext.Provider>
-    </ChatIntentContext.Provider>
+            <ThreadPrimitive.Viewport
+              turnAnchor="top"
+              scrollToBottomOnInitialize
+              scrollToBottomOnThreadSwitch
+              className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-4 [scrollbar-gutter:stable] sm:px-6"
+            >
+              <AuiIf condition={(s) => s.thread.isEmpty}>
+                <div className="mx-auto flex w-full max-w-[var(--chat-column)] flex-1 flex-col justify-end pb-10 pt-10">
+                  {welcome}
+                </div>
+              </AuiIf>
+              <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
+              <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
+                <ScrollToLatest />
+                <ChatComposer placeholder={placeholder} inputRef={inputRef} tools={composerTools} />
+              </ThreadPrimitive.ViewportFooter>
+              <AuiIf condition={(s) => s.thread.isEmpty}>
+                <div className="mx-auto w-full max-w-[var(--chat-column)] flex-1 pb-10">
+                  {starters && <ChatStarters groups={starters} onPick={fillComposer} />}
+                </div>
+              </AuiIf>
+            </ThreadPrimitive.Viewport>
+            <RunAnnouncer />
+          </ThreadPrimitive.Root>
+        </ChatThreadMountedAtContext.Provider>
+      </ChatIntentContext.Provider>
+    </ChatFileContext.Provider>
   );
 };

@@ -11,13 +11,21 @@ import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { useContext } from "react";
 
+import { ChatFileContext } from "../constants/chat-file.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import {
+  chatFileSize,
+  findChatFile,
+  textAfterChatFile,
+  textBeforeChatFile,
+} from "../utils/chat-file.util";
 import { NAVIGATE_TOOL_NAME } from "../utils/chat-intent.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
 import { ChatBlueprint } from "./ChatBlueprint";
 import { ChatDestination } from "./ChatDestination";
+import { ChatFileCard } from "./ChatFileCard";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
 
@@ -70,6 +78,40 @@ const MessageError = () => (
   </MessagePrimitive.Error>
 );
 
+const AssistantText = ({ text }: { text: string }) => {
+  const files = useContext(ChatFileContext);
+  const isRunning = useAuiState((s) => s.message.status?.type === "running");
+  const file = files ? findChatFile(text) : null;
+  if (!files || !file) return text.trim() ? <ChatMarkdown /> : null;
+
+  const state = file.isComplete ? files.resolveFile(file) : "saving";
+  // A file that never got stored shows as code, so nothing is lost.
+  if (state === null && !isRunning) return <ChatMarkdown />;
+
+  const card =
+    state && state !== "saving" ? (
+      <ChatFileCard
+        name={file.name}
+        contentType={file.contentType}
+        sizeBytes={chatFileSize(file.body)}
+        onOpen={() => files.onOpenFile(state.id)}
+      />
+    ) : (
+      <ChatFileCard
+        name={file.name}
+        contentType={file.contentType}
+        progress={file.isComplete ? "Saving…" : "Writing…"}
+      />
+    );
+  return (
+    <>
+      {textBeforeChatFile(text) && <ChatMarkdown preprocess={textBeforeChatFile} />}
+      {card}
+      {textAfterChatFile(text) && <ChatMarkdown preprocess={textAfterChatFile} />}
+    </>
+  );
+};
+
 const AssistantThinking = () => {
   const startedAt = useAuiState((s) => s.message.createdAt);
   return <ThinkingIndicator startedAt={startedAt} className="py-1" />;
@@ -120,7 +162,7 @@ const AssistantMessage = () => {
               case "group-activity":
                 return <ChatActivity indices={part.indices}>{children}</ChatActivity>;
               case "text":
-                return part.text.trim() ? <ChatMarkdown /> : null;
+                return <AssistantText text={part.text} />;
               case "reasoning":
                 return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
               case "data":

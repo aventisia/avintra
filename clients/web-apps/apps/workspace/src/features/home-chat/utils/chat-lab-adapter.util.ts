@@ -157,7 +157,35 @@ const BLUEPRINT: ChatBlueprint = {
   ],
 };
 
+const FILE_REPLY = `Here's a one-page status board you can drop into a portal:
+
+\`\`\`html
+<!doctype html>
+<html>
+<head>
+<title>Invoice status board</title>
+<style>
+  body { font: 15px system-ui; margin: 2rem; color: #1f2937; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; }
+  .num { font-size: 2rem; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>Invoices this week</h1>
+<div class="grid">
+  <div class="card"><div class="num">42</div>Received</div>
+  <div class="card"><div class="num">31</div>Approved</div>
+  <div class="card"><div class="num">3</div>Overdue</div>
+</div>
+</body>
+</html>
+\`\`\`
+
+Open it to preview; it's saved with this chat.`;
+
 const pickReply = (prompt: string) => {
+  if (/html|file|page/i.test(prompt)) return FILE_REPLY;
   if (/code|webhook/i.test(prompt)) return CODE_REPLY;
   if (/long|scroll/i.test(prompt)) return LONG_REPLY;
   return MARKDOWN_REPLY;

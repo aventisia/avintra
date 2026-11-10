@@ -130,9 +130,15 @@ const markdownComponents = memoizeMarkdownComponents({
 });
 
 /** Streams the current message's markdown with GFM, code blocks and smooth reveal. */
-export const ChatMarkdown = memo(function ChatMarkdown() {
+export const ChatMarkdown = memo(function ChatMarkdown({
+  preprocess,
+}: {
+  /** Rewrites the part's text before rendering. */
+  preprocess?: (text: string) => string;
+}) {
   return (
     <MarkdownTextPrimitive
+      preprocess={preprocess}
       remarkPlugins={[remarkGfm]}
       components={markdownComponents}
       className="break-words"

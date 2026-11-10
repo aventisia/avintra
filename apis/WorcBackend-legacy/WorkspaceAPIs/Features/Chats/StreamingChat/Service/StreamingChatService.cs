@@ -45,9 +45,10 @@ public class StreamingChatService : IStreamingChatService
     // Landing turns run without a Chat Agent flow: a fixed prompt plus the UI
     // skills the custom-UI generation path relies on.
     private const string LandingSystemPrompt =
-        "You are the Workspace assistant. Answer questions and help the user create files from natural language: custom interfaces, documents, spreadsheets, presentations, PDFs, and images. " +
-        "When the user asks for an interface, produce a complete self-contained HTML artifact using the available ui-* skills. " +
-        "For any other file, emit exactly one fenced block holding the file content with a sentence of reasoning outside the fence; the chat stores that block as the downloadable artifact.";
+        "You are the Workspace assistant. Answer questions and help the user create files from natural language: custom interfaces, images, spreadsheets, and documents. " +
+        "When the user asks for an interface, produce a complete self-contained HTML document using the available ui-* skills. " +
+        "Deliver a file as exactly one fenced block tagged html, svg, csv, tsv, or markdown, with a sentence of reasoning outside the fence; the chat stores that block as a file the user can preview and download. " +
+        "Show code (scripts, queries, config) in ordinary fenced code blocks tagged with their language; those stay inline and are not stored.";
 
     private static readonly List<string> LandingSkillNames = new()
     {

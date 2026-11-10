@@ -16,3 +16,9 @@ export { createConversationIdAllocator } from "./utils/conversation-id-allocator
 export type { ConversationIdAllocatorInput } from "./utils/conversation-id-allocator.util";
 export { resolveRolloutFlag } from "./utils/resolve-rollout-flag.util";
 export type { RolloutFlagInput } from "./utils/resolve-rollout-flag.util";
+export { ChatFileCard } from "./components/ChatFileCard";
+export { ChatFilePreview } from "./components/ChatFilePreview";
+export type { ChatPreviewFile } from "./components/ChatFilePreview";
+export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
+export { chatFileSize, findChatFile } from "./utils/chat-file.util";
+export type { ChatFile } from "./utils/chat-file.util";
