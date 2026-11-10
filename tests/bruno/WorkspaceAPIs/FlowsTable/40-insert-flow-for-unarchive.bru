@@ -1,0 +1,32 @@
+meta {
+  name: Insert flow for unarchive checks
+  type: http
+  seq: 40
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "type": "Agent",
+    "name": "Unarchive agent {{$randomProductName}} {{$randomInt}}",
+    "description": "Created to verify archiving and unarchiving an eligible agent."
+  }
+}
+
+script:post-response {
+  test("flow is created for the unarchive checks", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("UNARCHIVE_FLOW_ID", res.getBody().data.id);
+  }
+}

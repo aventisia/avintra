@@ -1,0 +1,27 @@
+meta {
+  name: Insert first version for unarchive checks
+  type: http
+  seq: 41
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow-version/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowId": "{{UNARCHIVE_FLOW_ID}}"
+  }
+}
+
+script:post-response {
+  test("first draft version is created", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

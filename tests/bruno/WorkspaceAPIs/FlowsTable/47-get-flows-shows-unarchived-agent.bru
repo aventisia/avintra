@@ -1,0 +1,24 @@
+meta {
+  name: Get flows shows the unarchived agent
+  type: http
+  seq: 47
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/flow/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("unarchived agent is back in the active list", function() {
+    expect(res.getStatus()).to.equal(200);
+    const flow = res.getBody().data.find(item => item.id === bru.getGlobalEnvVar("UNARCHIVE_FLOW_ID"));
+    expect(flow).to.not.equal(undefined);
+    expect(flow.isArchived).to.equal(false);
+  });
+}

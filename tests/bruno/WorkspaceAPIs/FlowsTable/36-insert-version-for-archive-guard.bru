@@ -1,0 +1,30 @@
+meta {
+  name: Insert flow version for archive guard checks
+  type: http
+  seq: 36
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/flow-version/create
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "flowId": "{{ARCHIVE_GUARD_FLOW_ID}}"
+  }
+}
+
+script:post-response {
+  test("flow version is created for the archive guard checks", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  if (res.getStatus() == 200) {
+    bru.setGlobalEnvVar("ARCHIVE_GUARD_FLOW_VERSION_ID", res.getBody().data.id);
+  }
+}
