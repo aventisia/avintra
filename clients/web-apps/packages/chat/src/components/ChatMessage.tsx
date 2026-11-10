@@ -3,19 +3,17 @@ import {
   AuiIf,
   ErrorPrimitive,
   MessagePrimitive,
+  type PartState,
   useAuiState,
 } from "@assistant-ui/react";
-import {
-  ChatToolCall,
-  ThinkingIndicator,
-  ToolApprovalBulkBar,
-  ToolApprovalRequest,
-} from "@avplatform/assistant-chat";
+import { ThinkingIndicator } from "@avplatform/assistant-chat";
 import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { useContext } from "react";
 
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
+import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
@@ -28,7 +26,16 @@ const useMessageEntranceClass = () => {
     : undefined;
 };
 
-const ungrouped = () => null;
+const ACTIVITY = ["group-activity"] as const;
+
+const groupActivity = (part: PartState) =>
+  part.type === "reasoning" ||
+  (part.type === "data" && part.name === "skill") ||
+  (part.type === "tool-call" && !part.approval)
+    ? ACTIVITY
+    : null;
+
+const skillName = (data: unknown) => String((data as { name?: unknown } | null)?.name ?? "");
 
 const useHasText = () =>
   useAuiState((s) =>
@@ -104,21 +111,19 @@ const AssistantMessage = () => {
       )}
     >
       <div className="text-base leading-7 text-ink">
-        <MessagePrimitive.GroupedParts groupBy={ungrouped}>
-          {({ part }) => {
+        <MessagePrimitive.GroupedParts groupBy={groupActivity} indicator="empty">
+          {({ part, children }) => {
             switch (part.type) {
+              case "group-activity":
+                return <ChatActivity indices={part.indices}>{children}</ChatActivity>;
               case "text":
                 return part.text.trim() ? <ChatMarkdown /> : null;
+              case "reasoning":
+                return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
+              case "data":
+                return part.name === "skill" ? <ChatSkillStep name={skillName(part.data)} /> : null;
               case "tool-call":
-                return (
-                  <div className="my-2">
-                    {part.approval ? (
-                      <ToolApprovalRequest {...part} />
-                    ) : (
-                      (part.toolUI ?? <ChatToolCall {...part} />)
-                    )}
-                  </div>
-                );
+                return part.approval ? <ChatApproval {...part} /> : <ChatToolStep {...part} />;
               case "indicator":
                 return <AssistantThinking />;
               default:
@@ -126,7 +131,7 @@ const AssistantMessage = () => {
             }
           }}
         </MessagePrimitive.GroupedParts>
-        <ToolApprovalBulkBar />
+        <ChatApprovalBulkBar />
       </div>
       <MessageError />
       {hasText && (

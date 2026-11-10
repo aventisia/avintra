@@ -34,7 +34,7 @@ export const ChatLabPage = () => {
     <div className="h-dvh">
       <AssistantRuntimeProvider runtime={runtime}>
         <ChatThread
-          placeholder="Try “markdown”, “code”, “long” or “error”…"
+          placeholder="Try “markdown”, “code”, “agent”, “approve”, “long” or “error”…"
           welcome={<HomeChatWelcome />}
           starters={HOME_CHAT_STARTERS}
           composerTools={

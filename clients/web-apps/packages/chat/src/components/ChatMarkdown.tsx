@@ -8,6 +8,7 @@ import { cn } from "@avplatform/ui/lib";
 import { memo } from "react";
 import remarkGfm from "remark-gfm";
 
+import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 
 const CodeHeader = ({ language, code }: CodeHeaderProps) => (
@@ -125,6 +126,7 @@ const markdownComponents = memoizeMarkdownComponents({
     );
   },
   CodeHeader,
+  SyntaxHighlighter: ChatCodeBlock,
 });
 
 /** Streams the current message's markdown with GFM, code blocks and smooth reveal. */
