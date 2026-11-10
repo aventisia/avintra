@@ -6,6 +6,7 @@ import {
   createConversationIdAllocator,
   withAttachmentText,
 } from "@avplatform/chat";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { getMessages } from "../apis/conversation-message.apis";
 import { createConversation } from "../apis/conversation.apis";
+import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
 
 type HomeChatRuntimeInput = {
   conversationId?: string;
@@ -41,6 +43,15 @@ export const useHomeChatRuntime = ({
     };
   }, []);
 
+  const queryClient = useQueryClient();
+  const isHistoryFreshRef = useRef(false);
+  // The server titles and reorders the chat as the turn starts, so the history refreshes on the first reply text and again once the turn ends.
+  const refreshHistory = (onlyOncePerTurn: boolean) => {
+    if (onlyOncePerTurn && isHistoryFreshRef.current) return;
+    isHistoryFreshRef.current = onlyOncePerTurn;
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_HISTORY_QUERY_KEY });
+  };
+
   const [adapter] = useState(() =>
     withAttachmentText(
       createAssistantUIModelAdapter({
@@ -53,6 +64,8 @@ export const useHomeChatRuntime = ({
         }),
         getExtraHeaders: getSpaceHeaders,
         getModelSelection,
+        onTextDelta: () => refreshHistory(true),
+        onRunFinished: () => refreshHistory(false),
       }),
     ),
   );

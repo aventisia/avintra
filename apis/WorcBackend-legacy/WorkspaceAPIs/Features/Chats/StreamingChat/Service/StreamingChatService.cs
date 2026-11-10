@@ -217,6 +217,9 @@ public class StreamingChatService : IStreamingChatService
             yield break;
         }
 
+        if (request.ConversationId is Guid conversationId)
+            await TitleLandingConversationAsync(conversationId, request.UserInput, cancellationToken);
+
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
@@ -227,6 +230,21 @@ public class StreamingChatService : IStreamingChatService
         {
             yield return chunk;
         }
+    }
+
+    /// <summary>
+    /// Titles a landing conversation from its first message; later turns leave the title alone.
+    /// </summary>
+    private Task TitleLandingConversationAsync(Guid conversationId, string? userInput, CancellationToken cancellationToken)
+    {
+        var title = ConversationHelpers.BuildLandingTitle(userInput);
+        return _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == conversationId &&
+                w.UserId == _userId &&
+                w.FlowVersionId == null &&
+                w.Title == null)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.Title, title), cancellationToken);
     }
 
     /// <summary>

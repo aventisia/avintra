@@ -165,6 +165,34 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
+    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, int skip, int take)
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<LandingConversationDto>>.Create("Failed to retrieve conversations", 500);
+
+        var query = _unitOfWork.ConversationRepo.GetByConditionAsync(w =>
+            w.FlowVersionId == null &&
+            w.UserId == _userId &&
+            w.Status != ConversationStatusEnum.Archived &&
+            w.Title != null);
+
+        var trimmedSearch = search?.Trim();
+        if (!string.IsNullOrEmpty(trimmedSearch))
+        {
+            var pattern = $"%{SearchByQueryHelpers.EscapeLikePattern(trimmedSearch)}%";
+            query = query.Where(w => EF.Functions.ILike(w.Title!, pattern, "\\"));
+        }
+
+        var conversations = await query
+            .OrderByDescending(o => o.LastModifiedOn)
+            .ThenByDescending(o => o.Id)
+            .Skip(Math.Max(skip, 0))
+            .Take(Math.Clamp(take, 1, 100))
+            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn })
+            .ToListAsync();
+
+        return serviceResponse.Update(null, 200, conversations);
+    }
+
     // Retrieves a specific conversation by its unique identifier.
     public async Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId)
     {
@@ -396,6 +424,26 @@ public class ConversationService : IConversationService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationTitleAsync(UpdateConversationTitleDto updateConversationTitleDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to rename conversation", 500);
+
+        var title = updateConversationTitleDto.Title.Trim();
+        if (title.Length == 0)
+            return serviceResponse.Update("Title is required", 400);
+
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationTitleDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.Title, title));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
     }
 
     // Archives a conversation.

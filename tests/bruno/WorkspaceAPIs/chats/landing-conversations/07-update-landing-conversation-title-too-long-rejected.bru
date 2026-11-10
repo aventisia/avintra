@@ -1,0 +1,32 @@
+meta {
+  name: Update landing conversation title too long rejected
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/title
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{LANDING_CONVERSATION_ID}}",
+    "title": "placeholder"
+  }
+}
+
+script:pre-request {
+  req.setBody({ id: bru.getVar("LANDING_CONVERSATION_ID"), title: "a".repeat(201) });
+}
+
+script:post-response {
+  test("title longer than 200 characters is rejected with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Get landing conversations hides untitled
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/list?take=100
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("a conversation with no turn yet is not listed", function() {
+    expect(res.getStatus()).to.equal(200);
+    const ids = res.getBody().data.map((c) => c.id);
+    expect(ids).to.not.include(bru.getVar("LANDING_CONVERSATION_ID"));
+  });
+}

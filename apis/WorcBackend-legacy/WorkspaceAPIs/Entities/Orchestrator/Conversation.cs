@@ -23,6 +23,13 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public ConversationStatusEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the history title of a landing conversation, taken from its first message. Max-200.
+    /// Null until the first landing turn is sent.
+    /// </summary>
+    [MaxLength(200)]
+    public string? Title { get; set; }
+
+    /// <summary>
     /// Gets or sets the Flow Version this conversation is associated with.
     /// </summary>
     [ForeignKey("FlowVersionId")]

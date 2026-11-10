@@ -1,0 +1,28 @@
+meta {
+  name: Update landing conversation title blank rejected
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/title
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{LANDING_CONVERSATION_ID}}",
+    "title": "   "
+  }
+}
+
+script:post-response {
+  test("blank title is rejected with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

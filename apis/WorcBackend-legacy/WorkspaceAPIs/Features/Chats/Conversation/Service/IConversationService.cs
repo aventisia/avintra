@@ -40,6 +40,11 @@ public interface IConversationService
     Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync();
 
     /// <summary>
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title.
+    /// </summary>
+    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, int skip, int take);
+
+    /// <summary>
     /// Retrieves a specific conversation by its unique identifier.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>
@@ -65,6 +70,11 @@ public interface IConversationService
     /// A service response containing the updated conversation.
     /// </returns>
     Task<ServiceResponse<ConversationDto>> UpdateAsync(ConversationDto conversationDto);
+
+    /// <summary>
+    /// Renames one of the current user's landing conversations.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationTitleAsync(UpdateConversationTitleDto updateConversationTitleDto);
 
     /// <summary>
     /// Archives a conversation, making it read-only and moving it to the archived list.

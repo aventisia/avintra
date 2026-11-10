@@ -449,6 +449,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 

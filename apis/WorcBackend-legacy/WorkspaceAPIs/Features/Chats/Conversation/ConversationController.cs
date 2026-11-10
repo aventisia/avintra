@@ -44,6 +44,16 @@ public class ConversationController : BaseApiController
         return ResultHelper(await _conversationService.GetLandingArchivedConversationsAsync());
     }
 
+    /// <summary>
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title.
+    /// </summary>
+    [HttpGet("landing/list")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<LandingConversationDto>>>> GetLandingConversations(
+        [FromQuery] string? search, [FromQuery] int skip = 0, [FromQuery] int take = 30)
+    {
+        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, skip, take));
+    }
+
     // Gets a conversation by its ID.
     [HttpGet("{conversationId}")]
     public async Task<ActionResult<ServiceResponse<ConversationDto>>> GetById(Guid conversationId)
@@ -63,6 +73,15 @@ public class ConversationController : BaseApiController
     public async Task<ActionResult<ServiceResponse<ConversationDto>>> Update([FromBody] ConversationDto conversationDto)
     {
         return ResultHelper(await _conversationService.UpdateAsync(conversationDto));
+    }
+
+    /// <summary>
+    /// Renames one of the current user's landing conversations.
+    /// </summary>
+    [HttpPut("landing/title")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationTitle([FromBody] UpdateConversationTitleDto updateConversationTitleDto)
+    {
+        return ResultHelper(await _conversationService.UpdateLandingConversationTitleAsync(updateConversationTitleDto));
     }
 
     // Archives a conversation (moves it to archived state).
