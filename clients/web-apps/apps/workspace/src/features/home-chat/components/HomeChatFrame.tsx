@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
 import { NotePencilIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
+import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
 import { HOME_CHAT_HISTORY_OPEN_STORAGE_KEY } from "../constants/home-chat.constant";
 import { useMediaQuery } from "../hooks/useMediaQuery.hook";
 
@@ -34,20 +35,29 @@ export type HomeChatHistoryControls = {
 type HomeChatFrameProps = {
   renderHistory: (controls: HomeChatHistoryControls) => ReactNode;
   onNewChat: () => void;
+  /** Shown in the bar above the thread, such as the open chat's title. */
+  header?: ReactNode;
   children: ReactNode;
 };
 
 /**
  * Home's frame: the history rail beside the thread from 1024px (open by
  * default from 1280px, then as the user left it), a sheet over it below, and
- * ⌘⇧O / Ctrl+Shift+O for a new chat.
+ * ⌘⇧O / Ctrl+Shift+O for a new chat. An open file preview hides the rail until it closes.
  */
-export const HomeChatFrame = ({ renderHistory, onNewChat, children }: HomeChatFrameProps) => {
+export const HomeChatFrame = ({
+  renderHistory,
+  onNewChat,
+  header,
+  children,
+}: HomeChatFrameProps) => {
   const isWide = useMediaQuery("(min-width: 1024px)");
   const [isRailOpen, setIsRailOpen] = useState(readStoredRailOpen);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isRailYielding, setIsRailYielding] = useState(false);
 
   const toggleRail = (isOpen: boolean) => {
+    setIsRailYielding(false);
     setIsRailOpen(isOpen);
     storeRailOpen(isOpen);
   };
@@ -69,7 +79,7 @@ export const HomeChatFrame = ({ renderHistory, onNewChat, children }: HomeChatFr
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const showsRail = isWide && isRailOpen;
+  const showsRail = isWide && isRailOpen && !isRailYielding;
   const dismissSheet = () => setIsSheetOpen(false);
 
   return (
@@ -97,20 +107,29 @@ export const HomeChatFrame = ({ renderHistory, onNewChat, children }: HomeChatFr
         </Dialog>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        {!showsRail && (
-          <div className="flex h-12 shrink-0 items-center gap-1 px-2 sm:px-3">
-            <ChatIconButton
-              label="Open chat history"
-              onClick={() => (isWide ? toggleRail(true) : setIsSheetOpen(true))}
-            >
-              <SidebarSimpleIcon />
-            </ChatIconButton>
-            <ChatIconButton label="New chat" onClick={startNewChat}>
-              <NotePencilIcon />
-            </ChatIconButton>
+        {(!showsRail || header) && (
+          <div className="flex h-12 shrink-0 items-center gap-1 bg-surface px-2 dark:bg-bg sm:px-3">
+            {!showsRail && (
+              <>
+                <ChatIconButton
+                  label="Open chat history"
+                  onClick={() => (isWide ? toggleRail(true) : setIsSheetOpen(true))}
+                >
+                  <SidebarSimpleIcon />
+                </ChatIconButton>
+                <ChatIconButton label="New chat" onClick={startNewChat}>
+                  <NotePencilIcon />
+                </ChatIconButton>
+              </>
+            )}
+            {header}
           </div>
         )}
-        <div className="min-h-0 flex-1">{children}</div>
+        <div className="min-h-0 flex-1">
+          <HomeChatRailYieldContext.Provider value={setIsRailYielding}>
+            {children}
+          </HomeChatRailYieldContext.Provider>
+        </div>
       </div>
     </div>
   );

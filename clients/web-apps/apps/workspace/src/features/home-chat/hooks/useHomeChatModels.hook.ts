@@ -1,3 +1,4 @@
+import { modelDisplayName } from "@avplatform/chat";
 import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
@@ -70,10 +71,21 @@ const createModel = (
     provider,
     providerLabel: PROVIDER_LABELS[provider],
     modelId,
-    label: modelId,
+    label: modelDisplayName(modelId),
     credentialName,
     isByokEnabled: Boolean(credentialName),
   };
+};
+
+/** One model per provider and name, so an alias hides its dated snapshot and a prefixed copy; the shortest ID stays. */
+const keepShortestIdPerName = (models: HomeChatModel[]) => {
+  const byName = new Map<string, HomeChatModel>();
+  for (const model of models) {
+    const name = `${model.provider}::${model.label}`;
+    const kept = byName.get(name);
+    if (!kept || model.modelId.length < kept.modelId.length) byName.set(name, model);
+  }
+  return [...byName.values()];
 };
 
 /**
@@ -111,13 +123,7 @@ export const useHomeChatModels = () => {
       }
     }
 
-    // A tenant-enabled model wins over a duplicate entry.
-    const seen = new Set<string>();
-    return options.filter((model) => {
-      if (seen.has(model.key)) return false;
-      seen.add(model.key);
-      return true;
-    });
+    return keepShortestIdPerName(options);
   }, [tenantQuery.data]);
 
   const groups = useMemo<HomeChatModelGroup[]>(() => {

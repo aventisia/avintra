@@ -2,20 +2,15 @@ import { cn } from "@avplatform/ui/lib";
 import {
   ArrowRightIcon,
   CircleNotchIcon,
-  FileCodeIcon,
-  FileCsvIcon,
   FileImageIcon,
   FileTextIcon,
 } from "@phosphor-icons/react";
 
+import { CHAT_FILE_ICONS } from "../constants/chat-file.constant";
 import { formatFileSize } from "../utils/chat-file.util";
 
-const iconFor = (contentType: string) => {
-  if (contentType === "text/html") return FileCodeIcon;
-  if (contentType.startsWith("image/")) return FileImageIcon;
-  if (contentType === "text/csv" || contentType === "text/tab-separated-values") return FileCsvIcon;
-  return FileTextIcon;
-};
+const iconFor = (contentType: string) =>
+  CHAT_FILE_ICONS[contentType] ?? (contentType.startsWith("image/") ? FileImageIcon : FileTextIcon);
 
 const describeType = (contentType: string) =>
   ({

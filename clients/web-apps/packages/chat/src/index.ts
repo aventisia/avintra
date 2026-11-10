@@ -1,5 +1,6 @@
 export { ChatHistory } from "./components/ChatHistory";
 export type { ChatHistoryProps } from "./components/ChatHistory";
+export { ChatTitle } from "./components/ChatTitle";
 export { ChatIconButton } from "./components/ChatIconButton";
 export { ChatModelPicker } from "./components/ChatModelPicker";
 export type { ChatModelGroup, ChatModelPickerProps } from "./components/ChatModelPicker";
@@ -20,5 +21,7 @@ export { ChatFileCard } from "./components/ChatFileCard";
 export { ChatFilePreview } from "./components/ChatFilePreview";
 export type { ChatPreviewFile } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
+export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
 export { chatFileSize, findChatFile } from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
+export { modelDisplayName } from "./utils/model-name.util";

@@ -1,4 +1,8 @@
+import { CHAT_FILE_ICONS } from "@avplatform/chat";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import {
+  ChatCircleIcon,
   EyeIcon,
   FileDocIcon,
   FileImageIcon,
@@ -9,6 +13,7 @@ import {
   TrashIcon,
 } from "@phosphor-icons/react";
 import type { FC, MouseEvent } from "react";
+import { Link } from "react-router-dom";
 
 import { TooltipIconButton } from "@/react-toolkit/features/av-platform-assistant-ui/components/tooltip-icon-button";
 
@@ -17,6 +22,8 @@ type WorkspaceChatFileCardProps = {
   name?: string | null;
   contentType?: string | null;
   sizeBytes?: number | null;
+  /** Route of the chat that produced the file; without it no link is shown. */
+  chatHref?: string;
   onPreview?: (artifactId: string) => void;
   onDelete?: (artifactId: string) => void;
 };
@@ -30,15 +37,12 @@ const iconForWorkspaceChatFile = (contentType: string | null | undefined, fileNa
   const type = (contentType ?? "").toLowerCase();
   const extension = getWorkspaceChatCardFileExtension(fileName);
 
+  if (CHAT_FILE_ICONS[type]) return CHAT_FILE_ICONS[type];
   if (type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(extension))
     return FileImageIcon;
   if (type === "application/pdf" || extension === "pdf") return FilePdfIcon;
   if (type.includes("word") || ["doc", "docx"].includes(extension)) return FileDocIcon;
-  if (
-    type.includes("sheet") ||
-    type.includes("excel") ||
-    ["xls", "xlsx", "csv"].includes(extension)
-  )
+  if (type.includes("sheet") || type.includes("excel") || ["xls", "xlsx"].includes(extension))
     return FileXlsIcon;
   if (
     type.includes("presentation") ||
@@ -61,6 +65,7 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   name,
   contentType,
   sizeBytes,
+  chatHref,
   onPreview,
   onDelete,
 }) => {
@@ -92,6 +97,17 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
         </span>
         <EyeIcon className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
       </button>
+      {chatHref && (
+        <Tooltip content="Open chat" side="bottom">
+          <Link
+            to={chatHref}
+            aria-label={`Open the chat that made ${label}`}
+            className={buttonVariants({ variant: "ghost", size: "icon6", className: "p-1" })}
+          >
+            <ChatCircleIcon className="size-4" />
+          </Link>
+        </Tooltip>
+      )}
       {onDelete && (
         <TooltipIconButton
           tooltip="Delete artifact"

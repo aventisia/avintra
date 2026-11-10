@@ -20,6 +20,7 @@ import { type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState }
 
 import { type ChatHistoryItem, groupHistoryByDate } from "../utils/history-groups.util";
 import { ChatIconButton } from "./ChatIconButton";
+import { ChatTitleInput } from "./ChatTitleInput";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
 const NEW_CHAT_SHORTCUT_LABEL = IS_MAC ? "⌘⇧O" : "Ctrl+Shift+O";
@@ -131,7 +132,7 @@ export const ChatHistory = ({
                 {group.items.map((item) => (
                   <li key={item.id}>
                     {renamingId === item.id ? (
-                      <HistoryRenameInput
+                      <ChatTitleInput
                         title={item.title}
                         onDone={(title) => {
                           setRenamingId(null);
@@ -234,39 +235,6 @@ const HistoryLink = ({ item, isActive, href, onOpen, onRename, onDelete }: Histo
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
-};
-
-const HistoryRenameInput = ({
-  title,
-  onDone,
-}: {
-  title: string;
-  onDone: (title: string | null) => void;
-}) => {
-  const [value, setValue] = useState(title);
-  const doneRef = useRef(false);
-  const finish = (next: string | null) => {
-    if (doneRef.current) return;
-    doneRef.current = true;
-    onDone(next);
-  };
-
-  return (
-    <Input
-      autoFocus
-      value={value}
-      maxLength={200}
-      aria-label="Chat title"
-      onFocus={(event) => event.currentTarget.select()}
-      onChange={(event) => setValue(event.target.value)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") finish(value.trim() || null);
-        if (event.key === "Escape") finish(null);
-      }}
-      onBlur={() => finish(value.trim() || null)}
-      className="h-9 rounded-lg px-2 text-sm"
-    />
   );
 };
 

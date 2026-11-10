@@ -19,7 +19,6 @@ export const HOME_CHAT_STARTERS: readonly ChatStarterGroup[] = [
       "Build a customer feedback form with a rating, a category and comments",
       "Write a weekly project status report as a document",
       "Make a spreadsheet that tracks monthly expenses by category",
-      "Create a five-slide deck introducing our onboarding process",
     ],
   },
 ];

@@ -22,7 +22,8 @@ export const ChatCodeBlock = ({
 
   const lines = tokenizeCode(code, lang);
   return (
-    <Pre>
+    // IMPORTANT NOTE: assistant-ui memoizes Pre and Code on the markdown node and ignores new children; the key remounts them once tokens arrive.
+    <Pre key={lines ? "highlighted" : "plain"}>
       <Code className="[&_span]:font-mono [&_span]:text-[color:var(--shiki-light)] dark:[&_span]:text-[color:var(--shiki-dark)]">
         {lines
           ? lines.map((tokens, index) => (

@@ -4,7 +4,7 @@ import { ChatModelPicker, ChatThread } from "@avplatform/chat";
 import { useBranding } from "@avplatform/ui/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 
@@ -16,6 +16,8 @@ import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
 import { HomeChatPreview } from "./HomeChatPreview";
 import { HomeChatWelcome } from "./HomeChatWelcome";
+
+const PREVIEW_PARAM = "file";
 
 type HomeChatThreadProps = {
   conversationId?: string;
@@ -47,7 +49,17 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   const starters = useHomeChatStarters(destinations);
   const navigate = useNavigate();
 
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const previewId = searchParams.get(PREVIEW_PARAM);
+  const setPreviewId = (id: string | null) =>
+    setSearchParams(
+      (params) => {
+        if (id) params.set(PREVIEW_PARAM, id);
+        else params.delete(PREVIEW_PARAM);
+        return params;
+      },
+      { replace: true },
+    );
   const files = useHomeChatFiles(props.conversationId, setPreviewId);
   const conversationIdRef = useRef(props.conversationId);
   conversationIdRef.current = props.conversationId;
@@ -81,7 +93,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         <div className="min-w-0 flex-1">
           <ChatThread
             placeholder={`Ask ${companyName ?? "anything"}…`}
-            welcome={<HomeChatWelcome />}
+            welcome={<HomeChatWelcome isSavedChat={!!props.conversationId} />}
             starters={starters}
             destinations={destinations}
             onNavigate={navigate}

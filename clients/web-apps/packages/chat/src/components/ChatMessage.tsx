@@ -20,6 +20,7 @@ import {
   textBeforeChatFile,
 } from "../utils/chat-file.util";
 import { NAVIGATE_TOOL_NAME } from "../utils/chat-intent.util";
+import { formatMessageTime } from "../utils/message-time.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
@@ -117,6 +118,23 @@ const AssistantThinking = () => {
   return <ThinkingIndicator startedAt={startedAt} className="py-1" />;
 };
 
+// IMPORTANT NOTE: groupConversationMessages dates a row without createdOn near the epoch; those times are hidden.
+const EARLIEST_SHOWN_TIME = Date.UTC(2000, 0);
+
+const MessageTime = () => {
+  const createdAt = useAuiState((s) => s.message.createdAt);
+  if (createdAt.getTime() < EARLIEST_SHOWN_TIME) return null;
+  return (
+    <time
+      dateTime={createdAt.toISOString()}
+      title={createdAt.toLocaleString()}
+      className="self-center px-1.5 text-xs text-muted-foreground opacity-0 transition-opacity group-focus-within/message:opacity-100 group-hover/message:opacity-100"
+    >
+      {formatMessageTime(createdAt)}
+    </time>
+  );
+};
+
 const UserMessage = () => {
   const hasText = useHasText();
   return (
@@ -136,6 +154,7 @@ const UserMessage = () => {
             <MessagePrimitive.Parts />
           </div>
           <ActionBarPrimitive.Root className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
+            <MessageTime />
             <MessageCopy />
           </ActionBarPrimitive.Root>
         </>
@@ -191,6 +210,7 @@ const AssistantMessage = () => {
           )}
         >
           <MessageCopy />
+          <MessageTime />
         </ActionBarPrimitive.Root>
       )}
     </MessagePrimitive.Root>

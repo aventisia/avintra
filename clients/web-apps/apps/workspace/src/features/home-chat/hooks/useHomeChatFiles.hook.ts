@@ -11,11 +11,12 @@ import { type ChatArtifactDto } from "@/features/04-assist/workspace-chat/dtos/c
 
 import { HOME_CHAT_FILES_QUERY_KEY } from "../constants/home-chat.constant";
 
-const fileKey = (file: Pick<ChatFile, "name">, sizeBytes: number) => `${file.name}:${sizeBytes}`;
+const fileKey = (file: Pick<ChatFile, "contentType">, sizeBytes: number) =>
+  `${file.contentType}:${sizeBytes}`;
 
 /**
  * Stores the files Home's replies produce as chat artifacts and resolves each
- * reply's file to its stored copy. Files are matched back by name and size.
+ * reply's file to its stored copy. Files are matched back by type and size, so renamed files still match.
  */
 export const useHomeChatFiles = (
   conversationId: string | undefined,
@@ -32,7 +33,7 @@ export const useHomeChatFiles = (
 
   const resolveFile: ChatFileHandlers["resolveFile"] = (file) => {
     const sizeBytes = chatFileSize(file.body);
-    const match = stored.find((item) => item.name === file.name && item.sizeBytes === sizeBytes);
+    const match = stored.find((item) => fileKey(item, item.sizeBytes) === fileKey(file, sizeBytes));
     if (match) return { id: match.id };
     return savingKeys.has(fileKey(file, sizeBytes)) ? "saving" : null;
   };

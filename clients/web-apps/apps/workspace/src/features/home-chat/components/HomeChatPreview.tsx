@@ -1,7 +1,8 @@
 import { ChatFilePreview, type ChatPreviewFile } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 
+import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
 import { useMediaQuery } from "../hooks/useMediaQuery.hook";
 
 type HomeChatPreviewProps = {
@@ -22,6 +23,12 @@ const useReturnFocusOnClose = () =>
 export const HomeChatPreview = ({ file, isLoading, onClose }: HomeChatPreviewProps) => {
   useReturnFocusOnClose();
   const isWide = useMediaQuery("(min-width: 1024px)");
+  const yieldRail = useContext(HomeChatRailYieldContext);
+  useEffect(() => {
+    if (!isWide) return;
+    yieldRail(true);
+    return () => yieldRail(false);
+  }, [isWide, yieldRail]);
   const preview = <ChatFilePreview file={file} isLoading={isLoading} onClose={onClose} />;
 
   if (isWide)
