@@ -34,4 +34,12 @@ public interface IConversationMessageService
     /// <param name="query">The search keyword or phrase.</param>
     /// <returns> A service response containing messages that match the search criteria. </returns>
     Task<ServiceResponse<IEnumerable<SearchConversationMessageDto>>> SearchMessagesAsync(string query);
+
+    /// <summary>
+    /// Stores the current user's rating on the reply to one user turn of their conversation.
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <param name="feedback">The user turn and its rating.</param>
+    /// <returns> A service response that is true once the rating is stored. </returns>
+    Task<ServiceResponse<bool>> SetFeedbackAsync(Guid conversationId, MessageFeedbackDto feedback);
 }

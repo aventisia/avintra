@@ -53,9 +53,11 @@ export function groupConversationMessages(
     const frames: NormalizedChatFrame[] = [];
     const decisions: Record<string, string> = {};
     const fallbackText: string[] = [];
+    let feedback: unknown;
 
     for (const message of group) {
       const metadata = metadataOf(message);
+      feedback ??= metadata.feedback;
       if (metadata[TRANSCRIPT_KEY] === true) {
         if (Array.isArray(metadata.frames)) {
           frames.push(...(metadata.frames as NormalizedChatFrame[]));
@@ -79,7 +81,10 @@ export function groupConversationMessages(
       id: first.id ?? `assistant-${result.length}`,
       role: "assistant",
       status: { type: "complete", reason: "unknown" },
-      metadata: {},
+      metadata:
+        feedback === "positive" || feedback === "negative"
+          ? { submittedFeedback: { type: feedback } }
+          : {},
       content,
       createdAt: toDate(first, result.length),
     } as ThreadMessageLike);

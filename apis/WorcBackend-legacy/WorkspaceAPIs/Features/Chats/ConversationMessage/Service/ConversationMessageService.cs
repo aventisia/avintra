@@ -318,4 +318,72 @@ public class ConversationMessageService : IConversationMessageService
 
         return serviceResponse;
     }
+
+    // Stores the rating on the first assistant row of the turn's reply.
+    public async Task<ServiceResponse<bool>> SetFeedbackAsync(Guid conversationId, MessageFeedbackDto feedback)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Message = "Couldn't save your feedback. Please try again."
+        };
+
+        try
+        {
+            var rows = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w =>
+                    w.ConversationId == conversationId &&
+                    w.Conversation.UserId == _userId)
+                .OrderBy(o => o.CreatedOn)
+                .ToListAsync();
+
+            WorkspaceAPIs.Entities.ConversationMessage? reply = null;
+            var userTurnsSeen = -1;
+            foreach (var row in rows)
+            {
+                if (row.Role == ConversationMessageSenderEnum.User)
+                {
+                    if (++userTurnsSeen > feedback.UserTurn) break;
+                }
+                else if (userTurnsSeen == feedback.UserTurn && row.Role == ConversationMessageSenderEnum.Assistant)
+                {
+                    reply = row;
+                    break;
+                }
+            }
+
+            var metadata = reply?.Metadata is null
+                ? new JsonObject()
+                : JsonNode.Parse(reply.Metadata.RootElement.GetRawText()) as JsonObject;
+            if (reply == null || metadata == null)
+            {
+                serviceResponse.Message = "That reply wasn't found.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            metadata["feedback"] = feedback.Rating;
+            var updatedMetadata = JsonDocument.Parse(metadata.ToJsonString());
+            // IMPORTANT NOTE: only Metadata is written; a full update rewrites Role in enum casing, which the pipeline doesn't read.
+            var updated = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w => w.Id == reply.Id)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(m => m.Metadata, updatedMetadata));
+
+            if (updated == 1)
+            {
+                serviceResponse.Data = true;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Feedback saved.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[SetFeedback] Failed for ConversationId {ConversationId}, UserId: {UserId}",
+                conversationId,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
 }

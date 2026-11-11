@@ -14,3 +14,17 @@ export const getMessages = (conversationId: string) =>
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
+
+/** Rates the reply to one user turn (zero-based) of a conversation. */
+export const setMessageFeedback = (
+  conversationId: string,
+  userTurn: number,
+  rating: "positive" | "negative",
+) =>
+  axiosInstance
+    .put<IHttpResponse<boolean>>(
+      `${baseAPIURL}/${conversationId}/feedback`,
+      { userTurn, rating },
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);

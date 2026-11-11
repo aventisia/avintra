@@ -1,4 +1,4 @@
-import { useLocalRuntime } from "@assistant-ui/react";
+import { type FeedbackAdapter, useLocalRuntime } from "@assistant-ui/react";
 import {
   type ChatDestination,
   type ChatModelSelection,
@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 import { getSpaceHeaders } from "@/utils/space-headers";
 
-import { getMessages } from "../apis/conversation-message.apis";
+import { getMessages, setMessageFeedback } from "../apis/conversation-message.apis";
 import { createConversation } from "../apis/conversation.apis";
 import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
 
@@ -70,16 +70,20 @@ export const useHomeChatRuntime = ({
     return keep;
   };
 
+  const [getConversationId] = useState(() =>
+    createConversationIdAllocator({
+      conversationId,
+      createConversation: async () => (await createConversation()).data.id,
+      onConversationCreated: (createdId) => {
+        if (isMountedRef.current) onConversationCreated(createdId);
+      },
+    }),
+  );
+
   const [adapter] = useState(() =>
     withAttachmentText(
       createAssistantUIModelAdapter({
-        getConversationId: createConversationIdAllocator({
-          conversationId,
-          createConversation: async () => (await createConversation()).data.id,
-          onConversationCreated: (createdId) => {
-            if (isMountedRef.current) onConversationCreated(createdId);
-          },
-        }),
+        getConversationId,
         getExtraHeaders: getSpaceHeaders,
         getModelSelection,
         getDestinations,
@@ -109,5 +113,22 @@ export const useHomeChatRuntime = ({
     }),
   );
 
-  return useLocalRuntime(adapter, { adapters: { history, attachments } });
+  const runtimeRef = useRef<ReturnType<typeof useLocalRuntime>>();
+  const [feedback] = useState<FeedbackAdapter>(() => ({
+    submit: ({ message, type }) => {
+      const messages = runtimeRef.current?.thread.getState().messages ?? [];
+      const index = messages.findIndex((candidate) => candidate.id === message.id);
+      const userTurn = messages.slice(0, index).filter((m) => m.role === "user").length - 1;
+      void getConversationId(false)
+        .then((id) => {
+          if (!id || userTurn < 0) throw new Error("No stored reply to rate");
+          return setMessageFeedback(id, userTurn, type);
+        })
+        .catch(() => toast.error("Couldn't save your feedback"));
+    },
+  }));
+
+  const runtime = useLocalRuntime(adapter, { adapters: { history, attachments, feedback } });
+  runtimeRef.current = runtime;
+  return runtime;
 };

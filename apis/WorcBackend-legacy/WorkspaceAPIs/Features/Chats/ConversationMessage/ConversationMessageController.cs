@@ -33,6 +33,13 @@ public class ConversationMessageController : BaseApiController
         return ResultHelper(await _conversationMessageService.GetRecentMessagesAsync(conversationId, count));
     }
 
+    // Rates the reply to one user turn.
+    [HttpPut("{conversationId}/feedback")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SetFeedback(Guid conversationId, [FromBody] MessageFeedbackDto feedback)
+    {
+        return ResultHelper(await _conversationMessageService.SetFeedbackAsync(conversationId, feedback));
+    }
+
     // Searches messages across all conversations.
     [HttpGet("search")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SearchConversationMessageDto>>>> SearchMessages([FromQuery] string query)

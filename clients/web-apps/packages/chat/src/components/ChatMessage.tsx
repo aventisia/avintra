@@ -15,6 +15,8 @@ import {
   CheckIcon,
   CopyIcon,
   PencilSimpleIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useContext } from "react";
@@ -89,6 +91,31 @@ const MessageEdit = () => (
       <PencilSimpleIcon />
     </ChatIconButton>
   </ActionBarPrimitive.Edit>
+);
+
+const MessageFeedback = () => (
+  <>
+    <ActionBarPrimitive.FeedbackPositive asChild>
+      <ChatIconButton label="Good response">
+        <AuiIf condition={(s) => s.message.metadata.submittedFeedback?.type === "positive"}>
+          <ThumbsUpIcon weight="fill" />
+        </AuiIf>
+        <AuiIf condition={(s) => s.message.metadata.submittedFeedback?.type !== "positive"}>
+          <ThumbsUpIcon />
+        </AuiIf>
+      </ChatIconButton>
+    </ActionBarPrimitive.FeedbackPositive>
+    <ActionBarPrimitive.FeedbackNegative asChild>
+      <ChatIconButton label="Bad response">
+        <AuiIf condition={(s) => s.message.metadata.submittedFeedback?.type === "negative"}>
+          <ThumbsDownIcon weight="fill" />
+        </AuiIf>
+        <AuiIf condition={(s) => s.message.metadata.submittedFeedback?.type !== "negative"}>
+          <ThumbsDownIcon />
+        </AuiIf>
+      </ChatIconButton>
+    </ActionBarPrimitive.FeedbackNegative>
+  </>
 );
 
 const MessageError = () => (
@@ -258,6 +285,7 @@ const AssistantMessage = () => {
           )}
         >
           {hasText && <MessageCopy />}
+          {hasText && <MessageFeedback />}
           {isLast && <MessageRegenerate />}
           {hasText && <MessageTime />}
         </ActionBarPrimitive.Root>
