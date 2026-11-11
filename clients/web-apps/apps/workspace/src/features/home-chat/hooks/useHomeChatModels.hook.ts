@@ -41,6 +41,20 @@ export type HomeChatModel = {
   isByokEnabled: boolean;
 };
 
+/** The speech-to-text model Home dictation runs on. */
+export type HomeChatSpeechModel = Pick<
+  HomeChatModel,
+  "provider" | "modelId" | "credentialName" | "isByokEnabled"
+>;
+
+/** Runs on platform credits when the tenant enables no speech-to-text model. */
+const PLATFORM_SPEECH_MODEL: HomeChatSpeechModel = {
+  provider: "elevenlabs",
+  modelId: "scribe_v2",
+  credentialName: null,
+  isByokEnabled: false,
+};
+
 /** A provider group in the Home composer's model picker. */
 export type HomeChatModelGroup = {
   provider: string;
@@ -141,9 +155,29 @@ export const useHomeChatModels = () => {
     return [...byProvider.values()];
   }, [models]);
 
+  const speechModel = useMemo<HomeChatSpeechModel>(() => {
+    for (const provider of tenantQuery.data?.data ?? []) {
+      const credentialName = provider.credentialName?.trim() || null;
+      const model = provider.enabledModels?.find(
+        ({ capability }) => capability === ModelCapabilityEnum.Stt,
+      );
+      if (provider.isDisabled || !model || !credentialName) continue;
+      const providerName = provider.providerType.trim().toLowerCase();
+      const pipelineProvider = PIPELINE_PROVIDERS[providerName] ?? providerName;
+      return {
+        provider: pipelineProvider,
+        modelId: toModelId(pipelineProvider, model.modelId),
+        credentialName,
+        isByokEnabled: true,
+      };
+    }
+    return PLATFORM_SPEECH_MODEL;
+  }, [tenantQuery.data]);
+
   return {
     models,
     groups,
+    speechModel,
     hasUsableModel: models.length > 0,
     isLoading: tenantQuery.isLoading,
     isError: tenantQuery.isError,

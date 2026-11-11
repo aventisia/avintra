@@ -11,12 +11,15 @@ import {
 import { CHAT_ATTACHMENT_LIMIT } from "../utils/chat-attachment-adapter.util";
 import { ChatAttachment } from "./ChatAttachment";
 import { ChatIconButton } from "./ChatIconButton";
+import { ChatVoiceInput } from "./ChatVoiceInput";
 
 type ChatComposerProps = {
   placeholder: string;
   inputRef: RefObject<HTMLTextAreaElement>;
   /** Controls placed after the attach button, such as a model picker. */
   tools?: ReactNode;
+  /** Turns a voice recording into text; the microphone is hidden without it. */
+  transcribe?: (audio: Blob) => Promise<string>;
 };
 
 const UNSUPPORTED_FILE = "That file type isn't supported. Attach images, PDFs or text files.";
@@ -26,10 +29,10 @@ const roundButtonClass =
 
 /**
  * Auto-growing message box that takes dropped, pasted or picked files. Enter
- * sends, Shift+Enter adds a line, Escape stops a reply, and ↑ in an empty box
- * recalls the last message.
+ * sends, Shift+Enter adds a line, Escape stops a reply, ↑ in an empty box
+ * recalls the last message, and the microphone dictates when transcription is given.
  */
-export const ChatComposer = ({ placeholder, inputRef, tools }: ChatComposerProps) => {
+export const ChatComposer = ({ placeholder, inputRef, tools, transcribe }: ChatComposerProps) => {
   const aui = useAui();
   const attachmentCount = useAuiState((s) => s.composer.attachments.length);
   const isOverLimit = attachmentCount > CHAT_ATTACHMENT_LIMIT;
@@ -100,7 +103,8 @@ export const ChatComposer = ({ placeholder, inputRef, tools }: ChatComposerProps
             </ChatIconButton>
           </ComposerPrimitive.AddAttachment>
           {tools}
-          <div className="ml-auto flex">
+          <div className="ml-auto flex items-center gap-1">
+            {transcribe && <ChatVoiceInput transcribe={transcribe} />}
             <AuiIf condition={(s) => !s.thread.isRunning}>
               <ComposerPrimitive.Send
                 disabled={isOverLimit}

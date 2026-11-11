@@ -8,6 +8,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 
+import { transcribeSpeech } from "../apis/speech.apis";
 import { HOME_CHAT_FILE_QUERY_KEY } from "../constants/home-chat.constant";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
 import { useHomeChatFiles } from "../hooks/useHomeChatFiles.hook";
@@ -27,7 +28,7 @@ type HomeChatThreadProps = {
 
 /** One Home conversation, from its first message or its saved history. */
 export const HomeChatThread = (props: HomeChatThreadProps) => {
-  const { models, groups } = useHomeChatModels();
+  const { models, groups, speechModel } = useHomeChatModels();
   const [modelKey, setModelKey] = useState<string | null>(null);
   const modelSelectionRef = useRef<ChatModelSelection | null>(null);
   const selectModel = (key: string | null) => {
@@ -96,6 +97,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             destinations={destinations}
             onNavigate={navigate}
             files={files.handlers}
+            transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
               groups.length > 0 && (
                 <ChatModelPicker groups={groups} value={modelKey} onChange={selectModel} />

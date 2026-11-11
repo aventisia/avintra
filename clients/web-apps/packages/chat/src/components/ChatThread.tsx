@@ -18,6 +18,8 @@ export type ChatThreadProps = {
   starters?: readonly ChatStarterGroup[];
   /** Controls placed after the composer's attach button, such as a model picker. */
   composerTools?: ReactNode;
+  /** Turns a voice recording into text; the microphone is hidden without it. */
+  transcribe?: (audio: Blob) => Promise<string>;
   /** Composer placeholder. */
   placeholder?: string;
   /** Pages the assistant may offer; a suggested page outside this list isn't shown. */
@@ -74,6 +76,7 @@ export const ChatThread = ({
   welcome,
   starters,
   composerTools,
+  transcribe,
   placeholder = "Message",
   destinations = NO_DESTINATIONS,
   onNavigate,
@@ -116,7 +119,12 @@ export const ChatThread = ({
               <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
               <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
                 <ScrollToLatest />
-                <ChatComposer placeholder={placeholder} inputRef={inputRef} tools={composerTools} />
+                <ChatComposer
+                  placeholder={placeholder}
+                  inputRef={inputRef}
+                  tools={composerTools}
+                  transcribe={transcribe}
+                />
               </ThreadPrimitive.ViewportFooter>
               <AuiIf condition={(s) => s.thread.isEmpty}>
                 <div className="mx-auto w-full max-w-[var(--chat-column)] flex-1 pb-10">
