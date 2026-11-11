@@ -16,12 +16,14 @@ export const useUpdateVaultCredentialMutation = () => {
   const { openOAuthPopup, navigateOAuthPopup, pollOAuthStatus } = useOAuthConnect();
   const oauthPopupRef = useRef<Window | null>(null);
   const [isComplete, setIsComplete] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
 
   const mutation = useMutation({
     mutationFn: updateVaultCredential,
 
     onError: (error) => {
       oauthPopupRef.current?.close();
+      setHasFailed(true);
       setIsComplete(true);
       toast.error(error.toString());
     },
@@ -75,9 +77,10 @@ export const useUpdateVaultCredentialMutation = () => {
 
   const mutate = (payload: Parameters<typeof mutation.mutate>[0]) => {
     setIsComplete(false);
+    setHasFailed(false);
     oauthPopupRef.current = isOAuthCredentialType(payload?.type) ? openOAuthPopup() : null;
     mutation.mutate(payload);
   };
 
-  return { ...mutation, mutate, isComplete };
+  return { ...mutation, mutate, isComplete, hasFailed };
 };

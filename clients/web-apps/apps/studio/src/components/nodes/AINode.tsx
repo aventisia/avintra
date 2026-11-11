@@ -28,7 +28,7 @@ export const AINode = memo(
       }
 
       if (data?.selectedModel) {
-        const newLabel = data?.selectedModel ?? data?.selectedModel?.name;
+        const newLabel = data.selectedModel.name;
         if (newLabel) {
           //  node by id and update its label
           updateNodeData(id, {
