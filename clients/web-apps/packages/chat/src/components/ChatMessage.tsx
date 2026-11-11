@@ -1,14 +1,22 @@
 import {
   ActionBarPrimitive,
   AuiIf,
+  ComposerPrimitive,
   ErrorPrimitive,
   MessagePrimitive,
   type PartState,
   useAuiState,
 } from "@assistant-ui/react";
 import { ThinkingIndicator } from "@avplatform/assistant-chat";
+import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { ArrowClockwiseIcon, CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import {
+  ArrowClockwiseIcon,
+  CheckIcon,
+  CopyIcon,
+  PencilSimpleIcon,
+  WarningCircleIcon,
+} from "@phosphor-icons/react";
 import { useContext } from "react";
 
 import { ChatFileContext } from "../constants/chat-file.constant";
@@ -73,6 +81,14 @@ const MessageRegenerate = () => (
       <ArrowClockwiseIcon />
     </ChatIconButton>
   </ActionBarPrimitive.Reload>
+);
+
+const MessageEdit = () => (
+  <ActionBarPrimitive.Edit asChild>
+    <ChatIconButton label="Edit">
+      <PencilSimpleIcon />
+    </ChatIconButton>
+  </ActionBarPrimitive.Edit>
 );
 
 const MessageError = () => (
@@ -161,8 +177,12 @@ const UserMessage = () => {
           <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
             <MessagePrimitive.Parts />
           </div>
-          <ActionBarPrimitive.Root className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
+          <ActionBarPrimitive.Root
+            hideWhenRunning
+            className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100"
+          >
             <MessageTime />
+            <MessageEdit />
             <MessageCopy />
           </ActionBarPrimitive.Root>
         </>
@@ -170,6 +190,26 @@ const UserMessage = () => {
     </MessagePrimitive.Root>
   );
 };
+
+const EditComposer = () => (
+  <MessagePrimitive.Root className="mx-auto flex w-full max-w-[var(--chat-column)] flex-col items-end pb-2 pt-6">
+    <ComposerPrimitive.Root className="flex w-full max-w-[85%] flex-col rounded-[1.25rem] border border-line bg-surface focus-within:border-line-strong">
+      <ComposerPrimitive.Input
+        autoFocus
+        aria-label="Edit message"
+        className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-4 pb-1 pt-3 text-base leading-7 text-ink outline-none"
+      />
+      <div className="flex justify-end gap-2 px-3 pb-3">
+        <ComposerPrimitive.Cancel asChild>
+          <Button variant="ghost">Cancel</Button>
+        </ComposerPrimitive.Cancel>
+        <ComposerPrimitive.Send asChild>
+          <Button>Send</Button>
+        </ComposerPrimitive.Send>
+      </div>
+    </ComposerPrimitive.Root>
+  </MessagePrimitive.Root>
+);
 
 const AssistantMessage = () => {
   const isLast = useAuiState((s) => s.message.isLast);
@@ -229,5 +269,7 @@ const AssistantMessage = () => {
 /** Renders the current thread message by role. */
 export const ChatMessage = () => {
   const role = useAuiState((s) => s.message.role);
+  const isEditing = useAuiState((s) => s.message.composer.isEditing);
+  if (isEditing) return <EditComposer />;
   return role === "user" ? <UserMessage /> : <AssistantMessage />;
 };
