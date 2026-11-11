@@ -6,7 +6,13 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useVoiceTestCall } from "../hooks/useVoiceTestCall.hook";
 
 /** Studio test call: runs a real session against the draft agent. */
-export const VoiceTestConsole = ({ modelLabel }: { modelLabel?: string }) => {
+export const VoiceTestConsole = ({
+  engineMode,
+  modelLabel,
+}: {
+  engineMode?: "pipeline" | "realtime";
+  modelLabel?: string;
+}) => {
   const agentName = useCurrentFlowStore((state) => state.currentFlow.name) || "Agent";
 
   const call = useVoiceTestCall();
@@ -23,7 +29,9 @@ export const VoiceTestConsole = ({ modelLabel }: { modelLabel?: string }) => {
           <div className="flex flex-wrap items-center gap-1.5">
             <h2 className="mr-1 text-heading text-ink">Test call</h2>
             <Badge variant="primary">Test mode</Badge>
-            <Badge variant="outline">Pipeline</Badge>
+            {engineMode && (
+              <Badge variant="outline">{engineMode === "realtime" ? "Realtime" : "Pipeline"}</Badge>
+            )}
           </div>
           <p className="text-hint text-muted-foreground">
             Live call with your draft agent. Tools run for real; the transcript is not saved.

@@ -41,6 +41,28 @@ export const isPersonaEmpty = (values: FormValues) =>
     hasText(values[name]),
   );
 
+const hasProviderModel = (value: unknown) =>
+  hasText(readKey(value, "provider")) && hasText(readKey(value, "model"));
+
+const getBrainReadiness = (values: FormValues): Pick<VoiceReadinessCheck, "hint" | "isReady"> => {
+  if (values[VOICE_FIELDS.engineMode] === "realtime")
+    return {
+      hint: "Pick a realtime provider, a model, and the credential it uses.",
+      isReady:
+        hasProviderModel(values[VOICE_FIELDS.realtimeModel]) &&
+        hasText(readKey(values[VOICE_FIELDS.realtimeModel], "credential_name")),
+    };
+
+  return {
+    hint: "Pick a language model, speech-to-text and text-to-speech models, and a voice.",
+    isReady:
+      hasProviderModel(values[VOICE_FIELDS.languageModel]) &&
+      hasText(readKey(values[VOICE_FIELDS.speechToText], "model")) &&
+      hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
+      hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
+  };
+};
+
 export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => [
   {
     section: "persona",
@@ -58,11 +80,6 @@ export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => 
   {
     section: "brain",
     label: "Brain",
-    hint: "Pick a language model, speech-to-text and text-to-speech models, and a voice.",
-    isReady:
-      hasText(readKey(values[VOICE_FIELDS.languageModel], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.speechToText], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
+    ...getBrainReadiness(values),
   },
 ];

@@ -52,7 +52,7 @@ async def fetch_settings(claims: VoiceJobClaims) -> dict:
         raise VoiceSessionRejected("Voice agent settings belong to another flow version.")
     if data.get("flowId") != str(claims.flow_id):
         raise VoiceSessionRejected("Voice agent settings belong to another flow.")
-    if data.get("engineMode") != "pipeline":
-        raise VoiceSessionRejected("Only pipeline voice agents are supported.")
+    if data.get("engineMode") not in {"pipeline", "realtime"}:
+        raise VoiceSessionRejected("Voice agent engine mode is not supported.")
 
     return data

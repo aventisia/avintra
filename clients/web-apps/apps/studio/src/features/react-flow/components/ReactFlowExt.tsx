@@ -52,6 +52,7 @@ import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { isSingleNodeAgentFlow } from "../utils/single-node-agent-flow.util";
 import { saveViewport } from "../utils/viewport-persistence";
+import { getVoiceAgentEngineMode } from "../utils/voice-agent-graph.util";
 import { AutoFollowExecutingNode } from "./AutoFollowExecutingNode";
 import { BackgroundExt } from "./BackgroundExt";
 import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
@@ -103,6 +104,11 @@ export const ReactFlowExt = () => {
     queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
   }, [queryClient]);
 
+  const engineMode = useMemo(
+    () => (flowType === FlowTypesEnum.VoiceAgent ? getVoiceAgentEngineMode(nodes) : undefined),
+    [flowType, nodes],
+  );
+
   // Model label for the always-visible single-node agent test panel, read from the
   // AI node's model config so the tester knows what is being exercised.
   const chatModelLabel = useMemo(() => {
@@ -113,13 +119,15 @@ export const ReactFlowExt = () => {
       aiNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
     )?.inputs;
     const modelKey =
-      flowType === FlowTypesEnum.VoiceAgent
-        ? "__ModelConfig__Voice"
-        : "__ModelConfig__Conversation";
+      engineMode === "realtime"
+        ? "__ModelConfig__RealtimeVoice"
+        : flowType === FlowTypesEnum.VoiceAgent
+          ? "__ModelConfig__Voice"
+          : "__ModelConfig__Conversation";
     const modelConfig = inputs?.find((input) => input.key === modelKey)?.value as
       { model?: unknown } | undefined;
     return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
-  }, [flowType, nodes]);
+  }, [engineMode, flowType, nodes]);
 
   const isTestChatDisabled = currentFlow.isPublished === true;
   const isVoiceAgentFlow = flowType === FlowTypesEnum.VoiceAgent;
@@ -346,6 +354,7 @@ export const ReactFlowExt = () => {
     return (
       <VoiceAgentStudio
         isLoading={isLoading || isVersionTransitioning}
+        engineMode={engineMode}
         modelLabel={chatModelLabel}
       />
     );

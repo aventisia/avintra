@@ -26,7 +26,7 @@ from app.features.langgraph.services.tool_skill_selector import (
 )
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.llm_providers.services.corsair_sidecar_service import is_corsair_tool
+from app.features.langgraph.tools.tool_resolver import resolve_tools
 from app.features.llm_providers.chat_agent_response_schema import (
     CHAT_AGENT_RESPONSE_SCHEMA,
 )
@@ -236,7 +236,7 @@ def _create_dynamic_model_node(
         node_model = model
 
         # Load only tools selected by agent selector
-        tools = await _resolve_tools(
+        tools = await resolve_tools(
             tool_registry,
             selected_tool_names,
             current_request,
@@ -323,7 +323,7 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         current_request = restore_request(metadata, request)
 
         # Resolve selected tool names into executable tools
-        tools = await _resolve_tools(
+        tools = await resolve_tools(
             tool_registry,
             selected_tool_names or [],
             current_request,
@@ -332,96 +332,6 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         return await create_tool_node(tools, current_request)(state)
 
     return tool_node_factory
-
-async def _resolve_tools(
-    tool_registry: ToolRegistry,
-    selected_tool_names: list[str] | None,
-    llm_request: LLMRequest | None = None,
-) -> list[BaseTool]:
-    """Resolve selected tool names to concrete tool instances."""
-
-    if not selected_tool_names:
-        return []
-
-    legacy_names = [name for name in selected_tool_names if not is_corsair_tool(name)]
-    corsair_names = [name for name in selected_tool_names if is_corsair_tool(name)]
-
-    tools = []
-    if legacy_names:
-        resolved_legacy = tool_registry.get_by_names(legacy_names)
-        if resolved_legacy:
-            tools.extend(resolved_legacy)
-
-    if corsair_names and llm_request is not None:
-        corsair_tools = await _build_corsair_tools_for_names(corsair_names, llm_request)
-        tools.extend(corsair_tools)
-
-    return tools
-
-
-async def _build_corsair_tools_for_names(
-    tool_names: list[str],
-    llm_request: LLMRequest,
-) -> list[BaseTool]:
-    """Fetch sidecar schemas and build bindable Corsair tools.
-
-    Only actions that are explicitly allowed by ``llm_request.tool_config``
-    are fetched so the model cannot call unconfigured Corsair actions.
-    """
-    from app.features.langgraph.tools.corsair.corsair_tool_factory import (
-        build_corsair_tools_from_schemas,
-    )
-    from app.features.llm_providers.services.corsair_sidecar_service import (
-        fetch_corsair_schemas,
-        parse_corsair_tool_name,
-        to_corsair_action,
-    )
-
-    configs = llm_request.tool_config or []
-    allowed: dict[str, set[str]] = {}
-    for config in configs:
-        if isinstance(config, dict):
-            tool = config.get("tool", "")
-            actions = {a.get("action", "") for a in config.get("actions", [])}
-        else:
-            tool = config.tool
-            actions = {a.action for a in config.actions}
-        plugin = (tool or "").strip().lower()
-        allowed.setdefault(plugin, set()).update(
-            to_corsair_action(plugin, action) for action in actions if action
-        )
-
-    fetch_configs = []
-    wanted: set[str] = set()
-    for name in tool_names:
-        plugin, action = parse_corsair_tool_name(name)
-        plugin = plugin.strip().lower()
-        action = to_corsair_action(plugin, action)
-        wanted.add(f"{plugin}.{action}")
-
-        if action in allowed.get(plugin, set()):
-            fetch_configs.append({"tool": plugin, "actions": [{"action": action}]})
-        else:
-            logger.warning(
-                "Skipping unconfigured Corsair tool %s (plugin=%s action=%s)",
-                name,
-                plugin,
-                action,
-            )
-
-    if not fetch_configs:
-        return []
-
-    try:
-        schemas = await fetch_corsair_schemas(fetch_configs)
-    except Exception:
-        logger.exception("Failed to fetch Corsair schemas for tool binding")
-        return []
-
-    # Filter schemas to only the requested names so the returned list is tight.
-    schemas = [s for s in schemas if s.get("name") in wanted]
-
-    return build_corsair_tools_from_schemas(schemas)
 
 
 def _resolve_skill_configs(

@@ -21,7 +21,9 @@ from uuid import UUID, uuid4
 import pytest
 from livekit.agents import AutoSubscribe, llm, stt
 
-from app.features.realtime_voice.schemas import (
+from voice_agent import session_runtime, stt_adapter
+from voice_agent.chat_bridge import VoiceTurnFrame, build_voice_llm_request
+from voice_agent.contracts import (
     ERROR_CODE_CREDENTIALS_UNAVAILABLE,
     ERROR_CODE_INVALID_CONFIG,
     ERROR_CODE_UPSTREAM,
@@ -30,8 +32,6 @@ from app.features.realtime_voice.schemas import (
     WS_CLOSE_NORMAL,
     WS_CLOSE_UPSTREAM_FAILURE,
 )
-from voice_agent import session_runtime
-from voice_agent.chat_bridge import VoiceTurnFrame, build_voice_llm_request
 from voice_agent.events import (
     VOICE_EVENT_TOPIC,
     RoomEventPublisher,
@@ -42,7 +42,11 @@ from voice_agent.events import (
 )
 from voice_agent.llm_adapter import VoiceEngineLLM
 from voice_agent.metadata import VoiceJobClaims
-from voice_agent.session_runtime import introduction_for, run_session
+from voice_agent.session_runtime import (
+    introduction_for,
+    introduction_instruction,
+    run_session,
+)
 from voice_agent.tts_adapter import LiteLLMTTS
 
 FLOW_VERSION_ID = UUID("44444444-4444-4444-4444-444444444444")
@@ -318,11 +322,15 @@ def test_session_events_cover_state_transcripts_tools_errors_and_timing():
         "llm_first_token_ms",
         "tts_first_audio_ms",
         "turn_total_ms",
+        "endpointing_ms",
+        "caller_to_speaking_ms",
     }
     assert voice_timing["stt_ms"] == 120
     assert voice_timing["llm_first_token_ms"] is not None
     assert voice_timing["tts_first_audio_ms"] is not None
     assert voice_timing["turn_total_ms"] is not None
+    assert voice_timing["endpointing_ms"] is None
+    assert voice_timing["caller_to_speaking_ms"] is None
     assert turn_timing["durationMs"] == voice_timing["turn_total_ms"]
     assert len(_of_type(published, "session.closed")) == 1
     assert _of_type(published, "session.closed")[0]["code"] == WS_CLOSE_NORMAL
@@ -395,6 +403,50 @@ def test_empty_transcript_returns_to_listening():
 
     states = [event["state"] for event in _of_type(published, "session.state")]
     assert states == ["listening", "processing", "listening"]
+
+
+def test_caller_stop_to_final_and_first_audio_are_measured_on_a_streaming_stt_turn():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("listening", "idle")
+    events.user_state("speaking")
+    events.user_state("listening")
+    events.caller_transcript("hello there")
+    turn = events.begin_turn()
+    events.assistant_delta(turn, "Hi.")
+    events.tts_first_audio()
+    events.finish_turn(turn)
+
+    [timing_event] = [
+        event for event in _of_type(published, "timing") if event["stage"] == "turn"
+    ]
+    voice_timing = timing_event["voice_turn_timing"]
+    assert voice_timing["stt_ms"] is None
+    assert voice_timing["endpointing_ms"] is not None
+    assert voice_timing["caller_to_speaking_ms"] is not None
+    assert voice_timing["turn_total_ms"] is not None
+
+
+def test_a_speculative_turn_still_records_the_caller_final_once_it_arrives():
+    published: list[dict] = []
+    events = VoiceSessionEvents("conversation-1", publish=published.append)
+
+    events.state("listening", "idle")
+    events.user_state("speaking")
+    events.user_state("listening")
+    turn = events.begin_turn()
+    events.assistant_delta(turn, "Hi.")
+    events.caller_transcript("hello there")
+    events.tts_first_audio()
+    events.finish_turn(turn)
+
+    [timing_event] = [
+        event for event in _of_type(published, "timing") if event["stage"] == "turn"
+    ]
+    voice_timing = timing_event["voice_turn_timing"]
+    assert voice_timing["endpointing_ms"] is not None
+    assert voice_timing["caller_to_speaking_ms"] is not None
 
 
 def test_finished_turn_persists_the_same_timing_object_as_its_event():
@@ -579,6 +631,15 @@ def test_introduction_is_used_only_for_an_ai_first_speaker():
     assert introduction_for({"firstSpeaker": "ai", "introduction": "   "}) is None
 
 
+def test_realtime_introduction_instruction_keeps_the_configured_text_verbatim():
+    instruction = introduction_instruction("Hello, this is Tata support.")
+
+    assert instruction.endswith("\n\nHello, this is Tata support.")
+    assert "exactly as written" in instruction
+    assert "word for word" in instruction
+    assert "do not add a greeting" in instruction
+
+
 def test_ai_first_speaks_the_resolved_introduction_and_wires_the_pipeline(
     monkeypatch, voice_persistence
 ):
@@ -611,7 +672,10 @@ def test_ai_first_speaks_the_resolved_introduction_and_wires_the_pipeline(
         "resume_false_interruption": False,
         "false_interruption_timeout": None,
     }
-    assert options["turn_handling"]["preemptive_generation"] == {"enabled": False}
+    assert options["turn_handling"]["preemptive_generation"] == {
+        "enabled": False,
+        "preemptive_tts": False,
+    }
 
     assert ctx.connected == [{"auto_subscribe": AutoSubscribe.AUDIO_ONLY}]
     assert ctx.participant_requests == [f"user-{USER_ID}"]
@@ -628,6 +692,21 @@ def test_ai_first_speaks_the_resolved_introduction_and_wires_the_pipeline(
     assert closed["reason"] == "participant_disconnected"
     assert closed["code"] == WS_CLOSE_NORMAL
     assert events[-1] is closed
+
+
+def test_saved_preemptive_generation_setting_enables_the_livekit_option(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+
+    asyncio.run(run_session(ctx, _claims(), _settings(preemptiveGeneration=True)))
+
+    [session] = fake_session.instances
+    assert session.options["turn_handling"]["preemptive_generation"] == {
+        "enabled": True,
+        "preemptive_tts": True,
+    }
 
 
 def test_human_first_stays_silent_until_the_caller_speaks(
@@ -702,6 +781,41 @@ def test_configuration_problem_closes_before_connecting(
     assert events[-1] is closed
 
 
+def test_streaming_stt_credential_failure_closes_with_the_credentials_code(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError("vault is down")
+
+    monkeypatch.setattr(stt_adapter, "resolve_credentials", fail)
+
+    asyncio.run(
+        run_session(
+            ctx,
+            _claims(),
+            _settings(
+                stt={
+                    "provider": "elevenlabs",
+                    "model": "scribe_v2_realtime",
+                    "isByokEnabled": True,
+                    "credentialName": "caller-stt-key",
+                }
+            ),
+        )
+    )
+
+    assert fake_session.instances == []
+    events = _payloads(ctx)
+    [error] = _of_type(events, "error")
+    assert error["code"] == ERROR_CODE_CREDENTIALS_UNAVAILABLE
+    [closed] = _of_type(events, "session.closed")
+    assert closed["code"] == WS_CLOSE_FORBIDDEN
+    assert voice_persistence.lifecycles[0].failed is True
+
+
 def test_state_caller_transcript_and_provider_error_events_are_published(
     monkeypatch, voice_persistence
 ):
@@ -731,6 +845,9 @@ def test_state_caller_transcript_and_provider_error_events_are_published(
     [transcript] = _of_type(events, "transcript.final")
     assert transcript["role"] == "user"
     assert transcript["text"] == "hello there"
+    [interim] = _of_type(events, "transcript.interim")
+    assert interim["role"] == "user"
+    assert interim["text"] == "hel"
     [error] = _of_type(events, "error")
     assert error["code"] == ERROR_CODE_UPSTREAM
     assert error["message"] == "STT down"

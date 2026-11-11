@@ -191,13 +191,6 @@ public sealed class VoiceAgentSettingsResolver : IVoiceAgentSettingsResolver
             flowVersion.Flow.Name,
             nodeConfig);
 
-        if (string.Equals(settings.EngineMode, "realtime", StringComparison.Ordinal))
-        {
-            return VoiceAgentSettingsResolution.Failed(
-                VoiceAgentSettingsResolutionStatus.Invalid,
-                "Realtime voice is not available in Phase 1. Use pipeline mode.");
-        }
-
         if (VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(parsedFlow) is string engineError)
         {
             return VoiceAgentSettingsResolution.Failed(

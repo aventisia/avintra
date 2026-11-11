@@ -9,11 +9,12 @@ import { VoiceTestConsole } from "./VoiceTestConsole";
 
 type VoiceAgentStudioProps = {
   isLoading: boolean;
+  engineMode?: "pipeline" | "realtime";
   modelLabel?: string;
 };
 
 /** Voice agent build view: the settings page beside the test call, in place of the canvas. */
-export const VoiceAgentStudio = ({ isLoading, modelLabel }: VoiceAgentStudioProps) => (
+export const VoiceAgentStudio = ({ isLoading, engineMode, modelLabel }: VoiceAgentStudioProps) => (
   <ResizablePanelGroup orientation="horizontal" className="!bg-bg p-1.5">
     <ResizablePanel
       defaultSize="60%"
@@ -34,7 +35,7 @@ export const VoiceAgentStudio = ({ isLoading, modelLabel }: VoiceAgentStudioProp
     </ResizablePanel>
     <ResizableHandle withHandle className="mr-px w-1.5 bg-transparent" />
     <ResizablePanel defaultSize="40%" minSize="30%" className="overflow-hidden rounded-xl">
-      <VoiceTestConsole modelLabel={modelLabel} />
+      <VoiceTestConsole engineMode={engineMode} modelLabel={modelLabel} />
     </ResizablePanel>
   </ResizablePanelGroup>
 );

@@ -1,5 +1,7 @@
 export type VoiceSessionMode = "test" | "live";
 
+export type VoiceNoiseCancellation = "none" | "auto" | "standard" | "telephony";
+
 export type VoiceSessionRequest = {
   flowVersionId: string;
   mode: VoiceSessionMode;
@@ -13,6 +15,7 @@ export type VoiceSessionResponse = {
   conversationId: string;
   agentName: string;
   mode: VoiceSessionMode;
+  noiseCancellation: VoiceNoiseCancellation;
 };
 
 export type VoiceCallState =
@@ -21,9 +24,13 @@ export type VoiceCallState =
 export type VoiceToolCall = { name: string; durationMs?: number; isRunning?: boolean };
 
 export type VoiceTurnLatency = {
-  speechToTextMs: number;
-  firstTokenMs: number;
-  firstAudioMs: number;
+  speechToTextMs: number | null;
+  endpointingMs: number | null;
+  firstTokenMs: number | null;
+  firstAudioMs: number | null;
+  callerToSpeakingMs: number | null;
+  ttftMs: number | null;
+  durationMs: number | null;
 };
 
 export type VoiceCaptionTurn = {
@@ -54,6 +61,10 @@ export type VoiceTurnTiming = {
   llmFirstTokenMs: number | null;
   ttsFirstAudioMs: number | null;
   turnTotalMs: number | null;
+  endpointingMs: number | null;
+  callerToSpeakingMs: number | null;
+  ttftMs: number | null;
+  durationMs: number | null;
 };
 
 /** Decoded event from the worker's `avintra.voice` data topic. */
@@ -70,6 +81,12 @@ export type VoiceServerEvent =
       role: "user" | "assistant";
       text: string;
       turnId?: number;
+    }
+  | {
+      type: "transcript.interim";
+      conversationId: string;
+      role: "user";
+      text: string;
     }
   | {
       type: "tool.call";

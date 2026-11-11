@@ -32,4 +32,8 @@ public sealed class VoiceSessionDto
     /// <summary>The session mode the caller requested.</summary>
     [JsonPropertyName("mode")]
     public string Mode { get; init; } = "live";
+
+    /// <summary>The resolved noise-cancellation mode.</summary>
+    [JsonPropertyName("noiseCancellation")]
+    public string NoiseCancellation { get; init; } = "none";
 }

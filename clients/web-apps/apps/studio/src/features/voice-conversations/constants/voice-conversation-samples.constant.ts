@@ -11,6 +11,10 @@ const latency = (speechToTextMs: number, firstTokenMs: number, firstAudioMs: num
   speechToTextMs,
   firstTokenMs,
   firstAudioMs,
+  endpointingMs: null,
+  callerToSpeakingMs: null,
+  ttftMs: null,
+  durationMs: null,
 });
 
 export const SAMPLE_VOICE_CONVERSATIONS: VoiceConversation[] = [
