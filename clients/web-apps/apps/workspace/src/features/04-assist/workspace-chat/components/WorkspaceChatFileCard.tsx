@@ -1,6 +1,9 @@
 import { CHAT_FILE_ICONS } from "@avplatform/chat";
+import { Checkbox } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { formatDate } from "@avplatform/ui/utils";
 import {
   ChatCircleIcon,
   EyeIcon,
@@ -22,10 +25,15 @@ type WorkspaceChatFileCardProps = {
   name?: string | null;
   contentType?: string | null;
   sizeBytes?: number | null;
+  createdOn?: string | null;
+  conversationTitle?: string | null;
   /** Route of the chat that produced the file; without it no link is shown. */
   chatHref?: string;
   onPreview?: (artifactId: string) => void;
   onDelete?: (artifactId: string) => void;
+  /** Shows a selection checkbox when set. */
+  onSelectedChange?: (artifactId: string, selected: boolean) => void;
+  selected?: boolean;
 };
 
 const getWorkspaceChatCardFileExtension = (fileName: string) => {
@@ -65,12 +73,21 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   name,
   contentType,
   sizeBytes,
+  createdOn,
+  conversationTitle,
   chatHref,
   onPreview,
   onDelete,
+  onSelectedChange,
+  selected = false,
 }) => {
   const label = name?.trim() ? name.trim() : "Stored file";
   const Icon = iconForWorkspaceChatFile(contentType, label);
+  const details = [
+    sizeBytes != null ? formatWorkspaceChatFileSize(sizeBytes) : null,
+    createdOn ? formatDate(createdOn) : null,
+    conversationTitle?.trim() || null,
+  ].filter(Boolean);
 
   const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -78,7 +95,20 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   };
 
   return (
-    <div className="aui-workspace-chat-file-card group flex w-full max-w-sm items-center gap-1 rounded-xl border border-line bg-sunken/40 py-2.5 pl-3 pr-1.5 text-left transition-colors hover:bg-hover/60">
+    <div
+      className={cn(
+        "aui-workspace-chat-file-card group flex w-full max-w-sm items-center gap-1 rounded-xl border border-line bg-sunken/40 py-2.5 pl-3 pr-1.5 text-left transition-colors hover:bg-hover/60",
+        selected && "border-indicator bg-hover/60",
+      )}
+    >
+      {onSelectedChange && (
+        <Checkbox
+          checked={selected}
+          onCheckedChange={(checked) => onSelectedChange(artifactId, checked === true)}
+          aria-label={`Select ${label}`}
+          className="mr-2"
+        />
+      )}
       <button
         type="button"
         onClick={() => onPreview?.(artifactId)}
@@ -91,14 +121,16 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-medium text-ink">{label}</span>
           <span className="block truncate text-xs text-muted-foreground">
-            {sizeBytes != null ? formatWorkspaceChatFileSize(sizeBytes) : "Stored artifact"} ·
-            Preview
+            {details.length ? details.join(" · ") : "Stored artifact"}
           </span>
         </span>
         <EyeIcon className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
       </button>
       {chatHref && (
-        <Tooltip content="Open chat" side="bottom">
+        <Tooltip
+          content={conversationTitle ? `Open “${conversationTitle}”` : "Open chat"}
+          side="bottom"
+        >
           <Link
             to={chatHref}
             aria-label={`Open the chat that made ${label}`}

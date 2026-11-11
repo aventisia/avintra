@@ -23,4 +23,10 @@ export interface ChatArtifactDto {
 
   /** Artifact origin: Generated or Uploaded. */
   origin: "Generated" | "Uploaded";
+
+  /** When the artifact was stored (ISO 8601). */
+  createdOn: string;
+
+  /** Title of the conversation that produced the artifact. */
+  conversationTitle: string | null;
 }

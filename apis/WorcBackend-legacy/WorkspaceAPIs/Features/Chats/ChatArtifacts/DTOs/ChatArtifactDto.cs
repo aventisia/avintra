@@ -48,4 +48,14 @@ public class ChatArtifactDto
     /// </summary>
     [StringLength(20)]
     public required string Origin { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the artifact was stored.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the title of the conversation that produced the artifact.
+    /// </summary>
+    public string? ConversationTitle { get; set; }
 }
