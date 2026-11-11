@@ -82,9 +82,22 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
+            var tenantIds = ShareRowTenantIds();
+            var workspaceShareTarget = await FindWorkspaceShareTargetAsync(resourceId);
+            var resourceType = workspaceShareTarget?.ResourceType ?? ResourceTypeEnum.Space;
+
+            if (workspaceShareTarget is { } found &&
+                !await CanReadSharesAsync(resourceId, found.ResourceType, found.ShareTarget, tenantIds))
+            {
+                return serviceResponse.Update("Resource not found.", 404);
+            }
+
             // Fetch all resource user access records for the given resource and include user details.
             var resourceUserAccesses = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.ResourceId == resourceId)
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType &&
+                    tenantIds.Contains(w.TenantId))
                 .Include(i => i.User)
                 .ProjectToType<ResourceUserAccessDto>()
                 .ToListAsync();
@@ -118,22 +131,25 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
+            var tenantIds = ShareRowTenantIds();
+
             // Fetch the resource user access including recipient details.
             var resourceUserAccess = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.Id == resourceUserAccessId)
+                .GetByConditionAsync(w =>
+                    w.Id == resourceUserAccessId &&
+                    tenantIds.Contains(w.TenantId))
                 .Include(i => i.User)
                 .ProjectToType<ResourceUserAccessDto>()
                 .SingleOrDefaultAsync();
 
-            if (resourceUserAccess == null)
+            if (resourceUserAccess == null ||
+                !await HasLegitimateAccessAsync(resourceUserAccess.ResourceId, resourceUserAccess.ResourceType, tenantIds))
             {
-                // Log that the resource user access was not found.
                 _logger.LogWarning(
                     "[GetResourceUserAccessByIdAsync] Resource share not found for Id {Id}",
                     resourceUserAccessId);
 
-                serviceResponse.Message = "Resource share not found.";
-                return serviceResponse;
+                return serviceResponse.Update("Resource share not found.", 404);
             }
             // Populate response.
             serviceResponse.Data = resourceUserAccess;
@@ -163,15 +179,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
-            // Block sharing a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<ResourceUserAccessDto>(
-                _unitOfWork,
-                resourceUserAccessDto.ResourceType,
+            var shareDenial = await FindShareDenialAsync<ResourceUserAccessDto>(
                 resourceUserAccessDto.ResourceId,
-                "share");
-            if (prodShareBlock != null)
+                resourceUserAccessDto.ResourceType);
+
+            if (shareDenial != null)
             {
-                return prodShareBlock;
+                return shareDenial;
             }
 
             if (resourceUserAccessDto.UserId != Guid.Empty && resourceUserAccessDto.UserId == _userId)
@@ -253,15 +267,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
-            // Block sharing a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<bool>(
-                _unitOfWork,
-                createResourceUserAccessDto.ResourceType,
+            var shareDenial = await FindShareDenialAsync<bool>(
                 createResourceUserAccessDto.ResourceId,
-                "share");
-            if (prodShareBlock != null)
+                createResourceUserAccessDto.ResourceType);
+
+            if (shareDenial != null)
             {
-                return prodShareBlock;
+                return shareDenial;
             }
 
             var selfUsers = createResourceUserAccessDto.Users
@@ -371,9 +383,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
+            var tenantIds = ShareRowTenantIds();
+
             // Retrieve the existing resource user access.
             var resourceUserAccess = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.Id == resourceUserAccessDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Id == resourceUserAccessDto.Id &&
+                    tenantIds.Contains(w.TenantId))
                 .SingleOrDefaultAsync();
 
             // Return if the resource user access does not exist.
@@ -383,30 +399,21 @@ public class ResourceUserAccessService : IResourceUserAccessService
                     "[UpdateResourceUserAccessAsync] Resource share not found for Id {Id}",
                     resourceUserAccessDto.Id);
 
-                serviceResponse.Message = "Resource share not found.";
-                return serviceResponse;
+                return serviceResponse.Update("Resource share not found.", 404);
             }
 
-            // Block sharing a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<ResourceUserAccessDto>(
-                _unitOfWork,
-                resourceUserAccess.ResourceType,
+            var shareDenial = await FindShareDenialAsync<ResourceUserAccessDto>(
                 resourceUserAccess.ResourceId,
-                "change sharing for");
-            if (prodShareBlock != null)
+                resourceUserAccess.ResourceType);
+
+            if (shareDenial != null)
             {
-                return prodShareBlock;
+                return shareDenial;
             }
 
-            if (resourceUserAccessDto.UserId != Guid.Empty &&
-                resourceUserAccessDto.UserId == _userId &&
-                resourceUserAccess.UserId != _userId)
-            {
-                return serviceResponse.Update("You cannot share a resource with yourself.", 400);
-            }
-
-            // Map updated DTO values to the entity.
-            resourceUserAccessDto.Adapt(resourceUserAccess);
+            // IMPORTANT NOTE: only the access level may change; copying ResourceId or UserId would let
+            // an owner of one resource retarget a row onto a resource they do not own.
+            resourceUserAccess.AccessLevel = resourceUserAccessDto.AccessLevel;
 
             // Update the entity in the repository.
             _unitOfWork.ResourceUserAccessRepo.Update(resourceUserAccess);
@@ -450,159 +457,21 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
-            // Block sharing a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<bool>(
-                _unitOfWork,
-                updateTenantWideAccessDto.ResourceType,
-                updateTenantWideAccessDto.ResourceId,
-                "change sharing for");
-            if (prodShareBlock != null)
+            var resourceId = updateTenantWideAccessDto.ResourceId;
+            var resourceType = updateTenantWideAccessDto.ResourceType;
+            var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
+
+            if (shareTarget == null)
             {
-                return prodShareBlock;
+                return serviceResponse.Update("Resource not found.", 404);
             }
 
-            // Update tenant-wide access based on the resource type.
-            switch (updateTenantWideAccessDto.ResourceType)
+            if (!await HasShareRightsAsync(resourceId, resourceType, shareTarget))
             {
-                case ResourceTypeEnum.Queue:
-                    {
-                        // Retrieve the Queue resource.
-                        var queue = await _unitOfWork.QueueRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (queue == null)
-                            return serviceResponse;
-
-                        // Update tenant-wide access.
-                        queue.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.QueueRepo.Update(queue);
-                        break;
-                    }
-
-                case ResourceTypeEnum.Trigger:
-                    {
-                        // Retrieve the Trigger resource.
-                        var trigger = await _unitOfWork.TriggerRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (trigger == null)
-                            return serviceResponse;
-
-                        trigger.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.TriggerRepo.Update(trigger);
-                        break;
-                    }
-
-                case ResourceTypeEnum.ConfigStore:
-                    {
-                        // Retrieve the ConfigStore resource.
-                        var configStore = await _unitOfWork.ConfigStoreRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (configStore == null)
-                            return serviceResponse;
-
-                        configStore.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.ConfigStoreRepo.Update(configStore);
-                        break;
-                    }
-
-                case ResourceTypeEnum.VaultCredential:
-                    {
-                        // Retrieve the VaultCredential resource.
-                        var vaultCredential = await _unitOfWork.VaultCredentialRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (vaultCredential == null)
-                            return serviceResponse;
-
-                        vaultCredential.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.VaultCredentialRepo.Update(vaultCredential);
-                        break;
-                    }
-
-                case ResourceTypeEnum.KnowledgeBase:
-                    {
-                        // Retrieve the KnowledgeBase resource.
-                        var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (knowledgeBase == null)
-                            return serviceResponse;
-
-                        knowledgeBase.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.KnowledgeBaseRepo.Update(knowledgeBase);
-                        break;
-                    }
-
-                case ResourceTypeEnum.Flow:
-                    {
-                        // Retrieve the Flow resource.
-                        var flow = await _unitOfWork.FlowRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (flow == null)
-                            return serviceResponse;
-
-                        flow.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.FlowRepo.Update(flow);
-                        break;
-                    }
-
-                case ResourceTypeEnum.FlowVersion:
-                    {
-                        // Retrieve the FlowVersion resource.
-                        var flowVersion = await _unitOfWork.FlowVersionRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (flowVersion == null)
-                            return serviceResponse;
-
-                        flowVersion.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.FlowVersionRepo.Update(flowVersion);
-                        break;
-                    }
-
-                case ResourceTypeEnum.Skill:
-                    {
-                        // Retrieve the Skill resource.
-                        var skill = await _unitOfWork.SkillRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (skill == null)
-                            return serviceResponse;
-
-                        skill.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.SkillRepo.Update(skill);
-                        break;
-                    }
-
-                case ResourceTypeEnum.Tool:
-                    {
-                        // Retrieve the Tool resource.
-                        var tool = await _unitOfWork.ToolRepo
-                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
-                            .SingleOrDefaultAsync();
-
-                        if (tool == null)
-                            return serviceResponse;
-
-                        tool.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
-                        _unitOfWork.ToolRepo.Update(tool);
-                        break;
-                    }
-
-                default:
-                    return serviceResponse;
+                return serviceResponse.Update("You do not have permission to share this resource.", 403);
             }
+
+            shareTarget.SetTenantWideAccess(updateTenantWideAccessDto.IsTenantWideAccess);
 
             // Persist all pending changes.
             if (!await _unitOfWork.SaveAsync())
@@ -641,12 +510,14 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
+            var tenantIds = ShareRowTenantIds();
 
             // Retrieve the user's resource user access for the specified resource.
             var resourceUserAccess = await _unitOfWork.ResourceUserAccessRepo
                 .GetByConditionAsync(w =>
                     w.ResourceId == resourceId &&
-                    w.UserId == _userId)
+                    w.UserId == _userId &&
+                    tenantIds.Contains(w.TenantId))
                 .FirstOrDefaultAsync();
 
             // Validate that the resource user access exists.
@@ -654,17 +525,6 @@ public class ResourceUserAccessService : IResourceUserAccessService
             {
                 serviceResponse.Message = "Access record not found.";
                 return serviceResponse;
-            }
-
-            // Block removing access from a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<bool>(
-                _unitOfWork,
-                resourceUserAccess.ResourceType,
-                resourceUserAccess.ResourceId,
-                "remove access from");
-            if (prodShareBlock != null)
-            {
-                return prodShareBlock;
             }
 
             // Remove the user's access record.
@@ -710,27 +570,28 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
         try
         {
+            var tenantIds = ShareRowTenantIds();
+
             // Retrieve the resource user access entity by its ID.
             var resourceUserAccess = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => w.Id == resourceUserAccessId)
+                .GetByConditionAsync(w =>
+                    w.Id == resourceUserAccessId &&
+                    tenantIds.Contains(w.TenantId))
                 .SingleOrDefaultAsync();
 
             // Validate that the resource user access exists.
             if (resourceUserAccess == null)
             {
-                serviceResponse.Message = "Resource share not found.";
-                return serviceResponse;
+                return serviceResponse.Update("Resource share not found.", 404);
             }
 
-            // Block removing access from a published (PROD) Configure resource.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateAsync<bool>(
-                _unitOfWork,
-                resourceUserAccess.ResourceType,
+            var shareDenial = await FindShareDenialAsync<bool>(
                 resourceUserAccess.ResourceId,
-                "remove access from");
-            if (prodShareBlock != null)
+                resourceUserAccess.ResourceType);
+
+            if (shareDenial != null)
             {
-                return prodShareBlock;
+                return shareDenial;
             }
 
             // Mark the entity for deletion.
@@ -792,26 +653,29 @@ public class ResourceUserAccessService : IResourceUserAccessService
                 return serviceResponse;
             }
 
+            var tenantIds = ShareRowTenantIds();
+
             // Retrieve all resource user access records matching the provided IDs.
             var resourceUserAccesses = await _unitOfWork.ResourceUserAccessRepo
-                .GetByConditionAsync(w => resourceUserAccessIds.Contains(w.Id))
+                .GetByConditionAsync(w =>
+                    resourceUserAccessIds.Contains(w.Id) &&
+                    tenantIds.Contains(w.TenantId))
                 .ToListAsync();
 
             // Validate that matching resource user access records were found.
             if (!resourceUserAccesses.Any())
             {
-                serviceResponse.Message = "No matching resource shares were found.";
-                return serviceResponse;
+                return serviceResponse.Update("No matching resource shares were found.", 404);
             }
 
-            // Block removing access from published (PROD) resources in a batched check.
-            var prodShareBlock = await ProdResourceUserAccessGuard.ValidateManyAsync<bool>(
-                _unitOfWork,
-                resourceUserAccesses.Select(resourceUserAccess => (resourceUserAccess.ResourceType, resourceUserAccess.ResourceId)),
-                "remove access from");
-            if (prodShareBlock != null)
+            foreach (var shareTarget in resourceUserAccesses.Select(w => (w.ResourceType, w.ResourceId)).Distinct())
             {
-                return prodShareBlock;
+                var shareDenial = await FindShareDenialAsync<bool>(shareTarget.ResourceId, shareTarget.ResourceType);
+
+                if (shareDenial != null)
+                {
+                    return shareDenial;
+                }
             }
 
             // Mark all retrieved resource user access records for deletion.
@@ -901,6 +765,163 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
             return (false, null);
         }
+    }
+
+    private sealed record ShareTarget(Guid CreatedByUserId, bool IsTenantWideAccess, Action<bool> SetTenantWideAccess);
+
+    private async Task<ShareTarget?> FindShareTargetAsync(Guid resourceId, ResourceTypeEnum resourceType)
+    {
+        switch (resourceType)
+        {
+            case ResourceTypeEnum.Queue:
+                return await LoadShareTargetAsync(_unitOfWork.QueueRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.Trigger:
+                return await LoadShareTargetAsync(_unitOfWork.TriggerRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.ConfigStore:
+                return await LoadShareTargetAsync(_unitOfWork.ConfigStoreRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.VaultCredential:
+                return await LoadShareTargetAsync(_unitOfWork.VaultCredentialRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.KnowledgeBase:
+                return await LoadShareTargetAsync(_unitOfWork.KnowledgeBaseRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.Flow:
+                return await LoadShareTargetAsync(_unitOfWork.FlowRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.FlowVersion:
+                return await LoadShareTargetAsync(_unitOfWork.FlowVersionRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.Skill:
+                return await LoadShareTargetAsync(_unitOfWork.SkillRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.Tool:
+                {
+                    var tenantId = _currentTenantService.CurrentTenantId;
+                    var tool = await _unitOfWork.ToolRepo
+                        .GetByConditionAsync(w => w.Id == resourceId && w.TenantId == tenantId)
+                        .SingleOrDefaultAsync();
+
+                    return tool == null
+                        ? null
+                        : new ShareTarget(tool.CreatedByUserId ?? Guid.Empty, tool.IsTenantWideAccess, isOn =>
+                        {
+                            tool.IsTenantWideAccess = isOn;
+                            _unitOfWork.ToolRepo.Update(tool);
+                        });
+                }
+            default:
+                return null;
+        }
+    }
+
+    private async Task<ShareTarget?> LoadShareTargetAsync<TEntity>(
+        IRepositoryBase<TEntity, WorkspaceDbContext> repo,
+        Guid resourceId,
+        Func<TEntity, bool> isTenantWideAccess,
+        Action<TEntity, bool> setTenantWideAccess)
+        where TEntity : BaseEntity, IMustHaveTenant
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var resource = await repo
+            .GetByConditionAsync(w => w.Id == resourceId && w.TenantId == tenantId)
+            .SingleOrDefaultAsync();
+
+        return resource == null
+            ? null
+            : new ShareTarget(resource.CreatedByUserId, isTenantWideAccess(resource), isOn =>
+            {
+                setTenantWideAccess(resource, isOn);
+                repo.Update(resource);
+            });
+    }
+
+    // IMPORTANT NOTE: share rows carry a client-chosen ResourceType, so a Workspace resource's type is
+    // resolved from its own table; only an id no Workspace table holds counts as a Space.
+    private async Task<(ResourceTypeEnum ResourceType, ShareTarget ShareTarget)?> FindWorkspaceShareTargetAsync(Guid resourceId)
+    {
+        foreach (var resourceType in Enum.GetValues<ResourceTypeEnum>().Where(w => w != ResourceTypeEnum.Space))
+        {
+            var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
+
+            if (shareTarget != null)
+            {
+                return (resourceType, shareTarget);
+            }
+        }
+
+        return null;
+    }
+
+    private async Task<ServiceResponse<T>?> FindShareDenialAsync<T>(Guid resourceId, ResourceTypeEnum resourceType)
+    {
+        if (resourceType == ResourceTypeEnum.Space)
+        {
+            return await FindWorkspaceShareTargetAsync(resourceId) == null
+                ? null
+                : ServiceResponse<T>.Create("Resource type does not match the resource.", 400);
+        }
+
+        var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
+
+        if (shareTarget == null)
+        {
+            return ServiceResponse<T>.Create("Resource not found.", 404);
+        }
+
+        return await HasShareRightsAsync(resourceId, resourceType, shareTarget)
+            ? null
+            : ServiceResponse<T>.Create("You do not have permission to share this resource.", 403);
+    }
+
+    // IMPORTANT NOTE: tenant-wide access grants View, never share rights.
+    private async Task<bool> HasShareRightsAsync(Guid resourceId, ResourceTypeEnum resourceType, ShareTarget shareTarget)
+    {
+        if (shareTarget.CreatedByUserId == _userId)
+        {
+            return true;
+        }
+
+        var tenantIds = ShareRowTenantIds();
+
+        return await _unitOfWork.ResourceUserAccessRepo
+            .GetByConditionAsync(w =>
+                w.UserId == _userId &&
+                w.ResourceId == resourceId &&
+                w.ResourceType == resourceType &&
+                w.AccessLevel == ResourceAccessTypeEnum.Owner &&
+                tenantIds.Contains(w.TenantId))
+            .AnyAsync();
+    }
+
+    // IMPORTANT NOTE: Owner grants are written without a TenantId, so current and legacy rows are
+    // both in scope; the resource-level tenant check above them stays the authority.
+    private Guid[] ShareRowTenantIds() => [_currentTenantService.CurrentTenantId, Guid.Empty];
+
+    private async Task<bool> HasLegitimateAccessAsync(Guid resourceId, ResourceTypeEnum resourceType, Guid[] tenantIds)
+    {
+        if (resourceType == ResourceTypeEnum.Space)
+        {
+            return await FindWorkspaceShareTargetAsync(resourceId) == null;
+        }
+
+        var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
+
+        return shareTarget != null && await CanReadSharesAsync(resourceId, resourceType, shareTarget, tenantIds);
+    }
+
+    private async Task<bool> CanReadSharesAsync(
+        Guid resourceId,
+        ResourceTypeEnum resourceType,
+        ShareTarget shareTarget,
+        Guid[] tenantIds)
+    {
+        if (shareTarget.CreatedByUserId == _userId || shareTarget.IsTenantWideAccess)
+        {
+            return true;
+        }
+
+        return await _unitOfWork.ResourceUserAccessRepo
+            .GetByConditionAsync(w =>
+                w.UserId == _userId &&
+                w.ResourceId == resourceId &&
+                w.ResourceType == resourceType &&
+                tenantIds.Contains(w.TenantId))
+            .AnyAsync();
     }
 
     // Retrieve resource identifiers accessible to current user for specific access levels

@@ -126,7 +126,7 @@ export const ToolsTable = () => {
 
           <DTPagination table={table} singularLabel="Tool" pluralLabel="Tools" />
 
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>

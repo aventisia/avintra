@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - stranger delete multiple
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/delete-multiple
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_STRANGER_TOKEN}}
+}
+
+body:json {
+  ["{{NEG_VIEWER_ACCESS_ID}}"]
+}
+
+script:post-response {
+  test("another tenant cannot batch-delete share rows", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

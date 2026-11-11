@@ -41,7 +41,8 @@ only; it does not carry a space.
   clone's flag and rows are copied add-only and are enforced at run time for published
   agents. The Dev resource's people-sharing rows (`ResourceUserAccess`) are copied to the
   Prod clone as well, so users shared in Dev keep access in Prod; the add-only rule keeps
-  any Prod rows set by an OM.
+  any Prod rows set by an OM. A Dev Owner arrives as Full access, so the clone's
+  creator stays its only Owner.
 - When a save restricts the resource, the response lists, in `unassignedPublishedFlows`, the
   published flows whose publish would resolve the resource's name to this resource but that
   are not on the list.

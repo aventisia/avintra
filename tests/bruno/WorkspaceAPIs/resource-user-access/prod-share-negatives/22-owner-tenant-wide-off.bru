@@ -1,0 +1,29 @@
+meta {
+  name: PROD share negatives - owner tenant-wide off
+  type: http
+  seq: 22
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/tenant-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "isTenantWideAccess": false
+  }
+}
+
+script:post-response {
+  test("owner can turn tenant-wide access back off", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

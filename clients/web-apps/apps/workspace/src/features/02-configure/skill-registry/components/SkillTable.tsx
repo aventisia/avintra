@@ -127,7 +127,7 @@ export const SkillTable = () => {
           <DTPagination table={table} singularLabel="Skill" pluralLabel="Skills" />
 
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>

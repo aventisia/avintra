@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - viewer delete multiple
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/delete-multiple
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_VIEWER_TOKEN}}
+}
+
+body:json {
+  ["{{NEG_VIEWER_ACCESS_ID}}"]
+}
+
+script:post-response {
+  test("a View-only user cannot batch-delete share rows", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}

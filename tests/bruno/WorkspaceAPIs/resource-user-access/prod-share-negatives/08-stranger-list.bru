@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - stranger list
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_RESOURCE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_STRANGER_TOKEN}}
+}
+
+script:post-response {
+  test("another tenant cannot read the share list", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > PT-02: denied reads answer 404, never a confirmation of existence.
+}

@@ -122,7 +122,7 @@ export const KnowledgeBaseTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="KB" pluralLabel="KBs" />
 
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>
       ) : (

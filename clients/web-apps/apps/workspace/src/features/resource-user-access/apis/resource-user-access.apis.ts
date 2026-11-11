@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import {
   CreateResourceUserAccessDto,
@@ -15,7 +16,9 @@ const resourceUserAccessApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_P
  */
 const getAllResourceUserAccess = () => {
   return axiosInstance
-    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/list`)
+    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -24,7 +27,9 @@ const getAllResourceUserAccess = () => {
  */
 const getResourceUserAccessById = (resourceId: string) => {
   return axiosInstance
-    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`)
+    .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -33,7 +38,9 @@ const getResourceUserAccessById = (resourceId: string) => {
  */
 const insertResourceUserAccess = (payload: CreateResourceUserAccessDto) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/bulk`, payload)
+    .post<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/bulk`, payload, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -42,7 +49,9 @@ const insertResourceUserAccess = (payload: CreateResourceUserAccessDto) => {
  */
 const updateResourceUserAccess = (payload: ResourceUserAccessDto) => {
   return axiosInstance
-    .put<IHttpResponse<ResourceUserAccessDto>>(`${resourceUserAccessApiUrl}`, payload)
+    .put<IHttpResponse<ResourceUserAccessDto>>(`${resourceUserAccessApiUrl}`, payload, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -51,7 +60,11 @@ const updateResourceUserAccess = (payload: ResourceUserAccessDto) => {
  */
 const updateTenantWideAccess = (payload: UpdateTenantWideAccessDto) => {
   return axiosInstance
-    .put<IHttpResponse<ResourceUserAccessDto>>(`${resourceUserAccessApiUrl}/tenant-access`, payload)
+    .put<IHttpResponse<ResourceUserAccessDto>>(
+      `${resourceUserAccessApiUrl}/tenant-access`,
+      payload,
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
@@ -60,7 +73,9 @@ const updateTenantWideAccess = (payload: UpdateTenantWideAccessDto) => {
  */
 const removeResourceUserAccess = (resourceId: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/${resourceId}/my-access`)
+    .delete<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/${resourceId}/my-access`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -69,7 +84,9 @@ const removeResourceUserAccess = (resourceId: string) => {
  */
 const deleteResourceUserAccess = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${resourceUserAccessApiUrl}/${id}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

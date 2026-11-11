@@ -77,7 +77,7 @@ export const MessageTriggersTable = () => {
           <DTPagination table={table} />
 
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           {/* Bulk actions for data table */}
           {/* <TriggerBulkActions table={table} /> */}

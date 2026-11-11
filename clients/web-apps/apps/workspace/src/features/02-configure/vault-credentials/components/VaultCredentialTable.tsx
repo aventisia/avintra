@@ -170,7 +170,7 @@ export const VaultCredentialTable = () => {
           )}
           <DTPagination table={table} singularLabel="credential" pluralLabel="credentials" />
 
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
 
           <VaultCredentialBulkActions table={table} />

@@ -77,7 +77,7 @@ export const ConfigStoresTable = () => {
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           <ConfigStoresBulkActions table={table} />
