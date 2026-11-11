@@ -61,8 +61,6 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
       { replace: true },
     );
   const files = useHomeChatFiles(props.conversationId, setPreviewId);
-  const conversationIdRef = useRef(props.conversationId);
-  conversationIdRef.current = props.conversationId;
   const preview = useQuery({
     queryKey: [...HOME_CHAT_FILE_QUERY_KEY, previewId],
     queryFn: async () => (await getChatArtifact(previewId!)).data,
@@ -83,7 +81,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         route,
         label: `${section} › ${label}`,
       })),
-    onReplyComplete: (text) => files.saveFromReply(conversationIdRef.current, text),
+    onReplyComplete: files.refreshAfterReply,
   });
   const { companyName } = useBranding();
 

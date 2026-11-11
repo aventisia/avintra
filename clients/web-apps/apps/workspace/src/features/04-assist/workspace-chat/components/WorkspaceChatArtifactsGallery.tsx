@@ -3,6 +3,7 @@ import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/react/shallow";
@@ -10,6 +11,7 @@ import { useShallow } from "zustand/react/shallow";
 import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
+import { getChatArtifact } from "../apis/workspace-chat.apis";
 import { useWorkspaceChatArtifacts } from "../hooks/useWorkspaceChatArtifacts.hook";
 import {
   WORKSPACE_CHAT_PREVIEW_PANEL_ID,
@@ -32,7 +34,11 @@ export const WorkspaceChatArtifactsGallery = () => {
   const { all, deleteArtifact } = useWorkspaceChatArtifacts();
   const artifacts = all.data?.data ?? [];
   const [previewArtifactId, setPreviewArtifactId] = useState<string | null>(null);
-  const previewArtifact = artifacts.find((artifact) => artifact.id === previewArtifactId);
+  const previewArtifact = useQuery({
+    queryKey: ["workspace-chat-artifact", previewArtifactId],
+    queryFn: async () => (await getChatArtifact(previewArtifactId!)).data,
+    enabled: !!previewArtifactId,
+  });
   const { showCustomAlertDialog } = useShowAlertHandler();
   const isHomeChatAvailable = useIsHomeChatAvailable();
 
@@ -142,16 +148,16 @@ export const WorkspaceChatArtifactsGallery = () => {
             >
               <ChatFilePreview
                 file={
-                  previewArtifact
+                  previewArtifact.data
                     ? {
-                        ...previewArtifact,
-                        url: previewArtifact.blobPath.startsWith("data:")
-                          ? previewArtifact.blobPath
+                        ...previewArtifact.data,
+                        url: previewArtifact.data.blobPath.startsWith("data:")
+                          ? previewArtifact.data.blobPath
                           : null,
                       }
                     : null
                 }
-                isLoading={false}
+                isLoading={previewArtifact.isLoading}
                 onClose={() => setPreviewArtifactId(null)}
               />
             </ResizablePanel>

@@ -45,4 +45,12 @@ public interface IChatArtifactsService
     /// <param name="chatArtifactIds">A collection of artifact IDs to delete.</param>
     /// <returns>A service response containing the number of artifacts deleted.</returns>
     Task<ServiceResponse<int>> DeleteMultipleChatArtifactsAsync(IEnumerable<Guid> chatArtifactIds);
+
+    /// <summary>
+    /// Stores the file a finished landing reply wrote, if any, as a generated artifact of its conversation.
+    /// </summary>
+    /// <param name="conversationId">The conversation the reply belongs to.</param>
+    /// <param name="replyText">The reply's full text.</param>
+    /// <param name="cancellationToken">Cancels the lookups.</param>
+    Task SaveGeneratedFileAsync(Guid conversationId, string replyText, CancellationToken cancellationToken);
 }

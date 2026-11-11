@@ -12,6 +12,31 @@ public static class ChatArtifactsHelpers
     /// </summary>
     public const long MaxFileBytes = 10 * 1024 * 1024;
 
+    /// <summary>
+    /// Blob-name prefix of chat artifacts kept in Azure Blob Storage; other blob paths are data URLs.
+    /// </summary>
+    public const string BlobPrefix = "chat-artifacts/";
+
+    private static readonly Dictionary<string, (string Name, string ContentType)> FileFences = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["html"] = ("Generated UI.html", "text/html"),
+        ["svg"] = ("Image.svg", "image/svg+xml"),
+        ["csv"] = ("Data.csv", "text/csv"),
+        ["tsv"] = ("Data.tsv", "text/tab-separated-values"),
+        ["markdown"] = ("Document.md", "text/markdown"),
+        ["md"] = ("Document.md", "text/markdown"),
+    };
+
+    // IMPORTANT NOTE: mirrors findChatFile in @avplatform/chat; the browser matches a stored file to its reply by type and UTF-8 size, so both must extract the same body.
+    private static readonly Regex FileFencePattern = new(
+        @"^```(html|svg|csv|tsv|markdown|md)[ \t]*\n([\s\S]*?)^```[ \t]*$",
+        RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+    private static readonly Regex BareHtmlPattern = new(@"^(<!doctype html|<html[\s>])[\s\S]*</html>$", RegexOptions.IgnoreCase);
+    private static readonly Regex TitlePattern = new(@"<title[^>]*>([^<]*)</title>", RegexOptions.IgnoreCase);
+    private static readonly Regex MarkdownTitlePattern = new(@"^#[ \t]+(.+)$", RegexOptions.Multiline);
+    private static readonly Regex UnsafeNameCharacters = new(@"[\\/:*?""<>|#]");
+
     private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".pdf", ".doc", ".docx", ".txt", ".md",
@@ -168,4 +193,46 @@ public static class ChatArtifactsHelpers
         sizeBytes = base64.Length * 3L / 4 - padding;
         return true;
     }
+
+    /// <summary>
+    /// Finds the first complete file a landing reply wrote as a fenced block, or a reply that is a whole HTML page.
+    /// </summary>
+    /// <param name="replyText">The reply's full text.</param>
+    /// <returns>The file, or null when the reply holds none.</returns>
+    public static GeneratedChatFile? FindGeneratedFile(string replyText)
+    {
+        var trimmed = replyText.Trim();
+        if (BareHtmlPattern.IsMatch(trimmed))
+            return new GeneratedChatFile(NameFromContent(trimmed, FileFences["html"]), "text/html", trimmed);
+
+        var match = FileFencePattern.Match(replyText);
+        if (!match.Success)
+            return null;
+
+        var fence = FileFences[match.Groups[1].Value];
+        var body = match.Groups[2].Value.Trim();
+        return new GeneratedChatFile(NameFromContent(body, fence), fence.ContentType, body);
+    }
+
+    private static string NameFromContent(string body, (string Name, string ContentType) fence)
+    {
+        var titleMatch = fence.ContentType switch
+        {
+            "text/html" or "image/svg+xml" => TitlePattern.Match(body),
+            "text/markdown" => MarkdownTitlePattern.Match(body),
+            _ => Match.Empty,
+        };
+        var title = UnsafeNameCharacters.Replace(titleMatch.Success ? titleMatch.Groups[1].Value : string.Empty, string.Empty).Trim();
+        if (title.Length > 60)
+            title = title[..60];
+        return title.Length > 0 ? title + Path.GetExtension(fence.Name) : fence.Name;
+    }
 }
+
+/// <summary>
+/// A file a landing reply wrote, ready to store as a generated chat artifact.
+/// </summary>
+/// <param name="Name">File name shown to the user.</param>
+/// <param name="ContentType">File media type.</param>
+/// <param name="Body">File text.</param>
+public sealed record GeneratedChatFile(string Name, string ContentType, string Body);

@@ -40,6 +40,7 @@ public class StreamingChatService : IStreamingChatService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IChatArtifactsService _chatArtifactsService;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -81,7 +82,8 @@ public class StreamingChatService : IStreamingChatService
         EnvironmentConfig environmentConfig,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
-        IHttpClientFactory httpClientFactory)
+        IHttpClientFactory httpClientFactory,
+        IChatArtifactsService chatArtifactsService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -91,6 +93,7 @@ public class StreamingChatService : IStreamingChatService
         _httpContextAccessor = httpContextAccessor;
         _currentTenantService = currentTenantService;
         _httpClientFactory = httpClientFactory;
+        _chatArtifactsService = chatArtifactsService;
 
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId)
             ? userId
@@ -241,6 +244,7 @@ public class StreamingChatService : IStreamingChatService
             await TitleLandingConversationAsync(conversationId, request.UserInput, cancellationToken);
 
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
+        var replyText = new StringBuilder();
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
             BuildLandingLlmPayload(request, modelSelection),
@@ -248,7 +252,27 @@ public class StreamingChatService : IStreamingChatService
             _currentTenantService.CurrentEnvType == ConfigureEnvironmentType.Prod ? "prod" : "dev",
             cancellationToken))
         {
+            AppendReplyDelta(replyText, chunk);
             yield return chunk;
+        }
+
+        if (request.ConversationId is Guid replyConversationId && !cancellationToken.IsCancellationRequested)
+            await _chatArtifactsService.SaveGeneratedFileAsync(replyConversationId, replyText.ToString(), cancellationToken);
+    }
+
+    private static void AppendReplyDelta(StringBuilder replyText, string frame)
+    {
+        if (!frame.Contains("\"delta\"", StringComparison.Ordinal))
+            return;
+
+        try
+        {
+            var node = JsonNode.Parse(frame["data:".Length..]);
+            if (GetStringProperty(node, "type") == "delta")
+                replyText.Append(GetStringProperty(node, "output"));
+        }
+        catch (System.Text.Json.JsonException)
+        {
         }
     }
 
