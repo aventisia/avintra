@@ -23,8 +23,19 @@ public static class VoiceAgentModelReadinessHarness
         failures += Run("M1 enabled pipeline models pass", () =>
             AssertNull(Validate(BuildPipelineFlow(), EnabledPipelineModels)));
 
-        failures += Run("M2 realtime engine mode skips the pipeline model check", () =>
-            AssertNull(Validate(BuildRealtimeFlow(), [])));
+        failures += Run("M2 realtime requires the tenant-enabled Realtime model", () =>
+        {
+            var missingError = Validate(BuildRealtimeFlow(), []);
+            AssertContains("realtime model", missingError);
+            AssertContains("gpt-realtime", missingError);
+            AssertContains("not enabled for this tenant", missingError);
+
+            var textOnlyError = Validate(BuildRealtimeFlow(), [("OpenAI", "gpt-realtime", "Text")]);
+            AssertContains("realtime model", textOnlyError);
+
+            AssertNull(Validate(BuildRealtimeFlow(), [("OpenAI", "gpt-realtime", "Realtime")]));
+            AssertNull(Validate(BuildRealtimeFlow(), [("OpenAI", " gpt-realtime ", "Realtime")]));
+        });
 
         failures += Run("M3 speech-to-text requires the Stt capability", () =>
         {

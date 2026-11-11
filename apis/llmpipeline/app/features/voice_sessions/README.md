@@ -10,11 +10,13 @@ speaks the answer back.
 ```
 Browser ── LiveKit WebRTC ──> LiveKit room <── voice_agent worker
    │                                │              │
-   │ data events (avintra.voice)    │              ├─ Silero VAD / LiveKit turn handling
-   └────────────────────────────────┘              ├─ STT: LiteLLM provider, one WAV per utterance
-                                                   ├─ VoiceChatBridge -> LangGraph chat engine
-                                                   │    (persona, KB, skills, tools, memory, history)
-                                                   └─ TTS: LiteLLM provider, sentence by sentence
+   │ data events (avintra.voice)    │              ├─ pipeline: Silero VAD / LiveKit turn handling
+   └────────────────────────────────┘              │    ├─ STT: LiteLLM provider, one WAV per utterance
+                                                   │    ├─ VoiceChatBridge -> LangGraph chat engine
+                                                   │    │    (persona, KB, skills, tools, memory, history)
+                                                   │    └─ TTS: LiteLLM provider, sentence by sentence
+                                                   └─ realtime: provider plugin (OpenAI, Azure, Gemini)
+                                                        (speech-to-speech, provider turn detection)
 WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
        │
        └── POST /api/v2/voice/sessions ──> llmpipeline ──> LiveKit API
@@ -32,8 +34,9 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
   fetches the resolved settings, and runs the caller-bound session. It never
   receives the browser token or a provider secret.
 - The chat engine remains the single owner of conversation history, tool
-  execution, KB retrieval, skills, and memory. The voice runtime is an adapter
-  around it.
+  execution, KB retrieval, skills, and memory for pipeline agents. The voice
+  runtime is an adapter around it. Realtime agents run a provider
+  speech-to-speech model instead and do not call the chat engine.
 
 ## Starting a session
 
@@ -63,6 +66,65 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
 5. The caller joins the room with `server_url` and `client_token`. The worker
    waits for the participant identity `user-<userId>` before starting audio.
 
+WorkspaceAPIs adds the resolved `noiseCancellation` mode (`none` or `auto`) to its
+session response. The browser client maps `auto` to browser noise suppression,
+echo cancellation, and auto gain control, and turns those constraints off for
+every other mode.
+
+## Realtime engine
+
+A realtime agent skips the pipeline: the worker opens a provider
+speech-to-speech session through a LiveKit plugin, and that model transcribes,
+answers, and speaks in one loop. The worker still owns the room, the stable
+events, and clean shutdown.
+
+- Providers: `openai`, `azure`, and `gemini` (Studio saves Gemini as
+  `googlegemini`). Realtime is BYOK only; the credential resolves through the
+  same path as the pipeline. The full matrix is in
+  `apis/llmpipeline/voice_agent/README.md`.
+- The persona and spoken-style guidance become the agent instructions. An
+  AI-first introduction is spoken with `generate_reply`, so the model delivers
+  it naturally instead of reading a fixed string.
+- Captions: caller transcripts come from `user_input_transcribed`; assistant
+  transcripts come from `conversation_item_added`. Each assistant response also
+  publishes a `timing` turn event with the provider's `ttft_ms` / `duration_ms`.
+- Realtime uses the provider's own turn detection and interruption handling; the
+  worker does not configure VAD for it.
+- Live realtime calls persist finalized caller and assistant items, seed the
+  model with the conversation history (capped by `memory.maxShortTermTurns`), and
+  post BYOK usage from `RealtimeModelMetrics`. Test calls persist no messages
+  but still publish timing and meter usage. Realtime tools run only actions
+  configured for automatic approval, and knowledge search is on demand; memory
+  summarization lands in a later phase. The conversation status is written on
+  close.
+- Noise cancellation resolves to `none` or `auto`. Enhanced modes are rejected
+  at publish; see [Noise cancellation](#noise-cancellation).
+
+## Noise cancellation
+
+Production LiveKit is self-hosted, so LiveKit Cloud's built-in BVC noise
+cancellation is not available. Phase 5 ships only the browser-side split:
+
+| Mode | Behaviour |
+| --- | --- |
+| `none` | Browser capture processing is turned off. |
+| `auto` | Browser noise suppression, echo cancellation, and auto gain control. |
+| `standard`, `telephony` | Not implemented; rejected at publish and not offered in the Studio builder. |
+
+`VoiceAgentGraphHelpers.AllowedNoiseCancellationModes` is the publish guard. The
+resolved mode still reaches the browser so `none` and `auto` change capture
+behaviour. The server-side follow-up is decision-recorded but not implemented:
+
+> **Evaluate server-side noise cancellation for self-hosted LiveKit**
+>
+> - Production LiveKit runs self-hosted, so BVC is unavailable.
+> - Evaluate the Krisp and ai-coustics LiveKit plugins for `standard` and
+>   `telephony`, including latency and CPU cost per concurrent call.
+> - Wire the chosen plugin in `voice_agent`, keep the browser capture
+>   constraints for `auto`, and add a Bruno acceptance asset for each mode.
+> - Licensing and cost need approval before implementation.
+> - Remove the publish block only when a mode is wired end to end.
+
 ## Authentication and session claims
 
 The platform bearer token is validated by both APIs. The caller token is a
@@ -85,8 +147,10 @@ rejects the job before any provider call unless:
 
 The worker then fetches
 `GET /api/assist/voice/settings/<flowVersionId>?mode=<mode>` with the worker
-credential and rejects the job unless `flowVersionId`, `flowId`, and
-`engineMode = pipeline` match.
+credential and rejects the job unless `flowVersionId` and `flowId` match and the
+resolved `engineMode` is `pipeline` or `realtime`. A realtime provider that the
+worker does not wire is rejected before any provider client is constructed; the
+provider matrix lives in `apis/llmpipeline/voice_agent/README.md`.
 
 ## Local start order
 
@@ -140,9 +204,6 @@ Restart `llmpipeline_apis` and `voice_agent` after changing `.env.local`.
 | `POSTGRESQL_WORKSPACE_DB_NAME` | worker | Workspace database holding conversations and messages. |
 | Provider keys / BYOK credential names | llmpipeline | Resolved by the existing LiteLLM STT/TTS/LLM providers; no separate voice provider configuration. |
 
-`REALTIME_VOICE_ENABLED` belongs to the separate realtime gateway and does not
-enable pipeline voice sessions.
-
 ## Event and error contract
 
 The worker publishes JSON events on the LiveKit data topic `avintra.voice`.
@@ -151,24 +212,27 @@ Every event carries `type`, `conversationId`, and `timestamp`.
 | Type | Fields | Meaning |
 | --- | --- | --- |
 | `session.state` | `state`, `previousState` | Stable state: `connecting`, `idle`, `listening`, `processing`, `speaking`. |
-| `transcript.final` | `role`, `text`, `turnId` (assistant) | One final caller or assistant transcript. |
-| `timing` | `stage`, `durationMs`, and turn fields | `stage = "session"` at close, or `stage = "turn"` with `turnId`, `interrupted`, and `voice_turn_timing`. |
+| `transcript.final` | `role`, `text`, `turnId` (pipeline assistant only) | One final caller or assistant transcript. Realtime assistant transcripts carry no `turnId` yet. |
+| `transcript.interim` | `role`, `text` | Live caller caption from a streaming STT; replaced by the final transcript. |
+| `timing` | `stage`, `durationMs`, and turn fields | `stage = "session"` at close, or `stage = "turn"` with `turnId`, `interrupted`, and `voice_turn_timing`. Realtime turn events carry no `turnId` yet. |
 | `tool.call` | `tool`, `turnId` | One engine tool call reported for the turn. |
 | `error` | `code`, `message`, `retryable`, `turnId` | A non-silent failure report; the session may continue. |
 | `session.closed` | `reason`, `code` | Terminal close with a close code. |
 
-`voice_turn_timing` contains `stt_ms`, `llm_first_token_ms`,
-`tts_first_audio_ms`, and `turn_total_ms`. The worker anchors turn timing after
-the final STT response, so caller-speech-end to first audio is
-`stt_ms + tts_first_audio_ms`; VAD endpointing time is not included. A failed or
-interrupted turn can leave individual fields `null`.
+Pipeline `voice_turn_timing` contains `stt_ms`, `llm_first_token_ms`,
+`tts_first_audio_ms`, `turn_total_ms`, `endpointing_ms` (caller stopped to final
+transcript), and `caller_to_speaking_ms` (caller stopped to first audio).
+Realtime timing leaves those fields `null` and fills `ttft_ms` and `duration_ms`
+from `RealtimeModelMetrics`. A failed or interrupted turn can leave individual
+fields `null`.
 
-Error codes reuse the realtime voice taxonomy:
+Error codes come from `voice_agent/contracts.py`:
 
 | Code | Close | Meaning |
 | --- | --- | --- |
-| `invalid_config` | `4400` | STT, LLM, or TTS provider/model is missing. |
-| `credentials_unavailable` | `4403` | BYOK is enabled but the credential name is missing. |
+| `invalid_config` | `4400` | A required provider/model setting is missing. |
+| `unsupported_provider` | `4400` | The realtime provider has no wired LiveKit plugin. |
+| `credentials_unavailable` | `4403` | BYOK is enabled but the credential name is missing or unresolvable. |
 | `upstream_error` | `1011` | Provider, join, or runtime failure. `retryable` is currently `false`. |
 
 A normal caller disconnect, job shutdown, or completed task closes with `1000`.
@@ -181,10 +245,12 @@ events because the worker never joins.
 
 - WorkspaceAPIs creates `run_Conversations` before dispatch with
   `Channel = Voice`, `FlowVersionId`, `UserId`, and `Status = Active`.
-- The chat engine writes normal conversation messages for live sessions. Turn
+- Live sessions persist messages: the chat engine writes pipeline turns, and the
+  realtime worker writes finalized caller and assistant items. Pipeline turn
   timing is merged into the latest assistant UI transcript row's metadata as
-  `voice_turn_timing`. `test` sessions are temporary chats: they create and close
-  the conversation row but do not persist messages or turn timing.
+  `voice_turn_timing`; realtime timing stays in the assistant message metadata.
+  `test` sessions are temporary chats: they create and close the conversation
+  row but do not persist messages or turn timing.
 - On normal disconnect or job shutdown the worker closes the agent session,
   flushes queued events, deletes the LiveKit room, and writes `Completed`.
   Configuration errors, join failures, and runtime errors write `Failed`.
@@ -194,13 +260,27 @@ events because the worker never joins.
   runs; the conversation can remain `Active` after the room's 120-second empty
   timeout. Check the worker registration when a session has no agent participant.
 
+## Metering
+
+- Realtime: `RealtimeUsageRecorder` accumulates audio tokens (input and output)
+  and provider-reported session seconds from `RealtimeModelMetrics`, then posts
+  BYOK usage at session end and every `USAGE_FLUSH_INTERVAL_SECONDS` on a long
+  call. It posts only when BYOK is enabled with a credential name; a failed post
+  is logged and never breaks the call.
+- Streaming pipeline STT: `StreamingSTTUsageRecorder` posts the `STTMetrics`
+  audio seconds. The batch LiteLLM STT path posts its own usage inside the
+  provider, so the two paths never double-count.
+- Pipeline LLM and TTS usage stays on the existing chat and LiteLLM paths.
+- `test` calls meter the same way as `live` calls; only message persistence
+  differs.
+
 ## Testing
 
 From `apis/llmpipeline`:
 
 ```sh
 # Every voice suite (sessions, binding, STT, TTS, bridge, orchestration,
-# persistence, interaction, and the realtime gateway)
+# persistence, interaction, and realtime)
 ./venv/Scripts/python.exe -m pytest tests -k voice -q
 
 # Focused suites
@@ -210,6 +290,8 @@ From `apis/llmpipeline`:
 ./venv/Scripts/python.exe -m pytest tests/test_voice_chat_bridge.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_orchestration.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_persistence.py -q
+./venv/Scripts/python.exe -m pytest tests/test_voice_realtime.py -q
+./venv/Scripts/python.exe -m pytest tests/test_voice_latency.py -q
 ```
 
 On Linux/macOS use `./venv/bin/python`. The settings-resolution harness runs
@@ -227,33 +309,79 @@ and (for live mode) the final messages and `voice_turn_timing` metadata.
 
 ## Latency measurement
 
-The `timing` event is the measurement source. For each completed non-interrupted
-turn, use `voice_turn_timing`:
+The `timing` event and each live turn's persisted `voice_turn_timing` are the
+measurement source. The claim is caller speech end to first audio, so report
+these fields per stage:
 
-- caller speech end to first audio: `stt_ms + tts_first_audio_ms`;
-- first token after STT: `llm_first_token_ms`;
-- full turn: `turn_total_ms`.
+| Stage | Field |
+| --- | --- |
+| Endpointing | `endpointing_ms` — caller stopped speaking to final transcript |
+| STT | `stt_ms` — final speech-to-text call duration |
+| First token | `llm_first_token_ms` (realtime: `ttft_ms`) |
+| First audio | `tts_first_audio_ms` |
+| End-to-end | `caller_to_speaking_ms` (realtime: `ttft_ms`) |
 
-Record at least ten representative turns across the supported first-speaker
-modes and report p50 and p95. The target is approximately 1.5 seconds from
-caller speech end to first audio. Split the result by stage before optimizing:
-STT provider/network latency is outside the worker's turn loop, and a slow STT
-call alone can exceed the target.
+Target: p95 end-to-end ≤ 800 ms over at least ten representative turns per
+configuration. Split the result by stage before optimizing: provider and network
+latency is outside the worker's turn loop, and a slow STT or endpointing wait
+alone can exceed the target.
 
 `tts_first_audio_ms` is recorded when TTS uses its streaming sentence path.
 When LiveKit selects the chunked synthesis path the field is `null`; measure the
-first audible agent frame in the client for those turns instead. Do not hide a
-provider-limited result by reporting only `turn_total_ms`.
+first audible agent frame in the client for those turns instead. Never report a
+latency number from `turn_total_ms` alone: it measures the completed turn, not
+the wait the caller hears.
+
+### Benchmark
+
+Run one local call per configuration (batch pipeline, streaming pipeline, and
+realtime) with at least ten turns each, then from `apis/llmpipeline`:
+
+```sh
+./venv/Scripts/python.exe -m voice_agent.latency \
+  batch=<conversationId,...> streaming=<conversationId,...> realtime=<conversationId,...>
+```
+
+Conversation ids come from `run_Conversations` (`Channel = Voice`); only `live`
+calls persist timing. The script prints the table below. Realtime reports
+provider `ttft_ms` as both first token and end-to-end, because it has no
+caller-speech-end reference.
+
+| Configuration | Turns | STT p50 / p95 (ms) | Endpointing p50 / p95 (ms) | First token p50 / p95 (ms) | First audio p50 / p95 (ms) | End-to-end p50 / p95 (ms) |
+| --- | --- | --- | --- | --- | --- | --- |
+| batch | — | — | — | — | — | — |
+| streaming | — | — | — | — | — | — |
+| realtime | — | — | — | — | — | — |
+
+The table is not yet recorded on this checkout. Fill it from a local stack run
+before quoting a latency number.
+
+## Remaining manual checks
+
+1. Publish a realtime draft with `none` and then `auto`; both must succeed.
+2. Change the draft's noise cancellation to `standard`; publish must return
+   `Voice agent noise cancellation mode 'standard' is not available yet.
+   Supported modes: auto, none.`
+3. Run a Studio `test` call and a Workspace `live` call against a realtime agent
+   with a BYOK OpenAI or Gemini key; confirm audio, captions, `Completed`
+   status, persisted live messages, and one BYOK usage row per call.
+4. Run the same calls for a pipeline agent and confirm the pipeline path,
+   interim captions, and `voice_turn_timing` are unchanged.
+5. Run at least ten turns per configuration and fill the benchmark table. Until
+   then, do not quote an 800 ms result.
 
 ## Known v1 limits
 
-- Pipeline mode only. The settings resolver rejects realtime agents; the
-  realtime gateway is a separate feature.
+- Realtime agents run `approval == "auto"` tools and on-demand knowledge search
+  but do not summarize memory yet; memory arrives in a later phase.
+  Persistence, history seeding, and BYOK usage already work, but realtime
+  assistant transcripts carry no `turnId`.
 - Voice conversations have no tool-approval UI. A tool action configured for
   human approval cannot be approved during a call: the worker speaks a fallback
   and keeps the turn closed. Only automatic actions run.
 - Interrupted turns are not persisted; partial assistant audio/transcript is
-  discarded. `resume_false_interruption` and preemptive generation are disabled.
+  discarded. `resume_false_interruption` is disabled; preemptive generation
+  follows the agent setting, which defaults on for new agents.
 - Turn timing is best-effort metadata. A missing assistant transcript row or a
   failed TTS call leaves timing fields unset.
 - `test` sessions deliberately do not persist messages or turn timing, so a
@@ -264,3 +392,5 @@ provider-limited result by reporting only `turn_total_ms`.
   is no reconciler yet.
 - No SIP/telephony entry point is included; callers must join the returned
   LiveKit room.
+- Enhanced noise cancellation is not implemented. `standard` and `telephony`
+  are rejected at publish; only the browser-level `none` / `auto` split exists.

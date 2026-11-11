@@ -34,6 +34,10 @@ const toVoiceTurnTiming = (value: unknown): VoiceTurnTiming | undefined => {
     llmFirstTokenMs: toNullableNumber(value.llm_first_token_ms),
     ttsFirstAudioMs: toNullableNumber(value.tts_first_audio_ms),
     turnTotalMs: toNullableNumber(value.turn_total_ms),
+    endpointingMs: toNullableNumber(value.endpointing_ms),
+    callerToSpeakingMs: toNullableNumber(value.caller_to_speaking_ms),
+    ttftMs: toNullableNumber(value.ttft_ms),
+    durationMs: toNullableNumber(value.duration_ms),
   };
 };
 
@@ -68,6 +72,11 @@ export const parseVoiceEvent = (data: Uint8Array, topic?: string): VoiceServerEv
       const text = toString(payload.text);
       if ((role !== "user" && role !== "assistant") || text === undefined) return null;
       return { type, conversationId, role, text, turnId: toNumber(payload.turnId) };
+    }
+    case "transcript.interim": {
+      const text = toString(payload.text);
+      if (payload.role !== "user" || text === undefined) return null;
+      return { type, conversationId, role: "user", text };
     }
     case "tool.call":
       return { type, conversationId, tool: payload.tool, turnId: toNumber(payload.turnId) };
@@ -154,9 +163,16 @@ const getToolName = (tool: unknown): string => {
 
 const toLatency = (timing?: VoiceTurnTiming): VoiceTurnLatency | null => {
   if (!timing) return null;
-  const { sttMs, llmFirstTokenMs, ttsFirstAudioMs } = timing;
-  if (!isNumber(sttMs) || !isNumber(llmFirstTokenMs) || !isNumber(ttsFirstAudioMs)) return null;
-  return { speechToTextMs: sttMs, firstTokenMs: llmFirstTokenMs, firstAudioMs: ttsFirstAudioMs };
+  const latency: VoiceTurnLatency = {
+    speechToTextMs: timing.sttMs,
+    endpointingMs: timing.endpointingMs,
+    firstTokenMs: timing.llmFirstTokenMs,
+    firstAudioMs: timing.ttsFirstAudioMs,
+    callerToSpeakingMs: timing.callerToSpeakingMs,
+    ttftMs: timing.ttftMs,
+    durationMs: timing.durationMs,
+  };
+  return Object.values(latency).some(isNumber) ? latency : null;
 };
 
 const appendToolCall = (
@@ -191,6 +207,32 @@ const appendToolCall = (
   };
 };
 
+const appendCallerInterim = (
+  snapshot: VoiceCallSnapshot,
+  event: VoiceServerEvent,
+): VoiceCallSnapshot => {
+  if (event.type !== "transcript.interim") return snapshot;
+
+  const text = event.text.trim();
+  if (!text) return snapshot;
+
+  const last = snapshot.turns[snapshot.turns.length - 1];
+  if (last?.speaker === "caller" && last.isInterim) {
+    return {
+      ...snapshot,
+      turns: [...snapshot.turns.slice(0, -1), { ...last, text }],
+    };
+  }
+
+  return {
+    ...snapshot,
+    turns: [
+      ...snapshot.turns,
+      { id: `${CALLER_TURN_PREFIX}-interim`, speaker: "caller", text, isInterim: true },
+    ],
+  };
+};
+
 const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) => {
   if (event.type !== "transcript.final") return snapshot;
 
@@ -203,6 +245,10 @@ const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) 
       speaker: "caller",
       text,
     };
+    const interimIndex = snapshot.turns.findIndex((turn) => turn.isInterim);
+    if (interimIndex !== -1) {
+      return { ...snapshot, turns: replaceTurn(snapshot.turns, interimIndex, callerTurn) };
+    }
     return { ...snapshot, turns: [...snapshot.turns, callerTurn] };
   }
 
@@ -295,6 +341,8 @@ export const applyVoiceEvent = (
     }
     case "transcript.final":
       return appendTranscript(active, event);
+    case "transcript.interim":
+      return appendCallerInterim(active, event);
     case "tool.call":
       return appendToolCall(active, getToolName(event.tool), event.turnId);
     case "timing":

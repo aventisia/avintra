@@ -90,6 +90,43 @@ public static class VoiceAgentSettingsFactoryHarness
             AssertEqual("Hello {{name}}", noVariables.Persona.Goal);
         });
 
+        failures += Run("Engine latency and noise settings resolve with conservative defaults", () =>
+        {
+            var defaults = VoiceAgentSettingsFactory.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Reception",
+                Parse("{}"));
+
+            AssertEqual(false, defaults.PreemptiveGeneration);
+            AssertEqual("none", defaults.NoiseCancellation);
+
+            var configured = VoiceAgentSettingsFactory.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Reception",
+                Parse("""{ "__PreemptiveGeneration__Voice": true, "__NoiseCancellation__Voice": " Auto " }"""));
+
+            AssertEqual(true, configured.PreemptiveGeneration);
+            AssertEqual("auto", configured.NoiseCancellation);
+
+            var unknown = VoiceAgentSettingsFactory.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Reception",
+                Parse("""{ "__NoiseCancellation__Voice": "aggressive" }"""));
+
+            AssertEqual("none", unknown.NoiseCancellation);
+
+            var enhanced = VoiceAgentSettingsFactory.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Reception",
+                Parse("""{ "__NoiseCancellation__Voice": " Standard " }"""));
+
+            AssertEqual("none", enhanced.NoiseCancellation);
+        });
+
         failures += Run("Malformed pronunciation entries are ignored", () =>
         {
             var settings = VoiceAgentSettingsFactory.Create(

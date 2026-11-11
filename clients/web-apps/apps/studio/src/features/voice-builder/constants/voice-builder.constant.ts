@@ -6,7 +6,9 @@ export const VOICE_FIELDS = {
   instructions: "__Instructions__Voice",
   firstSpeaker: "__FirstSpeaker__Voice",
   introduction: "__Introduction__Voice",
+  engineMode: "__EngineMode__Voice",
   languageModel: "__ModelConfig__Voice",
+  realtimeModel: "__ModelConfig__RealtimeVoice",
   speechToText: "__ModelConfig__SpeechToText",
   textToSpeech: "__ModelConfig__TextToSpeech",
   voiceConfig: "__VoiceConfig__TextToSpeech",
@@ -16,6 +18,12 @@ export const VOICE_FIELDS = {
   skills: "__SkillsConfig__Voice",
   memory: "__MemoryConfig__Voice",
   tools: "__ToolsConfig__Voice",
+} as const;
+
+export const VOICE_OUTPUT_FIELDS = {
+  language: `${VOICE_FIELDS.voiceConfig}.language`,
+  voice: `${VOICE_FIELDS.voiceConfig}.voice`,
+  speed: `${VOICE_FIELDS.voiceConfig}.speed`,
 } as const;
 
 export const VOICE_BUILDER_SECTIONS: { id: VoiceBuilderSectionId; label: string }[] = [

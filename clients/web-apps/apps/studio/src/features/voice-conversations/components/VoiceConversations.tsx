@@ -48,9 +48,10 @@ const formatStartedAt = (iso: string) =>
   new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 
 const getAverageFirstAudio = (conversation: VoiceConversation) => {
-  const timings = conversation.turns.flatMap((turn) =>
-    turn.latency ? [turn.latency.firstAudioMs] : [],
-  );
+  const timings = conversation.turns.flatMap((turn) => {
+    const firstAudioMs = turn.latency?.firstAudioMs;
+    return firstAudioMs != null ? [firstAudioMs] : [];
+  });
   if (!timings.length) return "-";
   return `${(timings.reduce((sum, ms) => sum + ms, 0) / timings.length / 1000).toFixed(1)} s`;
 };

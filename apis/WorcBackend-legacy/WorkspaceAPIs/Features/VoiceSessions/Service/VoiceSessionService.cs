@@ -170,6 +170,7 @@ public sealed class VoiceSessionService : IVoiceSessionService
             ConversationId = session.ConversationId,
             AgentName = session.AgentName,
             Mode = session.Mode,
+            NoiseCancellation = settings.NoiseCancellation,
         };
     }
 

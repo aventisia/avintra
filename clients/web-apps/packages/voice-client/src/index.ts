@@ -9,6 +9,7 @@ export type {
   VoiceCallSnapshot,
   VoiceCallState,
   VoiceCaptionTurn,
+  VoiceNoiseCancellation,
   VoiceServerEvent,
   VoiceSessionError,
   VoiceSessionMode,

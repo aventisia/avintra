@@ -39,6 +39,9 @@ public static class VoiceAgentSettingsFactory
             FlowId = flowId,
             AgentName = agentName ?? string.Empty,
             EngineMode = NormalizeEngineMode(GetString(nodeConfig, VoiceAgentGraphHelpers.EngineModeKey)),
+            PreemptiveGeneration = GetBool(nodeConfig, VoiceAgentGraphHelpers.PreemptiveGenerationKey) == true,
+            NoiseCancellation = VoiceAgentGraphHelpers.NormalizeNoiseCancellation(
+                GetString(nodeConfig, VoiceAgentGraphHelpers.NoiseCancellationKey)),
             FirstSpeaker = firstSpeaker,
             Introduction = introduction,
             Llm = ReadModel(GetObject(nodeConfig, VoiceAgentGraphHelpers.PipelineLlmKey)),

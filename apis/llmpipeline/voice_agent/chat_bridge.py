@@ -13,11 +13,18 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import Any
 
+from livekit.agents import llm
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+
 from app.core.config import settings
 from app.core.database import get_db_session_context
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.services.chat_service import ChatService, chat_service
+from app.features.langgraph.services.conversation_service import (
+    ConversationService,
+    conversation_service,
+)
 from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
 from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest,
@@ -56,7 +63,7 @@ def build_voice_llm_request(
     knowledge_base = agent_settings.get("knowledgeBase") or {}
     memory = agent_settings.get("memory") or {}
     agent_name = agent_settings.get("agentName") or ""
-    voice_system_prompt = _voice_system_prompt(agent_settings)
+    system_prompt = voice_system_prompt(agent_settings)
     kb_names = knowledge_base.get("names") or None
     manager_target = (agent_settings.get("managerAgentTarget") or "").strip()
 
@@ -66,7 +73,7 @@ def build_voice_llm_request(
             "target": manager_target,
             "context": {
                 "current_turn_summary": transcript,
-                "voice_system_prompt": voice_system_prompt,
+                "voice_system_prompt": system_prompt,
                 "conversation_id": claims.conversation_id,
             },
         }
@@ -80,7 +87,7 @@ def build_voice_llm_request(
         is_voice_agent=True,
         first_speaker=agent_settings.get("firstSpeaker") or "human",
         introduction_text=agent_settings.get("introduction"),
-        voice_system_prompt=voice_system_prompt,
+        voice_system_prompt=system_prompt,
         manager_agent=manager_agent,
         pronunciations=_pronunciations(agent_settings.get("pronunciations") or []),
         sfx=_sound_effects(agent_settings.get("soundEffects")),
@@ -108,7 +115,7 @@ def build_voice_llm_request(
     )
 
 
-def _voice_system_prompt(agent_settings: dict) -> str | None:
+def voice_system_prompt(agent_settings: dict) -> str | None:
     """Compose the persona with the S1 guidance even when the API omitted it."""
 
     persona = agent_settings.get("persona") or {}
@@ -117,6 +124,67 @@ def _voice_system_prompt(agent_settings: dict) -> str | None:
     if guidance and guidance not in prompt:
         prompt = f"{prompt}\n\n{guidance}".strip()
     return prompt or None
+
+
+async def load_realtime_chat_context(
+    claims: VoiceJobClaims,
+    agent_settings: dict,
+    *,
+    service: ConversationService | None = None,
+) -> llm.ChatContext | None:
+    """Seed a realtime session with the conversation's persisted turns."""
+
+    memory = agent_settings.get("memory") or {}
+    async with get_db_session_context(
+        settings.POSTGRESQL_WORKSPACE_DB_NAME
+    ) as session:
+        history = await (service or conversation_service).load_history(
+            session,
+            claims.conversation_id,
+        )
+
+    items = realtime_chat_items(history, memory.get("maxShortTermTurns"))
+    return llm.ChatContext(items=items) if items else None
+
+
+def realtime_chat_items(
+    history: list[BaseMessage],
+    max_short_term_turns: int | None,
+) -> list[llm.ChatMessage]:
+    """Map replayed history to chat items and keep the configured turn window.
+
+    A turn starts at a user message, matching the pipeline's short-term window.
+    System prompts come from agent instructions and tool rows need the tools
+    that produced them, so both are left out of the seed.
+    """
+
+    items: list[llm.ChatMessage] = []
+    for message in history:
+        if isinstance(message, HumanMessage):
+            role = "user"
+        elif isinstance(message, AIMessage):
+            role = "assistant"
+        else:
+            continue
+
+        text = message.content if isinstance(message.content, str) else ""
+        if not text.strip():
+            continue
+
+        item = llm.ChatMessage(role=role, content=[text])
+        if message.id:
+            item.id = message.id
+        items.append(item)
+
+    if not max_short_term_turns or max_short_term_turns <= 0:
+        return items
+
+    user_indices = [
+        index for index, item in enumerate(items) if item.role == "user"
+    ]
+    if len(user_indices) <= max_short_term_turns:
+        return items
+    return items[user_indices[-max_short_term_turns]:]
 
 
 def _tool_config(tools: list[dict]) -> list[ToolConfig] | None:

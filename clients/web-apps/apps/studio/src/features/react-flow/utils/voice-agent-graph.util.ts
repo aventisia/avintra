@@ -99,7 +99,7 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
       },
     },
     { key: "__CallRecording__Voice", value: false },
-    { key: "__PreemptiveGeneration__Voice", value: false },
+    { key: "__PreemptiveGeneration__Voice", value: true },
     { key: "__NoiseCancellation__Voice", value: "none" },
     {
       key: "__KbConfig__Voice",
@@ -401,28 +401,40 @@ export const normalizeVoiceAgentGraph = (nodes: Node[], edges: Edge[]): VoiceAge
   };
 };
 
+const getVoiceNodeInputs = (nodes: Node[]): NodeInputType[] => {
+  const voiceNode = nodes.find(
+    (node) => node.type === "aiNode" && node.data?.name === VOICE_AGENT_NODE_NAME,
+  );
+  return ((voiceNode?.data as NodeDataType | undefined)?.inputs ?? []) as NodeInputType[];
+};
+
+/** Reads the Voice AI node's engine mode from a graph. */
+export const getVoiceAgentEngineMode = (nodes: Node[]): "pipeline" | "realtime" => {
+  const value = getVoiceNodeInputs(nodes).find(
+    (input) => input.key === "__EngineMode__Voice",
+  )?.value;
+
+  return value === "realtime" ? "realtime" : "pipeline";
+};
+
 /**
  * Reads the Voice AI node's human/AI-first behaviour from a graph.
  * Missing or unknown values fall back to human-first so callers never
  * open a conversation with an AI message by accident.
  */
 export const getVoiceAgentFirstSpeaker = (nodes: Node[]): string => {
-  const voiceNode = nodes.find(
-    (node) => node.type === "aiNode" && node.data?.name === VOICE_AGENT_NODE_NAME,
-  );
-  const inputs = ((voiceNode?.data as NodeDataType | undefined)?.inputs ?? []) as NodeInputType[];
-  const value = inputs.find((input) => input.key === "__FirstSpeaker__Voice")?.value;
+  const value = getVoiceNodeInputs(nodes).find(
+    (input) => input.key === "__FirstSpeaker__Voice",
+  )?.value;
 
   return value === "ai" ? "ai" : VOICE_AGENT_DEFAULT_FIRST_SPEAKER;
 };
 
 /** Reads the Voice AI node's configured introduction from a graph. */
 export const getVoiceAgentIntroduction = (nodes: Node[]): string => {
-  const voiceNode = nodes.find(
-    (node) => node.type === "aiNode" && node.data?.name === VOICE_AGENT_NODE_NAME,
-  );
-  const inputs = ((voiceNode?.data as NodeDataType | undefined)?.inputs ?? []) as NodeInputType[];
-  const value = inputs.find((input) => input.key === "__Introduction__Voice")?.value;
+  const value = getVoiceNodeInputs(nodes).find(
+    (input) => input.key === "__Introduction__Voice",
+  )?.value;
 
   return typeof value === "string" ? value : "";
 };

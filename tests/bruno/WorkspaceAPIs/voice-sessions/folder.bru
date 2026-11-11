@@ -6,18 +6,24 @@ meta {
 docs {
   # Voice sessions
 
-  Run the requests in order. `00-login` stores `ACCESS_TOKEN`; the settings
-  request reads a VoiceAgent flow version; the session request creates the
-  conversation and LiveKit room and stores the join details as collection
-  variables.
+  Run the requests in order. `00-login` stores `ACCESS_TOKEN`. Requests 01–02
+  exercise one pipeline asset; requests 03–06 exercise a realtime draft and its
+  published live version. Each settings request asserts the resolved engine mode
+  and noise-cancellation mode before the matching session request creates the
+  conversation and LiveKit room.
 
   Set these collection or environment variables before running:
 
-  - `VOICE_FLOW_VERSION_ID`: a VoiceAgent flow version UUID.
+  - `VOICE_FLOW_VERSION_ID`: a pipeline VoiceAgent flow version UUID.
   - `VOICE_MODE`: `test` for the draft or `live` for a published version
     (default `test` in the request).
+  - `VOICE_REALTIME_DRAFT_FLOW_VERSION_ID`: the realtime draft flow version UUID.
+  - `VOICE_REALTIME_LIVE_FLOW_VERSION_ID`: the realtime published version UUID
+    (the same flow as the draft, after publishing).
 
-  Join the returned room with the LiveKit console or CLI using
-  `VOICE_SERVER_URL`, `VOICE_CLIENT_TOKEN`, and `VOICE_ROOM_NAME`. The token is
-  a short-lived credential; do not commit it or copy it into shared notes.
+  Join a returned room with the LiveKit console or CLI using its
+  `VOICE_*_SERVER_URL`, `VOICE_*_CLIENT_TOKEN`, and `VOICE_*_ROOM_NAME`.
+  Each token is a short-lived credential; do not commit it or copy it into
+  shared notes. Enhanced noise-cancellation modes are rejected at publish, so
+  the live asset must resolve `none` or `auto`.
 }

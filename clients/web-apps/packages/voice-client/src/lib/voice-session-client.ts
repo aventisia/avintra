@@ -1,10 +1,11 @@
-import { type RemoteTrack, Room, RoomEvent, Track } from "livekit-client";
+import { type AudioCaptureOptions, type RemoteTrack, Room, RoomEvent, Track } from "livekit-client";
 
 import type {
   VoiceCallSnapshot,
   VoiceSessionRequest,
   VoiceSessionResponse,
 } from "../types/voice-session.type";
+import { captureOptionsFor } from "./voice-capture.util";
 import { applyVoiceEvent, parseVoiceEvent } from "./voice-events";
 
 const TIMER_INTERVAL_MS = 500;
@@ -53,6 +54,7 @@ export class VoiceSessionClient {
   private _timer: ReturnType<typeof setInterval> | null = null;
   private _generation = 0;
   private _startedAt = 0;
+  private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
   private _disposed = false;
   private readonly _createSession: VoiceSessionClientOptions["createSession"];
   private readonly _onSnapshot: VoiceSessionClientOptions["onSnapshot"];
@@ -86,6 +88,7 @@ export class VoiceSessionClient {
     }
 
     this._update({ conversationId: session.conversationId });
+    this._captureOptions = captureOptionsFor(session.noiseCancellation ?? "none");
 
     const room = new Room();
     this._room = room;
@@ -110,7 +113,7 @@ export class VoiceSessionClient {
     this._update({ needsAudioResume: !room.canPlaybackAudio });
 
     try {
-      await room.localParticipant.setMicrophoneEnabled(true);
+      await room.localParticipant.setMicrophoneEnabled(true, this._captureOptions);
     } catch {
       if (generation !== this._generation) return;
       this._fail(
@@ -141,7 +144,7 @@ export class VoiceSessionClient {
     if (!participant) return;
 
     const isMuted = !this._snapshot.isMuted;
-    await participant.setMicrophoneEnabled(!isMuted);
+    await participant.setMicrophoneEnabled(!isMuted, this._captureOptions);
     this._update({ isMuted });
   }
 

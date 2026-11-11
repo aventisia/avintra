@@ -11,25 +11,16 @@ namespace ExecutorLibrary.Tests.VoiceAgent;
 public static class VoiceAgentEngineValidationHarness
 {
     private const string GeminiLiveModel = "gemini-2.5-flash-native-audio-latest";
-    private const string VertexLiveModel = "gemini-live-2.5-flash-native-audio";
-    private const string NovaSonicModel = "amazon.nova-2-sonic-v1:0";
     private const string OpenAiRealtimeModel = "gpt-realtime";
-    private const string GrokVoiceModel = "grok-voice-2.0";
 
     private static readonly (string Provider, string Model)[] AcceptedRealtimeProviders =
     [
         ("googlegemini", GeminiLiveModel),
         ("GoogleGemini", GeminiLiveModel),
         ("google", GeminiLiveModel),
-        ("vertex", VertexLiveModel),
-        ("amazon_nova", NovaSonicModel),
-        ("amazon-nova", NovaSonicModel),
         ("openai", OpenAiRealtimeModel),
         ("azure", OpenAiRealtimeModel),
-        ("gemini", GeminiLiveModel),
-        ("vertex_ai", VertexLiveModel),
-        ("xai", GrokVoiceModel),
-        ("bedrock", NovaSonicModel)
+        ("gemini", GeminiLiveModel)
     ];
 
     public static int Run()
@@ -63,7 +54,7 @@ public static class VoiceAgentEngineValidationHarness
             AssertContains("not supported", upperError);
             AssertContains("'ULTRAVOX'", upperError);
 
-            AssertEqual(6, VoiceAgentGraphHelpers.AllowedRealtimeProviders.Count);
+            AssertEqual(3, VoiceAgentGraphHelpers.AllowedRealtimeProviders.Count);
             AssertTrue(!VoiceAgentGraphHelpers.AllowedRealtimeProviders.Contains("ultravox"));
         });
 
@@ -73,7 +64,8 @@ public static class VoiceAgentEngineValidationHarness
                 BuildVoiceFlow("realtime", "elevenlabs", "eleven_v3"));
             AssertContains("elevenlabs", providerError);
             AssertContains("openai", providerError);
-            AssertContains("vertex_ai", providerError);
+            AssertContains("gemini", providerError);
+            AssertTrue(!providerError!.Contains("vertex_ai", StringComparison.Ordinal));
 
             var modeError = VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
                 BuildVoiceFlow("live", "openai", OpenAiRealtimeModel));
@@ -88,7 +80,20 @@ public static class VoiceAgentEngineValidationHarness
             AssertEqual("Realtime engine mode requires a realtime provider and model.", error);
         });
 
-        failures += Run("V6 pipeline accepted when complete and reported when text-to-speech is missing", () =>
+        failures += Run("V6 realtime without a BYOK credential is rejected", () =>
+        {
+            var error = VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, credentialName: string.Empty));
+            AssertEqual("Realtime engine mode requires a BYOK credential.", error);
+        });
+
+        failures += Run("V6b realtime accepts a BYOK credential supplied as credential_id", () =>
+        {
+            AssertNull(VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, credentialId: "cred-1")));
+        });
+
+        failures += Run("V7 pipeline accepted when complete and reported when text-to-speech is missing", () =>
         {
             AssertNull(VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
                 BuildPipelineVoiceFlow(includeTextToSpeechModel: true)));
@@ -98,7 +103,7 @@ public static class VoiceAgentEngineValidationHarness
             AssertEqual("Pipeline engine mode requires a text-to-speech provider and model.", error);
         });
 
-        failures += Run("V7 every rejection carries a non-empty user-facing message", () =>
+        failures += Run("V8 every rejection carries a non-empty user-facing message", () =>
         {
             string?[] rejections =
             [
@@ -107,6 +112,10 @@ public static class VoiceAgentEngineValidationHarness
                 VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(BuildVoiceFlow("realtime", "elevenlabs", "eleven_v3")),
                 VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(BuildVoiceFlow("live", "openai", OpenAiRealtimeModel)),
                 VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(BuildVoiceFlow("realtime", "openai", string.Empty)),
+                VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                    BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, credentialName: string.Empty)),
+                VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                    BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, noiseCancellation: "standard")),
                 VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(BuildPipelineVoiceFlow(includeTextToSpeechModel: false))
             ];
 
@@ -114,18 +123,52 @@ public static class VoiceAgentEngineValidationHarness
                 AssertTrue(rejection is not null && !string.IsNullOrWhiteSpace(rejection));
         });
 
+        failures += Run("V9 enhanced noise cancellation is blocked for both engine modes", () =>
+        {
+            foreach (var mode in new[] { "standard", "telephony", " Standard " })
+            {
+                var realtimeError = VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                    BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, noiseCancellation: mode));
+                AssertContains("not available yet", realtimeError);
+                AssertContains(mode.Trim(), realtimeError);
+
+                var pipelineError = VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                    BuildPipelineVoiceFlow(includeTextToSpeechModel: true, noiseCancellation: mode));
+                AssertContains("not available yet", pipelineError);
+                AssertContains(mode.Trim(), pipelineError);
+            }
+
+            AssertNull(VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                BuildVoiceFlow("realtime", "openai", OpenAiRealtimeModel, noiseCancellation: "auto")));
+            AssertNull(VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(
+                BuildPipelineVoiceFlow(includeTextToSpeechModel: true, noiseCancellation: "none")));
+        });
+
         Console.WriteLine($"\nResults: {(failures == 0 ? "ALL PASSED" : $"{failures} FAILED")}");
         return failures;
     }
 
-    private static ReactFlowDataModel BuildVoiceFlow(string engineMode, string? realtimeProvider, string? realtimeModel) =>
+    private static ReactFlowDataModel BuildVoiceFlow(
+        string engineMode,
+        string? realtimeProvider,
+        string? realtimeModel,
+        string? credentialName = "realtime-byok",
+        string? noiseCancellation = null,
+        string? credentialId = null) =>
         BuildFlow(
         [
             new ReactFlowNodeInput { Key = VoiceAgentGraphHelpers.EngineModeKey, Value = StringValue(engineMode) },
-            new ReactFlowNodeInput { Key = VoiceAgentGraphHelpers.RealtimeVoiceKey, Value = ObjectValue(realtimeProvider, realtimeModel) }
+            new ReactFlowNodeInput
+            {
+                Key = VoiceAgentGraphHelpers.RealtimeVoiceKey,
+                Value = ObjectValue(realtimeProvider, realtimeModel, credentialName, credentialId)
+            },
+            .. NoiseCancellationInput(noiseCancellation)
         ]);
 
-    private static ReactFlowDataModel BuildPipelineVoiceFlow(bool includeTextToSpeechModel) =>
+    private static ReactFlowDataModel BuildPipelineVoiceFlow(
+        bool includeTextToSpeechModel,
+        string? noiseCancellation = null) =>
         BuildFlow(
         [
             new ReactFlowNodeInput { Key = VoiceAgentGraphHelpers.EngineModeKey, Value = StringValue("pipeline") },
@@ -135,8 +178,18 @@ public static class VoiceAgentEngineValidationHarness
             {
                 Key = VoiceAgentGraphHelpers.PipelineTextToSpeechKey,
                 Value = ObjectValue("elevenlabs", includeTextToSpeechModel ? "eleven_flash_v2" : string.Empty)
-            }
+            },
+            .. NoiseCancellationInput(noiseCancellation)
         ]);
+
+    private static ReactFlowNodeInput[] NoiseCancellationInput(string? mode) =>
+        mode is null
+            ? []
+            : [new ReactFlowNodeInput
+            {
+                Key = VoiceAgentGraphHelpers.NoiseCancellationKey,
+                Value = StringValue(mode)
+            }];
 
     private static ReactFlowDataModel BuildFlow(List<ReactFlowNodeInput> inputs) =>
         new()
@@ -160,9 +213,19 @@ public static class VoiceAgentEngineValidationHarness
     private static JsonElement StringValue(string value) =>
         JsonDocument.Parse(JsonSerializer.Serialize(value)).RootElement.Clone();
 
-    private static JsonElement ObjectValue(string? provider, string? model) =>
+    private static JsonElement ObjectValue(
+        string? provider,
+        string? model,
+        string? credentialName = null,
+        string? credentialId = null) =>
         JsonDocument.Parse(JsonSerializer.Serialize(
-            new Dictionary<string, string?> { ["provider"] = provider, ["model"] = model })).RootElement.Clone();
+            new Dictionary<string, string?>
+            {
+                ["provider"] = provider,
+                ["model"] = model,
+                ["credential_name"] = credentialName,
+                ["credential_id"] = credentialId,
+            })).RootElement.Clone();
 
     private static int Run(string name, Action test)
     {

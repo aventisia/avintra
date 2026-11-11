@@ -420,12 +420,10 @@ export const openAiModelList: Model[] = [
   },
 ];
 
-// Official Google Gemini Live / TTS Voices (2025)
+// IMPORTANT NOTE: Gemini Live voices differ by model, so this list is the
+// intersection that every Live model we ship accepts.
 /** Curated Google Gemini text-to-speech voice options. */
 export const googleVoices = [
-  { label: "Journey", value: "journey" },
-  { label: "Horizon", value: "horizon" },
-  { label: "Lyra", value: "lyra" },
   { label: "Charon", value: "charon" },
   { label: "Kore", value: "kore" },
   { label: "Puck", value: "puck" },
@@ -586,21 +584,14 @@ export const googleModelList: Model[] = [
 ];
 
 /**
- * Realtime voice providers executable by the llmpipeline realtime gateway.
+ * Realtime voice providers executable by the voice runtime.
  *
- * IMPORTANT NOTE: this allowlist mirrors the gateway's six-provider matrix
- * (`apis/llmpipeline/app/features/realtime_voice`). A provider that a tenant has
+ * IMPORTANT NOTE: this allowlist mirrors the publish check in
+ * `VoiceAgentGraphHelpers.AllowedRealtimeProviders`. A provider that a tenant has
  * enabled for realtime but that is absent here must be surfaced as explicitly
  * unsupported, never offered as executable.
  */
-export const EXECUTABLE_REALTIME_PROVIDERS = [
-  "openai",
-  "azure",
-  "googlegemini",
-  "vertex_ai",
-  "xai",
-  "bedrock",
-] as const;
+export const EXECUTABLE_REALTIME_PROVIDERS = ["openai", "azure", "googlegemini"] as const;
 
 export type ExecutableRealtimeProvider = (typeof EXECUTABLE_REALTIME_PROVIDERS)[number];
 

@@ -22,9 +22,11 @@ await client.dispose();
 ```
 
 `start` bootstraps through `createSession`, joins the room, enables the default
-microphone, and piles up remote audio in hidden `<audio>` elements. Snapshot
-`state` is one of `idle`, `connecting`, `listening`, `thinking`, `speaking`,
-`ended`, `error`; `needsAudioResume` is set when the browser blocks playback.
+microphone with the capture constraints of the resolved `noiseCancellation` mode
+(`auto` keeps browser processing on; every other mode turns it off), and piles up
+remote audio in hidden `<audio>` elements. Snapshot `state` is one of `idle`,
+`connecting`, `listening`, `thinking`, `speaking`, `ended`, `error`;
+`needsAudioResume` is set when the browser blocks playback.
 
 ## Worker events
 
@@ -34,9 +36,14 @@ reducer over the call snapshot:
 
 - `session.state` maps `processing` to `thinking` and `idle` to `listening`.
 - `transcript.final` adds caller turns and agent turns keyed by `turnId`.
+- `transcript.interim` keeps one caller caption that is replaced as the
+  streaming STT revises it, then replaced by the final transcript.
 - `tool.call` attaches to its agent turn, or creates a placeholder turn when the
   tool runs before the reply text.
-- `timing` attaches display latency only when every displayed value is present.
+- `timing` attaches display latency for the turn when it carries any measurement:
+  the pipeline stages (`stt_ms`, `endpointing_ms`, `llm_first_token_ms`,
+  `tts_first_audio_ms`, `caller_to_speaking_ms`) or the realtime
+  `ttft_ms`/`duration_ms` pair.
 - `error` keeps the call active until a close arrives.
 - `session.closed` `1000` ends the call; any other code is an error.
 

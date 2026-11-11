@@ -93,7 +93,7 @@
       "type": "select",
       "name": "__EngineMode__Voice",
       "label": "Engine Mode",
-      "description": "Choose how the agent handles speech. Realtime uses one realtime model for both listening and speaking; Pipeline chains separate speech-to-text, language model, and text-to-speech steps. The selection is stored with the flow and honored by a later runtime change.",
+      "description": "Choose how the agent handles speech. Realtime uses one realtime model for both listening and speaking; Pipeline chains separate speech-to-text, language model, and text-to-speech steps.",
       "defaultValue": "pipeline",
       "required": false,
       "selectOptions": [
@@ -115,7 +115,7 @@
       "type": "model-config-select",
       "name": "__ModelConfig__RealtimeVoice",
       "label": "Realtime Model",
-      "description": "Model used when Engine Mode is Realtime. The selection is stored with the flow and honored by a later runtime change.",
+      "description": "Model used when Engine Mode is Realtime. Realtime is bring-your-own-key only: pick the provider, its model, and the credential it uses.",
       "defaultValue": {
         "is_byok_enabled": true,
         "provider": "",
@@ -144,7 +144,7 @@
       "type": "model-config-select",
       "name": "__ModelConfig__Voice",
       "label": "LLM",
-      "description": "Model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "description": "Model used when Engine Mode is Pipeline.",
       "defaultValue": {
         "is_byok_enabled": true,
         "provider": "",
@@ -172,7 +172,7 @@
       "direction": "Input",
       "type": "model-config-select",
       "name": "__ModelConfig__SpeechToText",
-      "description": "Speech-to-text model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "description": "Speech-to-text model used when Engine Mode is Pipeline. ElevenLabs Scribe streams interim transcripts; other models transcribe each utterance.",
       "defaultValue": {
         "is_byok_enabled": true,
         "provider": "",
@@ -200,7 +200,7 @@
       "direction": "Input",
       "type": "model-config-select",
       "name": "__ModelConfig__TextToSpeech",
-      "description": "Text-to-speech model used when Engine Mode is Pipeline. The selection is stored with the flow and honored by a later runtime change.",
+      "description": "Text-to-speech model used when Engine Mode is Pipeline.",
       "defaultValue": {
         "is_byok_enabled": true,
         "provider": "",
@@ -252,8 +252,8 @@
       "type": "switch",
       "name": "__PreemptiveGeneration__Voice",
       "label": "Preemptive Generation",
-      "description": "Starts preparing a reply before the caller finishes speaking. The setting is stored with the flow and honored by a later runtime change.",
-      "defaultValue": false,
+      "description": "Starts preparing a reply before the caller finishes speaking, cutting the wait to the first spoken word. Pipeline agents only.",
+      "defaultValue": true,
       "required": false,
       "category": "Voice Sessions"
     },
@@ -262,7 +262,7 @@
       "type": "select",
       "name": "__NoiseCancellation__Voice",
       "label": "Noise Cancellation",
-      "description": "Reduces background noise in the caller audio. The setting is stored with the flow and honored by a later runtime change.",
+      "description": "Reduces background noise in the caller audio for both engine modes. Auto applies browser noise suppression, echo cancellation, and auto gain control; None leaves the microphone unfiltered.",
       "defaultValue": "none",
       "required": false,
       "selectOptions": [
@@ -275,16 +275,6 @@
           "label": "Auto",
           "value": "auto",
           "description": "Let the platform choose the noise reduction."
-        },
-        {
-          "label": "Standard",
-          "value": "standard",
-          "description": "General background noise reduction."
-        },
-        {
-          "label": "Telephony",
-          "value": "telephony",
-          "description": "Tuned for phone call audio."
         }
       ],
       "category": "Voice Sessions"
