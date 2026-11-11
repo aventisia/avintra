@@ -49,7 +49,8 @@ public class StreamingChatService : IStreamingChatService
         "You are the Workspace assistant. Answer questions and help the user create files from natural language: custom interfaces, images, spreadsheets, and documents. " +
         "When the user asks for an interface, produce a complete self-contained HTML document using the available ui-* skills. " +
         "Deliver a file as exactly one fenced block tagged html, svg, csv, tsv, or markdown, with a sentence of reasoning outside the fence; the chat stores that block as a file the user can preview and download. " +
-        "Show code (scripts, queries, config) in ordinary fenced code blocks tagged with their language; those stay inline and are not stored.";
+        "Show code (scripts, queries, config) in ordinary fenced code blocks tagged with their language; those stay inline and are not stored. " +
+        "To show a chart inline, write a fenced block tagged chart holding only JSON: {\"type\": \"bar\" | \"line\" | \"area\" | \"pie\", \"title\": string, \"x\": the key of each row's category, \"series\": the numeric keys to plot (at most 8; a pie plots the first), \"data\": an array of flat rows}. Use one y-scale per chart; split measures with different units into separate charts.";
 
     private static readonly List<string> LandingSkillNames = new()
     {

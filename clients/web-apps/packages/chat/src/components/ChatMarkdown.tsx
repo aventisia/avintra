@@ -1,14 +1,17 @@
 import {
   type CodeHeaderProps,
   MarkdownTextPrimitive,
+  type MarkdownTextPrimitiveProps,
+  type SyntaxHighlighterProps,
   unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
   useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
 import { cn } from "@avplatform/ui/lib";
-import { memo } from "react";
+import { Suspense, lazy, memo } from "react";
 import remarkGfm from "remark-gfm";
 
 import { chatProseComponents } from "../constants/chat-prose.constant";
+import { parseChartSpec } from "../utils/chart-spec.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 
@@ -18,6 +21,31 @@ const CodeHeader = ({ language, code }: CodeHeaderProps) => (
     <ChatCopyButton text={code} label="Copy code" />
   </div>
 );
+
+const ChatChart = lazy(() =>
+  import("./ChatChart").then(({ ChatChart }) => ({ default: ChatChart })),
+);
+
+const ChartFallback = () => (
+  <div className="mt-5 h-72 animate-pulse rounded-xl border border-line bg-sunken" />
+);
+
+// A chart fence draws once its JSON parses; until then, or if it never does, it shows as code.
+const componentsByLanguage: MarkdownTextPrimitiveProps["componentsByLanguage"] = {
+  chart: {
+    CodeHeader: (props: CodeHeaderProps) =>
+      parseChartSpec(props.code) ? null : <CodeHeader {...props} />,
+    SyntaxHighlighter: (props: Omit<SyntaxHighlighterProps, "node">) => {
+      const spec = parseChartSpec(props.code);
+      if (!spec) return <ChatCodeBlock {...props} />;
+      return (
+        <Suspense fallback={<ChartFallback />}>
+          <ChatChart spec={spec} />
+        </Suspense>
+      );
+    },
+  },
+};
 
 const markdownComponents = memoizeMarkdownComponents({
   ...chatProseComponents,
@@ -50,6 +78,7 @@ export const ChatMarkdown = memo(function ChatMarkdown({
       preprocess={preprocess}
       remarkPlugins={[remarkGfm]}
       components={markdownComponents}
+      componentsByLanguage={componentsByLanguage}
       className="break-words"
       defer
     />
