@@ -22,10 +22,13 @@ export const useRestoreAgentVersion = () => {
         inputOutputObject: detail.inputOutputObject ?? JSON.stringify([]),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, detail) => {
       queryClient.invalidateQueries({
         queryKey: ["AGENT_HISTORY", currVersionId],
       });
+      // IMPORTANT NOTE: drop the cached Agent so closing history refetches the
+      // restored content (the loader query never refetches on mount).
+      queryClient.removeQueries({ queryKey: ["flow", detail.flowId] });
 
       toast.success("Change restored successfully");
     },

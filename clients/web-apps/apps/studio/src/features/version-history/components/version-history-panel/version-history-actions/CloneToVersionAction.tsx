@@ -1,29 +1,35 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { toast } from "@avplatform/ui/sonner";
 import { Copy } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 
 import { useCloneToVersionMutation } from "@/features/version-history/hooks/useCloneToVersionMutation";
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
-import { useAppLoaderStore } from "@/stores/app-loader-store";
 
 export default function CloneToVersionAction({ id }: { id: string }) {
   const detailQuery = useFetchVersionHistoryDetail(id);
   const cloneToNewVersionMutation = useCloneToVersionMutation();
 
-  const { showLoader } = useAppLoaderStore(
-    useShallow((state) => ({ showLoader: state.showLoader })),
-  );
-
   const handleClone = async () => {
-    showLoader("Cloning in process...");
+    try {
+      const { data } = await detailQuery.refetch();
+      if (!data) {
+        toast.error("Unable to load version details. Please try again.");
+        return;
+      }
 
-    const { data } = await detailQuery.refetch();
-    if (!data) return;
-
-    cloneToNewVersionMutation.mutate(data);
+      cloneToNewVersionMutation.mutate(data);
+    } catch {
+      toast.error("Clone failed. Please try again.");
+    }
   };
 
   return (
-    <SimpleDDMenuItem Icon={Copy} size="sm" content="Clone to new version" onClick={handleClone} />
+    <SimpleDDMenuItem
+      Icon={Copy}
+      size="sm"
+      content="Clone to new version"
+      disabled={detailQuery.isFetching || cloneToNewVersionMutation.isPending}
+      onClick={handleClone}
+    />
   );
 }
