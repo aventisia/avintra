@@ -1,12 +1,11 @@
 import { deepParse } from "@avplatform/ui/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useIsMutating, useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 
 import { getAgentsHistoryById } from "../apis/agents-history-apis";
@@ -16,30 +15,30 @@ export const useReactFlowViewData = () => {
 
   const historyId = searchParams.get("h");
 
-  // Get ReactFlowExt store state & actions
+  // IMPORTANT NOTE: preview writes to the isolated view store; the editable
+  // /agent canvas (useReactFlowExtStore) must never see history selection.
   const {
     setNodes,
     setEdges,
     setFlowVariablesObject,
     setViewport: setViewportState,
-  } = useReactFlowExtStore(
+    setVersionMeta,
+  } = useReactFlowViewStore(
     useShallow((state) => ({
       setNodes: state.setNodes,
       setEdges: state.setEdges,
       setFlowVariablesObject: state.setFlowVariablesObject,
       setViewport: state.setViewport,
-    })),
-  );
-
-  // Get ReactFlowView store state & actions
-  const { setVersionMeta } = useReactFlowViewStore(
-    useShallow((state) => ({
       setVersionMeta: state.setVersionMeta,
     })),
   );
 
   // Get react flow hook to set viewport
   const { fitView } = useReactFlow();
+
+  // Clone progress shows as a canvas overlay like the flow loader, never as
+  // the app-level takeover.
+  const isCloning = useIsMutating({ mutationKey: ["clone-history"] }) > 0;
 
   //Get flow
   const { data, isLoading } = useQuery({
@@ -85,5 +84,5 @@ export const useReactFlowViewData = () => {
     }
   }, [data]);
 
-  return { isLoading };
+  return { isLoading, isCloning };
 };
