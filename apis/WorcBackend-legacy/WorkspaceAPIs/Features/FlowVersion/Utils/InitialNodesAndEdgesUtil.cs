@@ -300,7 +300,7 @@ public static class InitialNodesAndEdgesUtil
                 }
             },
             new { Key = "__CallRecording__Voice", Value = (object?)false },
-            new { Key = "__PreemptiveGeneration__Voice", Value = (object?)false },
+            new { Key = "__PreemptiveGeneration__Voice", Value = (object?)true },
             new { Key = "__NoiseCancellation__Voice", Value = (object?)"none" },
             new
             {

@@ -16,9 +16,10 @@ from typing import Any, Awaitable, Callable
 from livekit import rtc
 
 from app.core.logger import logger
-from app.features.realtime_voice.schemas import (
+from .contracts import (
     ERROR_CODE_CREDENTIALS_UNAVAILABLE,
     ERROR_CODE_INVALID_CONFIG,
+    ERROR_CODE_UNSUPPORTED_PROVIDER,
     ERROR_CODE_UPSTREAM,
     WS_CLOSE_BAD_CONFIG,
     WS_CLOSE_FORBIDDEN,
@@ -41,6 +42,7 @@ _CLOSE_CODES = {
 
 _ERROR_CLOSE_CODES = {
     ERROR_CODE_INVALID_CONFIG: WS_CLOSE_BAD_CONFIG,
+    ERROR_CODE_UNSUPPORTED_PROVIDER: WS_CLOSE_BAD_CONFIG,
     ERROR_CODE_CREDENTIALS_UNAVAILABLE: WS_CLOSE_FORBIDDEN,
 }
 
@@ -118,7 +120,10 @@ class RoomEventPublisher:
 class _Turn:
     id: int
     started_at: float
+    has_reference: bool
     stt_ms: int | None = None
+    caller_stopped_at: float | None = None
+    caller_final_at: float | None = None
     first_delta_at: float | None = None
     first_audio_at: float | None = None
     parts: list[str] = field(default_factory=list)
@@ -144,6 +149,9 @@ class VoiceSessionEvents:
         self._closed = False
         self._speech_end_at: float | None = None
         self._stt_ms: int | None = None
+        self._caller_speaking = False
+        self._caller_stopped_at: float | None = None
+        self._caller_final_at: float | None = None
         self._turn_tasks: set[asyncio.Task[None]] = set()
 
     def state(self, state: str, previous: str | None = None) -> None:
@@ -160,15 +168,22 @@ class VoiceSessionEvents:
         """
 
         if state == "speaking":
+            self._caller_speaking = True
             if self._state == "processing":
                 self._set_state("listening", "processing")
             return
-        if state == "listening" and self._state in ("idle", "listening"):
-            self._set_state("processing", self._state)
+        if state == "listening":
+            if self._caller_speaking:
+                self._caller_speaking = False
+                self._caller_stopped_at = time.perf_counter()
+            if self._state in ("idle", "listening"):
+                self._set_state("processing", self._state)
 
     def empty_transcript(self) -> None:
         """Return to listening when the caller's utterance produced no transcript."""
 
+        self._caller_stopped_at = None
+        self._caller_final_at = None
         if self._state == "processing":
             self._set_state("listening", "processing")
 
@@ -178,11 +193,52 @@ class VoiceSessionEvents:
         self._state = stable
         self._emit("session.state", state=stable, previousState=previous)
 
+    def caller_interim(self, text: str) -> None:
+        """Publish the in-progress caller transcript a streaming STT reports."""
+
+        text = text.strip()
+        if not text:
+            return
+        self._emit("transcript.interim", role="user", text=text)
+
     def caller_transcript(self, text: str) -> None:
         text = text.strip()
         if not text:
             return
+        self._caller_final_at = time.perf_counter()
+        if self._turn is not None and self._turn.caller_final_at is None:
+            self._turn.caller_final_at = self._caller_final_at
+            self._turn.has_reference = True
         self._emit("transcript.final", role="user", text=text)
+
+    def assistant_transcript(self, text: str) -> None:
+        """Publish a finalized assistant transcript from a realtime model."""
+
+        text = text.strip()
+        if not text:
+            return
+        self._emit("transcript.final", role="assistant", text=text)
+
+    def realtime_response_timing(self, timing: dict[str, int]) -> dict[str, int | None]:
+        """Publish a realtime response's provider latency in the turn format."""
+
+        voice_timing: dict[str, int | None] = {
+            "stt_ms": None,
+            "llm_first_token_ms": None,
+            "tts_first_audio_ms": None,
+            "turn_total_ms": None,
+            "endpointing_ms": None,
+            "caller_to_speaking_ms": None,
+            "ttft_ms": timing.get("ttft_ms"),
+            "duration_ms": timing.get("duration_ms"),
+        }
+        self._emit(
+            "timing",
+            stage="turn",
+            durationMs=voice_timing["duration_ms"],
+            voice_turn_timing=voice_timing,
+        )
+        return voice_timing
 
     def stt_final(self, duration_ms: int) -> None:
         """Record the end and duration of the final speech-to-text call."""
@@ -193,14 +249,20 @@ class VoiceSessionEvents:
     def begin_turn(self) -> int:
         if self._turn is not None:
             self.cancel_turn(self._turn.id)
+        reference_at = self._speech_end_at or self._caller_final_at
         self._next_turn_id += 1
         self._turn = _Turn(
             id=self._next_turn_id,
-            started_at=self._speech_end_at or time.perf_counter(),
+            started_at=reference_at or time.perf_counter(),
+            has_reference=reference_at is not None,
             stt_ms=self._stt_ms,
+            caller_stopped_at=self._caller_stopped_at,
+            caller_final_at=self._caller_final_at,
         )
         self._speech_end_at = None
         self._stt_ms = None
+        self._caller_stopped_at = None
+        self._caller_final_at = None
         return self._turn.id
 
     def assistant_delta(self, turn_id: int, text: str) -> None:
@@ -274,7 +336,7 @@ class VoiceSessionEvents:
         self._emit(
             "timing",
             stage="session",
-            durationMs=_milliseconds(time.perf_counter() - self._started_at),
+            durationMs=milliseconds(time.perf_counter() - self._started_at),
         )
         self._emit(
             "session.closed",
@@ -299,22 +361,26 @@ class VoiceSessionEvents:
         interrupted: bool,
     ) -> dict[str, int | None]:
         completed_at = time.perf_counter()
-        has_stt = turn.stt_ms is not None
+        has_reference = turn.has_reference
         first_delta_ms = (
-            _milliseconds(turn.first_delta_at - turn.started_at)
-            if has_stt and turn.first_delta_at is not None
+            milliseconds(turn.first_delta_at - turn.started_at)
+            if has_reference and turn.first_delta_at is not None
             else None
         )
         timing = {
             "stt_ms": turn.stt_ms,
             "llm_first_token_ms": first_delta_ms,
             "tts_first_audio_ms": (
-                _milliseconds(turn.first_audio_at - turn.started_at)
-                if has_stt and turn.first_audio_at is not None
+                milliseconds(turn.first_audio_at - turn.started_at)
+                if has_reference and turn.first_audio_at is not None
                 else None
             ),
             "turn_total_ms": (
-                _milliseconds(completed_at - turn.started_at) if has_stt else None
+                milliseconds(completed_at - turn.started_at) if has_reference else None
+            ),
+            "endpointing_ms": _elapsed_ms(turn.caller_stopped_at, turn.caller_final_at),
+            "caller_to_speaking_ms": _elapsed_ms(
+                turn.caller_stopped_at, turn.first_audio_at
             ),
         }
         self._emit(
@@ -360,8 +426,14 @@ class VoiceSessionEvents:
             self._publish(payload)
 
 
-def _milliseconds(seconds: float) -> int:
+def milliseconds(seconds: float) -> int:
     return max(0, round(seconds * 1000))
+
+
+def _elapsed_ms(start: float | None, end: float | None) -> int | None:
+    if start is None or end is None or end < start:
+        return None
+    return milliseconds(end - start)
 
 
 def error_code_for_source(_source: Any) -> str:

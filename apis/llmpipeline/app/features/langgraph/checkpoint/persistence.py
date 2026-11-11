@@ -67,7 +67,10 @@ def _message_content(message: BaseMessage) -> str:
     return str(content)
 
 
-def _message_metadata(message: BaseMessage) -> dict[str, Any]:
+def _message_metadata(
+    message: BaseMessage,
+    extra_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Capture provider-specific metadata for storage."""
 
     metadata: dict[str, Any] = {
@@ -80,6 +83,9 @@ def _message_metadata(message: BaseMessage) -> dict[str, Any]:
     if isinstance(message, AIMessage):
         metadata["response_metadata"] = message.response_metadata or {}
         metadata["usage_metadata"] = message.usage_metadata or {}
+
+    if extra_metadata:
+        metadata.update(extra_metadata)
 
     # Filter out empty values but keep explicit False/0. Tool calls are
     # preserved as [] when present so they can be replayed to the model.
@@ -164,6 +170,7 @@ async def save_message(
     tenant_id: uuid.UUID,
     conversation_id: str,
     message: BaseMessage,
+    metadata: dict[str, Any] | None = None,
 ) -> None:
     """Persist a single LangChain message for a conversation."""
 
@@ -176,7 +183,7 @@ async def save_message(
         )
         return
 
-    metadata = _message_metadata(message)
+    message_metadata = _message_metadata(message, metadata)
 
     session.add(
         ConversationMessage(
@@ -185,7 +192,7 @@ async def save_message(
             conversation_id=conversation_uuid,
             role=_message_role(message),
             content=_message_content(message),
-            message_metadata=metadata if metadata else None,
+            message_metadata=message_metadata if message_metadata else None,
             created_on=datetime.now(timezone.utc),
         )
     )

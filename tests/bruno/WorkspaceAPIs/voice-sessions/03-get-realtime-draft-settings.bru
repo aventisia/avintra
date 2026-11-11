@@ -1,0 +1,33 @@
+meta {
+  name: Get realtime draft settings
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/settings/{{VOICE_REALTIME_DRAFT_FLOW_VERSION_ID}}?mode=test
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("draft resolves as a realtime agent with a supported noise mode", function() {
+    expect(res.getStatus()).to.equal(200);
+    const settings = res.getBody()?.data;
+    expect(settings.engineMode).to.equal("realtime");
+    expect(settings.realtime.provider).to.be.a("string").and.not.equal("");
+    expect(settings.realtime.model).to.be.a("string").and.not.equal("");
+    expect(["none", "auto"]).to.include(settings.noiseCancellation);
+  });
+}
+
+docs {
+  > `VOICE_REALTIME_DRAFT_FLOW_VERSION_ID` must identify a VoiceAgent draft whose
+  > engine mode is realtime and whose provider is OpenAI, Azure, or Gemini, with
+  > a BYOK credential. This request also proves the publish-time noise
+  > cancellation block does not affect `none` or `auto`.
+}

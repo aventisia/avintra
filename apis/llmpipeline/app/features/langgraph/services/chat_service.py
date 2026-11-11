@@ -39,12 +39,10 @@ from app.features.langgraph.skills.skill_loader import (
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_platform_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.langgraph.tools.tool_config_utils import (
-    configured_tool_roots,
-    expand_tool_config,
+from app.features.langgraph.tools.tool_config_utils import expand_tool_config
+from app.features.langgraph.tools.tool_resolver import (
+    register_configured_custom_tools,
 )
-from app.features.custom_tools.custom_tool_loader import load_custom_tools
-from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
     LLMChunkResponse,
@@ -945,40 +943,16 @@ class ChatService:
     ) -> None:
         """Load the request's configured custom tools and register them.
 
-        Only tools explicitly configured on the agent are loaded, scoped to the
-        active environment. The previous ``FlowVersionId`` join could never match
-        (the link table is dormant), so tools are resolved by their root name
-        (``ai_Tools.Name``) instead.
+        Delegates to the shared resolver so the realtime voice bridge loads the
+        same tools with the same environment and space scoping.
         """
 
-        tool_names = configured_tool_roots(request.tool_config or [])
-        if not tool_names:
-            return
-
-        try:
-            custom_tools = await load_custom_tools(
-                session=db_session,
-                tenant_id=user.tenant_id,
-                tool_names=tool_names,
-                workspace_api=f"https://{settings.APP_BASE_URL}/workspace",
-                access_token=user.access_token,
-                env_type=user.env_type,
-                space_id=user.space_id,
-            )
-            for ct in custom_tools:
-                self.tool_registry.register(ct)
-            if custom_tools:
-                logger.debug(
-                    "Registered %d custom tools for tenant %s",
-                    len(custom_tools),
-                    user.tenant_id,
-                )
-        except Exception as exc:
-            logger.warning(
-                "Failed to load custom tools for tenant %s: %s",
-                user.tenant_id,
-                exc,
-            )
+        await register_configured_custom_tools(
+            request,
+            user,
+            db_session,
+            self.tool_registry,
+        )
 
     async def _load_custom_skills(
         self,

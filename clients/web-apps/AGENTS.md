@@ -12,6 +12,7 @@
 
 - Most existing code predates these rules (legacy `-apis.ts` and `-dto.ts` filenames, `interface` outside DTOs). Apply the rules to files you create or touch, keep the rest of the change scope consistent, and leave untouched files alone.
 - New files follow these rules even when neighbouring files use the legacy form.
+- Touched modules that keep a pre-existing name because renaming would churn every importer: `dynamic-config-panel/constants/model-providers.ts`, `workspace/.../knowledge-base/constants/model-providers.ts`, `voice-client/src/lib/voice-events.ts`, `voice-client/src/lib/voice-session-client.ts`.
 
 ## Feature layout
 

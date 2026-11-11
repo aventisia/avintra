@@ -158,21 +158,22 @@ async def _resolve_kb_embedding_configs(
     return ordered_configs
 
 
-# Main: Query pgvector knowledge base and inject retrieved chunks as context into LLMRequest
-async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) -> None:
+# Main: Query pgvector knowledge base and return retrieved chunks as a context block
+async def search_knowledge(query: str, llm_request: LLMRequest, user: User) -> str:
     """
-    Queries the pgvector knowledge base using the LLM request's input as the query,
-    retrieves the top-k relevant chunks scoped to the specified kb_names,
-    and injects them as a formatted context block into llm_request.input in-place.
+    Retrieve the top-k relevant chunks for ``query`` scoped to the request's
+    ``kb_names`` and return them as a formatted context block.
 
-    Defaults: vector_store=pgvector, embedding_provider=openai, embedding_model=text-embedding-3-small.
-    Uses llm_request.credential_name as the embedding credential (supports BYOK).
-    Silently skips on any error to avoid blocking the LLM call.
+    Defaults: vector_store=pgvector, embedding_provider=openai,
+    embedding_model=text-embedding-3-small. Uses ``llm_request.credential_name``
+    as the embedding credential (supports BYOK). Returns an empty string when
+    nothing is found or retrieval fails, so callers can continue without KB
+    context instead of failing the request.
     """
-    query_text = _extract_query_from_input(llm_request)
+    query_text = (query or "").strip()
     if not query_text:
-        logger.warning("[KB-RETRIEVAL] Could not extract query text from LLM input — skipping KB retrieval.")
-        return
+        logger.warning("[KB-RETRIEVAL] Empty query — skipping KB retrieval.")
+        return ""
 
     try:
         kb_configs = await _resolve_kb_embedding_configs(
@@ -186,7 +187,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
         async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
             session.info["tenant_id"] = user.tenant_id
             db = TenantDB(session=session, tenant_id=user.tenant_id)
-            
+
             # Iterate through each KB configuration
             for kb_config in kb_configs:
                 store_type = kb_config.get("vector_store")
@@ -212,7 +213,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                         str(e),
                     )
                     continue
-                
+
                 store_credential = _resolve_kb_credential(
                     kb_config, "store_credential_name", llm_request.credential_name
                 )
@@ -259,16 +260,34 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
         # Guard: no results from any KB
         if not all_chunks:
             logger.debug("[KB-RETRIEVAL] No chunks retrieved from knowledge base.")
-            return
+            return ""
 
          # Rank chunks globally by similarity score (descending)
         all_chunks.sort(key=lambda chunk: chunk.similarity_score, reverse=True)
 
-        # Format retrieved chunks as a context block and inject into LLMRequest input
+        # Format retrieved chunks as a context block for the caller
         chunks_text = "\n\n".join(chunk.content for chunk in all_chunks)
         logger.debug(f"[KB-RETRIEVAL] Retrieved {len(all_chunks)} chunk(s) from knowledge base.")
-        context_str = f"[Knowledge Base Context]\n{chunks_text}\n[/Knowledge Base Context]"
-        _inject_context_into_input(llm_request, context_str)
+        return f"[Knowledge Base Context]\n{chunks_text}\n[/Knowledge Base Context]"
 
     except Exception as exc:
         logger.warning(f"[KB-RETRIEVAL] Failed to retrieve KB context: {exc} — continuing without KB context.")
+        return ""
+
+
+# Main: Query the knowledge base and inject retrieved chunks into LLMRequest
+async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) -> None:
+    """
+    Queries the knowledge base using the LLM request's input as the query and
+    injects the retrieved chunks as a formatted context block into
+    ``llm_request.input`` in-place. Silently skips on any error to avoid
+    blocking the LLM call.
+    """
+    query_text = _extract_query_from_input(llm_request)
+    if not query_text:
+        logger.warning("[KB-RETRIEVAL] Could not extract query text from LLM input — skipping KB retrieval.")
+        return
+
+    context_str = await search_knowledge(query_text, llm_request, user)
+    if context_str:
+        _inject_context_into_input(llm_request, context_str)

@@ -21,6 +21,14 @@ public sealed class VoiceAgentSettingsDto
     [JsonPropertyName("engineMode")]
     public string EngineMode { get; init; } = "pipeline";
 
+    /// <summary>Whether the pipeline starts preparing a reply before the caller finishes.</summary>
+    [JsonPropertyName("preemptiveGeneration")]
+    public bool PreemptiveGeneration { get; init; }
+
+    /// <summary>The resolved noise-cancellation mode: none or auto.</summary>
+    [JsonPropertyName("noiseCancellation")]
+    public string NoiseCancellation { get; init; } = "none";
+
     /// <summary>The normalized speaker that starts the conversation.</summary>
     [JsonPropertyName("firstSpeaker")]
     public string FirstSpeaker { get; init; } = "human";
@@ -41,11 +49,11 @@ public sealed class VoiceAgentSettingsDto
     [JsonPropertyName("tts")]
     public VoiceModelSettingsDto Tts { get; init; } = new();
 
-    /// <summary>The resolved realtime model configuration reserved for a later phase.</summary>
+    /// <summary>The resolved realtime model configuration.</summary>
     [JsonPropertyName("realtime")]
     public VoiceModelSettingsDto Realtime { get; init; } = new();
 
-    /// <summary>The resolved text-to-speech voice settings.</summary>
+    /// <summary>The resolved pipeline text-to-speech voice settings.</summary>
     [JsonPropertyName("ttsVoice")]
     public VoiceOutputSettingsDto TtsVoice { get; init; } = new();
 
@@ -126,7 +134,7 @@ public sealed class VoiceModelSettingsDto
     public string? ReasoningEffort { get; init; }
 }
 
-/// <summary>Text-to-speech language, voice, and speed settings.</summary>
+/// <summary>Speech output language, voice, and speed settings shared by both engines.</summary>
 public sealed class VoiceOutputSettingsDto
 {
     /// <summary>The BCP-47 or provider language value.</summary>

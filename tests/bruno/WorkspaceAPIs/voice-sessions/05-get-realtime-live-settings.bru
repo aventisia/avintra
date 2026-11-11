@@ -1,0 +1,31 @@
+meta {
+  name: Get realtime live settings
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/settings/{{VOICE_REALTIME_LIVE_FLOW_VERSION_ID}}?mode=live
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("published realtime version resolves with a supported noise mode", function() {
+    expect(res.getStatus()).to.equal(200);
+    const settings = res.getBody()?.data;
+    expect(settings.engineMode).to.equal("realtime");
+    expect(settings.realtime.provider).to.be.a("string").and.not.equal("");
+    expect(settings.realtime.model).to.be.a("string").and.not.equal("");
+    expect(["none", "auto"]).to.include(settings.noiseCancellation);
+  });
+}
+
+docs {
+  > `VOICE_REALTIME_LIVE_FLOW_VERSION_ID` must be a published version of the
+  > realtime draft flow; this asset checks only that published path.
+}

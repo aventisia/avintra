@@ -57,6 +57,7 @@ class ConversationService:
         message: BaseMessage,
         persisted_ids: set[str | None] | None = None,
         persisted_tool_call_ids: set[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Persist a single message if it has not already been written to the DB.
 
@@ -90,6 +91,7 @@ class ConversationService:
                 tenant_id=user.tenant_id,
                 conversation_id=conversation_id,
                 message=message,
+                metadata=metadata,
             )
 
             if message_id is not None and persisted_ids is not None:

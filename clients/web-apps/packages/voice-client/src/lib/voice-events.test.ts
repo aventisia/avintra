@@ -36,6 +36,10 @@ const turnTiming = (patch: Partial<VoiceTurnTiming> = {}): VoiceTurnTiming => ({
   llmFirstTokenMs: 500,
   ttsFirstAudioMs: 800,
   turnTotalMs: 1200,
+  endpointingMs: 250,
+  callerToSpeakingMs: 1350,
+  ttftMs: null,
+  durationMs: null,
   ...patch,
 });
 
@@ -58,6 +62,15 @@ describe("parseVoiceEvent", () => {
       role: "assistant",
       text: "hi",
       turnId: 2,
+    });
+
+    expect(
+      parse({ ...basePayload, type: "transcript.interim", role: "user", text: "hel" }),
+    ).toEqual({
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "hel",
     });
 
     expect(
@@ -90,7 +103,7 @@ describe("parseVoiceEvent", () => {
       durationMs: undefined,
       turnId: 2,
       interrupted: false,
-      voiceTurnTiming: turnTiming(),
+      voiceTurnTiming: turnTiming({ endpointingMs: null, callerToSpeakingMs: null }),
     });
 
     expect(
@@ -136,6 +149,10 @@ describe("parseVoiceEvent", () => {
         llmFirstTokenMs: null,
         ttsFirstAudioMs: null,
         turnTotalMs: null,
+        endpointingMs: null,
+        callerToSpeakingMs: null,
+        ttftMs: null,
+        durationMs: null,
       },
     });
   });
@@ -168,6 +185,10 @@ describe("parseVoiceEvent", () => {
       parse({ ...basePayload, type: "transcript.final", role: "system", text: "x" }),
     ).toBeNull();
     expect(parse({ ...basePayload, type: "transcript.final", role: "user" })).toBeNull();
+    expect(
+      parse({ ...basePayload, type: "transcript.interim", role: "assistant", text: "x" }),
+    ).toBeNull();
+    expect(parse({ ...basePayload, type: "transcript.interim", role: "user" })).toBeNull();
   });
 
   it("rejects timing with an unknown stage", () => {
@@ -212,6 +233,54 @@ describe("applyVoiceEvent", () => {
     });
 
     expect(next.turns).toEqual([{ id: "caller-1", speaker: "caller", text: "book a call" }]);
+  });
+
+  it("replaces the caller interim caption as the transcript grows and finalizes it", () => {
+    const first = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book",
+    });
+    const second = applyVoiceEvent(first, {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book a call",
+    });
+
+    expect(second.turns).toEqual([
+      { id: "caller-interim", speaker: "caller", text: "book a call", isInterim: true },
+    ]);
+
+    const final = applyVoiceEvent(second, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book a call today",
+    });
+
+    expect(final.turns).toEqual([{ id: "caller-2", speaker: "caller", text: "book a call today" }]);
+  });
+
+  it("keeps a caller interim caption separate from an earlier finalized caller turn", () => {
+    const first = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "hello",
+    });
+    const next = applyVoiceEvent(first, {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "and",
+    });
+
+    expect(next.turns).toEqual([
+      { id: "caller-1", speaker: "caller", text: "hello" },
+      { id: "caller-interim", speaker: "caller", text: "and", isInterim: true },
+    ]);
   });
 
   it("keys assistant turns by turnId and updates the existing turn", () => {
@@ -303,7 +372,7 @@ describe("applyVoiceEvent", () => {
     expect(labelFor(null)).toBe("Tool");
   });
 
-  it("attaches timing only when every displayed value is present", () => {
+  it("attaches timing when the turn carries a measurement and skips empty or interrupted turns", () => {
     const withTurn = applyVoiceEvent(activeSnapshot(), {
       type: "transcript.final",
       conversationId: CONVERSATION_ID,
@@ -323,12 +392,45 @@ describe("applyVoiceEvent", () => {
     const withLatency = applyVoiceEvent(withTurn, timingEvent(turnTiming()));
     expect(withLatency.turns[0].latency).toEqual({
       speechToTextMs: 300,
+      endpointingMs: 250,
       firstTokenMs: 500,
       firstAudioMs: 800,
+      callerToSpeakingMs: 1350,
+      ttftMs: null,
+      durationMs: null,
     });
 
-    const partial = applyVoiceEvent(withTurn, timingEvent(turnTiming({ ttsFirstAudioMs: null })));
-    expect(partial.turns[0].latency).toBeUndefined();
+    const realtime = applyVoiceEvent(
+      withTurn,
+      timingEvent(
+        turnTiming({
+          sttMs: null,
+          llmFirstTokenMs: null,
+          ttsFirstAudioMs: null,
+          turnTotalMs: null,
+          endpointingMs: null,
+          callerToSpeakingMs: null,
+          ttftMs: 420,
+          durationMs: 2100,
+        }),
+      ),
+    );
+    expect(realtime.turns[0].latency).toMatchObject({ ttftMs: 420, durationMs: 2100 });
+
+    const empty = applyVoiceEvent(
+      withTurn,
+      timingEvent(
+        turnTiming({
+          sttMs: null,
+          llmFirstTokenMs: null,
+          ttsFirstAudioMs: null,
+          turnTotalMs: null,
+          endpointingMs: null,
+          callerToSpeakingMs: null,
+        }),
+      ),
+    );
+    expect(empty.turns[0].latency).toBeUndefined();
 
     const interrupted = applyVoiceEvent(withTurn, {
       type: "timing",
