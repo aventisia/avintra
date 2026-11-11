@@ -33,6 +33,11 @@ export type CreateAssistantUIModelAdapterParams = {
   getModelSelection?: () => ChatModelSelection | null;
   /** Pages the landing chat may send the user to, read on every send. */
   getDestinations?: () => readonly ChatDestination[];
+  /**
+   * Given the user turns before this run, returns how many stored turns the
+   * server keeps; less than it holds means a regenerate or edit replaces the rest.
+   */
+  getKeepUserTurns?: (priorUserTurns: number) => number | undefined;
 };
 
 /** The model picked for a turn. Credentials are resolved server-side. */
@@ -162,6 +167,7 @@ export const createAssistantUIModelAdapter = ({
   getExtraHeaders,
   getModelSelection,
   getDestinations,
+  getKeepUserTurns,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   // Last conversation id observed in a frame. Temporary chats never allocate
   // one client-side, so this is the only handle that can resume their approvals.
@@ -322,6 +328,9 @@ export const createAssistantUIModelAdapter = ({
                 credentialName: modelSelection?.credentialName,
                 isByokEnabled: modelSelection?.isByokEnabled,
                 destinations: getDestinations?.(),
+                keepUserTurns: getKeepUserTurns?.(
+                  options.messages.filter((message) => message.role === "user").length - 1,
+                ),
               },
               options.abortSignal,
               getExtraHeaders?.(),

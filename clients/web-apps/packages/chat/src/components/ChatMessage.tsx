@@ -8,7 +8,7 @@ import {
 } from "@assistant-ui/react";
 import { ThinkingIndicator } from "@avplatform/assistant-chat";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { ArrowClockwiseIcon, CheckIcon, CopyIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { useContext } from "react";
 
 import { ChatFileContext } from "../constants/chat-file.constant";
@@ -65,6 +65,14 @@ const MessageCopy = () => (
       </AuiIf>
     </ChatIconButton>
   </ActionBarPrimitive.Copy>
+);
+
+const MessageRegenerate = () => (
+  <ActionBarPrimitive.Reload asChild>
+    <ChatIconButton label="Regenerate">
+      <ArrowClockwiseIcon />
+    </ChatIconButton>
+  </ActionBarPrimitive.Reload>
 );
 
 const MessageError = () => (
@@ -201,7 +209,7 @@ const AssistantMessage = () => {
         <ChatApprovalBulkBar />
       </div>
       <MessageError />
-      {hasText && (
+      {(hasText || isLast) && (
         <ActionBarPrimitive.Root
           hideWhenRunning
           className={cn(
@@ -209,8 +217,9 @@ const AssistantMessage = () => {
             !isLast && "opacity-0",
           )}
         >
-          <MessageCopy />
-          <MessageTime />
+          {hasText && <MessageCopy />}
+          {isLast && <MessageRegenerate />}
+          {hasText && <MessageTime />}
         </ActionBarPrimitive.Root>
       )}
     </MessagePrimitive.Root>

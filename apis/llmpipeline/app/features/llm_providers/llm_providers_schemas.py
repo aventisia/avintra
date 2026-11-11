@@ -53,6 +53,7 @@ class LLMRequest(BaseModel):
     skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
     conversation_id: Optional[str] = None   # Unique identifier for the conversation thread used to preserve context across requests.
     is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
+    keep_user_turns: Optional[int] = Field(default=None, ge=0)  # Regenerate/edit: drop persisted turns after this many user turns before running
     max_short_term_turns: Optional[int] = Field(default=None, ge=0)  # Number of most recent conversation turns sent to the model; None or 0 means no limit
 
 # Chat agent response schema

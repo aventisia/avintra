@@ -25,6 +25,8 @@ export interface StreamingChatRequestDto {
   isByokEnabled?: boolean;
   /** Pages the landing chat may send the user to; ignored by agent chats. */
   destinations?: readonly ChatDestination[];
+  /** Regenerate or edit: the stored turns after this many user turns are replaced. */
+  keepUserTurns?: number;
 }
 
 /** A Workspace page the landing chat can send the user to. */

@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
+from app.features.langgraph.checkpoint.memory import graph_memory
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
 from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_approval import (
@@ -437,6 +438,20 @@ class ChatService:
                 user=user,
             )
             config = self._thread_config(conversation_id)
+
+            if (
+                request.keep_user_turns is not None
+                and not request.is_temp_chat
+                and db_session is not None
+            ):
+                # The checkpoint holds the replaced turns too; dropping it makes
+                # the turn below reload the truncated history from the DB.
+                await self.conversation_service.truncate_history(
+                    db_session=db_session,
+                    conversation_id=conversation_id,
+                    keep_user_turns=request.keep_user_turns,
+                )
+                await graph_memory.adelete_thread(conversation_id)
 
             # A new message while an approval is pending cannot be processed
             # until the pause is cleared: auto-deny the stale requests first.

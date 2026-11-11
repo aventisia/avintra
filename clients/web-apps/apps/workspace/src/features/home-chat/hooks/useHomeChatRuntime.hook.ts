@@ -62,6 +62,14 @@ export const useHomeChatRuntime = ({
     void queryClient.invalidateQueries({ queryKey: HOME_CHAT_HISTORY_QUERY_KEY });
   };
 
+  // User turns the server holds; a run that starts from fewer is a regenerate or edit.
+  const storedUserTurnsRef = useRef(0);
+  const getKeepUserTurns = (priorUserTurns: number) => {
+    const keep = priorUserTurns < storedUserTurnsRef.current ? priorUserTurns : undefined;
+    storedUserTurnsRef.current = priorUserTurns + 1;
+    return keep;
+  };
+
   const [adapter] = useState(() =>
     withAttachmentText(
       createAssistantUIModelAdapter({
@@ -75,6 +83,7 @@ export const useHomeChatRuntime = ({
         getExtraHeaders: getSpaceHeaders,
         getModelSelection,
         getDestinations,
+        getKeepUserTurns,
         onTextDelta: () => refreshHistory(true),
         onTextComplete: onReplyComplete,
         onRunFinished: () => refreshHistory(false),
@@ -87,7 +96,11 @@ export const useHomeChatRuntime = ({
   const [history] = useState(() =>
     createConversationHistoryAdapter(conversationId, async (id) => {
       try {
-        return (await getMessages(id)).data;
+        const messages = (await getMessages(id)).data;
+        storedUserTurnsRef.current = messages.filter(
+          (message) => message.role.toLowerCase() === "user",
+        ).length;
+        return messages;
       } catch {
         toast.error("Couldn't open that chat");
         onConversationMissing();

@@ -17,7 +17,7 @@ from langchain_core.messages import (
     SystemMessage,
     ToolMessage,
 )
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
@@ -239,6 +239,45 @@ async def save_transcript(
     )
 
 
+def rows_after_user_turns(rows: list[Any], keep_user_turns: int) -> list[Any]:
+    """Return the rows from the user turn after the first ``keep_user_turns`` onward."""
+
+    seen = 0
+    for index, row in enumerate(rows):
+        if row.role == "user":
+            if seen == keep_user_turns:
+                return rows[index:]
+            seen += 1
+    return []
+
+
+async def truncate_messages(
+    session: AsyncSession,
+    conversation_id: str,
+    keep_user_turns: int,
+) -> int:
+    """Delete every message from the user turn after the first ``keep_user_turns``.
+
+    Regenerating or editing a message replays that turn, so the old turn and
+    everything after it must leave the history first. Returns the rows deleted.
+    """
+
+    conversation_uuid = uuid.UUID(conversation_id)
+    result = await session.execute(
+        select(ConversationMessage)
+        .where(ConversationMessage.conversation_id == conversation_uuid)
+        .order_by(ConversationMessage.created_on)
+    )
+    doomed = rows_after_user_turns(list(result.scalars().all()), keep_user_turns)
+    if doomed:
+        await session.execute(
+            delete(ConversationMessage).where(
+                ConversationMessage.id.in_([row.id for row in doomed])
+            )
+        )
+    return len(doomed)
+
+
 async def load_messages(
     session: AsyncSession,
     conversation_id: str,
@@ -284,7 +323,7 @@ async def load_messages(
             messages.append(
                 AIMessage(
                     content=record.content or "",
-                    tool_calls=metadata.get("tool_calls"),
+                    tool_calls=metadata.get("tool_calls") or [],
                     response_metadata=metadata.get("response_metadata") or {},
                     usage_metadata=metadata.get("usage_metadata"),
                     id=message_id,

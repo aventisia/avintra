@@ -62,6 +62,12 @@ public class StreamingChatRequestDto
     /// Advisory only: the client re-checks every route before showing it.
     /// </summary>
     public List<ChatDestinationItem>? Destinations { get; set; }
+
+    /// <summary>
+    /// Regenerate or edit: the stored turns after this many user turns are dropped
+    /// before the landing chat answers again. Null keeps the history.
+    /// </summary>
+    public int? KeepUserTurns { get; set; }
 }
 
 /// <summary>A Workspace page the landing chat can send the user to.</summary>

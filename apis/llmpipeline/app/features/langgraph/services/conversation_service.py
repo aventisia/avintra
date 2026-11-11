@@ -10,6 +10,7 @@ from app.features.langgraph.checkpoint.persistence import (
     load_messages,
     save_message as _save_message,
     save_transcript as _save_transcript,
+    truncate_messages,
 )
 from app.features.langgraph.graphs.message_builder import build_messages
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
@@ -36,6 +37,27 @@ class ConversationService:
                 conversation_id,
             )
             return []
+
+    async def truncate_history(
+        self,
+        db_session: AsyncSession,
+        conversation_id: str,
+        keep_user_turns: int,
+    ) -> None:
+        """Drop the turns after the first ``keep_user_turns`` so a turn can be replayed."""
+
+        deleted = await truncate_messages(
+            session=db_session,
+            conversation_id=conversation_id,
+            keep_user_turns=keep_user_turns,
+        )
+        await db_session.flush()
+        logger.debug(
+            "Truncated %s messages. conversation_id=%s keep_user_turns=%s",
+            deleted,
+            conversation_id,
+            keep_user_turns,
+        )
 
     async def save_message(
         self,

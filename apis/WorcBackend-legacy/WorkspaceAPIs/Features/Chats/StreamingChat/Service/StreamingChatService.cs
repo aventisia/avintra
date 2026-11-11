@@ -230,6 +230,12 @@ public class StreamingChatService : IStreamingChatService
             yield break;
         }
 
+        if (request.KeepUserTurns is int keep && (keep < 0 || !await OwnsLandingConversationAsync(request.ConversationId, cancellationToken)))
+        {
+            yield return SerializeError("This chat can't be changed.");
+            yield break;
+        }
+
         if (request.ConversationId is Guid conversationId)
             await TitleLandingConversationAsync(conversationId, request.UserInput, cancellationToken);
 
@@ -244,6 +250,11 @@ public class StreamingChatService : IStreamingChatService
             yield return chunk;
         }
     }
+
+    private Task<bool> OwnsLandingConversationAsync(Guid? conversationId, CancellationToken cancellationToken) =>
+        _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId && w.FlowVersionId == null)
+            .AnyAsync(cancellationToken);
 
     /// <summary>
     /// Titles a landing conversation from its first message; later turns leave the title alone.
@@ -689,6 +700,7 @@ public class StreamingChatService : IStreamingChatService
             stream = true,
             is_temp_chat = false,
             conversation_id = request.ConversationId?.ToString(),
+            keep_user_turns = request.KeepUserTurns,
             temperature = 1.0,
             top_p = 1.0,
             is_byok_enabled = selection.IsByokEnabled,
