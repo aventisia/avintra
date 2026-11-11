@@ -631,7 +631,7 @@ public class ConversationService : IConversationService
 
             // Filter only non-archived conversations (idempotency)
             var conversationsToArchive = conversations
-                .Where(w => w.Status == ConversationStatusEnum.Archived)
+                .Where(w => w.Status != ConversationStatusEnum.Archived)
                 .ToList();
 
             if (!conversationsToArchive.Any())

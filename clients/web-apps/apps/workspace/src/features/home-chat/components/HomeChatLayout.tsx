@@ -1,7 +1,10 @@
-import { ChatHistory, type ChatHistoryItem, ChatTitle } from "@avplatform/chat";
+import { ChatHistory, type ChatHistoryItem, ChatTitle, toChatMarkdown } from "@avplatform/chat";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
+import { downloadBlob } from "@avplatform/ui/utils";
 import { useHref, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
+import { getMessages } from "../apis/conversation-message.apis";
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
@@ -10,6 +13,16 @@ import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatThread } from "./HomeChatThread";
 
 const conversationHref = (id: string) => `${HOME_CHAT_CONVERSATION_ROUTE}/${id}`;
+
+const exportChat = async ({ id, title }: ChatHistoryItem) => {
+  try {
+    const markdown = toChatMarkdown(title, (await getMessages(id)).data);
+    const fileName = `${title.replace(/[\\/:*?"<>|]+/g, "-").trim() || "Chat"}.md`;
+    downloadBlob(new Blob([markdown], { type: "text/markdown;charset=utf-8" }), fileName);
+  } catch {
+    toast.error("Couldn't export this chat");
+  }
+};
 
 /** Lays out Home, the chat-first landing page: chat history beside the open thread. */
 export const HomeChatLayout = () => {
@@ -47,6 +60,7 @@ export const HomeChatLayout = () => {
               key={activeChat.id}
               title={activeChat.title}
               onRename={(title) => renameChat(activeChat.id, title)}
+              onExport={() => void exportChat(activeChat)}
               onDelete={() => confirmDelete(activeChat)}
             />
           )

@@ -12,7 +12,10 @@ export { NAVIGATE_TOOL_NAME, pickReachablePrompts } from "./utils/chat-intent.ut
 export type { ChatBlueprint, ChatDestinationOption } from "./utils/chat-intent.util";
 export { withAttachmentText } from "./utils/attachment-text.util";
 export { createChatAttachmentAdapter } from "./utils/chat-attachment-adapter.util";
-export { createConversationHistoryAdapter } from "./utils/conversation-history.util";
+export {
+  createConversationHistoryAdapter,
+  toChatMarkdown,
+} from "./utils/conversation-history.util";
 export { createConversationIdAllocator } from "./utils/conversation-id-allocator.util";
 export type { ConversationIdAllocatorInput } from "./utils/conversation-id-allocator.util";
 export { resolveRolloutFlag } from "./utils/resolve-rollout-flag.util";

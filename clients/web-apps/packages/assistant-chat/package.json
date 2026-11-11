@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./content-parts": "./src/lib/content-parts.ts",
+    "./conversation-messages": "./src/lib/conversation-messages.ts",
     "./package.json": "./package.json"
   },
   "scripts": {

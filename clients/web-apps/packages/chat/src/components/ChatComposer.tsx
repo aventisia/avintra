@@ -92,7 +92,10 @@ export const ChatComposer = ({ placeholder, inputRef, tools }: ChatComposerProps
         )}
         <div className="flex items-center gap-1 px-3 pb-3">
           <ComposerPrimitive.AddAttachment asChild>
-            <ChatIconButton label="Attach files" className="size-9 rounded-full">
+            <ChatIconButton
+              label={`Attach up to ${CHAT_ATTACHMENT_LIMIT} images, PDFs or text files (10 MB each)`}
+              className="size-9 rounded-full"
+            >
               <PaperclipIcon />
             </ChatIconButton>
           </ComposerPrimitive.AddAttachment>

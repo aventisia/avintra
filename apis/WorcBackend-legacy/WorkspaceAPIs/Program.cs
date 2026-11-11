@@ -1,5 +1,6 @@
 using Serilog;
 using WorkspaceAPIs.Features.CloudConnectors.CustomTool.Helpers;
+using WorkspaceAPIs.Features.Chats.StreamingChat.Service;
 
 EnvironmentConfigurationExtension.LoadDotEnvForKestrel();
 var builder = WebApplication.CreateBuilder(args);
@@ -76,6 +77,7 @@ builder.Services.AddHttpClient("CustomTool", client =>
     // IMPORTANT NOTE: CustomToolTransportHelpers owns the 30-second upstream budget; a client timeout would race it and surface as a 500 instead of a 504.
     client.Timeout = Timeout.InfiniteTimeSpan;
 }).ConfigurePrimaryHttpMessageHandler(CustomToolHttpHandlerFactory.Create);
+builder.Services.AddHttpClient(StreamingChatService.LlmPipelineStreamClientName, client => client.Timeout = Timeout.InfiniteTimeSpan);
 builder.Services.AddHttpClient("LLMPipeline", client =>
 {
     var appBaseUrl = config["EnvironmentConfig:AppBaseUrl"]?.Trim().TrimEnd('/');

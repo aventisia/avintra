@@ -39,6 +39,7 @@ public class StreamingChatService : IStreamingChatService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -65,6 +66,9 @@ public class StreamingChatService : IStreamingChatService
         new { tool = "workspace", credential_name = (string?)null, actions = new[] { new { action = "navigate", approval = "auto" } } },
     ];
 
+    public const string LlmPipelineStreamClientName = "LLMPipelineStream";
+    private static readonly TimeSpan PipelineStreamIdleTimeout = TimeSpan.FromMinutes(5);
+
     /// <summary>A resolved model for one turn, with the tenant credential it uses.</summary>
     private sealed record LlmModelSelection(string Provider, string Model, string? CredentialName, bool IsByokEnabled);
 
@@ -75,7 +79,8 @@ public class StreamingChatService : IStreamingChatService
         IResourceFlowAccessService resourceFlowAccessService,
         EnvironmentConfig environmentConfig,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -84,6 +89,7 @@ public class StreamingChatService : IStreamingChatService
         _environmentConfig = environmentConfig;
         _httpContextAccessor = httpContextAccessor;
         _currentTenantService = currentTenantService;
+        _httpClientFactory = httpClientFactory;
 
         _userId = Guid.TryParse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"), out var userId)
             ? userId
@@ -309,37 +315,51 @@ public class StreamingChatService : IStreamingChatService
             Encoding.UTF8,
             "application/json");
 
-        using var httpClient = new HttpClient(new HttpClientHandler
-        {
-            // llmpipeline may be reached over HTTPS with a dev certificate in local dev.
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-        });
-
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
-        httpClient.Timeout = Timeout.InfiniteTimeSpan;
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
-
-        // Forward the flow's space to llmpipeline so Chat Agent LLM credit usage
-        // is attributed to the correct space (rather than defaulting to Central).
-        if (spaceId.HasValue && spaceId.Value != Guid.Empty)
-        {
-            httpClient.DefaultRequestHeaders.Add("X-Space-Id", spaceId.Value.ToString());
-        }
-
-        // Forward the flow's environment to llmpipeline so Chat Agent resource
-        // resolution (credentials, vaults, etc.) matches the flow's publication
-        // status: published → "prod", otherwise "dev". Mirrors the executor path.
-        httpClient.DefaultRequestHeaders.Add("X-Env-Type", envType);
+        var httpClient = _httpClientFactory.CreateClient(LlmPipelineStreamClientName);
 
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
             Content = jsonContent,
         };
+        httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+        httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
 
-        using var response = await httpClient.SendAsync(
-            httpRequest,
-            HttpCompletionOption.ResponseHeadersRead,
-            cancellationToken);
+        // Forward the flow's space to llmpipeline so Chat Agent LLM credit usage
+        // is attributed to the correct space (rather than defaulting to Central).
+        if (spaceId.HasValue && spaceId.Value != Guid.Empty)
+        {
+            httpRequest.Headers.Add("X-Space-Id", spaceId.Value.ToString());
+        }
+
+        // Forward the flow's environment to llmpipeline so Chat Agent resource
+        // resolution (credentials, vaults, etc.) matches the flow's publication
+        // status: published → "prod", otherwise "dev". Mirrors the executor path.
+        httpRequest.Headers.Add("X-Env-Type", envType);
+
+        // IMPORTANT NOTE: llmpipeline sends no SSE heartbeats, so the idle window must outlast its longest silent step (tool runs, visual review).
+        using var idle = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        idle.CancelAfter(PipelineStreamIdleTimeout);
+
+        HttpResponseMessage? sentResponse = null;
+        try
+        {
+            sentResponse = await httpClient.SendAsync(
+                httpRequest,
+                HttpCompletionOption.ResponseHeadersRead,
+                idle.Token);
+        }
+        catch (Exception ex) when ((ex is OperationCanceledException or HttpRequestException) && !cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogError(ex, "llmpipeline {Endpoint} could not be reached.", endpointPath);
+        }
+
+        if (sentResponse is null)
+        {
+            yield return SerializeError("The assistant is unavailable right now. Please try again.");
+            yield break;
+        }
+
+        using var response = sentResponse;
 
         if (!response.IsSuccessStatusCode)
         {
@@ -361,9 +381,23 @@ public class StreamingChatService : IStreamingChatService
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using var reader = new StreamReader(stream, Encoding.UTF8);
 
-        while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
+        var isIdleTimeout = false;
+        while (!cancellationToken.IsCancellationRequested)
         {
-            var line = await reader.ReadLineAsync(cancellationToken);
+            idle.CancelAfter(PipelineStreamIdleTimeout);
+            string? line;
+            try
+            {
+                line = await reader.ReadLineAsync(idle.Token);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                isIdleTimeout = true;
+                break;
+            }
+
+            if (line is null)
+                break;
             if (string.IsNullOrWhiteSpace(line))
                 continue;
 
@@ -374,6 +408,12 @@ public class StreamingChatService : IStreamingChatService
             // Re-add the SSE frame terminator that StreamReader stripped so
             // the browser's SSE parser can split frames correctly.
             yield return line + "\n\n";
+        }
+
+        if (isIdleTimeout)
+        {
+            _logger.LogError("llmpipeline {Endpoint} sent nothing for {IdleTimeout}; relay stopped.", endpointPath, PipelineStreamIdleTimeout);
+            yield return SerializeError("The assistant stopped responding. Please try again.");
         }
     }
 

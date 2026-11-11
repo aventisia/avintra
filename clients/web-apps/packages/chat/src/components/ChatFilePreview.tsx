@@ -2,11 +2,15 @@ import { Skeleton } from "@avplatform/ui";
 import {
   ArrowSquareOutIcon,
   CodeIcon,
+  CornersInIcon,
+  CornersOutIcon,
   DownloadSimpleIcon,
   EyeIcon,
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, type RefObject, useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -64,6 +68,18 @@ const pointAtStandalonePage = (
   );
   link.href = pageUrl;
   setTimeout(() => URL.revokeObjectURL(pageUrl), 60_000);
+};
+
+const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+
+const useIsFullscreen = (ref: RefObject<HTMLElement>) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  useEffect(() => {
+    const sync = () => setIsFullscreen(!!ref.current && document.fullscreenElement === ref.current);
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
+  }, [ref]);
+  return isFullscreen;
 };
 
 const SOURCE_LANGUAGES: Record<string, string> = {
@@ -165,6 +181,16 @@ export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewPro
   const source = language ? readDataUrl(loadable.url) : null;
   const [sourceShownFor, setSourceShownFor] = useState<string | null>(null);
   const showsSource = source !== null && sourceShownFor === loadable?.url;
+  const [zoomFor, setZoomFor] = useState({ url: "", index: ZOOM_LEVELS.indexOf(1) });
+  const zoomIndex = zoomFor.url === loadable?.url ? zoomFor.index : ZOOM_LEVELS.indexOf(1);
+  const zoom = ZOOM_LEVELS[zoomIndex]!;
+  const zoomTo = (index: number) => setZoomFor({ url: loadable!.url, index });
+  const sectionRef = useRef<HTMLElement>(null);
+  const isFullscreen = useIsFullscreen(sectionRef);
+  const toggleFullscreen = () =>
+    void (
+      isFullscreen ? document.exitFullscreen() : sectionRef.current?.requestFullscreen()
+    )?.catch(() => {});
   const fileBody = showsSource ? (
     <ChatCodeBlock components={SOURCE_COMPONENTS} language={language!} code={source} />
   ) : (
@@ -173,6 +199,7 @@ export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewPro
 
   return (
     <section
+      ref={sectionRef}
       aria-label={file ? `Preview of ${file.name}` : "File preview"}
       className="flex h-full min-h-0 flex-col bg-surface dark:bg-bg"
     >
@@ -200,6 +227,39 @@ export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewPro
         )}
         {loadable && (
           <>
+            <div className="hidden items-center sm:flex">
+              <ChatIconButton
+                label="Zoom out"
+                disabled={zoomIndex === 0}
+                onClick={() => zoomTo(zoomIndex - 1)}
+              >
+                <MagnifyingGlassMinusIcon />
+              </ChatIconButton>
+              <button
+                type="button"
+                aria-label="Reset zoom"
+                title="Reset zoom"
+                onClick={() => zoomTo(ZOOM_LEVELS.indexOf(1))}
+                className="h-8 min-w-11 rounded-lg px-1 text-xs tabular-nums text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                {Math.round(zoom * 100)}%
+              </button>
+              <ChatIconButton
+                label="Zoom in"
+                disabled={zoomIndex === ZOOM_LEVELS.length - 1}
+                onClick={() => zoomTo(zoomIndex + 1)}
+              >
+                <MagnifyingGlassPlusIcon />
+              </ChatIconButton>
+            </div>
+            {document.fullscreenEnabled && (
+              <ChatIconButton
+                label={isFullscreen ? "Exit full screen" : "Full screen"}
+                onClick={toggleFullscreen}
+              >
+                {isFullscreen ? <CornersInIcon /> : <CornersOutIcon />}
+              </ChatIconButton>
+            )}
             <a
               href={loadable.url}
               download={loadable.name}
@@ -226,20 +286,29 @@ export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewPro
           <XIcon />
         </ChatIconButton>
       </header>
-      <div className="min-h-0 flex-1">
+      <div className="min-h-0 flex-1 overflow-hidden">
         {isLoading ? (
           <div role="status" aria-label="Loading preview" className="space-y-3 p-6">
             <Skeleton className="h-6 w-1/2 rounded" />
             <Skeleton className="h-40 w-full rounded-xl" />
           </div>
+        ) : fileBody ? (
+          <div
+            className="origin-top-left"
+            style={{
+              width: `${100 / zoom}%`,
+              height: `${100 / zoom}%`,
+              transform: zoom === 1 ? undefined : `scale(${zoom})`,
+            }}
+          >
+            {fileBody}
+          </div>
         ) : (
-          fileBody || (
-            <p className="p-6 text-sm text-muted-foreground">
-              {loadable
-                ? "This file can't be previewed here. Download it to open it."
-                : "This file can't be previewed."}
-            </p>
-          )
+          <p className="p-6 text-sm text-muted-foreground">
+            {loadable
+              ? "This file can't be previewed here. Download it to open it."
+              : "This file can't be previewed."}
+          </p>
         )}
       </div>
     </section>
