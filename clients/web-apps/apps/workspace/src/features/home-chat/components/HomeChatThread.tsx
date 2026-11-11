@@ -10,6 +10,7 @@ import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/worksp
 
 import { transcribeSpeech } from "../apis/speech.apis";
 import { HOME_CHAT_FILE_QUERY_KEY } from "../constants/home-chat.constant";
+import { useHomeChatCommands } from "../hooks/useHomeChatCommands.hook";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
 import { useHomeChatFiles } from "../hooks/useHomeChatFiles.hook";
 import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
@@ -49,6 +50,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   destinationsRef.current = destinations;
   const starters = useHomeChatStarters(destinations);
   const navigate = useNavigate();
+  const commands = useHomeChatCommands();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const previewId = searchParams.get(PREVIEW_PARAM);
@@ -97,6 +99,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             destinations={destinations}
             onNavigate={navigate}
             files={files.handlers}
+            commands={commands}
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
               groups.length > 0 && (

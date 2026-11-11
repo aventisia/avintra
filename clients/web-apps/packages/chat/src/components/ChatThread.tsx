@@ -7,6 +7,7 @@ import { ChatFileContext, type ChatFileHandlers } from "../constants/chat-file.c
 import { ChatIntentContext } from "../constants/chat-intent.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
 import type { ChatDestinationOption } from "../utils/chat-intent.util";
+import { type ChatCommand } from "./ChatCommandMenu";
 import { ChatComposer } from "./ChatComposer";
 import { ChatMessage } from "./ChatMessage";
 import { type ChatStarterGroup, ChatStarters } from "./ChatStarters";
@@ -20,6 +21,8 @@ export type ChatThreadProps = {
   composerTools?: ReactNode;
   /** Turns a voice recording into text; the microphone is hidden without it. */
   transcribe?: (audio: Blob) => Promise<string>;
+  /** Offered when the message starts with `/`. */
+  commands?: readonly ChatCommand[];
   /** Composer placeholder. */
   placeholder?: string;
   /** Pages the assistant may offer; a suggested page outside this list isn't shown. */
@@ -77,6 +80,7 @@ export const ChatThread = ({
   starters,
   composerTools,
   transcribe,
+  commands,
   placeholder = "Message",
   destinations = NO_DESTINATIONS,
   onNavigate,
@@ -124,6 +128,7 @@ export const ChatThread = ({
                   inputRef={inputRef}
                   tools={composerTools}
                   transcribe={transcribe}
+                  commands={commands}
                 />
               </ThreadPrimitive.ViewportFooter>
               <AuiIf condition={(s) => s.thread.isEmpty}>
