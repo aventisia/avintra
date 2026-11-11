@@ -33,7 +33,7 @@ script:post-response {
   });
 
   test("publish block message names the restricted knowledge base", function() {
-    expect(text).to.contain("Cannot publish: flow ");
+    expect(text).to.contain("is not allowed to use the");
     expect(text).to.contain(knowledgeBaseName);
   });
 }
@@ -43,7 +43,7 @@ docs {
   > saved reactFlowObject references a knowledge base by name in a knowledge step, and
   > RESTRICTED_KNOWLEDGE_BASE_NAME to name a Dev knowledge base whose flow assignment is
   > non-empty and does NOT include that flow. Publish then blocks with HTTP 403 and the
-  > message "Cannot publish: flow '<flow>' is not assigned to restricted knowledge base
+  > message "Cannot publish: '<flow>' is not allowed to use the knowledge base
   > '<kb>'". Run this before the unassign request while the restriction is still present.
   > Clearing the knowledge base restriction (POST resource-flows/assign with resourceType,
   > resourceId and flowIds []) and re-running publish returns 200.

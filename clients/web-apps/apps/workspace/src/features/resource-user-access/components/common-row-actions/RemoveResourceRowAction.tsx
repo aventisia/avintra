@@ -12,13 +12,11 @@ import { removeResourceUserAccess } from "../../apis/resource-user-access.apis";
 interface RemoveResourceRowActionProps {
   rowId: string;
   queryKey: unknown[];
-  disabled?: boolean;
 }
 
 export const RemoveResourceRowAction: React.FC<RemoveResourceRowActionProps> = ({
   rowId,
   queryKey,
-  disabled = false,
 }) => {
   const queryClient = useQueryClient();
   // Get showAlert handler
@@ -47,9 +45,7 @@ export const RemoveResourceRowAction: React.FC<RemoveResourceRowActionProps> = (
         }),
         "h-8",
       )}
-      disabled={disabled}
       onClick={() => {
-        if (disabled) return;
         showCustomAlertDialog({
           confirmActionFn: () => mutate(rowId),
           confirmBtnText: "Remove",

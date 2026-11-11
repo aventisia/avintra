@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - owner delete
+  type: http
+  seq: 25
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_LATE_ACCESS_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("owner can delete a share row", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > AC7: removing access stays available to the owner.
+}

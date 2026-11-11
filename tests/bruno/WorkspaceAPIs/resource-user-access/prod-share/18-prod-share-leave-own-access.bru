@@ -1,0 +1,26 @@
+meta {
+  name: PROD share - leave own access
+  type: http
+  seq: 18
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{PROD_SHARE_RESOURCE_ID}}/my-access
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_SHARE_MEMBER_TOKEN}}
+}
+
+script:post-response {
+  test("a shared user can leave a PROD resource", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > Self-leave (settled decision 3): the member token drops its own PROD access
+  > granted by `10-`.
+}

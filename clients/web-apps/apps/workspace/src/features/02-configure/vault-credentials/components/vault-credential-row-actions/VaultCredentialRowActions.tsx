@@ -57,7 +57,6 @@ export const VaultCredentialRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.VaultCredential}
           resourceName={name}
-          disabled={isProd}
         />
       )}
 
@@ -73,7 +72,7 @@ export const VaultCredentialRowActions = ({
       {resourceActions.delete && <VaultCredentialRowDeleteAction rowId={rowId} />}
 
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </DataTableRowActions>
   );

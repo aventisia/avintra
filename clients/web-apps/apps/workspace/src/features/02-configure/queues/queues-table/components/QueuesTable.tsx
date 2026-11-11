@@ -76,7 +76,7 @@ export const QueuesTable = () => {
           <DTPagination table={table} />
 
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
           {/* Bulk actions for data table */}
           <QueueBulkActions table={table} />

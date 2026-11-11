@@ -1,0 +1,29 @@
+meta {
+  name: PROD share - tenant-wide toggle on
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/tenant-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_SHARE_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "{{PROD_SHARE_RESOURCE_TYPE}}",
+    "resourceId": "{{PROD_SHARE_RESOURCE_ID}}",
+    "isTenantWideAccess": true
+  }
+}
+
+script:post-response {
+  test("owner can toggle tenant-wide access on a PROD resource", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

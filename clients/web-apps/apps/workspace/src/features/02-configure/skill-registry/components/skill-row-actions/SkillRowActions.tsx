@@ -77,7 +77,6 @@ export const SkillRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Skill}
           resourceName={name}
-          disabled={isProd}
         />
       )}
       {/* DropdownMenuSeparator component */}
@@ -89,7 +88,7 @@ export const SkillRowActions = ({
       {!readOnly &&
         accessLevel !== ResourceAccessTypeEnum.Owner &&
         accessLevel !== ResourceAccessTypeEnum.Personal && (
-          <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+          <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
         )}
     </DataTableRowActions>
   );

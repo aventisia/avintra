@@ -1,0 +1,33 @@
+meta {
+  name: PROD share negatives
+  seq: 21
+}
+
+docs {
+  > Authorization negatives and owner positives for the share-row API (issue #578,
+  > pentester findings PT-01..PT-04). The resource-level tenant check and the
+  > Owner-or-creator share gate must answer 403 for a same-tenant user without
+  > share rights and 404 for another tenant or a missing resource.
+  >
+  > Order matters in a folder run: `00-` seeds a View row for the low-privilege
+  > user, `01-` re-captures its id, `02-`…`10-` assert another tenant's 404s,
+  > `11-`…`16-` assert the View-only user's 403s, `18-`…`26-` assert the
+  > owner's mutations still succeed (`21-` checks that tenant-wide access gives the
+  > View-only user no share rights), and `27-` exercises self-leave.
+  >
+  > Prerequisites (Environment or Global Environment):
+  > - `NEG_RESOURCE_ID` — a Dev resource owned by the owner user (a queue is enough).
+  > - `NEG_VIEWER_ID`, `NEG_MEMBER_ID`, `NEG_LATE_ID` — three other users of
+  >   the same tenant, none holding Owner.
+  > - `NEG_OWNER_TOKEN` — the resource owner's token.
+  > - `NEG_VIEWER_TOKEN` — a same-tenant user holding only View on the resource.
+  > - `NEG_STRANGER_TOKEN` — a user of a different tenant.
+  >
+  > Share-row ids (`NEG_VIEWER_ACCESS_ID`, `NEG_MEMBER_ACCESS_ID`,
+  > `NEG_LATE_ACCESS_ID`) need no environment value: `00-`/`01-`, `18-` and `24-`
+  > capture them as runtime variables. Run the folder, not a single file, so the
+  > capture requests execute first.
+  >
+  > The run creates and removes its own share rows; only the seeded View row for
+  > `NEG_VIEWER_ID` is left behind by `00-` when a later request fails.
+}

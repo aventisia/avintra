@@ -1,0 +1,32 @@
+meta {
+  name: PROD share negatives - owner list captures rows
+  type: http
+  seq: 24
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_RESOURCE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("owner sees every share row", function() {
+    expect(res.getStatus()).to.equal(200);
+    const shares = res.getBody().data || [];
+    const idOf = (userId) => {
+      const row = shares.find((entry) => entry.userId === userId);
+      return row ? row.id : null;
+    };
+    const member = idOf(bru.getEnvVar("NEG_MEMBER_ID"));
+    const late = idOf(bru.getEnvVar("NEG_LATE_ID"));
+    expect(member).to.be.a("string");
+    expect(late).to.be.a("string");
+    bru.setVar("NEG_MEMBER_ACCESS_ID", member);
+    bru.setVar("NEG_LATE_ACCESS_ID", late);
+  });
+}

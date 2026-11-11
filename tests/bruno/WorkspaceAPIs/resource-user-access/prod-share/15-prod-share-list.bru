@@ -1,0 +1,32 @@
+meta {
+  name: PROD share - list to capture ids
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{PROD_SHARE_RESOURCE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_SHARE_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("bulk-shared users appear on the PROD resource", function() {
+    expect(res.getStatus()).to.equal(200);
+    const shares = res.getBody().data || [];
+    const idOf = (userId) => {
+      const row = shares.find((entry) => entry.userId === userId);
+      return row ? row.id : null;
+    };
+    const memberTwo = idOf(bru.getEnvVar("PROD_SHARE_MEMBER_TWO_ID"));
+    const memberThree = idOf(bru.getEnvVar("PROD_SHARE_MEMBER_THREE_ID"));
+    expect(memberTwo).to.be.a("string");
+    expect(memberThree).to.be.a("string");
+    bru.setVar("PROD_SHARE_ACCESS_TWO_ID", memberTwo);
+    bru.setVar("PROD_SHARE_ACCESS_THREE_ID", memberThree);
+  });
+}

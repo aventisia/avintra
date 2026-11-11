@@ -1,0 +1,34 @@
+meta {
+  name: PROD share negatives - viewer create
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_VIEWER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "accessLevel": "Owner",
+    "userId": "{{NEG_MEMBER_ID}}"
+  }
+}
+
+script:post-response {
+  test("a View-only user cannot grant access", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}
+
+docs {
+  > PT-01 same tenant: View does not confer share rights.
+}

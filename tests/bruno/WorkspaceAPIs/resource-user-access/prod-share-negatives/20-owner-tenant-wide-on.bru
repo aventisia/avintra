@@ -1,0 +1,33 @@
+meta {
+  name: PROD share negatives - owner tenant-wide on
+  type: http
+  seq: 20
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/tenant-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "isTenantWideAccess": true
+  }
+}
+
+script:post-response {
+  test("owner can turn tenant-wide access on", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > PT-04: the same toggle the View-only user was denied here succeeds for the owner.
+}

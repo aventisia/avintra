@@ -1,0 +1,47 @@
+meta {
+  name: Share PROD queue allowed (expect 200)
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_TD_ACCESS_TOKEN}}
+}
+
+headers {
+  X-Env-Type: Prod
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{PROD_TD_QUEUE_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{PROD_TD_SHAREE_ID}}"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  test("sharing a PROD queue is allowed for a user with share rights", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > Sharing is no longer blocked for persisted PROD Configure resources (issue
+  > #578). The sharing user must own the queue or hold an explicit share grant;
+  > the base permission table still gates the action.
+  > Requires `PROD_TD_QUEUE_ID` pointing at a PROD queue owned by the
+  > `PROD_TD_ACCESS_TOKEN` user, and `PROD_TD_SHAREE_ID` for a tenant user who is
+  > not the owner.
+}

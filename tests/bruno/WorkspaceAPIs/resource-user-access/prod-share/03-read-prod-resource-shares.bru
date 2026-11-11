@@ -1,0 +1,39 @@
+meta {
+  name: Read PROD shares of any Configure resource
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{PROD_SHARE_TARGET_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{PROD_SHARE_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("PROD clone keeps one Owner and maps the Dev sharing list", function() {
+    expect(res.getStatus()).to.equal(200);
+    const shares = res.getBody().data || [];
+    const level = (userId) => {
+      const row = shares.find((entry) => entry.userId === userId);
+      return row ? row.accessLevel : null;
+    };
+    const owners = shares.filter((entry) => entry.accessLevel === "Owner");
+    expect(owners.length).to.equal(1);
+    expect(level(bru.getEnvVar("PROD_SHARE_PUBLISHER_ID"))).to.equal("Owner");
+    expect(level(bru.getEnvVar("PROD_SHARE_DEV_OWNER_ID"))).to.equal("FullAccess");
+    expect(level(bru.getEnvVar("PROD_SHARE_USER_ID"))).to.equal(
+      bru.getEnvVar("PROD_SHARE_USER_LEVEL") || "View",
+    );
+  });
+}
+
+docs {
+  > AC6 sweep: run once per cloned type by passing the type's PROD id as
+  > `PROD_SHARE_TARGET_ID` (queue, tool, knowledge base, skill, key store,
+  > credential). Same assertions as `02-`, which pins the credential id.
+}

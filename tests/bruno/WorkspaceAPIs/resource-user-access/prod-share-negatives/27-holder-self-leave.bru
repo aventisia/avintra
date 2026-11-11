@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - holder self-leave
+  type: http
+  seq: 27
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_RESOURCE_ID}}/my-access
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_VIEWER_TOKEN}}
+}
+
+script:post-response {
+  test("a shared user can still leave", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > Settled decision 3: self-leave looks the row up by user and drops it, no share gate.
+}

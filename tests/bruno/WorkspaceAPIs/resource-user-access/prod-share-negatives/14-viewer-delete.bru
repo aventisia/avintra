@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - viewer delete
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_VIEWER_ACCESS_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_VIEWER_TOKEN}}
+}
+
+script:post-response {
+  test("a View-only user cannot delete a share row", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}
+
+docs {
+  > Self-leave (`my-access`) stays allowed; deleting the row by id is not.
+}

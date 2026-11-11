@@ -1,0 +1,29 @@
+meta {
+  name: PROD share negatives - owner lists shares
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_RESOURCE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("owner can read the share list", function() {
+    expect(res.getStatus()).to.equal(200);
+    const shares = res.getBody().data || [];
+    const viewer = shares.find((entry) => entry.userId === bru.getEnvVar("NEG_VIEWER_ID"));
+    expect(viewer).to.be.an("object");
+    bru.setVar("NEG_VIEWER_ACCESS_ID", viewer.id);
+  });
+}
+
+docs {
+  > Re-captures the viewer's row id so a repeated folder run still has it.
+}
