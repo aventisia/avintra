@@ -78,10 +78,11 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "rich-text",
       "name": "Content",
       "label": "Body",
-      "description": "Updated content of the draft email. The format should match the selected Content Type."
+      "description": "Updated content of the draft email. The format should match the selected Content Type.",
+      "richTextIf": { "conditions": [{ "field": "ContentType", "equals": "HTML" }] }
     },
     {
       "direction": "Input",

@@ -11,7 +11,8 @@
     "build": "tsc -b && vite build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\"",
     "lint": "eslint . --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@assistant-ui/react": "^0.15.25",
@@ -22,6 +23,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@babel/runtime": "^7.24.0",
     "@dagrejs/dagre": "^1.1.3",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
@@ -33,11 +35,14 @@
     "@tanstack/react-query": "^5.51.1",
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-fs": "^2.4.5",
+    "@tiptap/extension-image": "^2.6.4",
+    "@tiptap/extension-link": "^2.6.4",
+    "@tiptap/react": "^2.6.4",
+    "@tiptap/starter-kit": "^2.6.4",
     "@uiw/react-codemirror": "^4.23.6",
     "@uiw/react-markdown-editor": "^6.1.4",
     "@xyflow/react": "^12.0.1",
     "axios": "^1.7.2",
-    "@babel/runtime": "^7.24.0",
     "date-fns": "^4.1.0",
     "idb-keyval": "^6.2.5",
     "jwt-decode": "^4.0.0",
