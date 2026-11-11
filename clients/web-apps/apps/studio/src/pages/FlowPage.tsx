@@ -1,12 +1,15 @@
 import { ReactFlowProvider } from "@xyflow/react";
 
 import { useActionSelectorData } from "@/features/action-selector/hooks/useActionSelectorData.hook";
+import { usePreloadNodeConfigs } from "@/features/dynamic-config-panel";
 import { ReactFlowExt } from "@/features/react-flow/components/ReactFlowExt";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 
 export const FlowPage = () => {
   // Set action selector data
   useActionSelectorData();
+
+  usePreloadNodeConfigs();
 
   // Run check for pending logs if any and post them to respective job data
   useRecoverCrashLogs();
