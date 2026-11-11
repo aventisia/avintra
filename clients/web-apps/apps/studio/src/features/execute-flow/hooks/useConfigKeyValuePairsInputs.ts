@@ -1,4 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
+import { deepParse } from "@avplatform/ui/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
 import { useCallback } from "react";
@@ -6,7 +7,6 @@ import { useCallback } from "react";
 import { fetchConfigKeyValuePairs } from "@/features/react-flow/apis/config-store-apis";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
 import { ConfigKeyValueDto } from "@/features/react-flow/dtos/config-key-value-dto";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { NodeDataType } from "@/types/node-data-type";
 import { getStudioSpaceId } from "@/utils/space-headers";
 

@@ -16,7 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
-import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
 import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
 import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
@@ -112,6 +112,8 @@ export const ReactFlowExt = () => {
       ?.value as { model?: unknown } | undefined;
     return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
   }, [flowType, nodes]);
+
+  const isTestChatDisabled = currentFlow.isPublished === true;
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -391,6 +393,12 @@ export const ReactFlowExt = () => {
               flowVersionId={currentFlow.versionId}
               mode="temporary"
               allowNewSession
+              readOnly={isTestChatDisabled}
+              readOnlyMessage={
+                isTestChatDisabled
+                  ? "Testing is unavailable while this agent is published."
+                  : undefined
+              }
               title="Test Chat"
               badge="Test mode"
               description={

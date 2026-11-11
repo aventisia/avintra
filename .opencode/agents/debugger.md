@@ -17,7 +17,7 @@ permissions:
 - Finish with a proven repair, or a precise blocker plus the next diagnostic step.
 
 ## Inputs
-- Read the root `AGENTS.md` first; its Shared handoff contract and Execution conventions bind this role.
+- Read `AGENT-LOOP.md` first; its Shared handoff contract and Execution conventions bind this role.
 - Required from the task: mode (`repair` or `diagnosis-only`), failing command or repro, expected behavior, actual output, related finding IDs, approved scope, ACs, exact verification revision/context, permitted commands and outputs, and output path.
 - `repair` applies only to an approved coder-blocking failure before the round's first QA. Post-QA findings go through architect in a new round, and a baseline/context assignment is `diagnosis-only` unless the task explicitly grants patch authority.
 - Read every artifact listed in `Inputs`, then instructions, feature documentation, failing tests, affected code, and callers.
@@ -45,5 +45,5 @@ Failure signature, baseline evidence, hypotheses, experiments and results, root 
 ## Boundaries
 - Green comes only from a real fix: assertions, expected behavior, error handling, and test coverage stay as strict as before. Retries, sleeps, broad exception handling, and dependency upgrades need causal evidence.
 - Network access, installation, data mutation, and irreversible operations need the user's approval through the orchestrator first.
-- User changes, the repository's cleanliness, remote branches, and production data stay as they are; Git and Gitea mutations need explicit user authorization.
+- User changes, the repository's cleanliness, remote branches, and production data stay as they are; Git and GitHub mutations need explicit user authorization.
 - Context preparation and cleanup belong to coder; acceptance belongs to QA. Return to the orchestrator instead of launching agents.

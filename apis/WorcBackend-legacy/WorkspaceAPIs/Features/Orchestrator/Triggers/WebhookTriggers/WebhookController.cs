@@ -48,6 +48,8 @@ public class WebhookController : BaseApiController
         // ── 2. Load trigger (no tenant filter) ──────────────────────────────
         var trigger = await _dbContext.Triggers
             .Include(t => t.TriggerFlowVersions)
+                .ThenInclude(tfv => tfv.FlowVersion)
+                    .ThenInclude(fv => fv.Flow)
             .FirstOrDefaultAsync(t => t.Id == triggerId);
 
         if (trigger == null)
@@ -132,8 +134,9 @@ public class WebhookController : BaseApiController
         }
 
         // ── 8. Resolve agent (FlowVersion) ──────────────────────────────────
-        var flowVersionId = trigger.TriggerFlowVersions?.FirstOrDefault()?.FlowVersionId;
-        if (flowVersionId == null || flowVersionId == Guid.Empty)
+        var firstLinked = trigger.TriggerFlowVersions?.FirstOrDefault();
+        var flowVersionId = firstLinked?.FlowVersionId;
+        if (flowVersionId == null || flowVersionId == Guid.Empty || firstLinked?.FlowVersion == null)
         {
             _logger.LogWarning("Webhook fire rejected: no agent linked to trigger {TriggerId}.", triggerId);
             return PlainTextError(400, "No agent is linked to this webhook trigger.");
@@ -144,17 +147,31 @@ public class WebhookController : BaseApiController
         {
             Id = Guid.NewGuid(),
             TenantId = tenantId,
+            SpaceId = firstLinked?.FlowVersion?.SpaceId ?? firstLinked?.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
             FlowVersionId = flowVersionId.Value,
             TriggerType = TriggerTypesEnum.Webhook,
             RefId = triggerId,
             Status = JobStatusEnum.Created,
             Priority = JobPriorityEnum.Normal,
             InputArgumentsJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
-            CreatedOn = DateTimeOffset.UtcNow
         };
 
-        _dbContext.Jobs.Add(job);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Database.ExecuteInTransactionAsync(async () =>
+        {
+            await _dbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(job.FlowVersionId));
+
+            job.CreatedOn = DateTimeOffset.UtcNow;
+
+            job.FlowVersionHistoryId = await _dbContext.FlowVersionHistories
+                .Where(h => h.FlowVersionId == job.FlowVersionId && h.TenantId == tenantId)
+                .OrderByDescending(h => h.CreatedOn)
+                .ThenByDescending(h => h.Id)
+                .Select(h => (Guid?)h.Id)
+                .FirstOrDefaultAsync();
+
+            _dbContext.Jobs.Add(job);
+            await _dbContext.SaveChangesAsync();
+        });
 
         // ── 10. Dispatch job execution ───────────────────────────────────────
         _ = Task.Run(async () =>

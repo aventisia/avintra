@@ -20,7 +20,7 @@ permissions:
 - Source stays read-only; your only write is the assigned architect report.
 
 ## Inputs
-- Read the root `AGENTS.md` first; its Shared handoff contract and Artifact conventions bind this role.
+- Read `AGENT-LOOP.md` first; its Shared handoff contract and Artifact conventions bind this role.
 - Required from the task: the approved brief (path + revision), constraints, design round, output path, and relayed `Decisions`. The brief's checklist IDs are the ACs.
 - Read from disk, never from the orchestrator's summary: the approved brief, your own report for this round (it holds your stage state), the scout and QA reports for this round then prior rounds newest first, and for remediation the prior architect, coder, debugger, and pentester reports.
 - Return `BLOCKED` on a missing required artifact, a brief that is not `APPROVED`, an ambiguous round, or a collision with a completed report. When the latest QA verdict is `CLEAR`, return `COMPLETE` stating no plan is needed.
@@ -57,7 +57,7 @@ Done when every AC and every unresolved finding ID maps to at least one task wit
 - A labeled payload only when the user is needed: uncovered questions, or the complete proposal that reaches beyond the brief.
 
 ## Boundaries
-- Implementation, branches, builds, and Gitea state belong to other roles.
+- Implementation, branches, builds, and GitHub state belong to other roles.
 - A missing approved design is `BLOCKED`; never reconstruct it from memory.
 - Report unrelated problems as observations outside scope; carry every unresolved finding forward visibly.
 - Write only the assigned architect report and keep frozen proposal content and approval history unchanged. Return to the orchestrator instead of launching agents.

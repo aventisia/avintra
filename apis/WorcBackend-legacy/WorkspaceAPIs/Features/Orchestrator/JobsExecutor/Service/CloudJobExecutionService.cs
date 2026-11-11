@@ -8,6 +8,7 @@ public class CloudJobExecutionService : ICloudJobExecutionService
     private readonly ILogger<CloudJobExecutionService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly EnvironmentConfig _environmentConfig;
 
     private const string CloudProdEnvType = "prod";
@@ -21,6 +22,7 @@ public class CloudJobExecutionService : ICloudJobExecutionService
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IExecuteFlowStep2Service executeFlowStep2Service,
+        IResourceFlowAccessService resourceFlowAccessService,
         EnvironmentConfig environmentConfig)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -29,6 +31,7 @@ public class CloudJobExecutionService : ICloudJobExecutionService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _executeFlowStep2Service = executeFlowStep2Service;
+        _resourceFlowAccessService = resourceFlowAccessService;
         _environmentConfig = environmentConfig;
     }
 
@@ -51,6 +54,18 @@ public class CloudJobExecutionService : ICloudJobExecutionService
         if (parsedFlow == null)
         {
             await FailJobAsync(job, "Cloud execution failed: the flow graph is invalid.");
+            return;
+        }
+
+        var resourceAccess = await _resourceFlowAccessService.ValidateRunResourceAccessAsync(
+            job.TenantId,
+            flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+            flowVersion.Flow?.SpaceId,
+            flowVersion.FlowId,
+            flowVersion.ReactFlowObject);
+        if (resourceAccess.Data != true)
+        {
+            await FailJobAsync(job, resourceAccess.Message ?? "Cloud execution failed: the flow is not assigned to a restricted resource.");
             return;
         }
 
@@ -131,10 +146,15 @@ public class CloudJobExecutionService : ICloudJobExecutionService
     {
         _logger.LogWarning("Job {JobId} could not start on the cloud engine: {Remark}", job.Id, remark);
 
-        job.Status = JobStatusEnum.Failed;
-        job.EndTime = DateTimeOffset.UtcNow;
-        job.Remark = remark;
-        _unitOfWork.JobRepo.Update(job);
-        await _unitOfWork.SaveAsync();
+        // IMPORTANT NOTE: the request that inserted the job still tracks its own Job instance, so
+        // marking the untracked dispatch copy through the change tracker throws; write the row directly.
+        var endTime = DateTimeOffset.UtcNow;
+        await _unitOfWork.JobRepo
+            .GetByConditionAsync(w => w.Id == job.Id)
+            .IgnoreQueryFilters()
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(j => j.Status, JobStatusEnum.Failed)
+                .SetProperty(j => j.EndTime, endTime)
+                .SetProperty(j => j.Remark, remark));
     }
 }

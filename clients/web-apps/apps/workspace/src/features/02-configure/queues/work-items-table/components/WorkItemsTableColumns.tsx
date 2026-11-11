@@ -1,25 +1,91 @@
+import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
+import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { NavLink } from "react-router-dom";
 
-import { TABLE_KEY } from "../constants";
+import { InputSchemaField } from "../../queues-table/dtos/queues-table-dto";
 import { getStatusColor } from "../constants/column-display-names";
-import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
+import {
+  WorkItemsTableRow,
+  customColumnId,
+  customFieldLabel,
+} from "../utils/work-items-custom-columns.util";
 import { WorkItemRowActions } from "./WorkItemRowActions";
+
+const formatCustomFieldValue = (value: unknown): string => {
+  if (value === null || value === undefined || value === "") return FALLBACK_VALUE;
+  return typeof value === "object" ? JSON.stringify(value) : String(value);
+};
+
+const customFieldColumns = (
+  fields: InputSchemaField[],
+  tableKey: string,
+): ColumnDef<WorkItemsTableRow>[] =>
+  fields.map((field) => ({
+    id: customColumnId(field),
+    accessorFn: (row) => row.customData?.[field.name],
+    header: ({ column }) => (
+      <DTColumnHeader
+        tableKey={tableKey}
+        column={column}
+        title={customFieldLabel(field)}
+        className="max-w-40"
+      />
+    ),
+    cell: ({ getValue }) => {
+      const value = formatCustomFieldValue(getValue());
+      return (
+        <div title={value} className="w-40 truncate font-medium">
+          {value}
+        </div>
+      );
+    },
+  }));
 
 /**
  * Array of table columns for the WorkItems table.
- * Each column object contains an accessorKey, header component, and cell component.
  *
  * @param queueName Name of the parent queue, used for the detail-view link and
  * back navigation.
+ * @param customFields The queue's non-array custom fields, rendered after Status.
+ * @param tableKey Key holding this queue's saved column visibility and sort state.
  */
-export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWorkItemDto>[] => [
+export const workItemsTableColumns = (
+  queueName = "WorkItem",
+  customFields: InputSchemaField[] = [],
+  tableKey: string,
+): ColumnDef<WorkItemsTableRow>[] => [
   {
+    accessorKey: "selectRow",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    id: "workItemId",
     accessorKey: "id",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Id"} />,
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Work Item Id"} />
+    ),
     enableSorting: false,
     // Make the work item ID a link that opens the full work item detail
     // (JSON/form viewer and file viewer), matching the Assist experience.
@@ -38,19 +104,18 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
-    ),
+    header: ({ column }) => <DTColumnHeader tableKey={tableKey} column={column} title={"Status"} />,
     cell: ({ row }) => (
       <Badge className={getStatusColor(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),
   },
+  ...customFieldColumns(customFields, tableKey),
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created By"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Created By"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
@@ -59,7 +124,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Created On"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Created On"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
@@ -70,7 +135,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "sourceWorkItemId",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Source Work Item Id"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Source Work Item Id"} />
     ),
     cell: ({ row }) => {
       const sourceWorkItemId = row.original.sourceWorkItemId;
@@ -85,7 +150,7 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "retryTime",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry Time"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry Time"} />
     ),
     cell: ({ row }) => {
       const retryTime = row.original.retryTime;
@@ -99,13 +164,13 @@ export const workItemsTableColumns = (queueName = "WorkItem"): ColumnDef<QueueWo
   {
     accessorKey: "retryCount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Retry Count"} />
+      <DTColumnHeader tableKey={tableKey} column={column} title={"Retry Count"} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.original.retryCount ?? 0}</div>
     ),
   },
-  createDTActionsColumn<QueueWorkItemDto>({
+  createDTActionsColumn<WorkItemsTableRow>({
     renderCell: (row) => <WorkItemRowActions rowId={row.id ?? "rowId"} />,
   }),
 ];

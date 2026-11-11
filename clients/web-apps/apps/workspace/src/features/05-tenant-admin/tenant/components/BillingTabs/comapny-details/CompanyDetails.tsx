@@ -4,10 +4,10 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { SquarePen } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails";
-import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/store/company-details/company-details-dialog-store";
+import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails.ee";
+import { useCompanyDetailsDialogStore } from "@/features/05-tenant-admin/tenant/store/company-details/company-details-dialog-store.ee";
 
-import TabLoader from "../TabLoader";
+import TabLoader from "../TabLoader.ee";
 import CompanyDetailsDialog from "./company-details-dialog/CompanyDetailsDialog";
 
 const CompanyDetails = () => {

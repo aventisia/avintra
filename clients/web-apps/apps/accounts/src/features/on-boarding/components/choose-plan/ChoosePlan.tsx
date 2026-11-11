@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { COUNTRY_LS_KEY } from "@/constants/variables";
 import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
 
 import { useFetchSubscriptionPlans } from "../../hooks/useFetchSubscriptionPlans";
@@ -42,7 +43,8 @@ export const ChoosePlan = () => {
         setCurrency: state.setCurrency,
       })),
     );
-  const storedCountryData = typeof window !== "undefined" ? localStorage.getItem("country") : null;
+  const storedCountryData =
+    typeof window !== "undefined" ? localStorage.getItem(COUNTRY_LS_KEY) : null;
 
   const { data, isLoading } = useFetchSubscriptionPlans(
     `?currency=${currency}&frequency=${planFrequency}`,

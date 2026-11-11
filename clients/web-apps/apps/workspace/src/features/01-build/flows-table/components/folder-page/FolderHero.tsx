@@ -5,6 +5,7 @@ import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { MetaLine } from "@/components/MetaLine";
 import { pluralize } from "@/utils/pluralize.util";
 
+import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { useFolderDialogStore } from "../../stores/folder-dialog.store";
 import { FolderSummary } from "../../types/folder-summary.type";
 import { getFolderColor } from "../../utils/folder-color.util";
@@ -22,6 +23,7 @@ export const FolderHero = ({
 }) => {
   const color = getFolderColor(folder);
   const openDialog = useFolderDialogStore((state) => state.openDialog);
+  const { openEditFolderDialog } = useFolderFormDialog();
 
   return (
     <section
@@ -66,7 +68,7 @@ export const FolderHero = ({
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
-            onClick={() => openDialog({ kind: "edit", folder })}
+            onClick={() => openEditFolderDialog(folder.id)}
             className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-white/80 px-3 text-[12.5px] font-medium text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.05)] ring-1 ring-slate-900/[0.08] outline-none transition hover:bg-white hover:text-slate-900 hover:shadow-[0_2px_8px_-2px_rgba(15,23,42,0.18)] hover:ring-slate-900/[0.18] focus-visible:ring-2 focus-visible:ring-indigo-500/50 active:scale-[0.98]"
           >
             <PencilSquareIcon className="size-3.5" />

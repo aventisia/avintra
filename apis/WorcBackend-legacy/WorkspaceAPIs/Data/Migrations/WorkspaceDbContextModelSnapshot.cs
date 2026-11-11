@@ -1384,6 +1384,46 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("ai_OnPremModels");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.PlatformTool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPopular")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("OpenApiSpec")
+                        .HasColumnType("text");
+
+                    b.Property<JsonDocument>("ParsedSchema")
+                        .HasColumnType("jsonb");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("ai_PlatformTools");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ProjectTemplate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2031,6 +2071,42 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("LastModifiedByUserId");
 
                     b.ToTable("ai_ModelProviders");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.TenantPlatformTool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PlatformToolId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("PlatformToolId");
+
+                    b.HasIndex("TenantId", "PlatformToolId")
+                        .IsUnique();
+
+                    b.ToTable("ai_TenantPlatformTools");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Ticket", b =>
@@ -3323,6 +3399,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.TenantPlatformTool", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.PlatformTool", "PlatformTool")
+                        .WithMany()
+                        .HasForeignKey("PlatformToolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("PlatformTool");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Ticket", b =>

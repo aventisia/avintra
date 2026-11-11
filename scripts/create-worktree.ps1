@@ -1,34 +1,50 @@
 # create-worktree.ps1 — Create an isolated git worktree for this repository.
 #
 # The worktree is placed next to the main checkout, inside a shared
-# "<repo-parent>\avplatform-wt\" folder. Every local, gitignored `.env` and
-# `.env.local` file is copied into the new worktree and its service ports are
-# re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes.
+# "<repo-parent>\<repo-folder>-wt\" folder (e.g. "avintra-wt\"). Every local,
+# gitignored `.env` and `.env.local` file is copied into the new worktree and
+# its service ports are re-prefixed with the worktree number so multiple
+# checkouts can run at once without port clashes. API env files also get WT<N>_-prefixed database names
+# (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
+# and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
+# APIs accept requests for the worktree host.
 #
-# Port mapping (N = worktree number, first worktree = 1):
+# The worktree number N (1-50) is the only input: the worktree is named
+# "wt-N" and its port prefix is N, so the name always identifies the ports.
+#
+# Port mapping:
 #   2999 -> 1 299      3001 -> 1 301      4000 -> 1 400
 #   2999 -> 2 299      3001 -> 2 301      4000 -> 2 400
 #   i.e. new = N*1000 + floor(original/1000)*100 + (original % 100).
 #
 # Usage:
-#   .\scripts\create-worktree.ps1                       # prompt for a name, detached HEAD
-#   .\scripts\create-worktree.ps1 -Name my-feature      # prompt skipped, detached HEAD
-#   .\scripts\create-worktree.ps1 -Name my-feature -Branch   # branch "my-feature-base-branch"
-#   .\scripts\create-worktree.ps1 -Name my-feature -SkipInstall   # do not install dependencies
+#   .\scripts\create-worktree.ps1                     # prompt for a number, detached HEAD
+#   .\scripts\create-worktree.ps1 -Number 3           # worktree "wt-3", port prefix 3, detached HEAD
+#   .\scripts\create-worktree.ps1 -Number 3 -Branch   # branch "wt-3-base-branch"
+#   .\scripts\create-worktree.ps1 -Number 3 -SkipInstall   # do not install dependencies
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
-# Corsair, docs and Bruno collections; dotnet restore for the root solution; and
+# Corsair, docs and Bruno collections; cargo fetch for the desktop-app Tauri
+# Rust dependencies; dotnet restore for the root solution; and
 # a Python 3.12 virtualenv + pip install for the LLM pipeline. A failing install
 # is reported and the script exits non-zero, but the worktree is kept. Pass
 # -SkipInstall to skip this step.
 #
-# The script only creates the worktree, edits the copied env files, and installs
-# dependencies; it does NOT commit, push, or touch the main checkout's files.
+# Database copy: the local AccountsDb, WorkspaceDb and CorsairDb are backed up
+# once to "<repo-parent>\pg_dumps\local_{accounts,workspace,corsair}_db.dump";
+# a database is skipped when its dump already exists or the database itself does
+# not. As the last step, each dump is restored into the worktree's WT<N>_*
+# database unless that database already exists. Both steps connect with
+# POSTGRESQL_HOST/PORT/USERNAME/PASSWORD and are skipped when the PostgreSQL
+# client tools are missing or the server is unreachable.
+#
+# The script only creates the worktree, edits the copied env files, installs
+# dependencies, and copies the local databases; it does NOT commit, push, or
+# touch the main checkout's files.
 
 param(
-    [string]$Name,
+    [string]$Number,
     [switch]$Branch,
     [switch]$Detach,
     [switch]$SkipInstall
@@ -36,9 +52,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$WtBaseName = 'avplatform-wt'
 $MaxWorktrees = 50
-$TotalSteps = 5
+$TotalSteps = 7
 $Step = 0
 $BasePorts = @(2999, 3001, 3002, 3006, 3007, 4000, 4001, 4003, 4005, 4006)
 
@@ -109,19 +124,21 @@ $Main = $mainLine -replace '^worktree ', ''
 if ([string]::IsNullOrWhiteSpace($Main)) { Die 'not inside a git repository' }
 
 # ---------------------------------------------------------------------------
-# Worktree name
+# Worktree number -> name and port prefix
 # ---------------------------------------------------------------------------
-if ([string]::IsNullOrWhiteSpace($Name)) {
-    $Name = Read-Host 'Enter worktree name'
+if ([string]::IsNullOrWhiteSpace($Number)) {
+    $Number = Read-Host "Enter worktree number (1-$MaxWorktrees)"
 }
-$Name = $Name.Trim()
-if ([string]::IsNullOrWhiteSpace($Name)) { Die 'worktree name cannot be empty' }
-if ($Name -notmatch '^[A-Za-z0-9._-]+$') {
-    Die "invalid worktree name '$Name' (use letters, digits, '.', '_' or '-')"
+$Number = $Number.Trim()
+if ([string]::IsNullOrWhiteSpace($Number)) { Die 'worktree number cannot be empty' }
+if ($Number -notmatch '^[1-9][0-9]?$' -or [int]$Number -gt $MaxWorktrees) {
+    Die "invalid worktree number '$Number' (use a whole number from 1 to $MaxWorktrees)"
 }
+$PortPrefix = [int]$Number
+$Name = "wt-$PortPrefix"
 
 $Parent = Split-Path -Parent $Main
-$WtBase = Join-Path $Parent $WtBaseName
+$WtBase = Join-Path $Parent "$(Split-Path -Leaf $Main)-wt"
 $WtPath = Join-Path $WtBase $Name
 
 if ($Branch.IsPresent) {
@@ -134,20 +151,13 @@ if ($Branch.IsPresent) {
 # ---------------------------------------------------------------------------
 # Preflight checks
 # ---------------------------------------------------------------------------
-if (Test-Path -LiteralPath $WtPath) { Die "path already exists: $WtPath" }
-if ($worktreeList | Select-String -SimpleMatch $WtPath) {
-    Die "a worktree already exists at: $WtPath"
+if (Test-Path -LiteralPath $WtPath) { Die "worktree number $PortPrefix is in use; path already exists: $WtPath" }
+if ($worktreeList -contains "worktree $($WtPath -replace '\\', '/')") {
+    Die "worktree number $PortPrefix is in use; a worktree is registered at: $WtPath"
 }
 if ($Branch.IsPresent) {
     & git -C $Main show-ref --verify --quiet "refs/heads/$BranchName"
     if ($LASTEXITCODE -eq 0) { Die "branch '$BranchName' already exists" }
-}
-
-$WorktreeCount = ($worktreeList | Select-String '^worktree ').Count
-$PortPrefix = $WorktreeCount
-if ($PortPrefix -lt 1) { Die "unexpected worktree count: $WorktreeCount" }
-if ($PortPrefix -gt $MaxWorktrees) {
-    Die "maximum of $MaxWorktrees worktrees reached (would use port prefix $PortPrefix*)"
 }
 
 Write-Output 'create-worktree — setting up a new worktree'
@@ -245,7 +255,16 @@ function Update-Ports([string]$Path) {
     return $false
 }
 
-Step 'Copying env files and updating ports'
+$worktreeEnvPattern = '(?m)^[ \t]*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE|APP_BASE_URL)=.*(\r?\n|$)'
+
+function Set-WorktreeEnv([string]$Path) {
+    $prefix = "WT${PortPrefix}_"
+    $content = [System.Text.RegularExpressions.Regex]::Replace([System.IO.File]::ReadAllText($Path), $worktreeEnvPattern, '')
+    $content += "`nPOSTGRESQL_ACCOUNTS_DB_NAME=${prefix}AccountsDb`nPOSTGRESQL_WORKSPACE_DB_NAME=${prefix}WorkspaceDb`nPOSTGRESQL_DATABASE=${prefix}CorsairDb`nAPP_BASE_URL=wt${PortPrefix}-avintra.aventisia.com`n"
+    [System.IO.File]::WriteAllText($Path, $content)
+}
+
+Step 'Copying env files and updating ports, database names and app base URL'
 if ($envFiles.Count -eq 0) {
     Detail '(nothing to copy)'
 } else {
@@ -263,12 +282,13 @@ if ($envFiles.Count -eq 0) {
         } else {
             SkipMark $rel
         }
+        if ($rel -like 'apis/*') {
+            Set-WorktreeEnv $dst
+            OkMark "$rel (databases -> WT${PortPrefix}_*, APP_BASE_URL -> wt${PortPrefix}-avintra.aventisia.com)"
+        }
     }
 }
 
-# ---------------------------------------------------------------------------
-# Step 5 — bootstrap dependencies inside the worktree
-# ---------------------------------------------------------------------------
 function Resolve-WorktreePath {
     param([string[]]$Parts)
     $path = $WtPath
@@ -296,7 +316,7 @@ function Resolve-Python312 {
     return $null
 }
 
-function Invoke-Install {
+function Invoke-Task {
     param([string]$Label, [string]$WorkDir, [string]$Exe, [string[]]$Arguments)
     Write-Output "      [..] $Label"
     $prev = $ErrorActionPreference
@@ -319,51 +339,128 @@ function Invoke-Install {
     }
     if ($code -eq 0) {
         OkMark $Label
-        $script:LastInstallOk = $true
+        $script:LastTaskOk = $true
     } else {
         BadMark $Label
         $output | ForEach-Object { Detail $_ }
-        $script:LastInstallOk = $false
-        $script:InstallFailed = $true
+        $script:LastTaskOk = $false
+        $script:TaskFailed = $true
     }
 }
 
+$script:TaskFailed = $false
+$script:LastTaskOk = $false
+
+# ---------------------------------------------------------------------------
+# Step 5 — back up the local databases
+# ---------------------------------------------------------------------------
+$env:PGHOST = if ($env:POSTGRESQL_HOST) { $env:POSTGRESQL_HOST } else { 'localhost' }
+$env:PGPORT = if ($env:POSTGRESQL_PORT) { $env:POSTGRESQL_PORT } else { '5432' }
+$env:PGUSER = if ($env:POSTGRESQL_USERNAME) { $env:POSTGRESQL_USERNAME } else { 'postgres' }
+if ($env:POSTGRESQL_PASSWORD) { $env:PGPASSWORD = $env:POSTGRESQL_PASSWORD }
+
+$DumpDir = Join-Path $Parent 'pg_dumps'
+$Databases = @(
+    @{ Source = $(if ($env:POSTGRESQL_ACCOUNTS_DB_NAME) { $env:POSTGRESQL_ACCOUNTS_DB_NAME } else { 'AccountsDb' }); File = 'local_accounts_db.dump'; Target = "WT${PortPrefix}_AccountsDb" },
+    @{ Source = $(if ($env:POSTGRESQL_WORKSPACE_DB_NAME) { $env:POSTGRESQL_WORKSPACE_DB_NAME } else { 'WorkspaceDb' }); File = 'local_workspace_db.dump'; Target = "WT${PortPrefix}_WorkspaceDb" },
+    @{ Source = $(if ($env:POSTGRESQL_DATABASE) { $env:POSTGRESQL_DATABASE } else { 'CorsairDb' }); File = 'local_corsair_db.dump'; Target = "WT${PortPrefix}_CorsairDb" }
+)
+
+function Get-Databases {
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $names = & psql -d postgres -tAqc 'SELECT datname FROM pg_database' 2>$null
+        if ($LASTEXITCODE -ne 0) { return $null }
+        return ,@($names)
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
+function Get-PgSkipReason {
+    foreach ($tool in @('psql', 'pg_dump', 'pg_restore', 'createdb', 'dropdb')) {
+        if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) { return "$tool not found" }
+    }
+    if ($null -eq (Get-Databases)) { return "cannot connect to PostgreSQL at $($env:PGHOST):$($env:PGPORT)" }
+    return ''
+}
+
+$PgSkipReason = Get-PgSkipReason
+
+Step 'Backing up local databases'
+if ($PgSkipReason) {
+    OmitMark 'database backup' $PgSkipReason
+} else {
+    Field 'folder' $DumpDir
+    if (-not (Test-Path -LiteralPath $DumpDir)) {
+        New-Item -ItemType Directory -Path $DumpDir | Out-Null
+    }
+    $existingDbs = Get-Databases
+    foreach ($db in $Databases) {
+        $dump = Join-Path $DumpDir $db.File
+        if (Test-Path -LiteralPath $dump) {
+            OmitMark $db.Source "backup exists: $($db.File)"
+        } elseif ($existingDbs -notcontains $db.Source) {
+            OmitMark $db.Source 'database not found'
+        } else {
+            $partial = "$dump.partial"
+            Invoke-Task "$($db.Source) -> $($db.File)" $DumpDir 'pg_dump' @('-Fc', '-f', $partial, $db.Source)
+            if ($script:LastTaskOk) {
+                Move-Item -LiteralPath $partial -Destination $dump
+            } else {
+                Remove-Item -LiteralPath $partial -ErrorAction SilentlyContinue
+            }
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Step 6 — bootstrap dependencies inside the worktree
+# ---------------------------------------------------------------------------
 Step 'Installing dependencies'
-$script:InstallFailed = $false
-$script:LastInstallOk = $false
 if ($SkipInstall.IsPresent) {
     Detail 'skipped (-SkipInstall)'
 } else {
     $webAppsDir = Resolve-WorktreePath @('clients', 'web-apps')
     if (Test-Path -LiteralPath (Join-Path $webAppsDir 'package.json')) {
-        Invoke-Install 'web apps (npm install)' $webAppsDir 'npm' @('install', '--force')
+        Invoke-Task 'web apps (npm install)' $webAppsDir 'npm' @('install', '--force')
     } else {
         OmitMark 'web apps (npm install)' 'clients/web-apps not found'
     }
 
+    $tauriDir = Resolve-WorktreePath @('clients', 'web-apps', 'apps', 'desktop-app', 'src-tauri')
+    if (-not (Test-Path -LiteralPath (Join-Path $tauriDir 'Cargo.toml'))) {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'src-tauri/Cargo.toml not found'
+    } elseif (Get-Command cargo -ErrorAction SilentlyContinue) {
+        Invoke-Task 'desktop-app Rust deps (cargo fetch)' $tauriDir 'cargo' @('fetch', '--locked')
+    } else {
+        OmitMark 'desktop-app Rust deps (cargo fetch)' 'cargo not found (install Rust via https://rustup.rs)'
+    }
+
     $corsairDir = Resolve-WorktreePath @('apis', 'corsair')
     if (Test-Path -LiteralPath (Join-Path $corsairDir 'package.json')) {
-        Invoke-Install 'corsair (npm install)' $corsairDir 'npm' @('install', '--force')
+        Invoke-Task 'corsair (npm install)' $corsairDir 'npm' @('install', '--force')
     } else {
         OmitMark 'corsair (npm install)' 'apis/corsair not found'
     }
 
     $docsDir = Resolve-WorktreePath @('clients', 'docs')
     if (Test-Path -LiteralPath (Join-Path $docsDir 'package.json')) {
-        Invoke-Install 'docs (npm install)' $docsDir 'npm' @('install', '--force')
+        Invoke-Task 'docs (npm install)' $docsDir 'npm' @('install', '--force')
     } else {
         OmitMark 'docs (npm install)' 'clients/docs not found'
     }
 
     $brunoDir = Resolve-WorktreePath @('tests', 'bruno')
     if (Test-Path -LiteralPath (Join-Path $brunoDir 'package.json')) {
-        Invoke-Install 'bruno tests (npm install)' $brunoDir 'npm' @('install', '--force')
+        Invoke-Task 'bruno tests (npm install)' $brunoDir 'npm' @('install', '--force')
     } else {
         OmitMark 'bruno tests (npm install)' 'tests/bruno not found'
     }
 
     if (Test-Path -LiteralPath (Join-Path $WtPath 'Avplatform.sln')) {
-        Invoke-Install 'dotnet restore (Avplatform.sln)' $WtPath 'dotnet' @('restore', 'Avplatform.sln')
+        Invoke-Task 'dotnet restore (Avplatform.sln)' $WtPath 'dotnet' @('restore', 'Avplatform.sln')
     } else {
         OmitMark 'dotnet restore (Avplatform.sln)' 'Avplatform.sln not found'
     }
@@ -377,18 +474,45 @@ if ($SkipInstall.IsPresent) {
             $venvArgs = @()
             if ($py.Count -gt 1) { $venvArgs = $py[1..($py.Count - 1)] }
             $venvArgs += @('-m', 'venv', 'venv')
-            Invoke-Install 'llmpipeline venv' $llmDir $py[0] $venvArgs
-            if ($script:LastInstallOk) {
+            Invoke-Task 'llmpipeline venv' $llmDir $py[0] $venvArgs
+            if ($script:LastTaskOk) {
                 $venvRoot = Join-Path $llmDir 'venv'
                 $venvPip = Join-Path (Join-Path $venvRoot 'bin') 'pip'
                 if (-not (Test-Path -LiteralPath $venvPip)) {
                     $venvPip = Join-Path (Join-Path $venvRoot 'Scripts') 'pip.exe'
                 }
-                Invoke-Install 'llmpipeline pip install' $llmDir $venvPip @('-r', 'requirements.txt', '-r', 'requirements-dev.txt')
+                Invoke-Task 'llmpipeline pip install' $llmDir $venvPip @('-r', 'requirements.txt', '-r', 'requirements-dev.txt')
             }
         }
     } else {
         OmitMark 'llmpipeline (venv + pip)' 'apis/llmpipeline not found'
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Step 7 — restore the backups into the worktree databases
+# ---------------------------------------------------------------------------
+Step 'Restoring worktree databases'
+if ($PgSkipReason) {
+    OmitMark 'database restore' $PgSkipReason
+} else {
+    $existingDbs = Get-Databases
+    foreach ($db in $Databases) {
+        $dump = Join-Path $DumpDir $db.File
+        if (-not (Test-Path -LiteralPath $dump)) {
+            OmitMark $db.Target "no backup: $($db.File)"
+        } elseif ($existingDbs -contains $db.Target) {
+            OmitMark $db.Target 'database already exists'
+        } else {
+            $label = "$($db.File) -> $($db.Target)"
+            Invoke-Task "$label (createdb)" $DumpDir 'createdb' @($db.Target)
+            if ($script:LastTaskOk) {
+                Invoke-Task "$label (pg_restore)" $DumpDir 'pg_restore' @('--no-owner', '--no-acl', '-d', $db.Target, $dump)
+                if (-not $script:LastTaskOk) {
+                    & dropdb --if-exists $db.Target
+                }
+            }
+        }
     }
 }
 
@@ -397,8 +521,8 @@ Write-Output 'Done. New worktree is ready:'
 Write-Output "  $WtPath"
 Write-Output "Open it with: cd `"$WtPath`""
 
-if ($script:InstallFailed) {
+if ($script:TaskFailed) {
     [Console]::Error.WriteLine('')
-    [Console]::Error.WriteLine('Warning: one or more dependency installs failed; see the output above.')
+    [Console]::Error.WriteLine('Warning: one or more steps failed; see the output above.')
     exit 1
 }

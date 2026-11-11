@@ -351,8 +351,8 @@ public class OrchestratorHub : Hub
             // Retrieve agent details from the database and ensure it is published
             var agent = await _workspaceInternalDbContext.FlowVersions
                 .Where(w => w.Id == agentId && w.IsPublished)
+                .Include(i => i.Flow)
                 .Include(i => i.FlowVersionMachines)
-                .Include(i => i.FlowVersionHistories)
                 .SingleOrDefaultAsync();
 
             // If the agent is not found or not published, return an error
@@ -446,15 +446,26 @@ public class OrchestratorHub : Hub
                 Status = JobStatusEnum.Created,
                 Priority = JobPriorityEnum.Normal,
                 TenantId = tenantId,
+                SpaceId = agent.SpaceId ?? agent.Flow?.SpaceId,
                 TriggerType = TriggerTypesEnum.Manual,
-                FlowVersionHistoryId = agent.FlowVersionHistories
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Select(s => (Guid?)s.Id)
-                    .FirstOrDefault()
             };
 
-            _workspaceInternalDbContext.Jobs.Add(job);
-            await _workspaceInternalDbContext.SaveChangesAsync();
+            await _workspaceInternalDbContext.Database.ExecuteInTransactionAsync(async () =>
+            {
+                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(agent.Id));
+
+                job.CreatedOn = DateTimeOffset.UtcNow;
+
+                job.FlowVersionHistoryId = await _workspaceInternalDbContext.FlowVersionHistories
+                    .Where(h => h.FlowVersionId == agent.Id && h.TenantId == agent.TenantId)
+                    .OrderByDescending(h => h.CreatedOn)
+                    .ThenByDescending(h => h.Id)
+                    .Select(h => (Guid?)h.Id)
+                    .FirstOrDefaultAsync();
+
+                _workspaceInternalDbContext.Jobs.Add(job);
+                await _workspaceInternalDbContext.SaveChangesAsync();
+            });
 
             MachineReservationHelpers.Reserve(clientDataStore, job.Id, agentId);
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);

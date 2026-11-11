@@ -9,6 +9,8 @@ interface IUserSessionStore {
   userInitials: string;
   platformVersion: string;
   planType?: string;
+  hasPaidPlan?: boolean;
+  tenantType?: string;
   deploymentType: DeploymentType;
 
   /** IsAventisiaEmployee */

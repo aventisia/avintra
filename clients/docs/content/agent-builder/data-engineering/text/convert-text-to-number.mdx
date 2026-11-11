@@ -15,15 +15,15 @@ For instance:
 | Field Name          | Description                                                              | Input Type | Required? | Default Value |
 | ------------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
 | **Text to Convert** | The text value that you want to convert to a numeric type.               | Text       | Yes       | _(empty)_     |
-| **Output Type**     | Choose the numeric type for the conversion: Integer, Double, or Decimal. | Select     | Yes       | _(empty)_     |
+| **Output Type**     | Choose the numeric type for the conversion: Whole number, Decimal number, or Exact decimal number. | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
 The output of this node is a **numeric value**. The format depends on the chosen output type:
 
-- **Integer**: A whole number without any decimal points (e.g., `123`).
-- **Double**: A floating-point number with precision for larger numerical computations (e.g., `123.45`).
-- **Decimal**: A precise fractional number good for financial calculations (e.g., `123.4567`).
+- **Whole number**: A whole number without any decimal points (e.g., `123`).
+- **Decimal number**: A number with decimals for general use (e.g., `123.45`), accurate to about 15–17 significant digits; longer digit strings get rounded.
+- **Exact decimal number**: A number with decimals kept exactly as entered, good for money calculations (e.g., `19.99`), accurate up to 28–29 significant digits.
 
 ## Step-by-Step Guide
 
@@ -40,9 +40,9 @@ In the **Text to Convert** field, input the text you wish to transform into a nu
 
 In the **Output Type** dropdown, select the type of number you require:
 
-- **Integer**: For whole numbers.
-- **Double**: For numbers with decimal precision.
-- **Decimal**: For exact fractional numbers, commonly used in precise calculations.
+- **Whole number**: For whole numbers (e.g., `123`).
+- **Decimal number**: For numbers with decimals for general use (e.g., `123.45`).
+- **Exact decimal number**: For money or anywhere every decimal digit must stay exact (e.g., `19.99`).
 
 ### Step 4
 
@@ -59,16 +59,18 @@ Once configured, the converted numeric value is available as **ConvertedValue** 
 
 | Input Text | Output Type | Output Value | Output Type      |
 | ---------- | ----------- | ------------ | ---------------- |
-| `"123"`    | Integer     | 123          | Number (Integer) |
-| `"45.67"`  | Double      | 45.67        | Number (Double)  |
-| `"100.50"` | Decimal     | 100.50       | Number (Decimal) |
+| `"123"`    | Whole number         | 123          | Number (Whole number)         |
+| `"45.67"`  | Decimal number       | 45.67        | Number (Decimal number)       |
+| `"19.99"`  | Exact decimal number | 19.99        | Number (Exact decimal number) |
+| `"123.4567890123456789"` | Decimal number | 123.45678901234568 | Number (Decimal number) |
+| `"123.4567890123456789"` | Exact decimal number | 123.4567890123456789 | Number (Exact decimal number) |
 
 ## Common Mistakes & Troubleshooting
 
 | Problem                    | Solution                                                                                                   |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Conversion fails**       | Check that the input text is actually in a numeric format (e.g., no letters or special characters).        |
-| **Unexpected output type** | Verify that the correct output type (Integer, Double, Decimal) is selected according to your requirements. |
+| **Unexpected output type** | Verify that the correct output type (Whole number, Decimal number, Exact decimal number) is selected according to your requirements. |
 
 ## Real-World Use Cases
 

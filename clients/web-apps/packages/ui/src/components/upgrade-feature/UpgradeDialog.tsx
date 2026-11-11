@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   AlertDialog,
@@ -20,6 +21,8 @@ type UpgradeDialogProps = {
   /** Full description shown in the upgrade dialog. */
   description?: string;
   pricingUrl?: string;
+  /** In-app route to open instead of the external pricing page. */
+  upgradePath?: string;
 };
 
 export const UpgradeDialog = ({
@@ -28,7 +31,9 @@ export const UpgradeDialog = ({
   title = "Upgrade to unlock",
   description = "Upgrade now to access this feature and unlock more capabilities.",
   pricingUrl,
+  upgradePath,
 }: UpgradeDialogProps) => {
+  const navigate = useNavigate();
   const [showPricingFallback, setShowPricingFallback] = useState(false);
   const hasPricingUrl = Boolean(pricingUrl && /^https?:\/\//i.test(pricingUrl));
 
@@ -38,6 +43,12 @@ export const UpgradeDialog = ({
   };
 
   const handleUpgrade = () => {
+    if (upgradePath) {
+      onOpenChange(false);
+      navigate(upgradePath);
+      return;
+    }
+
     if (!pricingUrl) {
       return;
     }
@@ -88,7 +99,7 @@ export const UpgradeDialog = ({
 
         <AlertDialogFooter className="gap-2">
           <AlertDialogCancel>Not now</AlertDialogCancel>
-          {hasPricingUrl && (
+          {(hasPricingUrl || Boolean(upgradePath)) && (
             <Button type="button" onClick={handleUpgrade}>
               Upgrade
             </Button>

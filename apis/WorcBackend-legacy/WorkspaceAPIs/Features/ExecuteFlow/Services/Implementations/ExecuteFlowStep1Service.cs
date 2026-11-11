@@ -14,6 +14,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
     private readonly IExecuteFlowStep2Service _executeFlowStep2Service;
     private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICreditGateService _creditGateService;
+    private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -25,7 +26,8 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         IExecuteFlowStep2Service executeFlowStep2Service,
         IHttpContextAccessor httpContextAccessor,
         IResourceUserAccessService resourceUserAccessService,
-        ICreditGateService creditGateService)
+        ICreditGateService creditGateService,
+        IResourceFlowAccessService resourceFlowAccessService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -38,6 +40,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
         _resourceUserAccessService = resourceUserAccessService;
         _creditGateService = creditGateService;
+        _resourceFlowAccessService = resourceFlowAccessService;
     }
 
     public async Task<ServiceResponse<ExecuteFlowResponseDto>> ExecuteFlowAsync(ExecuteFlowRequestDto requestDto, TriggerTypesEnum triggerType)
@@ -56,7 +59,6 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 .GetByConditionAsync(w => w.Id == requestDto.FlowVersionId)
                 .IgnoreQueryFilters()
                 .Include(i => i.Flow)
-                .Include(i => i.FlowVersionHistories)
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 
@@ -114,6 +116,17 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 return serviceResponse.Update("Insufficient credits to execute this flow.", 402);
             }
 
+            var resourceAccess = await _resourceFlowAccessService.ValidateRunResourceAccessAsync(
+                flowVersion.TenantId,
+                flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+                flowVersion.Flow?.SpaceId,
+                flowVersion.FlowId,
+                flowVersion.ReactFlowObject);
+            if (resourceAccess.Data != true)
+            {
+                return serviceResponse.Update(resourceAccess.Message, resourceAccess.StatusCode);
+            }
+
             // Insert a new job for the flow execution.
             // Attribute the job (and the credit usage derived from it) to the space
             // the flow belongs to, since a flow unambiguously lives in one space.
@@ -136,15 +149,30 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 InputArgumentsJson = requestDto.InputArgumentsJson?.ToJsonString(),
                 OutputDataJson = null,
                 NodeExecutionLogs = new List<JobNodeExecutionLog>(),
-                FlowVersionHistoryId = flowVersion.FlowVersionHistories
-                    .OrderByDescending(o => o.CreatedOn)
-                    .Select(s => (Guid?)s.Id)
-                    .FirstOrDefault()
             };
-            await _unitOfWork.JobRepo.InsertAsync(newJob);
+
+            var jobSaved = false;
+
+            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersion.Id));
+
+                newJob.CreatedOn = DateTimeOffset.UtcNow;
+
+                newJob.FlowVersionHistoryId = await _unitOfWork.FlowVersionHistoryRepo
+                    .GetByConditionAsync(h => h.FlowVersionId == flowVersion.Id && h.TenantId == flowVersion.TenantId)
+                    .OrderByDescending(h => h.CreatedOn)
+                    .ThenByDescending(h => h.Id)
+                    .Select(h => (Guid?)h.Id)
+                    .FirstOrDefaultAsync();
+
+                await _unitOfWork.JobRepo.InsertAsync(newJob);
+
+                jobSaved = await _unitOfWork.SaveAsync();
+            });
 
             // Error: Failed to save the new job to database
-            if (!await _unitOfWork.SaveAsync())
+            if (!jobSaved)
             {
                 return serviceResponse;
             }

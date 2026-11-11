@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load the Super Admin notifications feature component.
 const SaNotificationsManagement = lazy(() =>
-  import("@/features/06-super-admin/sa-notifications/components/SaNotificationsManagement").then(
+  import("@/features/06-super-admin/sa-notifications/components/SaNotificationsManagement.ee").then(
     (module) => ({
       default: module.SaNotificationsManagement,
     }),

@@ -54,8 +54,10 @@ public class AccountsDbContextDesignTimeFactory : IDesignTimeDbContextFactory<Ac
             ?? environmentConfig.PostgresqlUsername ?? string.Empty;
         var pgPassword = Environment.GetEnvironmentVariable("POSTGRESQL_PASSWORD")
             ?? environmentConfig.PostgresqlPassword ?? string.Empty;
+        var pgDatabase = Environment.GetEnvironmentVariable("POSTGRESQL_ACCOUNTS_DB_NAME")
+            ?? environmentConfig.PostgresqlAccountsDbName;
 
-        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={pgDatabase};Include Error Detail=true";
 
         var optionsBuilder = new DbContextOptionsBuilder<AccountsDbContext>();
         optionsBuilder.UseNpgsql(appDbConnectionString);

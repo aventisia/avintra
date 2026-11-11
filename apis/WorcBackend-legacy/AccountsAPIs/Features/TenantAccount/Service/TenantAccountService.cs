@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Services;
 
-public class TenantAccountService : ITenantAccountService
+public partial class TenantAccountService : ITenantAccountService
 {
     private readonly ILogger<TenantAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
@@ -29,7 +29,10 @@ public class TenantAccountService : ITenantAccountService
 
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-        _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email") ?? string.Empty;
+        // IMPORTANT NOTE: the JWT bearer maps the "email" claim to ClaimTypes.Email, so both names are read.
+        _userEmail = httpContextAccessor.HttpContext?.User?.FindFirstValue("email")
+            ?? httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+            ?? string.Empty;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _loginWithExternalAuthService = loginWithExternalAuthService;
@@ -749,84 +752,12 @@ public class TenantAccountService : ITenantAccountService
         };
     }
 
-    /// <summary>
-    /// Validates Azure Entra (Azure AD) credentials by attempting to acquire an access token.
-    /// </summary>
-    /// <returns>True if credentials are valid; false otherwise.</returns>
-    public async Task<bool> ValidateAzureEntraCredentialsAsync()
-    {
-        return await ValidateEntraClientCredentialsAsync(
-            _environmentConfig.AzureTenantId,
-            _environmentConfig.AzureEntraIdClientId,
-            _environmentConfig.AzureEntraIdClientSecret);
-    }
-
     private void ApplyRedactedSsoConfig(TenantPreferenceDto dto, string? ssoConfigJson)
     {
         var ssoConfig = SsoConfigHelpers.Parse(ssoConfigJson);
         if (ssoConfig == null) return;
 
         dto.SSOConfigJson = SsoConfigHelpers.ToRedactedJson(ssoConfig);
-    }
-
-    private (bool IsAvailable, int StatusCode, string Message) GetSsoAvailability()
-    {
-        if (!_environmentConfig.IsSsoAllowedForDeployment)
-        {
-            return (false, 400, "Single sign-on is not available in the Community edition.");
-        }
-
-        if (!_environmentConfig.MicrosoftSsoEnabled)
-        {
-            return (false, 400, "Single sign-on is not enabled for this deployment.");
-        }
-
-        return (true, 200, string.Empty);
-    }
-
-    private void ApplySsoAvailability(TenantPreferenceDto dto)
-    {
-        dto.IsSSOAvailable = _environmentConfig.MicrosoftSsoEnabled && _environmentConfig.IsSsoAllowedForDeployment;
-    }
-
-    private async Task<SsoDisableWarningDto?> BuildSsoDisableWarningAsync()
-    {
-        var taRoleId = await _unitOfWork.AccountRoleRepo
-            .GetByConditionAsync(r => r.Name == CustomRolesEnum.TA.ToString())
-            .Select(r => (Guid?)r.Id)
-            .FirstOrDefaultAsync();
-
-        var affectedAdmins = new List<string>();
-        if (taRoleId.HasValue)
-        {
-            var passwordlessAdminNames = await _unitOfWork.AccountUserRepo
-                .GetByConditionAsync(u =>
-                    u.TenantId == _tenantId &&
-                    !u.IsDisabled &&
-                    u.PasswordHash == null &&
-                    u.UserRoles.Any(ur => ur.RoleId == taRoleId.Value))
-                .Select(u => u.UserName)
-                .ToListAsync();
-
-            affectedAdmins = passwordlessAdminNames
-                .Where(n => !string.IsNullOrWhiteSpace(n))
-                .Select(n => n!)
-                .ToList();
-        }
-
-        var affectedUserCount = await _unitOfWork.AccountUserRepo
-            .GetByConditionAsync(u => u.TenantId == _tenantId && !u.IsDisabled && u.PasswordHash == null)
-            .CountAsync();
-
-        if (affectedUserCount == 0) return null;
-
-        return new SsoDisableWarningDto
-        {
-            WarnOnly = true,
-            AffectedAdmins = affectedAdmins,
-            AffectedUserCount = affectedUserCount,
-            RecoveryHint = "Affected users can set a password from the login screen using Forgot password, then sign in with their email and password."
-        };
     }
 
     private async Task InsertSsoDisabledAuditLogAsync(SsoDisableWarningDto warning)

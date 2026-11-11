@@ -1,10 +1,10 @@
 import { toast } from "@avplatform/ui/sonner";
+import { deepParse } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { Edge, Node } from "@xyflow/react";
 import { set } from "idb-keyval";
 import { useCallback } from "react";
 
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { NodeDataType } from "@/types/node-data-type";
 
 import { fetchSubFlows } from "../apis/flow-builder-apis";

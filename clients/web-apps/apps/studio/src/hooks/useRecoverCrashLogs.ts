@@ -1,10 +1,10 @@
 import { get } from "idb-keyval";
 import { useEffect, useRef } from "react";
 
-import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
-import { CreditServicesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
-import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
-import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
+import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum.ee";
+import { CreditServicesEnum } from "@/features/credits-management/constants/credit-service-type-enum.ee";
+import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum.ee";
+import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation.ee";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
 import { updateJobData } from "@/features/execute-flow/apis/jobs-table-apis";
 import { insertNodeExecutionLogs } from "@/features/execute-flow/apis/node-execution-log-apis";

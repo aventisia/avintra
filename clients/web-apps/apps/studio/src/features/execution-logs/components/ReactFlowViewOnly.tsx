@@ -36,7 +36,7 @@ export const ReactFlowViewOnly = () => {
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 
-  const { isPending, isLoading, isFetching, isSubFlowView } = useReactFlowViewData();
+  const { isFetching, isSubFlowView } = useReactFlowViewData();
 
   const { openPanel, closePanel, isNodeDetailPanelOpen } = usePanelStore(
     useShallow((state) => ({
@@ -110,7 +110,7 @@ export const ReactFlowViewOnly = () => {
           isNodeDetailPanelOpen && "mr-[30.5rem] w-[calc(100%-21.5rem-30.5rem)]",
         )}
       >
-        {isPending || isLoading || isFetching ? (
+        {isFetching ? (
           <div className="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
             <LoadingSpinner className="h-6 w-6 text-primary" />
           </div>

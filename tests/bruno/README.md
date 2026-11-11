@@ -1,6 +1,6 @@
 # Bruno API Tests
 
-Bruno test collections for the Aventisia WORC Platform APIs.
+Bruno test collections for the Aventisia Avintra APIs.
 
 ## Overview
 
@@ -15,7 +15,7 @@ This directory contains [Bruno](https://www.usebruno.com/) collections used to m
 | `llmpipelineapis` | Text extraction, OCR, TTS, STT, LLM providers        |
 | `CamelAPIs`       | Apache Camel connectors, operations, schemas         |
 | `Corsair`         | Corsair sidecar: connect links, tools, credentials   |
-| `GlobalAdminAPIs` | External GlobalAdmin service: on-prem tenants/instances |
+| `GlobalAdminAPIs` | On-prem tenants, tenant instances, and instance execution data |
 
 ## Getting Started
 
@@ -62,7 +62,7 @@ Folder runs require `-r` (recursive) — without it `bru` silently runs 0 reques
 Store secrets in a `.env` file at this collection's root — `tests/bruno/.env` (gitignored). Bruno loads it automatically for both the CLI and the desktop app, and `environments/*.bru` map the login credentials into variables:
 
 ```sh
-# tests/bruno/.env  — copy .env.sample and fill in your own values
+# tests/bruno/.env  — copy .env.example and fill in your own values
 MY_EMAIL=you@example.com
 MY_PWD='secret'
 
@@ -72,6 +72,10 @@ WORKSPACE_API_PORT=4001
 LLMPIPELINE_API_PORT=4003
 CAMEL_API_PORT=4005
 CORSAIR_API_PORT=4006
+GLOBALADMIN_API_PORT=4004
+
+# Global Admin session token for the GlobalAdminAPIs collection
+SA_TOKEN=
 ```
 
 With that in place, the normal commands work with no extra flags:
@@ -112,7 +116,8 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 
 ## Environments vs Global Environment
 
-- `environments/*.bru` contain the API base URLs (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`, `GLOBALADMIN_API_BASE_URL`) plus login credentials (`MY_EMAIL`/`MY_PWD`, per-role `SA/TA/OM/TD/TU_EMAIL`/`_PWD`) and the localhost ports (`*_API_PORT`) mapped from `.env`. No literal secrets, no IDs.
+- `environments/*.bru` contain the API base URLs (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `LLMPIPELINE_API_BASE_URL`, `CAMEL_API_BASE_URL`, `CORSAIR_API_BASE_URL`, `GLOBALADMIN_API_BASE_URL`) plus login credentials (`MY_EMAIL`/`MY_PWD`, per-role `SA/TA/OM/TD/TU_EMAIL`/`_PWD`), the Global Admin session token (`SA_TOKEN`), and the localhost ports (`*_API_PORT`) mapped from `.env`. No literal secrets, no IDs.
+- `SA_TOKEN` must be a session token for a user with the `SA` role in a `Commercial` deployment; the `GlobalAdminAPIs` folder sends it as a bearer token. Every other service authenticates through the login requests that chain `ACCESS_TOKEN`.
 - Login credentials (`MY_*`, `SA/TA/OM/TD/TU_*`) come from the gitignored `tests/bruno/.env`, not the Global Environment. The DB seed creates only the super user (random password) — create one user per role manually before using the role credentials.
 - Everything else lives in Bruno's **Global Environment** (per-tester, never committed):
   - **Seed these yourself:** credentials for the connectors you exercise (`SQL_CREDENTIAL_NAME`, `MAILBOX_ADDRESS`/`MAIL_USERNAME`/`MAIL_PASSWORD`, `FTP_HOST`/`FTP_USERNAME`/`FTP_PASSWORD`, `POSTGRES_*`, `KAFKA_*`, `JMS_*`, `IMAP_*/SMTP_*`, `CORSAIR_*`, `CUSTOM_API_KEY`, `API_KEY`, `FILE_PATH`, `tenant_id`, `workspace_session_cookie`).
@@ -124,7 +129,7 @@ JUnit output lands in `results/junit.xml` (`results/` is gitignored). Never comm
 - `collection.bru` — Root collection metadata
 - `bruno.json` — Bruno configuration
 - `environments/` — Environment-specific variables (base URLs, login credential and localhost port mapping)
-- `.env.sample` — Template for the gitignored `.env` (secrets; copy and fill in)
+- `.env.example` — Template for the gitignored `.env` (secrets; `scripts/initial-setup.sh` copies it, then fill in)
 
 ## Notes
 

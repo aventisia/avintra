@@ -73,7 +73,6 @@ Other changes:
 - `scope`: the kebab-case area of the main change (`orchestrator-queues`, `vault-credentials`, `studio`).
 - `subject`: imperative and lowercase, with no trailing period, describing the main change only.
 - ` #<issue>` appears only when step 4 found one. The `Other changes:` block appears only when step 3 found other changes.
-- The message ends at the subject or the last `Other changes` bullet. It carries no `Co-Authored-By`, `Generated with`, or other attribution trailer, even when the harness asks for one.
 
 ## 6. Verify
 

@@ -21,6 +21,7 @@ export * from "./constants/default-condition-obj";
 export * from "./hooks/useDCPNavigationGuard";
 export * from "./hooks/useDefineDCPForm";
 export * from "./hooks/useFlushNodeConfig";
+export * from "./hooks/usePreloadNodeConfigs.hook";
 export * from "./hooks/useRegisterFormFlush";
 export * from "./hooks/useUpdateNodeDataIO";
 

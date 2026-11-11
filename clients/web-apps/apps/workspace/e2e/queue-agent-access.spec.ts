@@ -1,17 +1,21 @@
 import {
   type APIRequestContext,
+  type Locator,
   type Page,
-  type Route,
   expect,
   request,
   test,
 } from "@playwright/test";
 
-const WEB_ORIGIN = "http://localhost:3002";
-const ACCOUNTS_API = process.env.E2E_ACCOUNTS_API_URL ?? "http://localhost:4000";
-const WORKSPACE_API = process.env.E2E_WORKSPACE_API_URL ?? "http://localhost:4001";
-const EMAIL = process.env.E2E_EMAIL ?? "admin@aventisia.com";
-const PASSWORD = process.env.E2E_PWD ?? "";
+import {
+  EMAIL,
+  type Session,
+  WORKSPACE_API,
+  connectPage,
+  getApiHeaders,
+  loginAsAdmin,
+} from "./support/session";
+
 const ENVIRONMENT_STORAGE_KEY = `configure-env:${EMAIL}`;
 
 const OPEN_QUEUE = "E2E Open Queue";
@@ -29,42 +33,14 @@ type QueueSummary = {
 
 type FlowOption = { label: string; value: string };
 
-type SessionCookie = {
-  name: string;
-  value: string;
-  domain: string;
-  path: string;
-  sameSite: "Lax";
-};
-
 let api: APIRequestContext;
-let accessToken = "";
-let sessionCookies: SessionCookie[] = [];
+let session: Session;
 let openQueueId = "";
 let restrictedQueueId = "";
 let agentOneId = "";
 let agentTwoId = "";
 
-const parseSessionCookies = (headers: { name: string; value: string }[]): SessionCookie[] =>
-  headers
-    .filter((header) => header.name.toLowerCase() === "set-cookie")
-    .map((header) => {
-      const [pair] = header.value.split(";");
-      const separator = pair.indexOf("=");
-
-      return {
-        name: pair.slice(0, separator),
-        value: pair.slice(separator + 1),
-        domain: "localhost",
-        path: "/",
-        sameSite: "Lax",
-      };
-    });
-
-const apiHeaders = (env: "dev" | "prod" = "dev") => ({
-  Cookie: `AccessToken=${accessToken}`,
-  "X-Env-Type": env,
-});
+const apiHeaders = (env: "dev" | "prod" = "dev") => getApiHeaders(session, env);
 
 const findQueue = async (name: string, env: "dev" | "prod") => {
   const response = await api.get(`${WORKSPACE_API}/api/queue/list`, { headers: apiHeaders(env) });
@@ -85,14 +61,6 @@ const assignFlows = async (resourceId: string, flowIds: string[]) => {
   expect(response.ok()).toBeTruthy();
 };
 
-const forwardRequests = (sourcePrefix: string, targetPrefix: string) => async (route: Route) => {
-  const response = await route.fetch({
-    url: route.request().url().replace(sourcePrefix, targetPrefix),
-  });
-
-  await route.fulfill({ response });
-};
-
 const queueRow = (page: Page, queueName: string) =>
   page.getByRole("row").filter({ hasText: queueName });
 
@@ -108,16 +76,16 @@ const openAssignAgentsDialog = async (page: Page, queueName: string) => {
   return dialog;
 };
 
-test.beforeAll(async () => {
-  if (!PASSWORD) throw new Error("E2E_PWD must hold the seeded admin password.");
+const pickAgent = async (dialog: Locator, name: string) => {
+  const option = dialog.getByRole("option", { name: new RegExp(name) });
+  await expect(option).toBeVisible({ timeout: 15000 });
+  await option.click();
+  await expect(option).toHaveAttribute("aria-selected", "true");
+};
 
+test.beforeAll(async () => {
   api = await request.newContext();
-  const login = await api.post(`${ACCOUNTS_API}/api/auth/login`, {
-    data: { email: EMAIL, pwd: PASSWORD },
-  });
-  expect(login.ok()).toBeTruthy();
-  accessToken = (await login.json()).data.accessToken;
-  sessionCookies = parseSessionCookies(login.headersArray());
+  session = await loginAsAdmin(api);
 
   openQueueId = (await findQueue(OPEN_QUEUE, "dev")).id;
   restrictedQueueId = (await findQueue(RESTRICTED_QUEUE, "dev")).id;
@@ -143,27 +111,22 @@ test.beforeEach(async ({ page }) => {
   await assignFlows(openQueueId, []);
   await assignFlows(restrictedQueueId, [agentOneId]);
 
-  await page.context().addCookies(sessionCookies);
-  await page.route(
-    "**/workspace/api/**",
-    forwardRequests(`${WEB_ORIGIN}/workspace/api/`, `${WORKSPACE_API}/api/`),
-  );
-  await page.route(
-    "**/accounts/api/**",
-    forwardRequests(`${WEB_ORIGIN}/accounts/api/`, `${ACCOUNTS_API}/api/`),
-  );
+  await connectPage(page, session);
 });
 
-test("AC1 and AC6: the shared dialog opens and the restricted flag drives the initial mode", async ({
+test("AC1 and AC6: the shared dialog opens restricted-empty for an open queue and keeps assigned agents", async ({
   page,
 }) => {
   await page.goto("configure/queues");
 
   const openDialog = await openAssignAgentsDialog(page, OPEN_QUEUE);
   await expect(openDialog.getByText("Agent access", { exact: true })).toBeVisible();
-  await expect(openDialog.getByRole("radio", { name: /Any agent/ })).toBeChecked();
-  await expect(openDialog.getByText("Assign agents", { exact: true })).toHaveCount(0);
-  await expect(openDialog.getByText("Choose which agents process items from")).toHaveCount(0);
+  await expect(openDialog.getByRole("radio", { name: /Selected agents/ })).toBeChecked();
+  await expect(openDialog.getByRole("radio", { name: /Any agent/ })).not.toBeChecked();
+  await expect(openDialog.getByRole("combobox", { name: "Search agents" })).toBeVisible();
+  await expect(openDialog.getByText("No agents allowed yet")).toBeVisible();
+  await expect(openDialog.getByText("Open to every agent")).toBeVisible();
+  await expect(openDialog.getByRole("button", { name: "Save changes" })).toBeDisabled();
 
   await page.keyboard.press("Escape");
   await expect(openDialog).toBeHidden();
@@ -180,12 +143,12 @@ test("AC2: assigning agents restricts the queue, persists the list and re-opens 
   await page.goto("configure/queues");
 
   const dialog = await openAssignAgentsDialog(page, OPEN_QUEUE);
-  await dialog.getByRole("radio", { name: /Selected agents/ }).click();
+  await expect(dialog.getByRole("radio", { name: /Selected agents/ })).toBeChecked();
 
   const picker = dialog.getByRole("combobox", { name: "Search agents" });
   await picker.fill("E2E");
-  await dialog.getByRole("option", { name: new RegExp(AGENT_ONE) }).click();
-  await dialog.getByRole("option", { name: new RegExp(AGENT_TWO) }).click();
+  await pickAgent(dialog, AGENT_ONE);
+  await pickAgent(dialog, AGENT_TWO);
 
   await dialog.getByText("Agent access", { exact: true }).click();
   await expect(dialog.getByRole("listbox")).toBeHidden();
@@ -227,8 +190,9 @@ test("AC3: unticking and clearing update on re-open and clearing re-opens the qu
   await expect(queueRow(page, OPEN_QUEUE)).not.toContainText(AGENT_ONE);
 
   dialog = await openAssignAgentsDialog(page, OPEN_QUEUE);
-  await expect(dialog.getByRole("radio", { name: /Any agent/ })).toBeChecked();
-  await expect(dialog.getByText("Includes agents created later.")).toBeVisible();
+  await expect(dialog.getByRole("radio", { name: /Selected agents/ })).toBeChecked();
+  await expect(dialog.getByRole("radio", { name: /Any agent/ })).not.toBeChecked();
+  await expect(dialog.getByText("No agents allowed yet")).toBeVisible();
 
   const cleared = await findQueue(OPEN_QUEUE, "dev");
   expect(cleared.isResourceAccessRestricted).toBe(false);

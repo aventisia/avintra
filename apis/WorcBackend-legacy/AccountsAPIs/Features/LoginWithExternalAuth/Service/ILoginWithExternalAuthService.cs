@@ -3,13 +3,6 @@ namespace AccountsAPIs.Services;
 public interface ILoginWithExternalAuthService
 {
     /// <summary>
-    /// Generates a login URL for the specified external authentication provider.
-    /// </summary>
-    /// <param name="type">The external authentication provider (e.g., Azure, Google, Facebook, Twitter).</param>
-    /// <returns>The generated login URL or an error message.</returns>
-    ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type);
-
-    /// <summary>
     /// Generates a login URL carrying the email hint and the OAuth state binding for a specific tenant.
     /// </summary>
     /// <param name="type">The external authentication provider.</param>

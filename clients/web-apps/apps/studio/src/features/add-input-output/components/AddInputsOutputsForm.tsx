@@ -1,5 +1,6 @@
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
+import { applyFlowInputsToVariables } from "@avplatform/ui/utils";
 import { useViewport } from "@xyflow/react";
 import { Plus } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -12,7 +13,6 @@ import { useInputsOutputsForm } from "../hooks/useInputsOutputsForm";
 import { useUpdateInputOutput } from "../hooks/useUpdateInputOutput";
 import { useInputOutputsStore } from "../stores/inputs-outputs-store";
 import { formDataToDCPJson } from "../utils/formdataToJson";
-import { applyFlowInputsToVariables } from "../utils/sync-flow-inputs-to-variables.util";
 import InputFields from "./InputFields";
 import OutputFields from "./OutputFields";
 

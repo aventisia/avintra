@@ -54,14 +54,21 @@ const ImportFlow = () => {
 
     try {
       const parsedData = JSON.parse(uploadedData);
-      const { reactFlowObject, flowVariablesObject } = parsedData;
-      const remappedData = remapImportedFlowIds(reactFlowObject, flowVariablesObject);
+      const { reactFlowObject } = parsedData;
+      const { flowVariablesObject, inputOutputObject, ...canvas } = reactFlowObject;
+      const remappedData = remapImportedFlowIds(
+        canvas,
+        flowVariablesObject ?? parsedData.flowVariablesObject ?? [],
+      );
 
       // Update flow with the correct structure
       updateFlow({
         id: flowId,
         reactFlowObject: JSON.stringify(remappedData.reactFlowObject),
         flowVariablesObject: JSON.stringify(remappedData.flowVariablesObject),
+        ...(Array.isArray(inputOutputObject)
+          ? { inputOutputObject: JSON.stringify(inputOutputObject) }
+          : {}),
         versionId,
       });
     } catch (error) {

@@ -27,12 +27,12 @@ export const normalizeTimeZone = (tz: string): string => {
 /* -------------------------------------------------------
  * Get GMT offset (e.g., +05:30)
  * -----------------------------------------------------*/
-export const getTimeZoneOffset = (tz: string): string => {
+export const getTimeZoneOffset = (tz: string, date: Date = new Date()): string => {
   try {
     const parts = new Intl.DateTimeFormat("en-US", {
       timeZone: tz,
       timeZoneName: "shortOffset",
-    }).formatToParts(new Date());
+    }).formatToParts(date);
 
     const value = parts.find((p) => p.type === "timeZoneName")?.value || "";
 
@@ -42,6 +42,12 @@ export const getTimeZoneOffset = (tz: string): string => {
     return "";
   }
 };
+
+/* -------------------------------------------------------
+ * Timezone label (e.g., "Asia/Kolkata (GMT+5:30)"), offset taken at the given date
+ * -----------------------------------------------------*/
+export const formatTimeZoneLabel = (tz: string, date: Date = new Date()): string =>
+  `${tz.replace(/_/g, " ")} (GMT${getTimeZoneOffset(tz, date)})`;
 
 /* -------------------------------------------------------
  * Get all timezone options (canonical + deduped)
@@ -58,14 +64,7 @@ export const getTimezoneOptions = (): ISelectOption[] => {
       seen.add(tz);
       return true;
     })
-    .map((tz) => {
-      const offset = getTimeZoneOffset(tz);
-
-      return {
-        value: tz,
-        label: `${tz.replace(/_/g, " ")} (GMT${offset})`,
-      };
-    })
+    .map((tz) => ({ value: tz, label: formatTimeZoneLabel(tz) }))
     .sort((a, b) => a.label.localeCompare(b.label));
 };
 

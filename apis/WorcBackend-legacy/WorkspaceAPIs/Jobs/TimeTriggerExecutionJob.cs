@@ -33,7 +33,7 @@ public class TimeTriggerExecutionJob : IJob
             await _workspaceInternalDbContext.Database.ExecuteInTransactionAsync(async () =>
             {
                 // IMPORTANT NOTE: serializes ticks across API instances; a waiter re-reads the advanced NextTriggerTime and skips.
-                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync("time-trigger-execution");
+                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(TimeTriggerMetadataHelpers.ExecutionLockKey);
                 createdJobIds = await CreateDueJobsAsync(currentUtcTime);
             });
 
@@ -61,6 +61,8 @@ public class TimeTriggerExecutionJob : IJob
         var activeTriggers = await _workspaceInternalDbContext.Triggers
             .Where(w => w.TriggerType == TriggerTypesEnum.Time && !w.IsDisabled)
             .Include(t => t.TriggerFlowVersions)
+                .ThenInclude(tfv => tfv.FlowVersion)
+                    .ThenInclude(fv => fv.Flow)
             .ToListAsync();
 
         var dueTriggers = activeTriggers
@@ -70,6 +72,16 @@ public class TimeTriggerExecutionJob : IJob
         if (dueTriggers.Count == 0)
             return [];
 
+        var dueFlowVersionIds = dueTriggers
+            .SelectMany(t => t.TriggerFlowVersions)
+            .Select(f => f.FlowVersionId)
+            .Distinct()
+            .OrderBy(id => id)
+            .ToList();
+
+        foreach (var flowVersionId in dueFlowVersionIds)
+            await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(flowVersionId));
+
         var latestFlowVersionHistoryIds = await GetLatestFlowVersionHistoryIdsAsync(dueTriggers);
 
         var createdJobs = new List<Job>();
@@ -78,19 +90,26 @@ public class TimeTriggerExecutionJob : IJob
         {
             foreach (var triggerFlowVersion in trigger.TriggerFlowVersions)
             {
+                // Skip invalid entries
+                if (triggerFlowVersion.FlowVersion == null)
+                {
+                    _logger.LogWarning("Skipping invalid FlowVersionId for trigger {TriggerId}.", trigger.Id);
+                    continue;
+                }
+
                 latestFlowVersionHistoryIds.TryGetValue(triggerFlowVersion.FlowVersionId, out Guid? latestFlowVersionHistoryId);
 
                 createdJobs.Add(new Job()
                 {
                     Id = Guid.NewGuid(),
                     TenantId = triggerFlowVersion.TenantId,
+                    SpaceId = triggerFlowVersion.FlowVersion?.SpaceId ?? triggerFlowVersion.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
                     FlowVersionHistoryId = latestFlowVersionHistoryId,
                     TriggerType = TriggerTypesEnum.Time,
                     RefId = triggerFlowVersion.TriggerId,
                     Priority = JobPriorityEnum.Normal,
                     Status = JobStatusEnum.Created,
-                    CreatedOn = currentUtcTime,
                 });
             }
 
@@ -106,21 +125,12 @@ public class TimeTriggerExecutionJob : IJob
 
     private static bool IsDue(JsonElement metadata, DateTimeOffset currentUtcTime, DateTimeOffset endOfCurrentMinute)
     {
-        var nextTriggerTime = metadata.TryGetProperty("NextTriggerTime", out var ntt)
-            ? ntt.GetDateTimeOffset()
-            : DateTimeOffset.MinValue;
+        var triggerModel = metadata.Deserialize<TimeTriggerModel>(TimeTriggerMetadataHelpers.JsonOptions)!;
 
-        var effectiveDate = metadata.TryGetProperty("EffectiveDate", out var ed)
-            ? ed.GetDateTimeOffset()
-            : DateTimeOffset.MinValue;
+        var isWithinSchedule = triggerModel.EffectiveDate <= currentUtcTime
+            && (triggerModel.EndDate == null || triggerModel.EndDate >= currentUtcTime);
 
-        var endDate = metadata.TryGetProperty("EndDate", out var endDateProp) && endDateProp.ValueKind != JsonValueKind.Null
-            ? endDateProp.GetDateTimeOffset()
-            : (DateTimeOffset?)null;
-
-        var isWithinSchedule = effectiveDate <= currentUtcTime && (endDate == null || endDate >= currentUtcTime);
-
-        return isWithinSchedule && nextTriggerTime < endOfCurrentMinute;
+        return isWithinSchedule && triggerModel.NextTriggerTime < endOfCurrentMinute;
     }
 
     private Task<Dictionary<Guid, Guid?>> GetLatestFlowVersionHistoryIdsAsync(List<Trigger> triggers)
@@ -139,6 +149,7 @@ public class TimeTriggerExecutionJob : IJob
                 FlowVersionId = s.Key,
                 FlowVersionHistoryId = s
                     .OrderByDescending(o => o.CreatedOn)
+                    .ThenByDescending(o => o.Id)
                     .Select(s1 => (Guid?)s1.Id)
                     .FirstOrDefault()
             })

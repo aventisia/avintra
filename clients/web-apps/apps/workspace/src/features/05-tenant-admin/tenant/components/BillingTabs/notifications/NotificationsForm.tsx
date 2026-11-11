@@ -15,11 +15,11 @@ import {
   publishAgentProps,
   subscriptionProps,
   subscriptionRenewalReminderDaysProps,
-} from "@/features/05-tenant-admin/tenant/constants/notification-settings-field-props";
-import { notificationSettingsSchema } from "@/features/05-tenant-admin/tenant/constants/notification-settings-zod-schema";
-import { useDefineNotificationSettingsForm } from "@/features/05-tenant-admin/tenant/hooks/useDefineNotificationSettingsForm";
+} from "@/features/05-tenant-admin/tenant/constants/notification-settings-field-props.ee";
+import { notificationSettingsSchema } from "@/features/05-tenant-admin/tenant/constants/notification-settings-zod-schema.ee";
+import { useDefineNotificationSettingsForm } from "@/features/05-tenant-admin/tenant/hooks/useDefineNotificationSettingsForm.ee";
 
-import TabLoader from "../TabLoader";
+import TabLoader from "../TabLoader.ee";
 
 const NotificationsForm = () => {
   const { form, isDirty, isSubmitting, isPending, mutate, isLoading } =

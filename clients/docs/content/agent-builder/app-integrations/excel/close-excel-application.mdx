@@ -2,7 +2,9 @@ import { Callout, Steps } from "nextra/components";
 
 # Close Excel Application
 
-The **Close Excel Application** node allows you to terminate the active Excel instance running on your desktop. This is particularly useful when you want to ensure all Excel files are properly closed, including handling unsaved changes. This node can be configured to save changes or discard them before closing, providing flexibility based on your requirements.
+The **Close Excel Application** node closes the Excel instance that your flow launched. This is particularly useful when you want to ensure the flow's Excel files are properly closed, including handling unsaved changes. This node can be configured to save changes or discard them before closing, providing flexibility based on your requirements.
+
+Only the instance the flow launched is closed. An Excel you opened yourself stays open with its workbooks and any unsaved changes.
 
 For example:
 
@@ -13,7 +15,7 @@ For example:
 
 | Field Name               | Description                                                                                                           | Input Type | Required? | Default Value |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Excel Application**    | The Excel Application object you want to close. This refers to the active instance of Excel.                          | Text       | Yes       | _(empty)_     |
+| **Excel Application**    | The Excel Application object you want to close. This is the instance your flow launched, normally the **ExcelInstance** output of **Launch Excel Application**. | Text       | Yes       | _(empty)_     |
 | **Before Closing Excel** | Decide if you want to save changes before closing Excel. Options include not saving, saving, or saving as a new file. | Select     | No        | SaveDocument  |
 | **Save Path**            | The file path where you want to save the document if "Save Document As" is selected.                                  | Text       | No        | _(empty)_     |
 
@@ -30,7 +32,7 @@ Add the **Close Excel Application** node to your workflow.
 
 ### Step 2
 
-In the **Excel Application** field, specify the active Excel instance you wish to close.
+In the **Excel Application** field, specify the Excel instance your flow launched, usually the **ExcelInstance** output of the **Launch Excel Application** node.
 
 ### Step 3
 
@@ -73,6 +75,6 @@ Execute the node to close the Excel application with your specified settings.
 
 ## Real-World Use Cases
 
-- **End-of-Day Tasks**: Automatically close any open Excel documents, saving final changes before shutting down your system.
+- **End-of-Day Tasks**: Automatically close the flow's Excel instance, saving final changes before shutting down your system.
 - **Automated Report Delivery**: Save a report to a specific directory before closing Excel, ensuring reports are stored and updated.
 - **Data Processing Completion**: After data manipulation, choose whether to save the workbook or discard changes.

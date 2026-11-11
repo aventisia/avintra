@@ -18,7 +18,15 @@ import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchQueuesWorkItems } from "../hooks/useFetchQueuesWorkItems";
+import {
+  WorkItemsTableRow,
+  customColumnId,
+  customFieldLabel,
+  parseWorkItemData,
+  tableCustomFields,
+} from "../utils/work-items-custom-columns.util";
 import { PayloadTableHeading } from "./TableHeading";
+import { WorkItemBulkActions } from "./WorkItemBulkActions";
 import { workItemsTableColumns } from "./WorkItemsTableColumns";
 
 /**
@@ -35,12 +43,10 @@ export const WorkItemsTable = () => {
   // useDocumentTitle(TABLE_HEADING);
   const navigate = useNavigate();
 
-  // Get data-table preferences from local storage (persisted column visibility,
-  // including the optional Source Work Item Id / Retry columns).
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
-  // Fetch WorkItems data
-  const { data } = useFetchQueuesWorkItems();
+  // IMPORTANT NOTE: keep the table key per queue; custom column ids are field names,
+  // so a shared key would carry a hidden column from one queue to another.
+  const tableKey = `${TABLE_KEY}-${queueId}`;
+  const { columnVisibility, sortState } = getDataTablePreferences(tableKey, columnVisibilityState);
 
   // The work items screen is reachable from both the Personal and the Shared
   // queues tab, so the queue must be resolved against both lists.
@@ -49,6 +55,35 @@ export const WorkItemsTable = () => {
   const queue = useMemo(
     () => queuesData?.data?.find((item) => item.id === queueId),
     [queuesData?.data, queueId],
+  );
+
+  // IMPORTANT NOTE: the work-item list endpoint does not check queue access, so
+  // rows are fetched only after the queue resolves from the accessible lists.
+  const { data } = useFetchQueuesWorkItems(Boolean(queue));
+
+  const customFields = useMemo(() => tableCustomFields(queue?.inputSchema), [queue?.inputSchema]);
+
+  const rows = useMemo<WorkItemsTableRow[]>(() => {
+    const items = data?.data ?? [];
+    if (customFields.length === 0) return items;
+
+    return items.map((item) => ({ ...item, customData: parseWorkItemData(item.workItemData) }));
+  }, [customFields.length, data?.data]);
+
+  const viewColumnNames = useMemo(
+    () => [
+      ...columnDisplayNames,
+      ...customFields.map((field) => ({
+        key: customColumnId(field),
+        value: customFieldLabel(field),
+      })),
+    ],
+    [customFields],
+  );
+
+  const searchColumns = useMemo(
+    () => ["workItemId", ...customFields.map(customColumnId)],
+    [customFields],
   );
 
   // Resolve Prod-capped actions so the work-item table's read-only gate matches the row actions.
@@ -67,13 +102,14 @@ export const WorkItemsTable = () => {
   }, [queue, isProd, actions.update]);
 
   const filteredColumns = useMemo(() => {
-    if (!hasOnlyReadAccess) return workItemsTableColumns(name);
+    const columns = workItemsTableColumns(name, customFields, tableKey);
+    if (!hasOnlyReadAccess) return columns;
 
-    return workItemsTableColumns(name).filter((column) => column.id !== "actions");
-  }, [hasOnlyReadAccess, name]);
+    return columns.filter((column) => column.id !== "actions");
+  }, [customFields, hasOnlyReadAccess, name, tableKey]);
 
   // Create a React table for WorkItems data
-  const table = useDataTable(filteredColumns, data?.data || [], columnVisibility, sortState, true);
+  const table = useDataTable(filteredColumns, rows, columnVisibility, sortState, true);
 
   // Return the rendered DataTable component.
   return (
@@ -84,14 +120,16 @@ export const WorkItemsTable = () => {
           <div className="flex items-center justify-between">
             <PayloadTableHeading queueName={data?.data[0]?.queueName || name} />
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["id"]} placeholder="Search..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTSearchBox table={table} searchColumns={searchColumns} placeholder="Search..." />
+              <DTViewOptions {...{ table, tableKey }} columnDisplayNames={viewColumnNames} />
             </div>
           </div>
           {/* Data table to render data */}
           <DataTable table={table} columnsLength={filteredColumns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
+          {/* Bulk actions for selected work items (edit access only) */}
+          {!hasOnlyReadAccess && <WorkItemBulkActions table={table} />}
         </div>
       ) : (
         // Show data table skeleton while fetching the WorkItems data

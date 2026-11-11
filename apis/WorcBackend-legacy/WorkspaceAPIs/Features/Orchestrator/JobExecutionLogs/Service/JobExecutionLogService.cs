@@ -5,15 +5,18 @@ public class JobExecutionLogService : IJobExecutionLogService
     private readonly ILogger<JobExecutionLogService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly INodeExecutionLogService _nodeExecutionLogService;
+    private readonly EnvironmentConfig _environmentConfig;
 
     public JobExecutionLogService(
         ILogger<JobExecutionLogService> logger,
         IUnitOfWork unitOfWork,
-        INodeExecutionLogService nodeExecutionLogService)
+        INodeExecutionLogService nodeExecutionLogService,
+        EnvironmentConfig environmentConfig)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _nodeExecutionLogService = nodeExecutionLogService;
+        _environmentConfig = environmentConfig;
     }
 
     // Get all job execution logs for a specific FlowVersionId
@@ -29,8 +32,9 @@ public class JobExecutionLogService : IJobExecutionLogService
         try
         {
             // Query job logs filtered by FlowVersionId
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var jobExecutionLogs = await _unitOfWork.JobRepo
-                .GetByConditionAsync(j => j.FlowVersionId == flowVersionId)
+                .GetByConditionAsync(j => j.FlowVersionId == flowVersionId && j.CreatedOn >= earliestReadable)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .OrderByDescending(o => o.CreatedOn)
@@ -65,8 +69,9 @@ public class JobExecutionLogService : IJobExecutionLogService
         try
         {
             // Query job log by JobId
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var jobExecutionLogDetail = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobId)
+                .GetByConditionAsync(w => w.Id == jobId && w.CreatedOn >= earliestReadable)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .ProjectToType<JobExecutionLogDetailDto>()

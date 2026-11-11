@@ -1,3 +1,4 @@
+import { UpgradeCreateButton } from "@avplatform/ui";
 import {
   DTCreateButton,
   DTHeading,
@@ -21,7 +22,9 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSpaces } from "../hooks/useFetchSpaces";
 import { getSpacesTableColumns } from "./SpacesTableColumns";
-import { UpgradeSpaceButton } from "./upgrade-space-dialog/UpgradeSpaceButton";
+
+const MARKETING_URL = import.meta.env.VITE_MARKETING_URL;
+const UPGRADE_PRICING_URL = `${MARKETING_URL ?? "https://aventisia.com"}/pricing`;
 
 /**
  * Renders a table of spaces.
@@ -32,15 +35,18 @@ export const SpacesTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get the deployment type to gate space creation for community editions
-  const { deploymentType } = useUserSessionStore(
+  // Get the deployment type and plan type to gate space creation
+  const { deploymentType, planType } = useUserSessionStore(
     useShallow((state) => ({
       deploymentType: state.userSession?.deploymentType,
+      planType: state.userSession?.planType,
     })),
   );
 
-  // Community deployments are limited to the single seeded Central space
+  // Community deployments and Starter plans are limited to the single Central space
   const isCommunityDeployment = deploymentType === "Community";
+  const isLimitedPlan = isCommunityDeployment || planType === "Starter";
+  const useTenantOverview = planType === "Starter" && !isCommunityDeployment;
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
@@ -78,8 +84,12 @@ export const SpacesTable = () => {
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search spaces..." />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              {isCommunityDeployment ? (
-                <UpgradeSpaceButton />
+              {isLimitedPlan ? (
+                useTenantOverview ? (
+                  <UpgradeCreateButton label="Create Space" upgradePath="/tenant/overview" />
+                ) : (
+                  <UpgradeCreateButton label="Create Space" pricingUrl={UPGRADE_PRICING_URL} />
+                )
               ) : (
                 <DTCreateButton buttonText="Create Space" entity="space" />
               )}

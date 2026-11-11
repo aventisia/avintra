@@ -26,7 +26,7 @@ import { useImportStore } from "@/features/import-flow/stores/import-flow-store"
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
-import { useExportFlow } from "@/hooks/useExportFlow";
+import { useExportFlow } from "@/hooks/useExportFlow.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";

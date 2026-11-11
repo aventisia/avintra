@@ -1,6 +1,6 @@
 # Desktop App
 
-Tauri-based cross-platform desktop application for the Aventisia WORC Platform.
+Tauri-based cross-platform desktop application for the Aventisia Avintra.
 
 ## Overview
 
@@ -124,4 +124,5 @@ This app imports shared packages from the monorepo:
 
 - Tauri v2 is used for the application shell.
 - The `invoke()` calls (`launch_runner_app`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser. The runner is provisioned (downloaded/updated) when the desktop app opens; flow execution only launches it.
+- The header's "Open web app" button opens `<service address>/accounts/login` in the system default browser through the opener plugin (`opener:allow-open-url`); it is hidden before a service address is confirmed and outside the Tauri shell.
 - The bundled `ui-inspector` binary is built from `clients/UIInspector` (its post-build step copies to `src-tauri/binaries/ui-inspector/`). The runner binary is not bundled — it is downloaded/updated from the server by `runner_management.rs` and published via `clients/RunnerApp` publish scripts.

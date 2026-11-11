@@ -128,8 +128,8 @@ public class UserRegistrationService : IUserRegistrationService
                 UserName = createAccountDto.Email.ToLower(),
                 EmailConfirmed = true,
                 Email = createAccountDto.Email.ToLower(),
-                FirstName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.FirstName),
-                LastName = CapitalizeFirstLetterUtil.CapitalizeFirstLetter(createAccountDto.LastName),
+                FirstName = string.Empty,
+                LastName = string.Empty,
                 CreatedByUserId = newUserId,
                 LastModifiedByUserId = newUserId,
                 PwdSetOn = newPwdSetOn,
@@ -193,11 +193,7 @@ public class UserRegistrationService : IUserRegistrationService
                 await CreateDefaultTenantSubscriptionAsync(userTenant.Id, newUser.Id);
 
                 tenantId = userTenant.Id;
-                userRoles = Enum.GetValues(typeof(CustomRolesEnum))
-                            .Cast<CustomRolesEnum>()
-                            .Where(w => w != CustomRolesEnum.SA)
-                            .Select(r => r.ToString())
-                            .ToList();
+                userRoles = new List<string> { CustomRolesEnum.TA.ToString(), CustomRolesEnum.OM.ToString(), CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
             }
 
             // Link the new tenant to the user
@@ -236,7 +232,7 @@ public class UserRegistrationService : IUserRegistrationService
             }
 
             // Create placeholder values for email template
-            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", newUser.FirstName } };
+            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(newUser.FirstName, newUser.Email) } };
 
             // Failed to send AccountCreated email
             if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
@@ -328,6 +324,12 @@ public class UserRegistrationService : IUserRegistrationService
             // Clean domain by removing 'www.' prefix if present
             var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
 
+            if (tenantOrganizationDto.Type == TenantTypesEnum.Organization && SsoConfigHelpers.IsConsumerEmailDomain(cleanDomain))
+            {
+                serviceResponse.Message = "Public email domains cannot be used for an organization. Choose Individual or use your organization email address.";
+                return serviceResponse;
+            }
+
             // Retrieve the tenant for this user (assuming tenantId is already associated with the user)
             var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
             if (tenant == null)
@@ -388,25 +390,31 @@ public class UserRegistrationService : IUserRegistrationService
 
     private async Task CreateDefaultTenantSubscriptionAsync(Guid tenantId, Guid userId)
     {
+        var signupPlanUniqueName = EditionSubscriptionPlanHelpers.GetSignupPlan(_environmentConfig, userId).UniqueName;
+
         var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
-            .GetByConditionAsync(w => w.Name == "Default" && w.IsDefault)
+            .GetByConditionAsync(w => w.UniqueName == signupPlanUniqueName && w.IsDefault)
             .SingleOrDefaultAsync();
 
         if (subscriptionPlan == null)
         {
-            _logger.LogError("Default subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
+            _logger.LogError("Signup subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
             return;
         }
+
+        var isStarterPlan = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter;
 
         var tenantSubscription = new TenantSubscription
         {
             TenantId = tenantId,
             PlanId = subscriptionPlan.Id,
-            Frequency = SubscriptionFrequenciesEnum.Yearly,
+            Frequency = subscriptionPlan.Frequency,
             IsActive = true,
             Status = SubscriptionStatusTypesEnum.Active,
-            NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
-            MaxCredits = ulong.MaxValue,
+            NextBillingDate = isStarterPlan
+                ? DateTimeOffset.UtcNow.Date.AddMonths(1)
+                : new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
+            MaxCredits = subscriptionPlan.MaxCredits,
             MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
             MaxSpaces = subscriptionPlan.MaxSpaces,
             MaxUsers = subscriptionPlan.MaxUsers,
@@ -417,6 +425,22 @@ public class UserRegistrationService : IUserRegistrationService
         };
 
         await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
+
+        // IMPORTANT NOTE: TenantCreditAllocationJob only refills Starter credits once NextBillingDate is due, so the first month is granted here.
+        if (isStarterPlan)
+        {
+            await _unitOfWork.TenantCreditRepo.InsertAsync(new TenantCredit
+            {
+                TenantId = tenantId,
+                TenantSubscription = tenantSubscription,
+                AvailableCredits = tenantSubscription.MaxCredits,
+                CreditedOn = DateTimeOffset.UtcNow,
+                ExpiredOn = tenantSubscription.NextBillingDate,
+                Type = CreditTypesEnum.Subscription,
+                CreatedByUserId = userId,
+                LastModifiedByUserId = userId
+            });
+        }
 
         if (!await _unitOfWork.SaveAsync())
         {

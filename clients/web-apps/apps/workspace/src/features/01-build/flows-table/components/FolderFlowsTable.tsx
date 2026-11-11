@@ -10,7 +10,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import { HelpButton } from "@/components/help/HelpButton";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
-import { FLOWS_QUERY_KEY } from "../constants";
+import { FLOWS_QUERY_KEY, FOLDER_NOT_FOUND_TOAST_ID } from "../constants";
 import { useAgentsPagePaths } from "../hooks/useAgentsPagePaths.hook";
 import { useAgentsTable } from "../hooks/useAgentsTable.hook";
 import { useFetchFlows } from "../hooks/useFetchFlows";
@@ -63,7 +63,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
 
   useEffect(() => {
     if (isFolderMissing) {
-      if (!isFoldersFailed) toast.error("Folder not found");
+      if (!isFoldersFailed) toast.error("Folder not found", { id: FOLDER_NOT_FOUND_TOAST_ID });
       navigate(agentsPagePath, { replace: true });
     }
   }, [isFolderMissing, isFoldersFailed, navigate, agentsPagePath]);

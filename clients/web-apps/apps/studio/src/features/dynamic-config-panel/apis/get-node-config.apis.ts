@@ -38,6 +38,9 @@ const getUsableToolCatalogOnce = (): Promise<UsableToolCatalogItemDto[] | null> 
   return usableToolCatalogPromise;
 };
 
+const isConnectorConfigName = (nodeUniqueName: string): boolean =>
+  nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector";
+
 const isCustomToolNodeName = (nodeUniqueName: string): boolean => {
   if (nodeUniqueName.startsWith(CUSTOM_TOOL_NODE_PREFIX)) return true;
 
@@ -92,6 +95,11 @@ const buildSchemaAwareCustomToolConfig = async (
  * Gets the node config JSON for a given nodeUniqueName.
  */
 export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) => {
+  if (nodeType == "blockNode") {
+    const blockConfig = JSON.parse(sessionStorage.getItem("block-config") || "{}");
+    return blockConfig[nodeUniqueName];
+  }
+
   if (nodeConfigCache[nodeUniqueName]) {
     return nodeConfigCache[nodeUniqueName];
   }
@@ -100,18 +108,13 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     return nodeConfigInFlight[nodeUniqueName];
   }
 
-  if (nodeType == "blockNode") {
-    const blockConfig = JSON.parse(sessionStorage.getItem("block-config") || "{}");
-    return blockConfig[nodeUniqueName];
-  }
-
   if (isCustomToolNodeName(nodeUniqueName)) {
     // IMPORTANT NOTE: custom-tool node configs are rebuilt per open and never cached, so catalog and tenant changes are always reflected.
     const customToolConfig = await buildSchemaAwareCustomToolConfig(nodeUniqueName);
     return customToolConfig ?? buildCustomToolNodeConfig(nodeUniqueName);
   }
 
-  if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
+  if (isConnectorConfigName(nodeUniqueName)) {
     // IMPORTANT NOTE: cloud connector configs, including Corsair connectors named "Corsair/{Plugin}/{Action}Connector", are fetched from the Workspace API and have no local JSON.
     const connectorFetch = axiosInstance
       .get(
@@ -150,4 +153,49 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   }
 
   throw new Error(`No config found for node: ${nodeUniqueName}`);
+};
+
+const PRELOAD_CONCURRENCY = 4;
+
+let preloadPromise: Promise<void> | undefined;
+
+const runPreloadSweep = async (): Promise<void> => {
+  const nodeUniqueNames = Object.keys(modules)
+    .map((filepath) => filepath.slice(filepath.lastIndexOf("/") + 1, -".json".length))
+    .flatMap((basename) =>
+      basename.endsWith("Node")
+        ? [basename, `${basename.slice(0, -"Node".length)}Activity`]
+        : [basename],
+    )
+    .filter(
+      (nodeUniqueName) =>
+        !isConnectorConfigName(nodeUniqueName) && !isCustomToolNodeName(nodeUniqueName),
+    );
+
+  let nextIndex = 0;
+  const workers = Array.from(
+    { length: Math.min(PRELOAD_CONCURRENCY, nodeUniqueNames.length) },
+    async () => {
+      while (nextIndex < nodeUniqueNames.length) {
+        const nodeUniqueName = nodeUniqueNames[nextIndex];
+        nextIndex += 1;
+        try {
+          await getNodeConfig(nodeUniqueName);
+        } catch {
+          // IMPORTANT NOTE: a failed background preload must never break the Builder; the panel reloads the config on demand.
+        }
+      }
+    },
+  );
+  await Promise.all(workers);
+};
+
+/**
+ * Preloads every local node config JSON into the shared cache in small parallel batches.
+ */
+export const preloadNodeConfigs = (): Promise<void> => {
+  if (!preloadPromise) {
+    preloadPromise = runPreloadSweep().catch(() => undefined);
+  }
+  return preloadPromise;
 };

@@ -1,0 +1,36 @@
+meta {
+  name: Run allowed after assigning the subflow to the restricted queue
+  type: http
+  seq: 31
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/execute-flow/execute
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{SUBFLOW_PARENT_FLOW_VERSION_ID}}"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("parent run is allowed with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("an execution job is created", function() {
+    expect(res.getBody().data.jobId).to.be.a("string");
+  });
+}
+
+docs {
+  > Run after assign-subflows-for-run-allowed. The parent run that returned 403 while
+  > the child flow was outside the restricted queue now returns 200 with a jobId.
+}

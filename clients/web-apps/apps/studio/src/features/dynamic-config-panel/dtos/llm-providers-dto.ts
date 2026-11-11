@@ -1,5 +1,5 @@
-import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
-import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
+import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum.ee";
+import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum.ee";
 
 /**
  * Represents a literal provider type for LLM providers.

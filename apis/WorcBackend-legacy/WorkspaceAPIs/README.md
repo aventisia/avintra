@@ -44,7 +44,7 @@ sudo docker run -d --name workspace-apis -p 4001:4001 \
 	avplatform/workspace-apis:latest
 ```
 
-In local development (`ASPNETCORE_ENVIRONMENT` or `DOTNET_ENVIRONMENT` set to `Localhost`), `.env.local` in this directory is loaded before Kestrel binds, so its `ASPNETCORE_URLS` takes precedence over the launch profile URL. Use it to run parallel worktrees on separate ports, and start the service with this directory as the working directory (`cd apis/WorcBackend-legacy/WorkspaceAPIs && dotnet run`, or the `workspace_apis` VS Code task) so `.env.local` is found.
+In local development (`ASPNETCORE_ENVIRONMENT` or `DOTNET_ENVIRONMENT` set to `Localhost`), `.env.local` in this directory is loaded before Kestrel binds (create it from `.env.example`; `scripts/initial-setup.sh` does this), so its `ASPNETCORE_URLS` takes precedence over the launch profile URL. Use it to run parallel worktrees on separate ports, and start the service with this directory as the working directory (`cd apis/WorcBackend-legacy/WorkspaceAPIs && dotnet run`, or the `workspace_apis` VS Code task) so `.env.local` is found.
 
 ### 4. Development notes
 

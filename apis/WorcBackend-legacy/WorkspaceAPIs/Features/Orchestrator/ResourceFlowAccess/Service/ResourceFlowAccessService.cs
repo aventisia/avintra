@@ -1,3 +1,6 @@
+using ExecutorLibrary.Helpers;
+using ExecutorLibrary.Models;
+
 namespace WorkspaceAPIs.Services;
 
 public class ResourceFlowAccessService : IResourceFlowAccessService
@@ -500,6 +503,66 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .ToDictionary(g => g.Key, g => g.Select(w => w.FlowId).ToHashSet());
     }
 
+    public async Task<ServiceResponse<bool>> ValidateRunResourceAccessAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? spaceId, Guid flowId, string? reactFlowObject)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to validate run resource access", 500);
+
+        try
+        {
+            var targetSpaceId = spaceId == Guid.Empty ? null : spaceId;
+            var graphs = new List<(Guid FlowId, ReactFlowDataModel Graph)>();
+            await CollectRunGraphsAsync(tenantId, flowId, reactFlowObject, graphs, new HashSet<Guid>());
+
+            var blocking = new List<string>();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var (graphFlowId, graph) in graphs)
+            {
+                var references = ResourceFlowAccessHelpers.CollectReferencedResourceNames(graph);
+
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.Tool, "tool",
+                    await ResolveRunToolsAsync(tenantId, envType, targetSpaceId, references["tools"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.Queue, "queue",
+                    await ResolveRunQueuesAsync(tenantId, envType, targetSpaceId, references["queues"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.VaultCredential, "credential",
+                    await ResolveRunVaultCredentialsAsync(tenantId, envType, targetSpaceId, references["credentials"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.ConfigStore, "key store",
+                    await ResolveRunConfigStoresAsync(tenantId, envType, targetSpaceId, references["configStores"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.KnowledgeBase, "knowledge base",
+                    await ResolveRunKnowledgeBasesAsync(tenantId, envType, targetSpaceId, references["knowledgeBases"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+                await AppendBlockingResourcesAsync(blocking, seen, tenantId, graphFlowId,
+                    ResourceTypeEnum.Skill, "skill",
+                    await ResolveRunSkillsAsync(tenantId, envType, targetSpaceId, references["skills"]),
+                    w => w.Id, w => w.IsResourceAccessRestricted);
+            }
+
+            if (blocking.Count == 0)
+            {
+                return serviceResponse.Update(null, 200, true);
+            }
+
+            var message = "Cannot run: this agent is not assigned to restricted resource(s): "
+                + string.Join(", ", blocking)
+                + ". Ask each resource owner to add the agent under Agent access → Selected agents.";
+            return serviceResponse.Update(message, 403, false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to validate run resource access for flow {FlowId}.", flowId);
+            return serviceResponse;
+        }
+    }
+
     public async Task<Dictionary<Guid, HashSet<Guid>>> GetAssignedResourceIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> flowIds)
     {
         var idList = flowIds.ToList();
@@ -771,6 +834,219 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
             .Select(w => w.FlowName)
             .Distinct()
             .ToList();
+    }
+
+    private async Task CollectRunGraphsAsync(Guid tenantId, Guid flowId, string? reactFlowObject, List<(Guid FlowId, ReactFlowDataModel Graph)> graphs, HashSet<Guid> visitedVersionIds)
+    {
+        var graph = ReactFlowHelper.Parse(reactFlowObject);
+        if (graph is null)
+        {
+            return;
+        }
+
+        graphs.Add((flowId, graph));
+
+        var subFlowVersionIds = new HashSet<Guid>();
+        foreach (var node in graph.Nodes)
+        {
+            var reference = string.Equals(node.Type, "callAgentNode", StringComparison.OrdinalIgnoreCase)
+                ? node.Data?.SelectedAgent
+                : string.Equals(node.Type, "blockNode", StringComparison.OrdinalIgnoreCase)
+                    ? node.Data?.SelectedBlock
+                    : null;
+
+            if (ResourceFlowAccessHelpers.TryExtractFlowVersionId(reference, out var subFlowVersionId))
+            {
+                subFlowVersionIds.Add(subFlowVersionId);
+            }
+        }
+
+        // IMPORTANT NOTE: a called agent or block is checked as its own agent with its own grants,
+        // and the visited set stops a graph that calls itself directly or indirectly from recursing forever.
+        // The root version is not pre-seeded, so a graph that calls the root re-checks it once.
+        var pendingIds = subFlowVersionIds.Where(visitedVersionIds.Add).ToList();
+        if (pendingIds.Count == 0)
+        {
+            return;
+        }
+
+        var subFlowVersions = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w => pendingIds.Contains(w.Id) && w.TenantId == tenantId)
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Select(w => new { w.Id, w.FlowId, w.ReactFlowObject })
+            .ToListAsync();
+
+        foreach (var subFlowVersion in subFlowVersions)
+        {
+            await CollectRunGraphsAsync(tenantId, subFlowVersion.FlowId, subFlowVersion.ReactFlowObject, graphs, visitedVersionIds);
+        }
+    }
+
+    private async Task AppendBlockingResourcesAsync<T>(
+        List<string> blocking,
+        HashSet<string> seen,
+        Guid tenantId,
+        Guid flowId,
+        ResourceTypeEnum resourceType,
+        string resourceLabel,
+        Dictionary<string, T> resolved,
+        Func<T, Guid> idSelector,
+        Func<T, bool> restrictedSelector)
+    {
+        var restricted = resolved.Where(w => restrictedSelector(w.Value)).ToList();
+        if (restricted.Count == 0)
+        {
+            return;
+        }
+
+        var assignedFlowIds = await GetRunAssignedFlowIdsAsync(resourceType, restricted.Select(w => idSelector(w.Value)), tenantId);
+        foreach (var (name, resource) in restricted)
+        {
+            if (assignedFlowIds.TryGetValue(idSelector(resource), out var flowIds) && flowIds.Contains(flowId))
+            {
+                continue;
+            }
+
+            var entry = $"{resourceLabel} '{name}'";
+            if (seen.Add(entry))
+            {
+                blocking.Add(entry);
+            }
+        }
+    }
+
+    private async Task<Dictionary<Guid, HashSet<Guid>>> GetRunAssignedFlowIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> resourceIds, Guid tenantId)
+    {
+        var idList = resourceIds.ToList();
+        if (idList.Count == 0)
+        {
+            return new Dictionary<Guid, HashSet<Guid>>();
+        }
+
+        // IMPORTANT NOTE: grants are tenant-scoped with no space, so the run check bypasses the
+        // ambient space filter and applies the tenant explicitly, matching GetAssignedFlowNamesAsync.
+        var rows = await _unitOfWork.ResourceFlowAccessRepo
+            .GetByConditionAsync(w => w.ResourceType == resourceType && idList.Contains(w.ResourceId))
+            .IgnoreQueryFilters()
+            .Where(w => w.TenantId == tenantId)
+            .Select(w => new { w.ResourceId, w.FlowId })
+            .ToListAsync();
+
+        return rows
+            .GroupBy(w => w.ResourceId)
+            .ToDictionary(g => g.Key, g => g.Select(w => w.FlowId).ToHashSet());
+    }
+
+    // IMPORTANT NOTE: run-time resolution is case-insensitive (queue/credential/config store/knowledge
+    // base/skill compare lower-cased names, custom tools use ILike), so every resolver below must match
+    // the same way; a case-sensitive match lets a differently-cased reference bypass the gate.
+    private async Task<Dictionary<string, Tool>> ResolveRunToolsAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, Tool>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.ToolRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.Type == ComponentTypeEnum.Custom && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedTool(g, targetSpaceId)!);
+    }
+
+    private async Task<Dictionary<string, Queue>> ResolveRunQueuesAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, Queue>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.QueueRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedQueue(g, targetSpaceId)!);
+    }
+
+    private async Task<Dictionary<string, VaultCredential>> ResolveRunVaultCredentialsAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, VaultCredential>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedCredential(g, targetSpaceId)!);
+    }
+
+    private async Task<Dictionary<string, ConfigStore>> ResolveRunConfigStoresAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, ConfigStore>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.ConfigStoreRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedConfigStore(g, targetSpaceId)!);
+    }
+
+    private async Task<Dictionary<string, KnowledgeBase>> ResolveRunKnowledgeBasesAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, KnowledgeBase>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.KnowledgeBaseRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedKnowledgeBase(g, targetSpaceId)!);
+    }
+
+    private async Task<Dictionary<string, Skill>> ResolveRunSkillsAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? targetSpaceId, List<string> names)
+    {
+        if (names.Count == 0)
+        {
+            return new Dictionary<string, Skill>();
+        }
+
+        var normalizedNames = names.Select(w => w.ToLowerInvariant()).ToList();
+        var candidates = await _unitOfWork.SkillRepo
+            .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.Type == ComponentTypeEnum.Custom && w.TenantId == tenantId && w.EnvType == envType)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        return candidates
+            .GroupBy(w => w.Name)
+            .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedSkill(g, targetSpaceId)!);
     }
 
     private async Task<Tool?> GetToolAsync(Guid resourceId)

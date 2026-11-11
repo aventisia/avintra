@@ -4,10 +4,28 @@ import { z } from "zod";
 
 export const billingInfoSchema = z
   .object({
+    organizationType: z.enum(["Organization", "Individual"]),
+
     organizationName: z
       .string()
-      .min(1, { message: reqError("Organization name") })
-      .max(255, { message: maxLenError("Organization name", 255) }),
+      .max(255, { message: maxLenError("Organization name", 255) })
+      .optional(),
+
+    firstName: z
+      .string()
+      .min(1, { message: reqError("First name") })
+      .max(50, { message: maxLenError("First name", 50) })
+      .regex(nameRegex, {
+        message: nameError("First name"),
+      }),
+
+    lastName: z
+      .string()
+      .min(1, { message: reqError("Last name") })
+      .max(50, { message: maxLenError("Last name", 50) })
+      .regex(nameRegex, {
+        message: nameError("Last name"),
+      }),
 
     addressLine1: z
       .string()
@@ -54,6 +72,14 @@ export const billingInfoSchema = z
       .optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.organizationType === "Organization" && !data.organizationName?.trim()) {
+      ctx.addIssue({
+        path: ["organizationName"],
+        message: reqError("Organization name"),
+        code: z.ZodIssueCode.custom,
+      });
+    }
+
     if (data.isWillingToFileGst) {
       if (!data.gstNumber || data.gstNumber.trim() === "") {
         ctx.addIssue({

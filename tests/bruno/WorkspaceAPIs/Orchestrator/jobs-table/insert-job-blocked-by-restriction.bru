@@ -1,0 +1,44 @@
+meta {
+  name: Insert cloud job blocked by restricted resource
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/job
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "flowVersionId": "{{RESTRICTED_PUBLISHED_FLOW_VERSION_ID}}",
+    "executionLocation": "Cloud"
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  if (res.getStatus() === 201 && res.getBody()?.data?.id) {
+    bru.setGlobalEnvVar("RESTRICTED_CLOUD_JOB_ID", res.getBody().data.id);
+  }
+  test("job is accepted with 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("job id is returned", function() {
+    expect(res.getBody().data.id).to.be.a("string");
+  });
+}
+
+docs {
+  > Creates a Cloud job for RESTRICTED_PUBLISHED_FLOW_VERSION_ID. The flow version must
+  > be published, support Cloud execution, and reference a restricted tool/queue the
+  > flow is not assigned to (publish it while assigned, then remove the assignment or
+  > add the restriction). The insert returns 201, then the cloud dispatch refuses the
+  > run: GET /job/{{RESTRICTED_CLOUD_JOB_ID}} ends Failed with the
+  > "Cannot run: this agent is not assigned to restricted resource(s): ..." remark and
+  > no step executes. ACCESS_TOKEN must belong to an OM user.
+}

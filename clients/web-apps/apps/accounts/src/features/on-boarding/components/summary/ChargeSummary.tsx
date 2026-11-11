@@ -24,7 +24,15 @@ const ChargeSummary = ({
       amount: total,
       taxRate: GST,
       frequency: planFrequency,
-      ...effectiveBilling,
+      firstName: effectiveBilling.firstName,
+      lastName: effectiveBilling.lastName,
+      addressLine1: effectiveBilling.addressLine1,
+      addressLine2: effectiveBilling.addressLine2,
+      city: effectiveBilling.city,
+      postalCode: effectiveBilling.postalCode,
+      state: effectiveBilling.state,
+      country: effectiveBilling.country,
+      gstNumber: effectiveBilling.gstNumber,
       isWillingToFileGst: !!effectiveBilling.isWillingToFileGst,
     });
   };

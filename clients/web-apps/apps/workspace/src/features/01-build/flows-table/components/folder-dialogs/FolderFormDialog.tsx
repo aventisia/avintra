@@ -1,8 +1,9 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { ArrowRight, Info } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
@@ -65,6 +66,7 @@ export const FolderFormDialog = ({
   folder,
   agentToMove,
 }: FolderFormDialogProps) => {
+  const { setIsDirty, onCloseConfirmed } = useCrudDialogDirty();
   const isEditing = Boolean(folder);
   const spaceName = useCurrentSpaceStore((state) => state.currentSpace?.name ?? "Central");
   const { form, name, description, color, isNameTaken } = useFolderForm(folders, folder);
@@ -77,6 +79,11 @@ export const FolderFormDialog = ({
   const descriptionId = `${fieldId}-description`;
 
   const { errors, isDirty } = form.formState;
+
+  useEffect(() => {
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
+
   const trimmedName = name.trim();
   const nameError =
     errors.name?.message ??
@@ -106,7 +113,7 @@ export const FolderFormDialog = ({
           className: "sonner-toaster-sm",
         });
       }
-      onClose();
+      onCloseConfirmed();
     } catch (error) {
       setSubmitError(getMutationErrorMessage(error));
     }

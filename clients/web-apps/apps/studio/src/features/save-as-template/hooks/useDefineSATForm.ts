@@ -1,4 +1,5 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Node } from "@xyflow/react";
 import { useEffect, useState } from "react";
@@ -143,7 +144,7 @@ export const useDefineSATForm = () => {
         tags: formData.tags,
         icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,
-        lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+        lastModifiedBy: getUserDisplayName(userSession),
         lastModifiedOn: new Date(),
       });
     } else {
@@ -158,7 +159,7 @@ export const useDefineSATForm = () => {
         tags: formData.tags,
         icons: imgPaths,
         resources: filesToUpload.length > 0 ? filesToUpload : null,
-        createdBy: userSession?.firstName + " " + userSession?.lastName,
+        createdBy: getUserDisplayName(userSession),
         createdOn: new Date(),
       });
     }

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace AccountsAPIs.Services;
 
-public class LoginWithExternalAuthService : ILoginWithExternalAuthService
+public partial class LoginWithExternalAuthService : ILoginWithExternalAuthService
 {
     private const string EntraOrganizationsAuthority = "https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize";
     private const string EntraAdminConsentAuthority = "https://login.microsoftonline.com/organizations/v2.0/adminconsent";
@@ -47,27 +47,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         _authStateCache = authStateCache;
         _httpClientFactory = httpClientFactory;
         _accountsDbContext = accountsDbContext;
-    }
-
-    private string? GetSsoUnavailableMessage()
-    {
-        if (!_environmentConfig.IsSsoAllowedForDeployment)
-        {
-            return "Single sign-on is not available in the Community edition.";
-        }
-
-        if (!_environmentConfig.MicrosoftSsoEnabled)
-        {
-            return "Single sign-on is not enabled for this deployment.";
-        }
-
-        return null;
-    }
-
-    // Generates an authentication URL for a specific external provider (Azure, Google, Facebook, Twitter).
-    public ServiceResponse<string> GenerateLoginUrlAsync(ExternalAuthProviderEnum type)
-    {
-        return GenerateLoginUrlAsync(type, null, Guid.Empty);
     }
 
     // Generates an authentication URL carrying the email hint and the OAuth state binding for a specific tenant.
@@ -362,21 +341,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         return await ResolveSsoTenantByDomainAsync(authState.Email);
     }
 
-    private async Task<Tenant?> ResolveSsoTenantByDomainAsync(string? email)
-    {
-        var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
-        if (string.IsNullOrWhiteSpace(emailDomain)) return null;
-
-        return await _unitOfWork.TenantRepo
-            .GetByConditionAsync(t =>
-                t.Domain != string.Empty &&
-                t.IsSSOEnabled &&
-                t.Type == TenantTypesEnum.Organization &&
-                t.Domain.ToLower() == emailDomain)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
-    }
-
     private string BuildEntraAuthorizeUrl(string clientId, string? email, Guid tenantId, bool adminConsent)
     {
         var state = GenerateOpaqueValue();
@@ -568,16 +532,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         return (true, 200, "Identity token verified.", (JwtSecurityToken)validatedToken);
     }
 
-    private Guid? ResolveJitTargetTenantId(ValidateTokenRequestDto validateTokenRequestDto)
-    {
-        if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-        {
-            return Guid.Parse(_environmentConfig.OnPremTenantId);
-        }
-
-        return validateTokenRequestDto.SsoTenantId;
-    }
-
     // Validates the external authentication token and creates or retrieves the user
     public async Task<ServiceResponse<AccountUser>> ValidateTokenAndCreateUserAsync(ValidateTokenRequestDto validateTokenRequestDto)
     {
@@ -673,24 +627,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 return serviceResponse;
             }
 
-            // Validation: enterprise tenants require email domain match
-            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-            {
-                var appDomain = ExtractDomainFromEmailUtil.ExtractDomainFromUrl(_environmentConfig.AppBaseUrl);
-                var emailDomain = ExtractDomainFromEmailUtil.ExtractDomainFromEmail(email);
-
-                if (!appDomain.Equals(emailDomain, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    _logger.LogWarning(
-                        "Enterprise domain validation failed. EmailDomain={EmailDomain}, AppDomain={AppDomain}",
-                        emailDomain, appDomain);
-
-                    serviceResponse.StatusCode = 400;
-                    serviceResponse.Message = "Email domain does not match the platform's domain.";
-                    return serviceResponse;
-                }
-            }
-
             // Check database for an existing user with the same email
             var existingUser = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w => w.Email.ToLower() == email.ToLower())
@@ -714,7 +650,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
             // Condition: create user only if not already present
             if (existingUser == null)
             {
-                var jitTargetTenantId = ResolveJitTargetTenantId(validateTokenRequestDto);
+                var jitTargetTenantId = validateTokenRequestDto.SsoTenantId;
                 if (jitTargetTenantId.HasValue)
                 {
                     var jitTargetTenant = await _unitOfWork.TenantRepo
@@ -781,15 +717,8 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 Guid tenantId;
                 List<string> userRoles;
 
-                // Condition: enterprise tenant vs non-enterprise tenant
-                if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
-                {
-                    // Assign enterprise tenant and default role
-                    userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
-                    tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
-                    _logger.LogInformation("Enterprise tenant assigned. TenantId={TenantId}, UserId={UserId}", tenantId, newUser.Id);
-                }
-                else if (validateTokenRequestDto.SsoTenantId.HasValue)
+                // Condition: the domain-matched single sign-on tenant, otherwise a new tenant
+                if (validateTokenRequestDto.SsoTenantId.HasValue)
                 {
                     // Join the domain-matched single sign-on tenant with the default member roles only
                     tenantId = validateTokenRequestDto.SsoTenantId.Value;
@@ -798,7 +727,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 }
                 else
                 {
-                    // Create a new tenant for non-enterprise users
+                    // Create a new tenant when no single sign-on tenant matched
                     var userTenant = new Tenant
                     {
                         Id = Guid.NewGuid(),
@@ -830,12 +759,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                     await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
                         _accountsDbContext, userTenant.Id, userTenant.CreatedByUserId, userTenant.LastModifiedByUserId, _logger);
 
-                    // Assign all roles except Super Admin
-                    userRoles = Enum.GetValues(typeof(CustomRolesEnum))
-                        .Cast<CustomRolesEnum>()
-                        .Where(w => w != CustomRolesEnum.SA)
-                        .Select(r => r.ToString())
-                        .ToList();
+                    userRoles = new List<string> { CustomRolesEnum.TA.ToString(), CustomRolesEnum.OM.ToString(), CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
 
                     _logger.LogInformation(
                         "Tenant created successfully. TenantId={TenantId}, UserId={UserId}",
@@ -879,7 +803,7 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 // Prepare placeholder values for account creation email
                 var placeholderValues = new Dictionary<string, string>
                 {
-                    { "{{userFirstName}}", newUser.FirstName }
+                    { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(newUser.FirstName, newUser.Email) }
                 };
 
                 // Attempt to send account creation email (non-blocking)

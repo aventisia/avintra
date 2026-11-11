@@ -23,13 +23,9 @@ public class EnvironmentConfig
     public int PostgresqlPort { get; set; }
     public string PostgresqlUsername { get; set; } = string.Empty;
     public string PostgresqlPassword { get; set; } = string.Empty;
+    public string PostgresqlAccountsDbName { get; set; } = "AccountsDb";
+    public string PostgresqlWorkspaceDbName { get; set; } = "WorkspaceDb";
     public string AzureBlobStorageConnectionString { get; set; } = string.Empty;
-
-    // Azure Entra ID
-    public bool AzureEntraIdEnabled { get; set; }
-    public string AzureTenantId { get; set; } = string.Empty;
-    public string AzureEntraIdClientId { get; set; } = string.Empty;
-    public string AzureEntraIdClientSecret { get; set; } = string.Empty;
 
     // Single sign-on
     public bool MicrosoftSsoEnabled { get; set; }
@@ -145,9 +141,8 @@ public class EnvironmentConfig
     public string? BrandingAccentForegroundColor { get; set; }
 
     /// <summary>
-    /// True when the deployment runs as the explicit Community edition. Startup configuration
-    /// refuses to start on ambiguous identity settings (exactly one of the tenant id / instance
-    /// key present) and on both blank unless <c>ON_PREM_EDITION=Community</c> is set.
+    /// True when the deployment runs as the Community edition: no on-prem tenant identity is
+    /// configured. Startup refuses to run with only one of the two identity values.
     /// </summary>
     public bool IsCommunityDeployment =>
         string.IsNullOrWhiteSpace(OnPremTenantId) || string.IsNullOrWhiteSpace(OnPremInstanceKey);

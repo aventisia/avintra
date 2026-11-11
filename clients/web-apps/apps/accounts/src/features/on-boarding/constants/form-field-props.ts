@@ -2,6 +2,33 @@ import { CountriesEnum } from "@avplatform/ui/enums";
 import type { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 import { enumToArray } from "@avplatform/ui/utils";
 
+// First Name
+const firstNameProps: InputFieldProps = {
+  label: "First Name",
+  name: "firstName",
+  type: "text",
+  isRequired: true,
+};
+
+// Last Name
+const lastNameProps: InputFieldProps = {
+  label: "Last Name",
+  name: "lastName",
+  type: "text",
+  isRequired: true,
+};
+
+// Organization Type
+const organizationTypeProps: SelectFieldProps = {
+  name: "organizationType",
+  label: "Account Type",
+  selectOptions: [
+    { label: "Individual", value: "Individual" },
+    { label: "Organization", value: "Organization" },
+  ],
+  isRequired: true,
+};
+
 // Pin Code
 const pinCodeProps: InputFieldProps = {
   label: "Pin Code",
@@ -63,6 +90,9 @@ const countryProps: SelectFieldProps = {
 };
 
 export {
+  firstNameProps,
+  lastNameProps,
+  organizationTypeProps,
   pinCodeProps,
   addressLine1Props,
   addressLine2Props,

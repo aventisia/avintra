@@ -3,7 +3,7 @@ import { SidebarOnDialog } from "@avplatform/layout/sidebar";
 import { type IUserSessionStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
-import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
 import { DownloadDialog } from "@/features/desktop-download";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";

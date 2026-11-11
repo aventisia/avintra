@@ -3,37 +3,52 @@
 # create-worktree.sh — Create an isolated git worktree for this repository.
 #
 # The worktree is placed next to the main checkout, inside a shared
-# "<repo-parent>/avplatform-wt/" folder. Every local, gitignored `.env` and
-# `.env.local` file is copied into the new worktree and its service ports are
-# re-prefixed with the worktree number so multiple checkouts can run at once
-# without port clashes.
+# "<repo-parent>/<repo-folder>-wt/" folder (e.g. "avintra-wt/"). Every local,
+# gitignored `.env` and `.env.local` file is copied into the new worktree and
+# its service ports are re-prefixed with the worktree number so multiple
+# checkouts can run at once without port clashes. API env files also get WT<N>_-prefixed database names
+# (WT<N>_AccountsDb, WT<N>_WorkspaceDb, WT<N>_CorsairDb), which the APIs create
+# and seed on first start, and APP_BASE_URL=wt<N>-avintra.aventisia.com so the
+# APIs accept requests for the worktree host.
 #
-# Port mapping (N = worktree number, first worktree = 1):
+# The worktree number N (1-50) is the only input: the worktree is named
+# "wt-N" and its port prefix is N, so the name always identifies the ports.
+#
+# Port mapping:
 #   2999 -> 1 299      3001 -> 1 301      4000 -> 1 400
 #   2999 -> 2 299      3001 -> 2 301      4000 -> 2 400
 #   i.e. new = N*1000 + (original/1000)*100 + (original % 100).
 #
 # Usage:
-#   ./scripts/create-worktree.sh                 # prompt for a name, detached HEAD
-#   ./scripts/create-worktree.sh my-feature      # prompt skipped, detached HEAD
-#   ./scripts/create-worktree.sh my-feature --branch   # branch "my-feature-base-branch"
-#   ./scripts/create-worktree.sh my-feature --skip-install   # do not install dependencies
+#   ./scripts/create-worktree.sh                 # prompt for a number, detached HEAD
+#   ./scripts/create-worktree.sh 3               # worktree "wt-3", port prefix 3, detached HEAD
+#   ./scripts/create-worktree.sh 3 --branch      # branch "wt-3-base-branch"
+#   ./scripts/create-worktree.sh 3 --skip-install   # do not install dependencies
 #
 # After the worktree is created and its env files are re-prefixed, the script
 # bootstraps dependencies inside the new worktree: npm install for the web apps,
-# Corsair, docs and Bruno collections; dotnet restore for the root solution; and
+# Corsair, docs and Bruno collections; cargo fetch for the desktop-app Tauri
+# Rust dependencies; dotnet restore for the root solution; and
 # a Python 3.12 virtualenv + pip install for the LLM pipeline. A failing install
 # is reported and the script exits non-zero, but the worktree is kept. Pass
 # --skip-install to skip this step.
 #
-# The script only creates the worktree, edits the copied env files, and installs
-# dependencies; it does NOT commit, push, or touch the main checkout's files.
+# Database copy: the local AccountsDb, WorkspaceDb and CorsairDb are backed up
+# once to "<repo-parent>/pg_dumps/local_{accounts,workspace,corsair}_db.dump";
+# a database is skipped when its dump already exists or the database itself does
+# not. As the last step, each dump is restored into the worktree's WT<N>_*
+# database unless that database already exists. Both steps connect with
+# POSTGRESQL_HOST/PORT/USERNAME/PASSWORD and are skipped when the PostgreSQL
+# client tools are missing or the server is unreachable.
+#
+# The script only creates the worktree, edits the copied env files, installs
+# dependencies, and copies the local databases; it does NOT commit, push, or
+# touch the main checkout's files.
 
 set -euo pipefail
 
-WT_BASE_NAME="avplatform-wt"
 MAX_WORKTREES=50
-TOTAL_STEPS=5
+TOTAL_STEPS=7
 
 # Canonical (main-checkout) service ports that participate in re-prefixing.
 BASE_PORTS=(2999 3001 3002 3006 3007 4000 4001 4003 4005 4006)
@@ -60,7 +75,7 @@ fi
 # ---------------------------------------------------------------------------
 # Arguments
 # ---------------------------------------------------------------------------
-WT_NAME=""
+N=""
 CREATE_BRANCH=0
 SKIP_INSTALL=0
 for arg in "$@"; do
@@ -69,7 +84,7 @@ for arg in "$@"; do
     --detach) CREATE_BRANCH=0 ;;
     --skip-install) SKIP_INSTALL=1 ;;
     -*) die "unknown option: $arg" ;;
-    *) WT_NAME="$arg" ;;
+    *) N="$arg" ;;
   esac
 done
 
@@ -81,20 +96,21 @@ MAIN="$(git worktree list --porcelain 2>/dev/null | awk 'NR==1{sub(/^worktree /,
 [ -n "$MAIN" ] || die "not inside a git repository"
 
 # ---------------------------------------------------------------------------
-# Worktree name
+# Worktree number -> name and port prefix
 # ---------------------------------------------------------------------------
-if [ -z "$WT_NAME" ]; then
-  printf 'Enter worktree name: '
-  read -r WT_NAME || die "aborted"
+if [ -z "$N" ]; then
+  printf 'Enter worktree number (1-%d): ' "$MAX_WORKTREES"
+  read -r N || die "aborted"
 fi
-WT_NAME="${WT_NAME#"${WT_NAME%%[![:space:]]*}"}"
-WT_NAME="${WT_NAME%"${WT_NAME##*[![:space:]]}"}"
-[ -n "$WT_NAME" ] || die "worktree name cannot be empty"
-[[ "$WT_NAME" =~ ^[A-Za-z0-9._-]+$ ]] \
-  || die "invalid worktree name '$WT_NAME' (use letters, digits, '.', '_' or '-')"
+N="${N#"${N%%[![:space:]]*}"}"
+N="${N%"${N##*[![:space:]]}"}"
+[ -n "$N" ] || die "worktree number cannot be empty"
+[[ "$N" =~ ^[1-9][0-9]?$ ]] && [ "$N" -le "$MAX_WORKTREES" ] \
+  || die "invalid worktree number '$N' (use a whole number from 1 to $MAX_WORKTREES)"
+WT_NAME="wt-$N"
 
 PARENT="$(dirname "$MAIN")"
-WT_BASE="$PARENT/$WT_BASE_NAME"
+WT_BASE="$PARENT/$(basename "$MAIN")-wt"
 WT_PATH="$WT_BASE/$WT_NAME"
 
 if [ "$CREATE_BRANCH" -eq 1 ]; then
@@ -107,20 +123,13 @@ fi
 # ---------------------------------------------------------------------------
 # Preflight checks
 # ---------------------------------------------------------------------------
-[ -e "$WT_PATH" ] && die "path already exists: $WT_PATH"
-if git worktree list | grep -Fq "$WT_PATH"; then
-  die "a worktree already exists at: $WT_PATH"
+[ -e "$WT_PATH" ] && die "worktree number $N is in use; path already exists: $WT_PATH"
+if git worktree list --porcelain | grep -Fxq "worktree $WT_PATH"; then
+  die "worktree number $N is in use; a worktree is registered at: $WT_PATH"
 fi
 if [ "$CREATE_BRANCH" -eq 1 ]; then
   git -C "$MAIN" show-ref --verify --quiet "refs/heads/$BRANCH" \
     && die "branch '$BRANCH' already exists"
-fi
-
-WORKTREE_COUNT="$(git worktree list --porcelain | grep -c '^worktree ' || true)"
-N="$WORKTREE_COUNT"
-[ "$N" -ge 1 ] || die "unexpected worktree count: $WORKTREE_COUNT"
-if [ "$N" -gt "$MAX_WORKTREES" ]; then
-  die "maximum of $MAX_WORKTREES worktrees reached (would use port prefix $N*)"
 fi
 
 printf 'create-worktree — setting up a new worktree\n'
@@ -216,23 +225,35 @@ copy_and_prefix() {
   fi
 }
 
-step "Copying env files and updating ports"
+set_worktree_env() {
+  local rel="$1"
+  local dst="$WT_PATH/$rel"
+  local prefix="WT${N}_"
+  [ -f "$dst" ] || return 0
+  perl -i -ne 'print unless /^\s*(POSTGRESQL_ACCOUNTS_DB_NAME|POSTGRESQL_WORKSPACE_DB_NAME|POSTGRESQL_DATABASE|APP_BASE_URL)=/' "$dst"
+  printf '\nPOSTGRESQL_ACCOUNTS_DB_NAME=%sAccountsDb\nPOSTGRESQL_WORKSPACE_DB_NAME=%sWorkspaceDb\nPOSTGRESQL_DATABASE=%sCorsairDb\nAPP_BASE_URL=wt%s-avintra.aventisia.com\n' \
+    "$prefix" "$prefix" "$prefix" "$N" >>"$dst"
+  okmark "$rel (databases -> ${prefix}*, APP_BASE_URL -> wt${N}-avintra.aventisia.com)"
+}
+
+step "Copying env files and updating ports, database names and app base URL"
 if [ "${#ENV_FILES[@]}" -eq 0 ]; then
   detail "(nothing to copy)"
 else
   for rel in "${ENV_FILES[@]}"; do
     copy_and_prefix "$rel"
   done
+  for rel in "${ENV_FILES[@]}"; do
+    case "$rel" in apis/*) set_worktree_env "$rel" ;; esac
+  done
 fi
 
-# ---------------------------------------------------------------------------
-# Step 5 — bootstrap dependencies inside the worktree
-# ---------------------------------------------------------------------------
-INSTALL_FAILED=0
+TASK_FAILED=0
 RUN_OK=1
-LOGDIR=""
+LOGDIR="$(mktemp -d)"
+trap 'rm -rf "$LOGDIR"' EXIT
 
-run_install() {
+run_task() {
   local label="$1" workdir="$2" log
   shift 2
   log="$LOGDIR/$(printf '%s' "$label" | tr -c 'A-Za-z0-9._-' '_').log"
@@ -243,7 +264,7 @@ run_install() {
   else
     failmark "$label"
     indent <"$log" >&2
-    INSTALL_FAILED=1
+    TASK_FAILED=1
     RUN_OK=0
   fi
 }
@@ -260,39 +281,97 @@ resolve_python312() {
   return 1
 }
 
+# ---------------------------------------------------------------------------
+# Step 5 — back up the local databases
+# ---------------------------------------------------------------------------
+export PGHOST="${POSTGRESQL_HOST:-localhost}"
+export PGPORT="${POSTGRESQL_PORT:-5432}"
+export PGUSER="${POSTGRESQL_USERNAME:-postgres}"
+[ -n "${POSTGRESQL_PASSWORD:-}" ] && export PGPASSWORD="$POSTGRESQL_PASSWORD"
+
+DUMP_DIR="$PARENT/pg_dumps"
+DATABASES=(
+  "${POSTGRESQL_ACCOUNTS_DB_NAME:-AccountsDb}|local_accounts_db.dump|WT${N}_AccountsDb"
+  "${POSTGRESQL_WORKSPACE_DB_NAME:-WorkspaceDb}|local_workspace_db.dump|WT${N}_WorkspaceDb"
+  "${POSTGRESQL_DATABASE:-CorsairDb}|local_corsair_db.dump|WT${N}_CorsairDb"
+)
+
+pg_unavailable_reason() {
+  local tool
+  for tool in psql pg_dump pg_restore createdb dropdb; do
+    command -v "$tool" >/dev/null 2>&1 || { printf '%s not found' "$tool"; return; }
+  done
+  psql -d postgres -tAqc 'SELECT 1' >/dev/null 2>&1 \
+    || printf 'cannot connect to PostgreSQL at %s:%s' "$PGHOST" "$PGPORT"
+}
+
+list_databases() { psql -d postgres -tAqc 'SELECT datname FROM pg_database'; }
+
+PG_SKIP_REASON="$(pg_unavailable_reason)"
+
+step "Backing up local databases"
+if [ -n "$PG_SKIP_REASON" ]; then
+  omitmark "database backup" "$PG_SKIP_REASON"
+else
+  field "folder" "$DUMP_DIR"
+  mkdir -p "$DUMP_DIR"
+  EXISTING_DBS="$(list_databases)"
+  for entry in "${DATABASES[@]}"; do
+    IFS='|' read -r src_db dump_file _ <<<"$entry"
+    dump="$DUMP_DIR/$dump_file"
+    if [ -f "$dump" ]; then
+      omitmark "$src_db" "backup exists: $dump_file"
+    elif ! grep -Fxq -- "$src_db" <<<"$EXISTING_DBS"; then
+      omitmark "$src_db" "database not found"
+    else
+      run_task "$src_db -> $dump_file" "$DUMP_DIR" \
+        sh -c 'pg_dump -Fc -f "$1.partial" "$2" && mv "$1.partial" "$1" || { rm -f "$1.partial"; exit 1; }' _ "$dump" "$src_db"
+    fi
+  done
+fi
+
+# ---------------------------------------------------------------------------
+# Step 6 — bootstrap dependencies inside the worktree
+# ---------------------------------------------------------------------------
 step "Installing dependencies"
 if [ "$SKIP_INSTALL" -eq 1 ]; then
   detail "skipped (--skip-install)"
 else
-  LOGDIR="$(mktemp -d)"
-  trap 'rm -rf "$LOGDIR"' EXIT
-
   if [ -f "$WT_PATH/clients/web-apps/package.json" ]; then
-    run_install "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
+    run_task "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
   else
     omitmark "web apps (npm install)" "clients/web-apps not found"
   fi
 
+  TAURI_DIR="$WT_PATH/clients/web-apps/apps/desktop-app/src-tauri"
+  if [ ! -f "$TAURI_DIR/Cargo.toml" ]; then
+    omitmark "desktop-app Rust deps (cargo fetch)" "src-tauri/Cargo.toml not found"
+  elif command -v cargo >/dev/null 2>&1; then
+    run_task "desktop-app Rust deps (cargo fetch)" "$TAURI_DIR" cargo fetch --locked
+  else
+    omitmark "desktop-app Rust deps (cargo fetch)" "cargo not found (install Rust via https://rustup.rs)"
+  fi
+
   if [ -f "$WT_PATH/apis/corsair/package.json" ]; then
-    run_install "corsair (npm install)" "$WT_PATH/apis/corsair" npm install --force
+    run_task "corsair (npm install)" "$WT_PATH/apis/corsair" npm install --force
   else
     omitmark "corsair (npm install)" "apis/corsair not found"
   fi
 
   if [ -f "$WT_PATH/clients/docs/package.json" ]; then
-    run_install "docs (npm install)" "$WT_PATH/clients/docs" npm install --force
+    run_task "docs (npm install)" "$WT_PATH/clients/docs" npm install --force
   else
     omitmark "docs (npm install)" "clients/docs not found"
   fi
 
   if [ -f "$WT_PATH/tests/bruno/package.json" ]; then
-    run_install "bruno tests (npm install)" "$WT_PATH/tests/bruno" npm install --force
+    run_task "bruno tests (npm install)" "$WT_PATH/tests/bruno" npm install --force
   else
     omitmark "bruno tests (npm install)" "tests/bruno not found"
   fi
 
   if [ -f "$WT_PATH/Avplatform.sln" ]; then
-    run_install "dotnet restore (Avplatform.sln)" "$WT_PATH" dotnet restore Avplatform.sln
+    run_task "dotnet restore (Avplatform.sln)" "$WT_PATH" dotnet restore Avplatform.sln
   else
     omitmark "dotnet restore (Avplatform.sln)" "Avplatform.sln not found"
   fi
@@ -300,9 +379,9 @@ else
   LLM_DIR="$WT_PATH/apis/llmpipeline"
   if [ -f "$LLM_DIR/requirements.txt" ]; then
     if PY="$(resolve_python312)"; then
-      run_install "llmpipeline venv ($PY -m venv)" "$LLM_DIR" "$PY" -m venv venv
+      run_task "llmpipeline venv ($PY -m venv)" "$LLM_DIR" "$PY" -m venv venv
       if [ "$RUN_OK" -eq 1 ]; then
-        run_install "llmpipeline pip install" "$LLM_DIR" ./venv/bin/pip install -r requirements.txt -r requirements-dev.txt
+        run_task "llmpipeline pip install" "$LLM_DIR" ./venv/bin/pip install -r requirements.txt -r requirements-dev.txt
       fi
     else
       omitmark "llmpipeline (venv + pip)" "Python 3.12 not found"
@@ -312,11 +391,33 @@ else
   fi
 fi
 
+# ---------------------------------------------------------------------------
+# Step 7 — restore the backups into the worktree databases
+# ---------------------------------------------------------------------------
+step "Restoring worktree databases"
+if [ -n "$PG_SKIP_REASON" ]; then
+  omitmark "database restore" "$PG_SKIP_REASON"
+else
+  EXISTING_DBS="$(list_databases)"
+  for entry in "${DATABASES[@]}"; do
+    IFS='|' read -r _ dump_file wt_db <<<"$entry"
+    dump="$DUMP_DIR/$dump_file"
+    if [ ! -f "$dump" ]; then
+      omitmark "$wt_db" "no backup: $dump_file"
+    elif grep -Fxq -- "$wt_db" <<<"$EXISTING_DBS"; then
+      omitmark "$wt_db" "database already exists"
+    else
+      run_task "$dump_file -> $wt_db" "$DUMP_DIR" \
+        sh -c 'createdb "$1" && pg_restore --no-owner --no-acl -d "$1" "$2" || { dropdb --if-exists "$1"; exit 1; }' _ "$wt_db" "$dump"
+    fi
+  done
+fi
+
 printf '\nDone. New worktree is ready:\n'
 printf '  %s\n' "$WT_PATH"
 printf 'Open it with: cd "%s"\n' "$WT_PATH"
 
-if [ "$INSTALL_FAILED" -eq 1 ]; then
-  printf '\nWarning: one or more dependency installs failed; see the output above.\n' >&2
+if [ "$TASK_FAILED" -eq 1 ]; then
+  printf '\nWarning: one or more steps failed; see the output above.\n' >&2
   exit 1
 fi

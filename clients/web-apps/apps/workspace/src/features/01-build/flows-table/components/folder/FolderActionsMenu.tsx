@@ -7,6 +7,7 @@ import { MenuContent, MenuItem, MenuSeparator } from "@/components/MenuParts";
 
 import { FoldersTableRowDto } from "../../dtos/folders-table-row.dto";
 import { useAgentsPagePaths } from "../../hooks/useAgentsPagePaths.hook";
+import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { useFolderDialogStore } from "../../stores/folder-dialog.store";
 
 /**
@@ -15,6 +16,7 @@ import { useFolderDialogStore } from "../../stores/folder-dialog.store";
 export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) => {
   const navigate = useNavigate();
   const openDialog = useFolderDialogStore((state) => state.openDialog);
+  const { openEditFolderDialog } = useFolderFormDialog();
   const { getFolderPagePath } = useAgentsPagePaths();
 
   return (
@@ -30,7 +32,7 @@ export const FolderActionsMenu = ({ folder }: { folder: FoldersTableRowDto }) =>
           <FolderOpen />
           Open
         </MenuItem>
-        <MenuItem onSelect={() => openDialog({ kind: "edit", folder })}>
+        <MenuItem onSelect={() => openEditFolderDialog(folder.id)}>
           <PencilSquareIcon />
           Edit details
         </MenuItem>

@@ -5,7 +5,7 @@ using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
-[DisplayName("Close Excel Application"), Description("Closes the active Excel application instance and optionally saves changes.")]
+[DisplayName("Close Excel Application"), Description("Closes the Excel application instance from the flow and optionally saves changes.")]
 [NodeMetadata(icon: "/assets/Excel.svg")]
 public class CloseExcelNode : BaseNode
 {

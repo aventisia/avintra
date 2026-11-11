@@ -1,3 +1,4 @@
+import { deepParse } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect } from "react";
@@ -6,7 +7,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
-import { deepParse } from "@/features/react-flow/utils/deepParse";
 import { useBreadcrumbStore } from "@/stores/breadcrumb-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
@@ -87,7 +87,7 @@ export const useReactFlowViewData = () => {
   const { fitView } = useReactFlow();
 
   //Get flow
-  const { data, isPending, isLoading, isFetching } = useQuery({
+  const { data, isFetching } = useQuery({
     queryKey: ["JOB_EXECUTION_DETAIL", jobId],
     queryFn: () => getAgentsExecutionLogsById(jobId ?? ""),
     enabled: !!jobId,
@@ -117,14 +117,16 @@ export const useReactFlowViewData = () => {
     belongsToThisJob &&
     (flowId !== (runFlowId ?? data.flowId) || (!!versionId && versionId !== data.flowVersionId));
 
+  const isFlowMetaOnly = !jobId && !!flowId;
+
   const {
-    data: subFlowData,
-    isFetching: isSubFlowFetching,
-    isFetched: isSubFlowFetched,
+    data: flowData,
+    isFetching: isFlowFetching,
+    isFetched: isFlowFetched,
   } = useQuery({
     queryKey: ["flow", flowId, versionId],
     queryFn: () => getFlowToLoad(flowId!, versionId),
-    enabled: isSubFlowView,
+    enabled: isSubFlowView || isFlowMetaOnly,
     staleTime: Infinity,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -150,6 +152,11 @@ export const useReactFlowViewData = () => {
   }, [jobId]);
 
   useEffect(() => {
+    if (!isFlowMetaOnly || !flowData?.data) return;
+    setVersionMeta({ name: flowData.data.name, versionNumber: flowData.data.versionNumber });
+  }, [isFlowMetaOnly, flowData, setVersionMeta]);
+
+  useEffect(() => {
     if (!data) return;
     if (!flowId) {
       setFlowId(data.flowId);
@@ -157,9 +164,9 @@ export const useReactFlowViewData = () => {
 
     // While the sub-flow graph is still loading, keep the previous canvas instead of
     // flashing the root flow's graph. If the fetch failed, fall back to the root graph.
-    if (isSubFlowView && !isSubFlowFetched) return;
+    if (isSubFlowView && !isFlowFetched) return;
 
-    const subFlowGraph = isSubFlowView ? subFlowData?.data : undefined;
+    const subFlowGraph = isSubFlowView ? flowData?.data : undefined;
     const graphSource = subFlowGraph?.reactFlowObject ?? data.reactFlowObject;
 
     setVersionMeta({
@@ -212,7 +219,7 @@ export const useReactFlowViewData = () => {
       setEdges([]);
       setFlowVariablesObject([]);
     }
-  }, [data, subFlowData, isSubFlowView, isSubFlowFetched, activeCallerId]);
+  }, [data, flowData, isSubFlowView, isFlowFetched, activeCallerId]);
 
-  return { isPending, isLoading, isFetching: isFetching || isSubFlowFetching, isSubFlowView };
+  return { isFetching: isFetching || isFlowFetching, isSubFlowView };
 };

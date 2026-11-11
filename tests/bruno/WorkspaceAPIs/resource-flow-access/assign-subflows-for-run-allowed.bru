@@ -1,0 +1,40 @@
+meta {
+  name: Assign the parent and subflow to the restricted queue for the allowed run
+  type: http
+  seq: 30
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/assign
+  body: json
+  auth: bearer
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{SUBFLOW_RESTRICTED_QUEUE_ID}}",
+    "flowIds": [
+      "{{SUBFLOW_PARENT_FLOW_ID}}",
+      "{{SUBFLOW_CHILD_FLOW_ID}}"
+    ]
+  }
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("assigning both parent and child flows returns 200", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.assignedCount).to.be.at.least(2);
+  });
+}
+
+docs {
+  > Adds both SUBFLOW_PARENT_FLOW_ID and SUBFLOW_CHILD_FLOW_ID to
+  > SUBFLOW_RESTRICTED_QUEUE_ID through the bulk replace endpoint. Run
+  > run-allowed-after-subflow-assign next. Use a DEDICATED fixture queue and restore the
+  > original flow set when finished.
+}

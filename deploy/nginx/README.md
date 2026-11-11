@@ -15,8 +15,8 @@ This directory contains the Nginx configuration and Dockerfile for containerized
 
 ```sh
 # Build
-sudo docker build -f deploy/nginx/Dockerfile -t acr.aventisia.com/avplatform/frontend:0.4.0 .
+sudo docker build -f deploy/nginx/Dockerfile -t <registry>/avplatform/frontend:0.4.0 .
 
 # Push
-sudo docker push acr.aventisia.com/avplatform/frontend:0.4.0
+sudo docker push <registry>/avplatform/frontend:0.4.0
 ```

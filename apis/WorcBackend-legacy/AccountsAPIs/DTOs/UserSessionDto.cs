@@ -45,5 +45,15 @@ public class UserSessionDto
     /// </summary>
     public required string Country { get; set; }
 
+    /// <summary>
+    /// Gets or sets the tenant type (Unspecified until organization setup), or "NA" without a tenant.
+    /// </summary>
+    public required string TenantType { get; set; }
+
     public required string PlatformVersion { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the tenant's active subscription is a paid (priced) plan.
+    /// </summary>
+    public bool HasPaidPlan { get; set; }
 }

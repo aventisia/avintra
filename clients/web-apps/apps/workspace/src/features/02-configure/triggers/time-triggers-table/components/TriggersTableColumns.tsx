@@ -1,6 +1,11 @@
 import { Checkbox } from "@avplatform/ui";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
+import {
+  formatDate,
+  formatTimeZoneLabel,
+  getEnumValueByKey,
+  normalizeTimeZone,
+} from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -10,6 +15,31 @@ import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
+
+const formatNextTriggerTime = (value: string | undefined, timezone: string) => {
+  if (!value) return "NA";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "NA";
+
+  try {
+    const formatted = new Intl.DateTimeFormat("en-GB", {
+      timeZone: timezone,
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+      .format(date)
+      .replace(/\s(am|pm)$/i, (suffix) => suffix.toUpperCase());
+
+    return `${formatted} ${formatTimeZoneLabel(normalizeTimeZone(timezone), date)}`;
+  } catch {
+    return format(date, "dd MMM yyyy, h:mm a");
+  }
+};
 
 /**
  * Array of table columns for the triggers table.
@@ -95,9 +125,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("nextTriggerTime")
-          ? format(row.getValue("nextTriggerTime"), "dd MMM yyyy, h:mm a")
-          : "NA"}
+        {formatNextTriggerTime(row.original.nextTriggerTime, row.original.timezone)}
       </div>
     ),
   },

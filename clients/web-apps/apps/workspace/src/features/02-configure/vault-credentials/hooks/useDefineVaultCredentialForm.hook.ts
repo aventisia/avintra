@@ -2,6 +2,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -53,9 +54,9 @@ export const useDefineVaultCredentialForm = ({
       password: "",
       confirmPassword: "",
       description: "",
-      createdBy: userSession?.firstName + " " + userSession?.lastName,
+      createdBy: getUserDisplayName(userSession),
       createdOn: new Date(),
-      lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: getUserDisplayName(userSession),
       lastModifiedOn: new Date(),
     },
   });
@@ -78,10 +79,9 @@ export const useDefineVaultCredentialForm = ({
       description: configData?.description,
 
       isDisabled: configData?.isDisabled ?? false,
-      createdBy: configData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdBy: configData?.createdBy ?? getUserDisplayName(userSession),
       createdOn: configData?.createdOn ? new Date(configData?.createdOn) : new Date(),
-      lastModifiedBy:
-        configData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedBy: configData?.lastModifiedBy ?? getUserDisplayName(userSession),
       lastModifiedOn: configData?.lastModifiedOn
         ? new Date(configData?.lastModifiedOn)
         : new Date(),

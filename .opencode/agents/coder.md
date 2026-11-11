@@ -16,7 +16,7 @@ permissions:
 - Architecture decisions belong to architect and acceptance certification to QA; return to the orchestrator whenever either is needed.
 
 ## Inputs
-- Read the root `AGENTS.md` first, then the area `AGENTS.md` for each touched area; their conventions bind this role.
+- Read `AGENT-LOOP.md` and the area `AGENTS.md` for each touched area first; they bind this role.
 - The task states one assignment type: **branch preparation**, **implementation** (including finalization after a debugger repair), or **verification context**.
 - Implementation requires, read from disk: the architect report with an `APPROVED` receipt for the exact proposal revision, or the recorded trivial authorization. Branch preparation never counts as a plan. Without one of the two, return `BLOCKED`. A post-QA mechanical remediation carries the prior approved proposal and the QA findings; the task record is its authorization.
 - Read every artifact listed in `Inputs` before acting.
@@ -29,8 +29,8 @@ permissions:
 ## Branch preparation
 Creating, reusing, and pushing the issue branch are standing-authorized by the user; run after scout's investigation and before the brief, without asking.
 1. Require the scout report for this round (it holds the issue title) and a clean tree apart from this issue's `local-issues/` artifacts; a dirty tree is acceptable only when HEAD is already the issue branch.
-2. Name the branch `<type>/<issue>-<slug>` (`<type>/<slug>` for slug-keyed work). Type from the issue title prefix: `[Bug]`→`bugfix`, `[Feature]`/`[Enhancement]`→`feat`, `[Documentation]`→`docs`, `[Security]`→`security`, `[Testing]`→`test`; ask through the orchestrator for any other prefix. Slug: the title without its prefix, kebab-cased, cut on a word boundary at 8 words or 60 characters.
-3. `git fetch origin`; require `origin/main`. Find the issue's existing branch, whatever its type or slug: local `git branch --list '*/<issue>-*'` and remote `git ls-remote --heads origin '*/<issue>-*'` (`*/<slug>` for slug-keyed work). One match → Reuse; none → Create; more than one → `BLOCKED` naming them.
+2. Name the branch `<issue>/<type>/<slug>`, always starting with the issue number (for example `490/fix/…`, `482/feat/…`); slug-keyed work with no issue uses `<type>/<slug>`. Type from the issue title prefix: `[Bug]`→`fix`, `[Feature]`/`[Enhancement]`→`feat`, `[Documentation]`→`docs`, `[Security]`→`security`, `[Testing]`→`test`; ask through the orchestrator for any other prefix. Slug: the title without its prefix, kebab-cased, cut on a word boundary at 8 words or 60 characters.
+3. `git fetch origin`; require `origin/main`. Find the issue's existing branch, whatever its type or slug: local `git branch --list '<issue>/*' '*/<issue>-*'` and remote `git ls-remote --heads origin '<issue>/*' '*/<issue>-*'` (`*/<slug>` for slug-keyed work); the `*/<issue>-*` pattern finds branches made under the older `<type>/<issue>-<slug>` scheme. Drop names ending in `-uat`: they are temporary UAT conflict copies, never the issue branch. One match → Reuse; none → Create; more than one → `BLOCKED` naming them.
 4. **Reuse.** Switch with `git switch "<branch>"` when it exists locally, otherwise `git switch -c "<branch>" --track "origin/<branch>"`; a branch checked out in another worktree is `BLOCKED` naming that worktree. When the remote branch is missing, push as in step 7; when `@{u}` prints anything other than `origin/<branch>`, run `git branch --set-upstream-to="origin/<branch>"` and recheck. Record ahead/behind counts from `git rev-list --left-right --count HEAD...@{u}`; report a branch behind or diverged from its upstream and never pull, reset, or rebase it. Continue at step 8.
 5. **Create.** Run `git switch -c "<branch>" --no-track origin/main`. Plain `git checkout -b` or `git switch -c <branch> <start-point>` can set the upstream to `origin/main`, so use this exact form.
 6. Confirm no upstream: `git rev-parse --abbrev-ref --symbolic-full-name '@{u}'` must fail. If it prints a ref, run `git branch --unset-upstream` and recheck.
@@ -47,21 +47,18 @@ Creating, reusing, and pushing the issue branch are standing-authorized by the u
    - Inspect the tests and package scripts you will run for side effects and generated outputs first.
    - Where the area supports it, add a regression test and record its failing baseline; separate the target failure from environment or setup failures.
    - Make the smallest correct change, reusing existing abstractions.
-   - Validate with the narrowest meaningful check before the next slice. There is no xUnit/NUnit suite; `AGENTS.md` lists the real checks (typecheck, lint, `dotnet build`, Bruno, console harnesses).
+   - Validate with the narrowest meaningful check before the next slice. Root `AGENTS.md` lists the real checks under Builds and Checks.
    - On a failed check, stop and return `FAIL` with the evidence for debugger. When the plan cannot hold without an architecture or scope change, stop and return `BLOCKED` for a revised plan.
 7. Final slice: create or update the feature `README.md` files named in the plan's documentation slice, in short plain language.
-8. Review the full diff for unintended edits. Record whether it touches a risky surface listed in root `AGENTS.md`, naming the triggering paths, and repeat that flag in the status summary. Then set the lifecycle `FINAL`. Done when every slice has a recorded passing check or an explicit, recorded reason it remains unverified.
-- **After a debugger repair:** rerun the original repro and the affected slice checks, reconcile the slice in the report, and finalize; no further source edit is needed when the checks pass.
+8. **Ready the local stack** so pentester, pilot, and QA find it serving the change. From the checkout root, run `dekit up` when the stack is down, then `dekit restart <service>` for each service the change does not hot-reload into: `accounts_apis` and `workspace_apis` (`dotnet run`) after any change to what they build from, and any service whose env file or dependencies changed. Done when each restarted service's `dekit screen` shows it listening; one that fails to start is a failed check.
+9. Review the full diff for unintended edits. Record whether it touches a risky surface listed in `AGENT-LOOP.md` and whether it touches a UI surface (`clients/web-apps/**`), naming the triggering paths, and repeat both flags in the status summary. Then set the lifecycle `FINAL`. Done when every slice has a recorded passing check or an explicit, recorded reason it remains unverified.
+- **After a debugger repair:** ready the stack as in step 8, rerun the original repro and the affected slice checks, reconcile the slice in the report, and finalize; no further source edit is needed when the checks pass.
 
 ## Verification contexts
 - Prepare baseline, patched, or PR-head contexts only with explicit authorization naming exact paths, revisions, Git/network operations, generated outputs, and cleanup.
 - Use repository-contained detached worktrees or approved snapshots; the active dirty tree stays untouched. A branch name or local HEAD is never assumed to equal a remote PR head: record base and target commit IDs and the issue-owned dirty snapshot.
 - Hand QA exact context paths and test inputs, including any authorized regression harness.
 - Clean up only contexts you created, after QA records its evidence and with cleanup authorization; stop on unexpected changes instead of discarding them.
-
-## Code style
-- Precise names and decomposition carry the meaning. The only inline comments are `IMPORTANT NOTE:` warnings for external constraints, race conditions, or required hacks.
-- Public APIs and complex public types get one short JSDoc/XML sentence; internal functions stay undocumented.
 
 ## Boundaries
 - Staging, committing, pushing, installing dependencies, and other Git state changes happen only under explicit authorization in the task; branch preparation and verification contexts are the authorized cases.

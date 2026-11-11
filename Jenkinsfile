@@ -22,30 +22,45 @@ def getBuildMode(branchName) {
     }
 }
 
-// Function to check if a directory has changes
-def hasChangesInPath(path) {
-    if (env.CHANGE_ID) {
-        // For pull requests
-        def changes = sh(script: "git diff --name-only origin/${env.CHANGE_TARGET}...HEAD | grep '^${path}/' || true", returnStdout: true).trim()
-        return changes != ''
-    } else {
-        // For regular commits - compare with previous commit
-        def changes = sh(script: "git diff --name-only HEAD~1 HEAD | grep '^${path}/' || true", returnStdout: true).trim()
-        return changes != ''
+// IMPORTANT NOTE: GitHub rebase merges and multi-commit pushes land several commits at once,
+// so diff against the last successful build; HEAD~1 only covers the first build or a rewritten history.
+def changedFiles() {
+    def base = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+    if (!base || sh(script: "git cat-file -e ${base}^{commit}", returnStatus: true) != 0) {
+        base = 'HEAD~1'
     }
+    echo "Detecting changes since ${base}"
+    return sh(script: "git diff --name-only ${base} HEAD", returnStdout: true)
+}
+
+def hasChangesInPath(changes, path) {
+    return ("\n" + changes).contains("\n${path}/")
 }
 
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,corsair_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,globaladmin_api,llmpipeline_api,apachecamel_api,corsair_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, global-admin, and studio apps (desktop-app excluded).')
     }
     stages {
+        stage('Secret Scan') {
+            steps {
+                sh 'bash scripts/install-gitleaks.sh && bash scripts/secret-scan.sh'
+            }
+        }
+
         stage('Detect Changes') {
             steps {
                 script {
+                    // IMPORTANT NOTE: the repo is public on GitHub, so PR and feature-branch builds may carry
+                    // untrusted code; only uat and main ever build or deploy. Unset BUILD_* flags skip every stage.
+                    if (!(env.BRANCH_NAME in ['uat', 'main'])) {
+                        echo "Skipping build: ${env.BRANCH_NAME} is not a deploy branch (uat, main)"
+                        return
+                    }
+
                     echo 'Detecting changes in monorepo...'
-                    
+
                     // Check if this is a manual/retry build
                     def isManualBuild = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0
                     
@@ -54,33 +69,38 @@ pipeline {
                         def reposToBuild = params.REPOS_TO_BUILD.tokenize(',').collect { it.trim().toLowerCase() }
                         env.BUILD_ACCOUNTS_API = reposToBuild.contains('accounts_api') ? 'true' : 'false'
                         env.BUILD_WORKSPACE_API = reposToBuild.contains('workspace_api') ? 'true' : 'false'
+                        env.BUILD_GLOBALADMIN_API = reposToBuild.contains('globaladmin_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = reposToBuild.contains('apachecamel_api') ? 'true' : 'false'
                         env.BUILD_CORSAIR_API = reposToBuild.contains('corsair_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
-                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio')) ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('global-admin') || reposToBuild.contains('studio')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
                         
+                        def changes = changedFiles()
+
                         // Detect changes in each component
-                        def aspnetToolkitChanged = hasChangesInPath('apis/WorcBackend-legacy/AspNetToolkit')
+                        def aspnetToolkitChanged = hasChangesInPath(changes, 'apis/WorcBackend-legacy/AspNetToolkit')
                         
                         // If AspNetToolkit changed, all .NET APIs need to be rebuilt
-                        env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
-                        env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
-                        env.BUILD_APACHECAMEL_API = hasChangesInPath('apis/apache-camel') ? 'true' : 'false'
-                        env.BUILD_CORSAIR_API = hasChangesInPath('apis/corsair') ? 'true' : 'false'
-                        env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
-                        env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
-                        env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
+                        env.BUILD_ACCOUNTS_API = (hasChangesInPath(changes, 'apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_WORKSPACE_API = (hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
+                        env.BUILD_GLOBALADMIN_API = hasChangesInPath(changes, 'apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
+                        env.BUILD_LLMPIPELINE_API = hasChangesInPath(changes, 'apis/llmpipeline') ? 'true' : 'false'
+                        env.BUILD_APACHECAMEL_API = hasChangesInPath(changes, 'apis/apache-camel') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = hasChangesInPath(changes, 'apis/corsair') ? 'true' : 'false'
+                        env.BUILD_DOCS_CLIENT = hasChangesInPath(changes, 'clients/docs') ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = hasChangesInPath(changes, 'clients/web-apps') ? 'true' : 'false'
+                        env.BUILD_RUNNER_APP = hasChangesInPath(changes, 'clients/RunnerApp') ? 'true' : 'false'
                     }
                     
                     echo """
                     Changed components:
                     - Accounts API: ${env.BUILD_ACCOUNTS_API}
                     - Workspace API: ${env.BUILD_WORKSPACE_API}
+                    - Global Admin API: ${env.BUILD_GLOBALADMIN_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Apache Camel API: ${env.BUILD_APACHECAMEL_API}
                     - Corsair API: ${env.BUILD_CORSAIR_API}
@@ -365,6 +385,110 @@ pipeline {
                         }
                     }
                 }
+
+                stage('Global Admin API') {
+                    when {
+                        expression { env.BUILD_GLOBALADMIN_API == 'true' }
+                    }
+                    stages {
+                        stage('Restore - Global Admin API') {
+                            steps {
+                                dir('apis/WorcBackend-legacy/GlobalAdminAPIs') {
+                                    echo 'Restoring Global Admin API packages...'
+                                    sh 'dotnet restore'
+                                    echo 'Restoring Global Admin API tools...'
+                                    sh 'dotnet tool restore'
+                                }
+                            }
+                        }
+                        stage('Build - Global Admin API') {
+                            steps {
+                                dir('apis/WorcBackend-legacy/GlobalAdminAPIs') {
+                                    echo 'Building Global Admin API...'
+                                    sh 'dotnet build --configuration Release'
+                                }
+                            }
+                        }
+                        stage('Database migration - Global Admin API') {
+                            steps {
+                                script {
+                                    sshagent(credentials: ['aventisia_vps_ssh']) {
+                                        def targetServers = getTargetServers(env.BRANCH_NAME)
+                                        echo "Database migration to ${targetServers.size()} server(s): ${targetServers.join(', ')}..."
+
+                                        targetServers.each { server ->
+                                            def remoteEnv = sh(
+                                                script: "ssh admin@${server} 'cat /etc/environment'",
+                                                returnStdout: true
+                                            )
+                                            def migrationEnvVars = remoteEnv.readLines()
+                                                .collect { it.trim() }
+                                                .findAll { it ==~ /^POSTGRESQL_[A-Z_]+=.*/ }
+                                                .collect { line ->
+                                                    def (name, value) = line.split('=', 2)
+                                                    "${name}=${value.replaceAll(/^(["'])(.*)\1$/, '$2')}"
+                                                }
+
+                                            // IMPORTANT NOTE: the design-time factory falls back to localhost
+                                            // when the host is missing, so fail here instead of migrating the wrong DB.
+                                            if (migrationEnvVars.isEmpty()) {
+                                                error "No POSTGRESQL_* variables in /etc/environment on ${server}"
+                                            }
+
+                                            withEnv(migrationEnvVars) {
+                                                dir('apis/WorcBackend-legacy/GlobalAdminAPIs') {
+                                                    echo "Migrating database schema on ${server}..."
+                                                    sh 'ASPNETCORE_ENVIRONMENT=Production dotnet ef database update --context=GlobalAdminDbContext'
+                                                }
+                                            }
+
+                                            echo "Successfully migrated database schema on ${server}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Publish - Global Admin API') {
+                            steps {
+                                dir('apis/WorcBackend-legacy/GlobalAdminAPIs') {
+                                    echo 'Publishing Global Admin API...'
+                                    sh 'dotnet publish -c Release --property:PublishDir=./Published'
+                                }
+                            }
+                        }
+                        stage('Deploy - Global Admin API') {
+                            steps {
+                                script {
+                                    sshagent(credentials: ['aventisia_vps_ssh']) {
+                                        // Get target servers based on branch
+                                        def targetServers = getTargetServers(env.BRANCH_NAME)
+
+                                        echo """Deploying Global Admin API to ${targetServers.size()} server(s)...
+Required environment variables on each target (systemd unit for globaladmin_apis.service):
+  POSTGRESQL_HOST, POSTGRESQL_USERNAME, POSTGRESQL_PASSWORD, JWT_SECRET_KEY (= AccountsAPIs secret)
+  POSTGRESQL_* must also be present in /etc/environment, which the CI migration stage reads.
+Optional environment variables (defaults in brackets):
+  POSTGRESQL_PORT [5432], SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD,
+  SMTP_MAIL_FROM_NAME, SMTP_MAIL_FROM_ADDRESS
+Migrations run in the CI stage above and again on boot, so Postgres and database GlobalAdminDb must be
+reachable from both the agent and the target."""
+
+                                        // Do deployment on each target server
+                                        targetServers.each { server ->
+                                            echo "Deploying to ${server}..."
+
+                                            // Deploy and restart service
+                                            sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/GlobalAdminAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/globaladmin/"
+                                            sh "ssh admin@${server} 'sudo systemctl restart globaladmin_apis.service'"
+
+                                            echo "Successfully deployed to ${server}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
           
@@ -438,7 +562,7 @@ pipeline {
                             steps {
                                 dir('clients/web-apps') {
                                     echo 'Building web-apps...'
-                                    sh "npx turbo run build --filter=accounts --filter=workspace --filter=studio -- --mode=${getBuildMode(env.BRANCH_NAME)}"
+                                    sh "npx turbo run build --filter=accounts --filter=workspace --filter=global-admin --filter=studio -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }
@@ -467,6 +591,21 @@ pipeline {
                                         targetServers.each { server ->
                                             sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/workspace/"
                                             echo "Successfully deployed Workspace App to ${server}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        stage('Deploy - Global Admin App') {
+                            steps {
+                                script {
+                                    sshagent(credentials: ['aventisia_vps_ssh']) {
+                                        def targetServers = getTargetServers(env.BRANCH_NAME)
+                                        echo "Deploying Global Admin App to ${targetServers.size()} server(s)..."
+
+                                        targetServers.each { server ->
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/global-admin/dist/* admin@${server}:/var/www/aventisia.com/clients/globaladmin/"
+                                            echo "Successfully deployed Global Admin App to ${server}"
                                         }
                                     }
                                 }

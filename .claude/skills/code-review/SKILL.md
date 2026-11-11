@@ -1,7 +1,7 @@
 ---
 name: code-review
-argument-hint: "Diff, commit, branch, file, snippet, or Gitea PR (#123 / URL); optional review focus"
-description: "Exacting review of code changes for bugs, structure, reuse, comment discipline, and dead code, ending in a pass / needs revision / reject verdict. Use for any code review, including a Gitea PR number or URL."
+argument-hint: "Diff, commit, branch, file, snippet, or GitHub PR (#123 / URL); optional review focus"
+description: "Exacting review of code changes for bugs, structure, reuse, comment discipline, and dead code, ending in a pass / needs revision / reject verdict. Use for any code review, including a GitHub PR number or URL."
 ---
 
 # Code Review
@@ -10,7 +10,7 @@ Review as an **exacting** senior developer: is the code robust, modular, readabl
 
 ## 1. Load the target
 
-- **Gitea PR** (`#123`, `123`, or a PR URL): follow [`gitea-pr.md`](gitea-pr.md). The review stays read-only: the PR is never commented on, approved, rejected, or merged. Landing it is `merge-pr`'s job.
+- **GitHub PR** (`#123`, `123`, or a PR URL): follow [`github-pr.md`](github-pr.md). The review stays read-only: the PR is never commented on, approved, rejected, or merged. Landing it is `merge-pr`'s job.
 - **Branch**: `git diff <base>...HEAD`, with the branch's base (ask when unclear).
 - **Commit**: `git show <sha>`.
 - **Working tree**: `git diff` plus `git diff --cached`.
@@ -33,6 +33,8 @@ Logic flaws, race conditions, unhandled exceptions or promises, data loss, missi
 ### 2. Architecture / Modularity
 
 One responsibility per file. Components, models, utilities, services, and integrations live in separate files inside clear domain boundaries, following the feature-folder layout the area `AGENTS.md` defines. Flag oversized files and logic crammed into one file.
+
+A feature carries the same name on the frontend and the backend: the `src/features/<feature>/` folder, its `.apis.ts` and DTO files, and the backend controller, service, and DTOs name the domain identically, differing only in casing (kebab-case, camelCase, PascalCase). Flag every mismatch (`machines` vs `RunnerController`, `job-schedules` vs `TriggersController`) as an issue, naming both sides and the name to converge on.
 
 ### 3. Code Reuse
 

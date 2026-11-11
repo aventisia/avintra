@@ -359,19 +359,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       },
     ],
   },
-  {
-    // sectionInternalName: globalAdmin
-    sectionName: "Global Admin",
-    menuItems: [
-      {
-        permissions: ["SA"],
-        Icon: IdentificationIcon,
-        name: "On-prem Tenants",
-        route: "/ga/on-prem-tenants",
-        type: ["Commercial"],
-      },
-    ],
-  },
 ];
 
 // TODO: Refactor this function to use a more efficient method of checking permissions

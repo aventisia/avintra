@@ -7,7 +7,6 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
-import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -57,9 +56,6 @@ import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
-import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
-import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
-import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
 import MyAccountPage from "./pages/MyAccountPage";
 
 const routerConfig: RouteObject[] = [
@@ -368,35 +364,6 @@ const routerConfig: RouteObject[] = [
               {
                 path: "tickets/:id",
                 element: <SaSupportTicketDetailPage />,
-              },
-            ],
-          },
-        ],
-      },
-      // globalAdmin section
-      {
-        path: "/ga",
-        element: <GALayout />,
-        children: [
-          {
-            path: "on-prem-tenants",
-            children: [
-              {
-                index: true,
-                element: <OnPremTenantsPage />,
-              },
-              {
-                path: ":tid",
-                children: [
-                  {
-                    index: true,
-                    element: <TenantInstancePage />,
-                  },
-                  {
-                    path: ":id",
-                    element: <TenantInstanceDataPage />,
-                  },
-                ],
               },
             ],
           },

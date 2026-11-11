@@ -3,12 +3,6 @@ interface CreateAccountDto {
   /** User's email/username */
   email: string;
 
-  /** User's first name. Max-50 */
-  firstName: string;
-
-  /** User's last name. Max-50 */
-  lastName: string;
-
   /** Password for the user account. Min-8, Max-16 */
   pwd: string;
 

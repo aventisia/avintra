@@ -50,8 +50,8 @@ public static class EnvironmentConfigurationExtension
         // Basic environment variables
         var APP_BASE_URL = GetRequiredEnvVar("APP_BASE_URL");
 
-        // On-prem tenant credentials are optional only for an explicit Community edition. The admin
-        // email is always required so the default platform user can be seeded.
+        // On-prem tenant credentials identify a paid deployment; a deployment with neither runs as
+        // Community. The admin email is always required so the default platform user can be seeded.
         var ON_PREM_TENANT_ID = Environment.GetEnvironmentVariable("ON_PREM_TENANT_ID") ?? string.Empty;
         var ON_PREM_INSTANCE_KEY = Environment.GetEnvironmentVariable("ON_PREM_INSTANCE_KEY") ?? string.Empty;
         var ON_PREM_ADMIN_EMAIL = GetRequiredEnvVar("ON_PREM_ADMIN_EMAIL");
@@ -65,6 +65,8 @@ public static class EnvironmentConfigurationExtension
         var POSTGRESQL_PORT = Environment.GetEnvironmentVariable("POSTGRESQL_PORT") ?? config["EnvironmentConfig:PostgresqlPort"] ?? "5432";
         var POSTGRESQL_USERNAME = GetRequiredEnvVar("POSTGRESQL_USERNAME");
         var POSTGRESQL_PASSWORD = GetRequiredEnvVar("POSTGRESQL_PASSWORD");
+        var POSTGRESQL_ACCOUNTS_DB_NAME = Environment.GetEnvironmentVariable("POSTGRESQL_ACCOUNTS_DB_NAME") ?? "AccountsDb";
+        var POSTGRESQL_WORKSPACE_DB_NAME = Environment.GetEnvironmentVariable("POSTGRESQL_WORKSPACE_DB_NAME") ?? "WorkspaceDb";
         var AZURE_BLOB_STORAGE_CONNECTION_STRING = GetRequiredEnvVar("AZURE_BLOB_STORAGE_CONNECTION_STRING");
 
         // JWT environment variables
@@ -76,18 +78,7 @@ public static class EnvironmentConfigurationExtension
         var AES_ENCRYPTION_KEY = GetRequiredEnvVar("AES_ENCRYPTION_KEY");
         var AES_INITIALIZATION_VECTOR = GetRequiredEnvVar("AES_INITIALIZATION_VECTOR");
 
-        // Azure Entra ID environment variables
-        var AZURE_ENTRA_ID_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_ENABLED") ?? config["EnvironmentConfig:AzureEntraIdEnabled"] ?? "false");
-        string AZURE_TENANT_ID = string.Empty;
-        string AZURE_ENTRA_ID_CLIENT_ID = string.Empty;
-        string AZURE_ENTRA_ID_CLIENT_SECRET = string.Empty;
-        if (AZURE_ENTRA_ID_ENABLED)
-        {
-            AZURE_TENANT_ID = GetRequiredEnvVar("AZURE_TENANT_ID");
-            AZURE_ENTRA_ID_CLIENT_ID = GetRequiredEnvVar("AZURE_ENTRA_ID_CLIENT_ID");
-            AZURE_ENTRA_ID_CLIENT_SECRET = Environment.GetEnvironmentVariable("AZURE_ENTRA_ID_CLIENT_SECRET") ?? string.Empty;
-        }
-
+        // Single sign-on environment variables
         var MICROSOFT_SSO_ENABLED = bool.Parse(Environment.GetEnvironmentVariable("MICROSOFT_SSO_ENABLED") ?? config["EnvironmentConfig:MicrosoftSsoEnabled"] ?? "false");
         var MICROSOFT_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_ID") ?? string.Empty;
         var MICROSOFT_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("MICROSOFT_SSO_CLIENT_SECRET") ?? string.Empty;
@@ -284,9 +275,13 @@ public static class EnvironmentConfigurationExtension
 
         // CORS origins configuration
         var EXTRA_CORS_ORIGINS = Environment.GetEnvironmentVariable("EXTRA_CORS_ORIGINS") ?? string.Empty;
-        var CORS_ORIGINS = string.IsNullOrEmpty(EXTRA_CORS_ORIGINS)
-                            ? $"https://{APP_BASE_URL}"
-                            : $"https://{APP_BASE_URL};{EXTRA_CORS_ORIGINS}";
+        var CORS_ORIGINS = string.Join(
+            ';',
+            new[] { $"https://{APP_BASE_URL}", EXTRA_CORS_ORIGINS }
+                .SelectMany(origins => origins.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                .Select(origin => origin.Trim())
+                .Where(origin => origin.Length > 0)
+                .Distinct());
 
         // Allowed hosts configuration
         var EXTRA_ALLOWED_HOSTS = Environment.GetEnvironmentVariable("EXTRA_ALLOWED_HOSTS") ?? string.Empty;
@@ -318,12 +313,10 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:PostgresqlPort", POSTGRESQL_PORT },
                     { "EnvironmentConfig:PostgresqlUsername", POSTGRESQL_USERNAME },
                     { "EnvironmentConfig:PostgresqlPassword", POSTGRESQL_PASSWORD },
+                    { "EnvironmentConfig:PostgresqlAccountsDbName", POSTGRESQL_ACCOUNTS_DB_NAME },
+                    { "EnvironmentConfig:PostgresqlWorkspaceDbName", POSTGRESQL_WORKSPACE_DB_NAME },
                     { "EnvironmentConfig:AzureBlobStorageConnectionString", AZURE_BLOB_STORAGE_CONNECTION_STRING },
 
-                    { "EnvironmentConfig:AzureEntraIdEnabled", AZURE_ENTRA_ID_ENABLED.ToString() },
-                    { "EnvironmentConfig:AzureTenantId", AZURE_TENANT_ID },
-                    { "EnvironmentConfig:AzureEntraIdClientId", AZURE_ENTRA_ID_CLIENT_ID },
-                    { "EnvironmentConfig:AzureEntraIdClientSecret", AZURE_ENTRA_ID_CLIENT_SECRET },
                     { "EnvironmentConfig:MicrosoftSsoEnabled", MICROSOFT_SSO_ENABLED.ToString() },
                     { "EnvironmentConfig:MicrosoftSsoClientId", MICROSOFT_SSO_CLIENT_ID },
                     { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },
@@ -553,8 +546,9 @@ public static class EnvironmentConfigurationExtension
     }
 
     /// <summary>
-    /// Resolves the deployment edition from the identity settings and the explicit
-    /// <c>ON_PREM_EDITION=Community</c> opt-in. Ambiguous configuration refuses to start.
+    /// Resolves the deployment edition from the on-prem identity settings. Both values present
+    /// means a paid deployment validated by GlobalAdmin; both absent means Community. Exactly one
+    /// present refuses to start as a likely misconfiguration.
     /// </summary>
     private static bool ResolveIsCommunityDeployment(string onPremTenantId, string onPremInstanceKey)
     {
@@ -572,19 +566,11 @@ public static class EnvironmentConfigurationExtension
             var missingVariable = hasTenantId ? "ON_PREM_INSTANCE_KEY" : "ON_PREM_TENANT_ID";
 
             throw new InvalidOperationException(
-                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both for a paid deployment, or unset both and set ON_PREM_EDITION=Community to run an explicit Community deployment.");
+                $"Refusing to start: {presentVariable} is set but {missingVariable} is missing. Set both identity variables for a paid deployment, or unset both to run the Community edition.");
         }
 
-        var edition = Environment.GetEnvironmentVariable("ON_PREM_EDITION");
-        var hasCommunityOptIn = string.Equals(
-            edition?.Trim(), OnPremTenantTypesEnum.Community.ToString(), StringComparison.OrdinalIgnoreCase);
-
-        if (!hasCommunityOptIn)
-        {
-            throw new InvalidOperationException(
-                "Refusing to start: ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY are both blank and ON_PREM_EDITION is not set to 'Community'. Set both identity variables for a paid deployment, or set ON_PREM_EDITION=Community to run an explicit Community deployment.");
-        }
-
+        Console.Error.WriteLine(
+            "No on-prem tenant identity configured; running the Community edition. Set ON_PREM_TENANT_ID and ON_PREM_INSTANCE_KEY for a paid deployment.");
         return true;
     }
 

@@ -1,7 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { FolderPlus } from "lucide-react";
 
-import { useFolderDialogStore } from "../../stores/folder-dialog.store";
+import { useFolderFormDialog } from "../../hooks/useFolderFormDialog.hook";
 import { MovableAgent } from "../../types/movable-agent.type";
 import { getAgentDropHandlers } from "../../utils/agent-drag.util";
 
@@ -25,15 +25,15 @@ const getCopy = (isDropReady: boolean, isFirstFolder: boolean) => {
  * Dashed tile that creates a folder; dropping an agent on it creates the folder with that agent inside.
  */
 export const NewFolderTile = ({ draggedAgent, isFirstFolder }: NewFolderTileProps) => {
-  const openDialog = useFolderDialogStore((state) => state.openDialog);
+  const { openCreateFolderDialog } = useFolderFormDialog();
   const isDropReady = draggedAgent !== null;
   const { title, hint } = getCopy(isDropReady, isFirstFolder);
 
   return (
     <button
       type="button"
-      onClick={() => openDialog({ kind: "create" })}
-      {...getAgentDropHandlers((agent) => openDialog({ kind: "create", agentToMove: agent }))}
+      onClick={() => openCreateFolderDialog()}
+      {...getAgentDropHandlers((agent) => openCreateFolderDialog({ agentToMove: agent }))}
       data-drop-ready={isDropReady || undefined}
       className={cn(
         "group/drop flex h-[4.5rem] w-full items-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50/50 px-3 text-left text-slate-500 outline-none transition duration-200",

@@ -14,11 +14,19 @@ public class FormatDateTimeNode : BaseNode
     [DisplayName("Format Option"), Description("Choose whether to use a standard or custom DateTime format.")]
     public InArgument<FormatOptionEnum> FormatToUse { get; set; } = new InArgument<FormatOptionEnum>(FormatOptionEnum.Standard);
 
-    [DisplayName("Standard Format"), Description("The standard DateTime format to use.")]
+    [DisplayName("Standard Format"), Description("The standard DateTime format to use. Examples use US English; other regional settings may format differently.")]
     [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Standard)]
     public InArgument<StandardFormatOptionEnum> StandardFormat { get; set; } = new InArgument<StandardFormatOptionEnum>(StandardFormatOptionEnum.ShortDate);
 
-    [DisplayName("Custom Format String"), Description("A custom format string for the DateTime value (e.g., yyyyMMdd). For more info on custom format strings, see: https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1")]
+    [DisplayName("Custom Format String"), Description(
+        "A custom format pattern. Examples using 3 November 2026, 3:45:30 PM:\n\n" +
+        "- `yyyyMMdd` → 20261103\n" +
+        "- `yyyy-MM-dd` → 2026-11-03\n" +
+        "- `dd MMM yyyy` → 03 Nov 2026\n" +
+        "- `dddd, dd MMMM yyyy` → Tuesday, 03 November 2026\n" +
+        "- `MM/dd/yyyy hh:mm tt` → 11/03/2026 03:45 PM\n" +
+        "- `HH:mm:ss` → 15:45:30\n\n" +
+        "Specifiers: `yyyy` year, `MM` month, `MMM` short month, `dd` day, `ddd` short weekday, `dddd` weekday, `HH` 24-hour, `hh` 12-hour, `mm` minute, `ss` second, `tt` AM/PM.")]
     [RenderIfCondition(nameof(FormatToUse), FormatOptionEnum.Custom)]
     public InArgument<string> CustomFormat { get; set; } = new InArgument<string>();
 
@@ -119,14 +127,31 @@ public class FormatDateTimeNode : BaseNode
 
     public enum StandardFormatOptionEnum
     {
+        [Display(Name = "Short date", Description = "e.g. 11/3/2026 (US English)")]
         ShortDate,
+
+        [Display(Name = "Long date", Description = "e.g. Tuesday, November 3, 2026 (US English)")]
         LongDate,
+
+        [Display(Name = "Short time", Description = "e.g. 3:45 PM (US English)")]
         ShortTime,
+
+        [Display(Name = "Long time", Description = "e.g. 3:45:30 PM (US English)")]
         LongTime,
+
+        [Display(Name = "Full date and time", Description = "e.g. Tuesday, 03 November 2026 15:45:30 (fixed layout)")]
         FullDatetimeLongTime,
+
+        [Display(Name = "Short date and short time", Description = "e.g. 11/3/2026 3:45 PM (US English)")]
         FullDatetimeShortTime,
+
+        [Display(Name = "General date, short time", Description = "e.g. 11/3/2026 3:45 PM (US English)")]
         GeneralDatetimeShortTime,
+
+        [Display(Name = "General date, long time", Description = "e.g. 11/3/2026 3:45:30 PM (US English)")]
         GeneralDatetimeLongTime,
+
+        [Display(Name = "Sortable (ISO 8601)", Description = "e.g. 2026-11-03 15:45:30Z (fixed layout)")]
         SortableDatetime
     }
 }

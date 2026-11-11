@@ -10,7 +10,8 @@ export const useFlowAccessMode = (draft: ResourceFlowDraft) => {
   const [modeIntent, setModeIntent] = useState<AccessMode | null>(null);
   const [stashedIds, setStashedIds] = useState<string[]>([]);
 
-  const mode: AccessMode = modeIntent ?? (draft.wasOpenAccess ? "open" : "restricted");
+  // IMPORTANT NOTE: the dialog must start restricted so an untouched save can never leave a resource open to every agent.
+  const mode: AccessMode = modeIntent ?? "restricted";
   const canSave =
     (draft.isDirty || (draft.wasRestrictedEmpty && mode === "open")) &&
     !(mode === "restricted" && draft.isOpenAccess) &&

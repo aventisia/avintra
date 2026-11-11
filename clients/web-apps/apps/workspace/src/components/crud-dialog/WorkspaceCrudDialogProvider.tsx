@@ -29,12 +29,10 @@ import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
-import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant";
+import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant.ee";
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
 import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
-import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
-import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
 import { getDialogHeadingDescription as getNotificationDialogHeadingDescription } from "@/features/notifications/constants/notifications-table.constant";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
@@ -51,6 +49,11 @@ const JobCrudDialogContent = lazy(() =>
 const FlowFormDialog = lazy(() =>
   import("@/features/01-build/flows-table/components/flow-crud-dialog/FlowFormDialog").then(
     (m) => ({ default: m.FlowFormDialog }),
+  ),
+);
+const FolderCrudDialog = lazy(() =>
+  import("@/features/01-build/flows-table/components/folder-dialogs/FolderCrudDialog").then(
+    (m) => ({ default: m.FolderCrudDialog }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -104,17 +107,17 @@ const WebhookTriggerCrudDialogContent = lazy(() =>
   ),
 );
 const CreditPlanCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/credit-plans-table/components/credit-plans-crud-dialog/CreditPlanCrudDialogContent").then(
+  import("@/features/06-super-admin/credit-plans-table/components/credit-plans-crud-dialog/CreditPlanCrudDialogContent.ee").then(
     (m) => ({ default: m.CreditPlanCrudDialogContent }),
   ),
 );
 const SubPlansCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/subscription-plans-table/components/sub-plans-crud-dialog/SubPlansCrudDialogContent").then(
+  import("@/features/06-super-admin/subscription-plans-table/components/sub-plans-crud-dialog/SubPlansCrudDialogContent.ee").then(
     (m) => ({ default: m.SubPlansCrudDialogContent }),
   ),
 );
 const TenantCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/tenants-table/components/tenant-crud-dialog/TenantCrudDialogContent").then(
+  import("@/features/06-super-admin/tenants-table/components/tenant-crud-dialog/TenantCrudDialogContent.ee").then(
     (m) => ({ default: m.TenantCrudDialogContent }),
   ),
 );
@@ -124,18 +127,8 @@ const TicketCrudDialogContent = lazy(() =>
   ),
 );
 const SaTicketCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent").then(
+  import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent.ee").then(
     (m) => ({ default: m.SaTicketCrudDialogContent }),
-  ),
-);
-const OnPremTenantCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant/components/on-prem-tenant-crud-dialog/OnPremTenantCrudDialogContent").then(
-    (m) => ({ default: m.OnPremTenantCrudDialogContent }),
-  ),
-);
-const TenantInstanceCrudDialogContent = lazy(() =>
-  import("@/features/07-global-admin/on-prem-tenant-instance/components/tenant-instance-crud-dialog/TenantInstanceCrudDialogContent").then(
-    (m) => ({ default: m.TenantInstanceCrudDialogContent }),
   ),
 );
 const UserCrudDialogContent = lazy(() =>
@@ -164,7 +157,7 @@ const NotificationCrudDialogContent = lazy(() =>
   ),
 );
 const SaNotificationCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/sa-notifications/components/sa-notification-crud-dialog/SaNotificationCrudDialogContent").then(
+  import("@/features/06-super-admin/sa-notifications/components/sa-notification-crud-dialog/SaNotificationCrudDialogContent.ee").then(
     (m) => ({ default: m.SaNotificationCrudDialogContent }),
   ),
 );
@@ -182,6 +175,9 @@ const crudDialogRegistry: CrudDialogRegistry = {
   },
   flow: {
     Dialog: FlowFormDialog,
+  },
+  folder: {
+    Dialog: FolderCrudDialog,
   },
   queue: {
     maxWidth: "!max-w-[36rem]",
@@ -258,16 +254,6 @@ const crudDialogRegistry: CrudDialogRegistry = {
     getHeader: getSaTicketDialogHeadingDescription,
     Content: SaTicketCrudDialogContent,
   },
-  onPremTenant: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getOnPremTenantDialogHeadingDescription,
-    Content: OnPremTenantCrudDialogContent,
-  },
-  tenantInstance: {
-    maxWidth: "!max-w-[32rem]",
-    getHeader: getTenantInstanceDialogHeadingDescription,
-    Content: TenantInstanceCrudDialogContent,
-  },
   user: {
     maxWidth: "!max-w-[32rem]",
     getHeader: getUserDialogHeadingDescription,
@@ -340,40 +326,56 @@ export function WorkspaceCrudDialogProvider() {
 
   const isBlockedCreate = env === "prod" && crudAction === "create" && isConfigureEntity;
 
+  const isStarterInviteCreate =
+    entity === "user" &&
+    crudAction === "create" &&
+    userSession?.planType === "Starter" &&
+    userSession?.deploymentType !== "Community";
+
   // Hold a Prod update dialog until the session (and therefore the user's role) is
   // known. Deciding while the session is null would briefly render the edit form
   // for every user and then close it.
   const isPendingProdEditAuth = isProdUpdate && !userSession;
+  const isPendingInviteAuth = entity === "user" && crudAction === "create" && !userSession;
   const isBlockedProdEdit =
     isProdUpdate && !!userSession && !userSession.userRoles.includes(ROLE_OM);
-  const isBlockedAction = isBlockedCreate || isBlockedProdEdit;
+  const isBlockedAction = isBlockedCreate || isBlockedProdEdit || isStarterInviteCreate;
 
   // The Configure dialog warning is only needed in Prod mode.
   const showEnvBanner = env === "prod" && isConfigureEntity;
 
-  // Warn once per blocked attempt, then strip the dialog params from the URL.
-  const notifiedRef = useRef(false);
+  const notifiedRef = useRef<string | null>(null);
   useEffect(() => {
     if (!isBlockedAction) {
-      notifiedRef.current = false;
+      notifiedRef.current = null;
       return;
     }
 
-    if (!notifiedRef.current) {
-      notifiedRef.current = true;
+    const blockKey = `${entity}:${crudAction}:${isBlockedCreate}:${isStarterInviteCreate}`;
+    if (notifiedRef.current !== blockKey) {
+      notifiedRef.current = blockKey;
       toast.warning(
-        isBlockedCreate
-          ? "Creating resources is not available in PROD mode"
-          : "Your role does not allow editing resources in PROD mode",
+        isStarterInviteCreate
+          ? "Inviting users is not available on the Starter plan"
+          : isBlockedCreate
+            ? "Creating resources is not available in PROD mode"
+            : "Your role does not allow editing resources in PROD mode",
       );
     }
 
     closeCrudDialog();
-  }, [isBlockedAction, isBlockedCreate, closeCrudDialog]);
+  }, [
+    isBlockedAction,
+    isBlockedCreate,
+    isStarterInviteCreate,
+    closeCrudDialog,
+    entity,
+    crudAction,
+  ]);
 
   return (
     <Suspense fallback={<DataTableSkeleton />}>
-      {isBlockedAction || isPendingProdEditAuth ? null : (
+      {isBlockedAction || isPendingProdEditAuth || isPendingInviteAuth ? null : (
         <CrudDialogProvider
           registry={crudDialogRegistry}
           contentBanner={showEnvBanner ? <ConfigureProdEnvBanner className="mx-2" /> : undefined}

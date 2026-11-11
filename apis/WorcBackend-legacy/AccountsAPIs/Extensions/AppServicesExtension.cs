@@ -1,6 +1,6 @@
 namespace AccountsAPIs.Extensions;
 
-public static class AppServicesExtension
+public static partial class AppServicesExtension
 {
     /// <summary>
     /// Adds db context services
@@ -16,8 +16,8 @@ public static class AppServicesExtension
         var pgPassword = environmentConfig.PostgresqlPassword ?? "";
 
         // Build connection strings for different databases
-        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
-        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=AccountsDb;Include Error Detail=true";
+        var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={environmentConfig.PostgresqlAccountsDbName};Include Error Detail=true";
+        var tenantDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database={environmentConfig.PostgresqlAccountsDbName};Include Error Detail=true";
 
         services.AddDbContext<AccountsDbContext>(options => options.UseNpgsql(appDbConnectionString));
         services.AddDbContext<TenantDbContext>(options => options.UseNpgsql(tenantDbConnectionString));
@@ -99,7 +99,6 @@ public static class AppServicesExtension
         services.AddScoped<IEmailCampaignService, EmailCampaignService>();
         services.AddScoped<IResetPwdService, ResetPwdService>();
         services.AddScoped<ILoginWithPwdService, LoginWithPwdService>();
-        services.AddScoped<ISingleSignOnService, SingleSignOnService>();
         services.AddScoped<IBrandingService, BrandingService>();
         services.AddScoped<IMyAccountService, MyAccountService>();
         services.AddScoped<ITenantAccountService, TenantAccountService>();
@@ -146,40 +145,6 @@ public static class AppServicesExtension
         services.AddHostedService<InstanceUsageStartupService>();
     }
 
-    /// <summary>
-    /// Registers the Razorpay client and configuration in the dependency injection container.
-    /// </summary>
-    /// <param name="services">The collection of services to register.</param>
-    /// <param name="config">The configuration provider used to retrieve Razorpay settings.</param>
-    /// <param name="tenantType">The tenant type (e.g., Commercial, Enterprise) to determine if Razorpay should be enabled.</param>
-    public static void AddRazorpayClient(this IServiceCollection services, IConfiguration config)
-    {
-        var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
-        var onPremTenantType = environmentConfig.OnPremTenantType ?? "Enterprise";
-
-        // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
-        if (onPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
-        {
-            // Retrieve the Razorpay configuration section from the configuration provider
-            var razorpayKeyId = environmentConfig.RazorpayKeyId;
-            var razorpayKeySecret = environmentConfig.RazorpayKeySecret;
-
-            // Check if Razorpay KeyId and KeySecret are configured correctly
-            if (string.IsNullOrEmpty(razorpayKeyId) || string.IsNullOrEmpty(razorpayKeySecret))
-            {
-                throw new InvalidOperationException("Razorpay KeyId and KeySecret must be configured.");
-            }
-
-            services.AddSingleton<Razorpay.Api.RazorpayClient>(provider =>
-                new Razorpay.Api.RazorpayClient(razorpayKeyId, razorpayKeySecret));
-        }
-        else
-        {
-            // Register null RazorpayClient for non-Commercial tenants to satisfy DI requirements
-            services.AddSingleton<Razorpay.Api.RazorpayClient>(provider => null!);
-        }
-    }
-
     // Extension method to configure and register Quartz jobs and their triggers
     public static void AddQuartzJobs(this IServiceCollection services)
     {
@@ -218,6 +183,17 @@ public static class AppServicesExtension
                 .StartNow()
                 .WithCronSchedule("1 0 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc)) // Cron expression: daily at 12:01 AM UTC
                 .WithDescription("Trigger for Instance Usage Job - runs daily at 12:01 AM UTC"));
+
+            var pendingCheckoutCleanupJobKey = new JobKey("PendingCheckoutCleanupJob");
+
+            quartz.AddJob<PendingCheckoutCleanupJob>(opts => opts.WithIdentity(pendingCheckoutCleanupJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(pendingCheckoutCleanupJobKey)
+                .WithIdentity("PendingCheckoutCleanupJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 2 0 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithDescription("Trigger for Pending Checkout Cleanup Job - runs daily at 12:02 AM UTC"));
         });
 
         // Register Quartz hosted service to run jobs in the background and wait for job completion on shutdown
@@ -226,5 +202,6 @@ public static class AppServicesExtension
         // Register job classes with DI container so they can receive dependencies via constructor injection
         services.AddTransient<TenantCreditAllocationJob>();
         services.AddTransient<InstanceUsageJob>();
+        services.AddTransient<PendingCheckoutCleanupJob>();
     }
 }

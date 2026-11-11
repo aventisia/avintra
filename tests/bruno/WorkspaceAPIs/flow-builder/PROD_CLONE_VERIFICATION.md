@@ -234,6 +234,29 @@ ORDER BY a.tenant_id, i.name;
 -- Re-publishing must upsert, not duplicate.
 ```
 
+### 2.9 People-sharing rows (ResourceUserAccess)
+
+Every Dev share on a cloned resource must exist on its Prod clone for the same user
+(`user_ResourceUserAccess`, `ResourceType` matching the cloned type). Repeat the check
+per resource type by swapping the queue join for the type's table.
+
+```sql
+SELECT d."Name", ds."UserId", ds."AccessLevel" AS dev_level, ps."AccessLevel" AS prod_level
+FROM "user_ResourceUserAccess" ds
+JOIN "run_Queues" d ON d."Id" = ds."ResourceId"
+LEFT JOIN "run_Queues" p
+       ON p."TenantId" = d."TenantId" AND p."Name" = d."Name" AND p."EnvType" = 'Prod'
+      AND p."SpaceId" IS NOT DISTINCT FROM d."SpaceId"
+LEFT JOIN "user_ResourceUserAccess" ps
+       ON ps."ResourceType" = ds."ResourceType" AND ps."ResourceId" = p."Id" AND ps."UserId" = ds."UserId"
+WHERE ds."ResourceType" = 'Queue'
+  AND d."TenantId" = :tenant_id
+  AND d."EnvType" = 'Dev'
+  AND d."Name" IN (:queue_names);
+-- Expect one row per Dev share with prod_level = dev_level. A NULL prod_level means
+-- publish did not migrate the share.
+```
+
 ## 3. Idempotency (repair path)
 
 Re-publish the same flow version and re-run §2. Every count must be unchanged

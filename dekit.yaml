@@ -1,0 +1,60 @@
+# Local dev stack, run with dekit (https://dekit.run). .vscode/tasks.json runs the same services as a fallback.
+#
+# Prerequisites:
+#   - Node.js 22+ with npm (`node --run` needs 22+), .NET 8 SDK, Python 3.12
+#   - Env files and dependencies from scripts/initial-setup.sh (or initial-setup.ps1), which also installs dekit
+#   - dekit itself, if setup ran before it was added: npm install -g @dekit/cli
+#
+# Ports come from each service's local env files, so a worktree made by create-worktree runs on its own ports.
+# Each checkout or worktree gets its own dekit runner; run the commands from inside it.
+#
+# Commands:
+#   dekit up                        start every service in the background
+#   dekit attach                    open the UI: arrows pick a service, r restarts it, ? shows all keys,
+#                                   q then d leaves the UI with services running, q then q stops them
+#   dekit ls                        list services and their state
+#   dekit restart workspace_apis    restart one service (any name under `tasks:`)
+#   dekit restart +backend          restart a group (+backend or +frontend)
+#   dekit restart '*'               restart everything
+#   dekit start +frontend           start only some services
+#   dekit stop corsair              stop one service
+#   dekit screen accounts_apis      print a service's recent output
+#   dekit down                      stop everything (the next `dekit up` brings the same services back)
+#   dekit help                      full docs in the terminal
+
+defaults:
+  autostart: true
+
+# IMPORTANT NOTE: dekit starts only .exe programs on Windows, not the npm/npx .cmd shims, so npm scripts run via `node --run`.
+tasks:
+  accounts:
+    cmd: node --run dev
+    cwd: clients/web-apps/apps/accounts
+    tags: [frontend]
+  workspace:
+    cmd: node --run dev
+    cwd: clients/web-apps/apps/workspace
+    tags: [frontend]
+  studio:
+    cmd: node --run dev
+    cwd: clients/web-apps/apps/studio
+    tags: [frontend]
+  accounts_apis:
+    cmd: dotnet run
+    cwd: apis/WorcBackend-legacy/AccountsAPIs
+    tags: [backend]
+  workspace_apis:
+    cmd: dotnet run
+    cwd: apis/WorcBackend-legacy/WorkspaceAPIs
+    tags: [backend]
+  llmpipeline_apis:
+    # IMPORTANT NOTE: dekit.yaml cannot branch per OS; both venv layouts go on PATH so `python` resolves on Linux/macOS and Windows.
+    cmd: python dev.py
+    cwd: apis/llmpipeline
+    add_path: [apis/llmpipeline/venv/bin, apis/llmpipeline/venv/Scripts]
+    env: {ENV: local}
+    tags: [backend]
+  corsair:
+    cmd: node --run dev
+    cwd: apis/corsair
+    tags: [backend]
