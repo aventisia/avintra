@@ -9,6 +9,9 @@ import {
 } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
 import {
+  ArchiveIcon,
+  ArrowLeftIcon,
+  ArrowUUpLeftIcon,
   CircleNotchIcon,
   DotsThreeIcon,
   MagnifyingGlassIcon,
@@ -38,6 +41,12 @@ export type ChatHistoryProps = {
   onDelete: (item: ChatHistoryItem) => void;
   /** Pins or unpins a chat; the menu item is hidden without it. */
   onTogglePin?: (item: ChatHistoryItem) => void;
+  /** Lists archived chats instead of the active ones. */
+  showArchived?: boolean;
+  /** Switches between active and archived chats; the button is hidden without it. */
+  onShowArchivedChange?: (showArchived: boolean) => void;
+  /** Archives a chat, or restores it while archived chats are shown; the menu item is hidden without it. */
+  onToggleArchive?: (item: ChatHistoryItem) => void;
   /** Collapses the panel; the button is hidden without it. */
   onCollapse?: () => void;
   search: string;
@@ -52,7 +61,7 @@ export type ChatHistoryProps = {
 
 /**
  * The chat history panel: new chat, title search, and chats grouped by day
- * that load more on scroll and can be renamed or deleted.
+ * that load more on scroll and can be renamed, pinned, archived or deleted.
  */
 export const ChatHistory = ({
   items,
@@ -63,6 +72,9 @@ export const ChatHistory = ({
   onRename,
   onDelete,
   onTogglePin,
+  showArchived = false,
+  onShowArchivedChange,
+  onToggleArchive,
   onCollapse,
   search,
   onSearchChange,
@@ -78,8 +90,20 @@ export const ChatHistory = ({
 
   return (
     <nav aria-label="Chat history" className="flex h-full min-h-0 flex-col">
-      <div className="flex h-14 shrink-0 items-center justify-between gap-2 px-3">
-        <h2 className="pl-1 text-sm font-semibold text-ink">Chats</h2>
+      <div className="flex h-14 shrink-0 items-center gap-1 px-3">
+        {showArchived && onShowArchivedChange && (
+          <ChatIconButton label="Back to chats" onClick={() => onShowArchivedChange(false)}>
+            <ArrowLeftIcon />
+          </ChatIconButton>
+        )}
+        <h2 className="mr-auto pl-1 text-sm font-semibold text-ink">
+          {showArchived ? "Archived chats" : "Chats"}
+        </h2>
+        {!showArchived && onShowArchivedChange && (
+          <ChatIconButton label="Archived chats" onClick={() => onShowArchivedChange(true)}>
+            <ArchiveIcon />
+          </ChatIconButton>
+        )}
         {onCollapse && (
           <ChatIconButton label="Close chat history" onClick={onCollapse}>
             <SidebarSimpleIcon />
@@ -127,7 +151,11 @@ export const ChatHistory = ({
           </HistoryNote>
         ) : groups.length === 0 ? (
           <HistoryNote>
-            {search.trim() ? `No chats match “${search.trim()}”.` : "Your chats will show up here."}
+            {search.trim()
+              ? `No chats match “${search.trim()}”.`
+              : showArchived
+                ? "Chats you archive will show up here."
+                : "Your chats will show up here."}
           </HistoryNote>
         ) : (
           groups.map((group) => (
@@ -152,7 +180,11 @@ export const ChatHistory = ({
                         onOpen={onOpen}
                         onRename={() => setRenamingId(item.id)}
                         onDelete={() => onDelete(item)}
-                        onTogglePin={onTogglePin && (() => onTogglePin(item))}
+                        onTogglePin={
+                          !showArchived && onTogglePin ? () => onTogglePin(item) : undefined
+                        }
+                        archiveLabel={showArchived ? "Unarchive" : "Archive"}
+                        onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
                       />
                     )}
                   </li>
@@ -186,6 +218,8 @@ type HistoryLinkProps = {
   onRename: () => void;
   onDelete: () => void;
   onTogglePin?: () => void;
+  archiveLabel: "Archive" | "Unarchive";
+  onToggleArchive?: () => void;
 };
 
 const HistoryLink = ({
@@ -196,6 +230,8 @@ const HistoryLink = ({
   onRename,
   onDelete,
   onTogglePin,
+  archiveLabel,
+  onToggleArchive,
 }: HistoryLinkProps) => {
   const isRenamingRef = useRef(false);
 
@@ -251,6 +287,13 @@ const HistoryLink = ({
               content={item.isPinned ? "Unpin" : "Pin"}
               Icon={item.isPinned ? PushPinSlashIcon : PushPinIcon}
               onSelect={onTogglePin}
+            />
+          )}
+          {onToggleArchive && (
+            <SimpleDDMenuItem
+              content={archiveLabel}
+              Icon={archiveLabel === "Archive" ? ArchiveIcon : ArrowUUpLeftIcon}
+              onSelect={onToggleArchive}
             />
           )}
           <DeleteDDMenuItem onSelect={onDelete} />

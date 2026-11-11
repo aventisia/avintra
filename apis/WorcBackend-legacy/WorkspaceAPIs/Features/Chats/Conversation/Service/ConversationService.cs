@@ -165,14 +165,14 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, int skip, int take)
+    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, int skip, int take)
     {
         var serviceResponse = ServiceResponse<IEnumerable<LandingConversationDto>>.Create("Failed to retrieve conversations", 500);
 
         var query = _unitOfWork.ConversationRepo.GetByConditionAsync(w =>
             w.FlowVersionId == null &&
             w.UserId == _userId &&
-            w.Status != ConversationStatusEnum.Archived &&
+            (w.Status == ConversationStatusEnum.Archived) == archived &&
             w.Title != null);
 
         var trimmedSearch = search?.Trim();

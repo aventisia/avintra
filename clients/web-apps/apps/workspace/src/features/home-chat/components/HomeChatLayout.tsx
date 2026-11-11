@@ -1,6 +1,7 @@
 import { ChatHistory, type ChatHistoryItem, ChatTitle, toChatMarkdown } from "@avplatform/chat";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { downloadBlob } from "@avplatform/ui/utils";
+import { useState } from "react";
 import { useHref, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -30,8 +31,9 @@ export const HomeChatLayout = () => {
   const { sessionKey, ...session } = useHomeChatSession();
   const navigate = useNavigate();
   const appRoot = useHref("/").replace(/\/$/, "");
-  const history = useHomeChatHistory();
-  const { renameChat, togglePin, deleteChat } = useHomeChatHistoryActions();
+  const [showArchived, setShowArchived] = useState(false);
+  const history = useHomeChatHistory(showArchived);
+  const { renameChat, togglePin, setArchived, deleteChat } = useHomeChatHistoryActions();
   const { showCustomAlertDialog } = useShowAlertHandler();
   const activeChat = history.items.find((item) => item.id === session.conversationId);
 
@@ -80,6 +82,12 @@ export const HomeChatLayout = () => {
             }}
             onRename={renameChat}
             onTogglePin={togglePin}
+            showArchived={showArchived}
+            onShowArchivedChange={setShowArchived}
+            onToggleArchive={({ id }) => {
+              setArchived(id, !showArchived);
+              if (!showArchived && id === session.conversationId) navigate("/", { replace: true });
+            }}
             onDelete={confirmDelete}
             onCollapse={close}
             search={history.search}

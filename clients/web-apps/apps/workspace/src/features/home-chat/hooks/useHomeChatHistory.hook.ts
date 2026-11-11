@@ -10,18 +10,19 @@ import {
   HOME_CHAT_HISTORY_QUERY_KEY,
 } from "../constants/home-chat.constant";
 
-/** The user's Home chats in the current space, searched by title and loaded a page at a time. */
-export const useHomeChatHistory = () => {
+/** The user's active or archived Home chats in the current space, searched by title and loaded a page at a time. */
+export const useHomeChatHistory = (archived: boolean) => {
   const spaceId = useCurrentSpaceStore((state) => state.currentSpace?.id ?? null);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search.trim(), 250);
 
   const query = useInfiniteQuery({
-    queryKey: [...HOME_CHAT_HISTORY_QUERY_KEY, spaceId, debouncedSearch],
+    queryKey: [...HOME_CHAT_HISTORY_QUERY_KEY, spaceId, archived, debouncedSearch],
     queryFn: async ({ pageParam }) =>
       (
         await getLandingConversations({
           search: debouncedSearch || undefined,
+          archived,
           skip: pageParam,
           take: HOME_CHAT_HISTORY_PAGE_SIZE,
         })

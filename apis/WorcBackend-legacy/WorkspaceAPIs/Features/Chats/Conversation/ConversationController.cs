@@ -45,13 +45,13 @@ public class ConversationController : BaseApiController
     }
 
     /// <summary>
-    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title.
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title; archived ones when asked.
     /// </summary>
     [HttpGet("landing/list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<LandingConversationDto>>>> GetLandingConversations(
-        [FromQuery] string? search, [FromQuery] int skip = 0, [FromQuery] int take = 30)
+        [FromQuery] string? search, [FromQuery] bool archived = false, [FromQuery] int skip = 0, [FromQuery] int take = 30)
     {
-        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, skip, take));
+        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, archived, skip, take));
     }
 
     // Gets a conversation by its ID.

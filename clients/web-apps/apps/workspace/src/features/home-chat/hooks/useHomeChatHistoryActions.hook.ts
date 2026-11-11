@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 import {
   deleteConversation,
+  setConversationArchived,
   updateLandingConversationPin,
   updateLandingConversationTitle,
 } from "../apis/conversation.apis";
@@ -12,7 +13,7 @@ import { type UpdateConversationTitleDto } from "../dtos/update-conversation-tit
 
 type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 
-/** Renames (shown at once), pins and deletes Home chats, refreshing the history afterwards. */
+/** Renames (shown at once), pins, archives and deletes Home chats, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
   const refreshHistory = () =>
@@ -43,6 +44,17 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const archive = useMutation({
+    mutationFn: setConversationArchived,
+    onSuccess: (_, { archived }) =>
+      toast.success(archived ? "Chat archived" : "Chat restored", {
+        className: "sonner-toaster-sm",
+      }),
+    onError: (_, { archived }) =>
+      toast.error(archived ? "Couldn't archive that chat" : "Couldn't restore that chat"),
+    onSettled: refreshHistory,
+  });
+
   const remove = useMutation({
     mutationFn: deleteConversation,
     onSuccess: () => toast.success("Chat deleted", { className: "sonner-toaster-sm" }),
@@ -54,6 +66,7 @@ export const useHomeChatHistoryActions = () => {
     renameChat: (id: string, title: string) => rename.mutate({ id, title }),
     togglePin: ({ id, isPinned }: { id: string; isPinned?: boolean }) =>
       pin.mutate({ id, isPinned: !isPinned }),
+    setArchived: (id: string, archived: boolean) => archive.mutate({ id, archived }),
     deleteChat: remove.mutateAsync,
   };
 };

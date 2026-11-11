@@ -10,8 +10,13 @@ import { type UpdateConversationTitleDto } from "../dtos/update-conversation-tit
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 
-/** Lists a page of the user's titled Home conversations, most recent first. */
-export const getLandingConversations = (params: { search?: string; skip: number; take: number }) =>
+/** Lists a page of the user's titled Home conversations, pinned then most recent first. */
+export const getLandingConversations = (params: {
+  search?: string;
+  archived: boolean;
+  skip: number;
+  take: number;
+}) =>
   axiosInstance
     .get<IHttpResponse<LandingConversationDto[]>>(`${baseAPIURL}/landing/list`, {
       params,
@@ -41,6 +46,16 @@ export const updateLandingConversationPin = (updateConversationPinDto: UpdateCon
     .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/pin`, updateConversationPinDto, {
       headers: getSpaceHeaders(),
     })
+    .then((res) => res.data);
+
+/** Archives or restores one of the user's conversations. */
+export const setConversationArchived = ({ id, archived }: { id: string; archived: boolean }) =>
+  axiosInstance
+    .post<IHttpResponse<boolean>>(
+      `${baseAPIURL}/${id}/${archived ? "archive" : "unarchive"}`,
+      {},
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 
 /** Deletes one of the user's conversations with its messages. */
