@@ -4,13 +4,14 @@ import { useShallow } from "zustand/react/shallow";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
 import { useClipboardStore } from "../stores/useClipboardStore";
+import { isEditableContextActive } from "../utils/keyboard-shortcut.util";
 import { useFlowOperations } from "./useFlowOperations";
 
 /**
- * Global keyboard shortcuts for Copy/Cut/Paste.
+ * Global canvas keyboard shortcuts: Copy/Cut/Paste and enable/disable (Ctrl+D).
  */
-export const useCopyPasteShortcuts = () => {
-  const { copyNodes, cutNodes, pasteNodes, nodes } = useFlowOperations();
+export const useCanvasShortcuts = () => {
+  const { copyNodes, cutNodes, pasteNodes, toggleDisableSelected, nodes } = useFlowOperations();
   const { selectedNode } = useContextMenuActionsStore(
     useShallow((state) => ({ selectedNode: state.selectedNode })),
   );
@@ -23,15 +24,15 @@ export const useCopyPasteShortcuts = () => {
       if (!ctrlOrCmd) return;
 
       const key = event.key.toLowerCase();
-      if (!["c", "x", "v"].includes(key)) return;
+      if (!["c", "x", "v", "d"].includes(key)) return;
+      if (isEditableContextActive()) return;
 
-      const activeElement = document.activeElement as HTMLElement | null;
-      if (activeElement?.closest('[role="dialog"]')) return;
-      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) return;
-      if (activeElement?.isContentEditable) return;
-
-      const textSelection = window.getSelection();
-      if (textSelection && !textSelection.isCollapsed) return;
+      if (key === "d") {
+        if (event.shiftKey) return;
+        event.preventDefault();
+        if (!event.repeat) toggleDisableSelected();
+        return;
+      }
 
       if (key === "c" || key === "x") {
         if (!hasNodeTargets) return;
@@ -60,5 +61,5 @@ export const useCopyPasteShortcuts = () => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [copyNodes, cutNodes, pasteNodes, selectedNode, hasNodeTargets]);
+  }, [copyNodes, cutNodes, pasteNodes, toggleDisableSelected, selectedNode, hasNodeTargets]);
 };

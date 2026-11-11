@@ -99,6 +99,10 @@ const ShortcutsDialog = () => {
           keys: ["Delete"],
           description: "Remove selected edge",
         },
+        {
+          keys: ["Ctrl", "D"],
+          description: "Enable/disable selected nodes",
+        },
       ],
     },
   ];
