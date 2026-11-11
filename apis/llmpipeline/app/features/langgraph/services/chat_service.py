@@ -1,6 +1,5 @@
 """High-level service that runs LangGraph chat workflows."""
 
-import asyncio
 import json
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
@@ -18,6 +17,7 @@ from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.checkpoint.memory import graph_memory
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
+from app.features.langgraph.services.chat_agent_text_stream import ChatAgentTextStream
 from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_EXPIRED,
@@ -509,10 +509,9 @@ class ChatService:
         # Ids whose completion frame has already been emitted (on_tool_end for
         # ToolNode tools; the tools node output below for connector tools).
         completed_tool_call_ids: set[str] = set()
-        # When a chat agent is configured to emit JSON (e.g. from a custom
-        # prompt/template), the streamed deltas are raw JSON tokens. We buffer
-        # them and suppress the raw token frames, then parse the JSON at the end.
+        # IMPORTANT NOTE: a chat agent may answer in JSON, so only the reply text read from its tokens is sent.
         suppress_raw_deltas = request.is_chat_agent
+        chat_agent_text = ChatAgentTextStream()
 
         async for event in graph.astream_events(
             graph_input,
@@ -547,10 +546,9 @@ class ChatService:
                     text = self._extract_text_delta(chunk)
                     if text:
                         text_buffer.append(text)
-                        # For chat-agent JSON-mode output, suppress raw JSON
-                        # deltas; the final parsed text/followups are emitted at
-                        # the end as proper typed frames.
-                        if not suppress_raw_deltas:
+                        if suppress_raw_deltas:
+                            text = chat_agent_text.feed(text)
+                        if text:
                             yield LLMChunkResponse(
                                 provider=request.provider,
                                 model=request.model,
@@ -840,22 +838,20 @@ class ChatService:
             else:
                 final_text = buffered
 
-        # For chat agents whose model emitted a structured JSON payload, the
-        # whole answer was produced in one conceptual chunk. Replay the final
-        # text as word-by-word deltas so the UI renders streaming text instead
-        # of dumping the full message at once. Non-JSON chat agents already see
-        # real deltas during ``on_chat_model_stream``.
-        if final_text and suppress_raw_deltas:
-            for chunk in self._word_streaming_chunks(final_text, words_per_chunk=2):
+        if suppress_raw_deltas:
+            streamed = chat_agent_text.text
+            if final_text.startswith(streamed):
+                remainder = final_text[len(streamed) :]
+            else:
+                remainder = "" if streamed else final_text
+            if remainder:
                 yield LLMChunkResponse(
                     provider=request.provider,
                     model=request.model,
-                    output=chunk,
+                    output=remainder,
                     type="delta",
                     conversation_id=conversation_id,
                 )
-                # Delay between chunks so the user perceives progressive typing.
-                await asyncio.sleep(0.06)
             final_text = ""
 
         yield LLMChunkResponse(
@@ -1623,21 +1619,6 @@ class ChatService:
 
         # Fall back to the first object/array if no text-bearing object exists.
         return objects[0] if objects else None
-
-    @staticmethod
-    def _word_streaming_chunks(text: str, words_per_chunk: int = 1):
-        """Yield ``text`` in small chunks to simulate streaming output.
-
-        Splits on whitespace boundaries so words stay intact. The chunk size
-        can be increased if the message feels too slow.
-        """
-        words = text.split(" ")
-        for i in range(0, len(words), words_per_chunk):
-            chunk = " ".join(words[i : i + words_per_chunk])
-            # Preserve the trailing space between chunks (except at the end).
-            if i + words_per_chunk < len(words):
-                chunk += " "
-            yield chunk
 
     def _extract_response_status(
         self,

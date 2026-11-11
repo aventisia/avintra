@@ -1,3 +1,5 @@
+import json
+
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -40,6 +42,9 @@ def create_model_node(
         )
 
         response = await model.ainvoke(messages)
+        if isinstance(response, dict):
+            # IMPORTANT NOTE: structured output returns a plain dict, which graph state cannot hold.
+            response = AIMessage(content=json.dumps(response, ensure_ascii=False))
 
         if isinstance(response, AIMessage):
             logger.debug(
