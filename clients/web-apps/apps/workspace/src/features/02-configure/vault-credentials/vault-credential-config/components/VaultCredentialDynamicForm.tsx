@@ -4,7 +4,7 @@ import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialo
 import { Form, FormLabelExt, InputField, SwitchField } from "@avplatform/ui/form";
 import { recordLabelClass } from "@avplatform/ui/record-sheet";
 import { type CrudActionType } from "@avplatform/ui/types";
-import { InfoIcon } from "@phosphor-icons/react";
+import { InfoIcon, SquaresFourIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -69,12 +69,17 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
     setShowOutputFields(renderedOutputFields.map((field) => field.name).length > 0);
   }, [isFormReady, vaultCredentialConfig, watchedValues]);
 
-  const { mutate, isComplete: isCreateComplete } = useAddVaultCredentialMutation();
+  const {
+    mutate,
+    isComplete: isCreateComplete,
+    hasFailed: hasCreateFailed,
+  } = useAddVaultCredentialMutation();
 
   const {
     mutate: updateMutation,
     isPending: isUpdating,
     isComplete: isUpdateComplete,
+    hasFailed: hasUpdateFailed,
   } = useUpdateVaultCredentialMutation();
 
   const isType = watch("selectedType")?.value;
@@ -92,6 +97,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
 
       const parsed = customApiToolSchema.safeParse(rawValues);
       if (!parsed.success) {
+        setIsSubmitting(false);
         parsed.error.issues.forEach((issue) => {
           form.setError(issue.path.join(".") as string, { message: issue.message });
         });
@@ -141,11 +147,21 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
   };
 
   useEffect(() => {
-    if ((action === "create" && isCreateComplete) || (action === "update" && isUpdateComplete)) {
-      setIsSubmitting(false);
-      onCloseConfirmed();
-    }
-  }, [action, isCreateComplete, isUpdateComplete, onCloseConfirmed]);
+    const isComplete = action === "create" ? isCreateComplete : isUpdateComplete;
+    if (!isComplete) return;
+
+    setIsSubmitting(false);
+    // A failed save keeps the dialog open so the entered values are not lost.
+    const hasFailed = action === "create" ? hasCreateFailed : hasUpdateFailed;
+    if (!hasFailed) onCloseConfirmed();
+  }, [
+    action,
+    isCreateComplete,
+    hasCreateFailed,
+    isUpdateComplete,
+    hasUpdateFailed,
+    onCloseConfirmed,
+  ]);
 
   return (
     <Form
@@ -160,16 +176,24 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
             control={form.control}
             render={({ field }) => (
               <AppSelector
-                autoFocus={true}
+                defaultOpen={!field.value}
                 options={getDistinctVaultCredentialAppSelectOptions()}
                 selectedItem={field.value || null}
                 onItemSelect={(item) => field.onChange(item)}
-                onItemClear={() => field.onChange(null)}
-                placeholder="Search apps"
               />
             )}
           />
-          {isType && <Separator />}
+          {isType ? (
+            <Separator />
+          ) : (
+            <div className="flex min-h-[22rem] flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-6 text-center">
+              <SquaresFourIcon className="mb-1 size-6 text-muted-foreground" />
+              <p className="text-[13px] font-semibold text-ink">Select an app or service</p>
+              <p className="text-[12px] text-muted-foreground">
+                The fields it needs to connect appear here.
+              </p>
+            </div>
+          )}
         </>
       )}
       {isType && isCustomApiToolSelected && (
@@ -257,16 +281,14 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
           description="Disable this record if it's been outdated, or not required anymore"
         />
       )}
-      {isType && (
-        <CrudDialogActions>
-          <SubmitButton
-            primaryText={action === "create" ? "Create credential" : "Save changes"}
-            secondaryText={action === "create" ? "Creating..." : "Saving..."}
-            isPending={isSubmitting}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </CrudDialogActions>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          primaryText={action === "create" ? "Create credential" : "Save changes"}
+          secondaryText={action === "create" ? "Creating..." : "Saving..."}
+          isPending={isSubmitting}
+          disabled={!isType || !isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

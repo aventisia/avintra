@@ -1,10 +1,18 @@
-import { Input } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { FormLabelExt } from "@avplatform/ui/form";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@avplatform/ui/command";
+import { FormLabelExt, crudDialogFieldClasses } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { ScrollArea } from "@avplatform/ui/scroll";
-import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
+
+import { getVaultCredentialAppIcon } from "../constants/vault-credential-app-icon-mapper.constant";
 
 type AppOption = {
   label: string;
@@ -15,9 +23,8 @@ type AppSelectorProps = {
   options: AppOption[];
   selectedItem: AppOption | null;
   onItemSelect: (item: AppOption) => void;
-  onItemClear: () => void;
   placeholder?: string;
-  autoFocus?: boolean;
+  defaultOpen?: boolean;
 };
 
 const POPULAR_VALUES = new Set([
@@ -44,159 +51,107 @@ const POPULAR_VALUES = new Set([
   "Mistral",
 ]);
 
-const POPULAR_LIMIT = 21;
+const BASE_PATH = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
+const FALLBACK_ICON = `${BASE_PATH}/brand-img/default-provider.svg`;
 
-export const AppSelector: React.FC<AppSelectorProps> = ({
+const AppIcon = ({ value }: { value: string }) => (
+  <img
+    src={BASE_PATH + (getVaultCredentialAppIcon(value) ?? "/brand-img/default-provider.svg")}
+    alt=""
+    className="size-4 shrink-0 object-contain"
+    onError={(event) => {
+      event.currentTarget.src = FALLBACK_ICON;
+    }}
+  />
+);
+
+/** Searchable app or service picker for a new vault credential. */
+export const AppSelector = ({
   options,
   selectedItem,
   onItemSelect,
-  placeholder = "Search and select item...",
-  autoFocus = false,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-  };
-
-  const handleItemSelect = (item: AppOption) => {
-    onItemSelect(item);
-    setInputValue("");
-    setIsOpen(false);
-  };
-
-  const handleInputFocus = () => {
-    setIsOpen(true);
-  };
-
-  const isItemSelected = (value: string) => {
-    return selectedItem?.value === value;
-  };
-
-  const sortedOptions = useMemo(
-    () =>
-      [...options].sort((a, b) =>
-        a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
-      ),
-    [options],
-  );
-
-  const filteredResults = useMemo(
-    () =>
-      sortedOptions.filter((option) =>
-        option.label.toLowerCase().includes(inputValue.toLowerCase()),
-      ),
-    [sortedOptions, inputValue],
-  );
+  placeholder = "Select an app or service",
+  defaultOpen = false,
+}: AppSelectorProps) => {
+  const [open, setOpen] = useState(defaultOpen);
 
   const { popularOptions, otherOptions } = useMemo(() => {
-    const popular: AppOption[] = [];
-    const others: AppOption[] = [];
-    for (const option of filteredResults) {
-      if (popular.length < POPULAR_LIMIT && POPULAR_VALUES.has(option.value)) {
-        popular.push(option);
-      } else {
-        others.push(option);
-      }
-    }
-    return { popularOptions: popular, otherOptions: others };
-  }, [filteredResults]);
+    const sorted = [...options].sort((a, b) =>
+      a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+    );
+    return {
+      popularOptions: sorted.filter((option) => POPULAR_VALUES.has(option.value)),
+      otherOptions: sorted.filter((option) => !POPULAR_VALUES.has(option.value)),
+    };
+  }, [options]);
 
-  const renderOption = (option: AppOption) => (
-    <div
-      key={option.value}
-      className={cn(
-        "flex cursor-pointer items-center gap-3 rounded-lg py-2 pl-6 pr-2 transition-colors hover:bg-hover",
-        isItemSelected(option.value) && "cursor-not-allowed opacity-50",
-      )}
-      onClick={() => !isItemSelected(option.value) && handleItemSelect(option)}
-    >
-      <div className="flex flex-col">
-        <p className="truncate text-sm font-medium">{option.label}</p>
-      </div>
-    </div>
-  );
+  const renderOption = (option: AppOption) => {
+    const isSelected = selectedItem?.value === option.value;
+    return (
+      <CommandItem
+        key={option.value}
+        value={`${option.label} ${option.value}`}
+        onSelect={() => {
+          if (!isSelected) onItemSelect(option);
+          setOpen(false);
+        }}
+        className="gap-2.5"
+      >
+        <AppIcon value={option.value} />
+        <span className="flex-1 truncate">{option.label}</span>
+        <CheckIcon className={cn("size-3.5", isSelected ? "opacity-100" : "opacity-0")} />
+      </CommandItem>
+    );
+  };
 
   return (
-    <div ref={containerRef} className="relative w-full">
-      <div>
-        <div className="mb-1">
-          <FormLabelExt label="Select app or service" description="Select an app or service" />
-        </div>
-        <div className="relative">
-          <Input
-            ref={inputRef}
-            type="text"
-            value={isOpen ? inputValue : selectedItem ? selectedItem?.label : ""}
-            autoFocus={autoFocus}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onFocus={handleInputFocus}
-            placeholder={selectedItem && isOpen ? selectedItem?.label : placeholder}
-          />
-
-          <Button
+    <div className="space-y-1.5">
+      <FormLabelExt
+        label="App or service"
+        description="The app or service this credential connects to. It cannot be changed after creation."
+      />
+      <Popover open={open} onOpenChange={setOpen} modal>
+        <PopoverTrigger asChild>
+          <button
             type="button"
-            variant="ghost"
-            size="icon7"
-            className="absolute right-2 top-1.5"
-            onClick={() => setIsOpen(!isOpen)}
+            role="combobox"
+            aria-expanded={open}
+            className={cn(
+              "flex w-full items-center justify-between gap-2.5 rounded-md text-left outline-none",
+              crudDialogFieldClasses.selectTrigger,
+            )}
           >
-            {isOpen ? (
-              <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
+            {selectedItem ? (
+              <span className="flex min-w-0 items-center gap-2.5 text-ink">
+                <AppIcon value={selectedItem.value} />
+                <span className="truncate">{selectedItem.label}</span>
+              </span>
             ) : (
-              <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-muted-foreground">{placeholder}</span>
             )}
-          </Button>
-        </div>
-      </div>
-
-      {isOpen && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-surface shadow-pop">
-          <div className="p-2">
-            {inputValue && filteredResults.length === 0 && (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                No results found for "{inputValue}"
-              </div>
-            )}
-
-            {filteredResults.length > 0 && (
-              <ScrollArea>
-                {popularOptions.length > 0 && (
-                  <>
-                    <p className="px-2 pb-1 pt-1 text-xs font-semibold tracking-wide text-muted-foreground">
-                      Popular
-                    </p>
-                    {popularOptions.map(renderOption)}
-                  </>
-                )}
-
-                {otherOptions.length > 0 && (
-                  <>
-                    <p className="px-2 pb-1 pt-2 text-xs font-semibold tracking-wide text-muted-foreground">
-                      Others
-                    </p>
-                    {otherOptions.map(renderOption)}
-                  </>
-                )}
-              </ScrollArea>
-            )}
-          </div>
-        </div>
-      )}
+            <CaretUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-[--radix-popover-trigger-width] p-1.5 shadow-pop"
+        >
+          <Command>
+            <div className="mb-1 rounded-md bg-sunken">
+              <CommandInput className="h-9 text-sm" placeholder="Search apps" autoFocus />
+            </div>
+            <CommandList className="max-h-72">
+              <CommandEmpty>No apps found.</CommandEmpty>
+              {popularOptions.length > 0 && (
+                <CommandGroup heading="Popular">{popularOptions.map(renderOption)}</CommandGroup>
+              )}
+              {otherOptions.length > 0 && (
+                <CommandGroup heading="All apps">{otherOptions.map(renderOption)}</CommandGroup>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
