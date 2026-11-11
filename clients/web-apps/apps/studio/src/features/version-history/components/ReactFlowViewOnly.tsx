@@ -9,7 +9,7 @@ import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { DCPDialog, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 
 import { PANEL_ID } from "../constants";
 import { useReactFlowViewData } from "../hooks/useReactFlowViewData";
@@ -30,11 +30,11 @@ export const ReactFlowViewOnly = () => {
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
 
-  const { nodes, edges } = useReactFlowExtStore(
+  const { nodes, edges } = useReactFlowViewStore(
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 
-  const { isLoading } = useReactFlowViewData();
+  const { isLoading, isCloning } = useReactFlowViewData();
 
   const { openPanel, closePanel } = usePanelStore(
     useShallow((state) => ({
@@ -96,9 +96,12 @@ export const ReactFlowViewOnly = () => {
           <BackgroundViewOnly />
         </ReactFlow>
 
-        {isLoading && (
-          <div className="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+        {(isLoading || isCloning) && (
+          <div className="bg-background/70 absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-sm">
             <LoadingSpinner className="h-6 w-6 text-primary" />
+            {isCloning && (
+              <span className="text-sm text-muted-foreground">Cloning in process...</span>
+            )}
           </div>
         )}
       </div>
