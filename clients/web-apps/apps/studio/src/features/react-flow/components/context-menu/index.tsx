@@ -23,6 +23,7 @@ import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
+import { STRUCTURAL_NODE_TYPES } from "../../constants/structural-node-types.constant";
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
 import { useClipboardStore } from "../../stores/useClipboardStore";
 import MenuItem from "./MenuItem";
@@ -40,8 +41,16 @@ export const ReactFlowContextMenu = memo(() => {
       })),
     );
   const flowType = useReactFlowExtStore((state) => state.flowType);
-  const { copyNodes, cutNodes, pasteNodes, deleteNode, disableNode, cancelCut } =
-    useFlowOperations();
+  const {
+    copyNodes,
+    cutNodes,
+    pasteNodes,
+    deleteNode,
+    toggleDisableSelected,
+    getDisableTargetIds,
+    shouldDisableSelected,
+    cancelCut,
+  } = useFlowOperations();
   const { groupNodes, ungroupNodes } = useNodeGrouping();
   const autoLayout = useDagreAutoLayout();
   const clipboard = useClipboardStore((state) => state.clipboard);
@@ -67,16 +76,8 @@ export const ReactFlowContextMenu = memo(() => {
   if (flowType === FlowTypesEnum.ChatAgent) return null;
 
   const isPaneMode = !selectedNode && !selectedEdge;
-  const restrictedTypes = [
-    "triggerNode",
-    "flowEndNode",
-    "branchStartNode",
-    "branchEndNode",
-    "mergeBranchesNode",
-    "modelNode",
-  ];
 
-  const isPaneOrStartOrEnd = isPaneMode || restrictedTypes.includes(selectedNode?.type ?? "");
+  const isPaneOrStartOrEnd = isPaneMode || STRUCTURAL_NODE_TYPES.includes(selectedNode?.type ?? "");
 
   const clipboardNodes = clipboard?.nodes || [];
   const hasClipboardData = clipboardNodes.length > 0;
@@ -94,7 +95,8 @@ export const ReactFlowContextMenu = memo(() => {
 
   const isGroupHead = selectedNode?.data?.isGroupHead;
   const isGroupMember = selectedNode?.data?.groupId;
-  const isDisabled = selectedNode?.data?.isDisabled;
+  const disableTargetIds = getDisableTargetIds();
+  const shouldDisable = shouldDisableSelected();
 
   return (
     <div
@@ -244,11 +246,12 @@ export const ReactFlowContextMenu = memo(() => {
           />
 
           <MenuItem
-            icon={isDisabled ? <CircleCheckIcon size={14} /> : <BanIcon size={14} />}
-            label={isDisabled ? "Enable" : "Disable"}
-            disabled={isPaneOrStartOrEnd || !selectedNode}
+            icon={shouldDisable ? <BanIcon size={14} /> : <CircleCheckIcon size={14} />}
+            label={shouldDisable ? "Disable" : "Enable"}
+            shortcut="Ctrl+d"
+            disabled={disableTargetIds.length === 0}
             onClick={() => {
-              disableNode(!isDisabled);
+              toggleDisableSelected();
             }}
           />
 

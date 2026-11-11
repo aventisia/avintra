@@ -17,6 +17,11 @@ import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 
 import { useClipboardStore } from "../stores/useClipboardStore";
 import { generatePastedSubgraph } from "../utils/clipboardUtils";
+import {
+  isTogglableType,
+  resolveTargetIds,
+  shouldDisableTargets,
+} from "../utils/disable-toggle.util";
 import { getBranchSubgraphNodeIds } from "../utils/getBranchSubNodeIds";
 import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
 import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
@@ -96,14 +101,16 @@ export const useFlowOperations = () => {
 
   const { updateNodeData } = useReactFlow();
 
-  const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } = useContextMenuActionsStore(
-    useShallow((state) => ({
-      selectedNode: state.selectedNode,
-      setMenu: state.setMenu,
-      setSelectedNode: state.setSelectedNode,
-      setSelectedEdge: state.setSelectedEdge,
-    })),
-  );
+  const { selectedNode, menu, setMenu, setSelectedNode, setSelectedEdge } =
+    useContextMenuActionsStore(
+      useShallow((state) => ({
+        selectedNode: state.selectedNode,
+        menu: state.menu,
+        setMenu: state.setMenu,
+        setSelectedNode: state.setSelectedNode,
+        setSelectedEdge: state.setSelectedEdge,
+      })),
+    );
 
   const { deleteAlert } = useStudioPreferencesStore(
     useShallow((state) => ({
@@ -218,13 +225,10 @@ export const useFlowOperations = () => {
     flowEventChannel.postMessage({ type: "CLIPBOARD_CLEARED" });
   }, [clearCutNodes, clearClipboard]);
 
-  const getTargetIds = useCallback(() => {
-    if (selectedNode) {
-      if (orderedSelectedIds.includes(selectedNode.id)) return orderedSelectedIds;
-      return [selectedNode.id];
-    }
-    return orderedSelectedIds;
-  }, [orderedSelectedIds, selectedNode]);
+  const getTargetIds = useCallback(
+    () => resolveTargetIds(orderedSelectedIds, selectedNode?.id),
+    [orderedSelectedIds, selectedNode],
+  );
 
   const extractSubgraphs = useCallback(
     (targetNodeIds: string[]) => {
@@ -953,31 +957,44 @@ export const useFlowOperations = () => {
     ],
   );
 
-  const disableNode = useCallback(
-    (isDisabled: boolean) => {
-      if (!selectedNode) return;
+  // IMPORTANT NOTE: dismissing the context menu clears `menu` but leaves
+  // `selectedNode` set, so the right-clicked node only counts while the menu is open.
+  const getDisableTargetIds = useCallback(() => {
+    if (flowType === FlowTypesEnum.ChatAgent) return [];
+    const nodeMap = new Map(useReactFlowExtStore.getState().nodes.map((n) => [n.id, n]));
+    return resolveTargetIds(orderedSelectedIds, menu ? selectedNode?.id : undefined).filter((id) =>
+      isTogglableType(nodeMap.get(id)?.type),
+    );
+  }, [flowType, orderedSelectedIds, menu, selectedNode]);
 
-      const { nodes: currentNodes, edges: currentEdges } = useReactFlowExtStore.getState();
+  const shouldDisableSelected = useCallback(() => {
+    const nodeMap = new Map(useReactFlowExtStore.getState().nodes.map((n) => [n.id, n]));
+    return shouldDisableTargets(
+      getDisableTargetIds(),
+      (id) => nodeMap.get(id)?.data?.isDisabled === true,
+    );
+  }, [getDisableTargetIds]);
 
-      const comprehensiveIds = getComprehensiveSelection(
-        [selectedNode.id],
-        currentNodes,
-        currentEdges,
-      );
-      currentNodes
-        .filter((n) => comprehensiveIds.includes(n.id))
-        .forEach((n) => updateNodeData(n.id, { isDisabled }));
-      resetContextMenu();
-    },
-    [selectedNode, updateNodeData, resetContextMenu, getComprehensiveSelection],
-  );
+  const toggleDisableSelected = useCallback(() => {
+    const targetIds = getDisableTargetIds();
+    if (targetIds.length === 0) return;
+
+    const shouldDisable = shouldDisableSelected();
+    const { nodes: currentNodes, edges: currentEdges } = useReactFlowExtStore.getState();
+    getComprehensiveSelection(targetIds, currentNodes, currentEdges).forEach((id) =>
+      updateNodeData(id, { isDisabled: shouldDisable }),
+    );
+    resetContextMenu();
+  }, [getDisableTargetIds, shouldDisableSelected, updateNodeData, resetContextMenu]);
 
   return {
     copyNodes,
     cutNodes,
     pasteNodes,
     deleteNode,
-    disableNode,
+    toggleDisableSelected,
+    getDisableTargetIds,
+    shouldDisableSelected,
     cancelCut,
     nodes,
   };
