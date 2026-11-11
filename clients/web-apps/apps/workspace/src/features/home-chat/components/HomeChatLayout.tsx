@@ -31,7 +31,7 @@ export const HomeChatLayout = () => {
   const navigate = useNavigate();
   const appRoot = useHref("/").replace(/\/$/, "");
   const history = useHomeChatHistory();
-  const { renameChat, deleteChat } = useHomeChatHistoryActions();
+  const { renameChat, togglePin, deleteChat } = useHomeChatHistoryActions();
   const { showCustomAlertDialog } = useShowAlertHandler();
   const activeChat = history.items.find((item) => item.id === session.conversationId);
 
@@ -79,6 +79,7 @@ export const HomeChatLayout = () => {
               navigate("/");
             }}
             onRename={renameChat}
+            onTogglePin={togglePin}
             onDelete={confirmDelete}
             onCollapse={close}
             search={history.search}

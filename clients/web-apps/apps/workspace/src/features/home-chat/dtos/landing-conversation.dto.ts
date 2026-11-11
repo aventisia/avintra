@@ -8,4 +8,7 @@ export interface LandingConversationDto {
 
   /** ISO timestamp of the conversation's last change; orders the history. */
   lastModifiedOn: string;
+
+  /** Whether the chat is pinned above the rest of the history. */
+  isPinned: boolean;
 }

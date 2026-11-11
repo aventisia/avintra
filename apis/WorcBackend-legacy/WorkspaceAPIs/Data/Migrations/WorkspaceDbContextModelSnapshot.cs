@@ -433,6 +433,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsPinned")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LastModifiedByUserId")
                         .HasColumnType("uuid");
 

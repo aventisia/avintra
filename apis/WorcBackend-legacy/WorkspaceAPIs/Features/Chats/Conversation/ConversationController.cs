@@ -84,6 +84,15 @@ public class ConversationController : BaseApiController
         return ResultHelper(await _conversationService.UpdateLandingConversationTitleAsync(updateConversationTitleDto));
     }
 
+    /// <summary>
+    /// Pins or unpins one of the current user's landing conversations.
+    /// </summary>
+    [HttpPut("landing/pin")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationPin([FromBody] UpdateConversationPinDto updateConversationPinDto)
+    {
+        return ResultHelper(await _conversationService.UpdateLandingConversationPinAsync(updateConversationPinDto));
+    }
+
     // Archives a conversation (moves it to archived state).
     [HttpPost("{conversationId}/archive")]
     public async Task<ActionResult<ServiceResponse<bool>>> Archive(Guid conversationId)

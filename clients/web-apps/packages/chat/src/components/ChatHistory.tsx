@@ -14,6 +14,8 @@ import {
   MagnifyingGlassIcon,
   NotePencilIcon,
   PencilSimpleIcon,
+  PushPinIcon,
+  PushPinSlashIcon,
   SidebarSimpleIcon,
 } from "@phosphor-icons/react";
 import { type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -34,6 +36,8 @@ export type ChatHistoryProps = {
   onNewChat: () => void;
   onRename: (id: string, title: string) => void;
   onDelete: (item: ChatHistoryItem) => void;
+  /** Pins or unpins a chat; the menu item is hidden without it. */
+  onTogglePin?: (item: ChatHistoryItem) => void;
   /** Collapses the panel; the button is hidden without it. */
   onCollapse?: () => void;
   search: string;
@@ -58,6 +62,7 @@ export const ChatHistory = ({
   onNewChat,
   onRename,
   onDelete,
+  onTogglePin,
   onCollapse,
   search,
   onSearchChange,
@@ -147,6 +152,7 @@ export const ChatHistory = ({
                         onOpen={onOpen}
                         onRename={() => setRenamingId(item.id)}
                         onDelete={() => onDelete(item)}
+                        onTogglePin={onTogglePin && (() => onTogglePin(item))}
                       />
                     )}
                   </li>
@@ -179,9 +185,18 @@ type HistoryLinkProps = {
   onOpen: (id: string) => void;
   onRename: () => void;
   onDelete: () => void;
+  onTogglePin?: () => void;
 };
 
-const HistoryLink = ({ item, isActive, href, onOpen, onRename, onDelete }: HistoryLinkProps) => {
+const HistoryLink = ({
+  item,
+  isActive,
+  href,
+  onOpen,
+  onRename,
+  onDelete,
+  onTogglePin,
+}: HistoryLinkProps) => {
   const isRenamingRef = useRef(false);
 
   return (
@@ -231,6 +246,13 @@ const HistoryLink = ({ item, isActive, href, onOpen, onRename, onDelete }: Histo
               onRename();
             }}
           />
+          {onTogglePin && (
+            <SimpleDDMenuItem
+              content={item.isPinned ? "Unpin" : "Pin"}
+              Icon={item.isPinned ? PushPinSlashIcon : PushPinIcon}
+              onSelect={onTogglePin}
+            />
+          )}
           <DeleteDDMenuItem onSelect={onDelete} />
         </DropdownMenuContent>
       </DropdownMenu>

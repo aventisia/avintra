@@ -183,11 +183,12 @@ public class ConversationService : IConversationService
         }
 
         var conversations = await query
-            .OrderByDescending(o => o.LastModifiedOn)
+            .OrderByDescending(o => o.IsPinned)
+            .ThenByDescending(o => o.LastModifiedOn)
             .ThenByDescending(o => o.Id)
             .Skip(Math.Max(skip, 0))
             .Take(Math.Clamp(take, 1, 100))
-            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn })
+            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned })
             .ToListAsync();
 
         return serviceResponse.Update(null, 200, conversations);
@@ -440,6 +441,22 @@ public class ConversationService : IConversationService
                 w.FlowVersionId == null &&
                 w.UserId == _userId)
             .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.Title, title));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationPinAsync(UpdateConversationPinDto updateConversationPinDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to pin conversation", 500);
+
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationPinDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.IsPinned, updateConversationPinDto.IsPinned));
 
         return updated == 0
             ? serviceResponse.Update("Conversation not found", 404)

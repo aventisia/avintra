@@ -5,6 +5,7 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
+import { type UpdateConversationPinDto } from "../dtos/update-conversation-pin.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
@@ -30,6 +31,14 @@ export const updateLandingConversationTitle = (
 ) =>
   axiosInstance
     .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/title`, updateConversationTitleDto, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
+/** Pins or unpins one of the user's Home conversations. */
+export const updateLandingConversationPin = (updateConversationPinDto: UpdateConversationPinDto) =>
+  axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/pin`, updateConversationPinDto, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

@@ -1,14 +1,18 @@
 import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { deleteConversation, updateLandingConversationTitle } from "../apis/conversation.apis";
+import {
+  deleteConversation,
+  updateLandingConversationPin,
+  updateLandingConversationTitle,
+} from "../apis/conversation.apis";
 import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
 
 type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 
-/** Renames (shown at once) and deletes Home chats, refreshing the history afterwards. */
+/** Renames (shown at once), pins and deletes Home chats, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
   const refreshHistory = () =>
@@ -33,6 +37,12 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const pin = useMutation({
+    mutationFn: updateLandingConversationPin,
+    onError: () => toast.error("Couldn't pin that chat"),
+    onSettled: refreshHistory,
+  });
+
   const remove = useMutation({
     mutationFn: deleteConversation,
     onSuccess: () => toast.success("Chat deleted", { className: "sonner-toaster-sm" }),
@@ -42,6 +52,8 @@ export const useHomeChatHistoryActions = () => {
 
   return {
     renameChat: (id: string, title: string) => rename.mutate({ id, title }),
+    togglePin: ({ id, isPinned }: { id: string; isPinned?: boolean }) =>
+      pin.mutate({ id, isPinned: !isPinned }),
     deleteChat: remove.mutateAsync,
   };
 };

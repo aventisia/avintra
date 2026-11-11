@@ -1,4 +1,9 @@
-export type ChatHistoryItem = { id: string; title: string; lastModifiedOn: string };
+export type ChatHistoryItem = {
+  id: string;
+  title: string;
+  lastModifiedOn: string;
+  isPinned?: boolean;
+};
 
 export type ChatHistoryGroup = { label: string; items: ChatHistoryItem[] };
 
@@ -15,8 +20,8 @@ const labelFor = (daysAgo: number) => {
 };
 
 /**
- * Splits history, already newest first, into Today, Yesterday, Last 7 days
- * and Older by the viewer's local calendar day.
+ * Splits history, already pinned first and then newest first, into Pinned,
+ * Today, Yesterday, Last 7 days and Older by the viewer's local calendar day.
  */
 export const groupHistoryByDate = (
   items: readonly ChatHistoryItem[],
@@ -27,7 +32,7 @@ export const groupHistoryByDate = (
   for (const item of items) {
     // Rounding absorbs the hour a daylight-saving switch adds to or removes from a day.
     const daysAgo = Math.round((today - startOfDay(new Date(item.lastModifiedOn))) / DAY_MS);
-    const label = labelFor(daysAgo);
+    const label = item.isPinned ? "Pinned" : labelFor(daysAgo);
     const group = groups.at(-1);
     if (group?.label === label) group.items.push(item);
     else groups.push({ label, items: [item] });

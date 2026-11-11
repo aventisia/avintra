@@ -19,4 +19,9 @@ public class LandingConversationDto
     /// Gets or sets when the conversation last changed, which orders the history.
     /// </summary>
     public DateTimeOffset LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the conversation is pinned above the rest of the history.
+    /// </summary>
+    public bool IsPinned { get; set; }
 }

@@ -26,6 +26,20 @@ describe("groupHistoryByDate", () => {
     ]);
   });
 
+  it("puts pinned chats in their own group, whatever their day", () => {
+    const groups = groupHistoryByDate(
+      [
+        { ...at("a", new Date(2026, 10, 1, 12, 0)), isPinned: true },
+        at("b", new Date(2026, 10, 10, 8, 0)),
+      ],
+      now,
+    );
+    expect(groups.map((g) => [g.label, g.items.map((i) => i.id)])).toEqual([
+      ["Pinned", ["a"]],
+      ["Today", ["b"]],
+    ]);
+  });
+
   it("counts a timestamp slightly ahead of the clock as today", () => {
     expect(groupHistoryByDate([at("a", new Date(2026, 10, 10, 9, 31))], now)[0]?.label).toBe(
       "Today",

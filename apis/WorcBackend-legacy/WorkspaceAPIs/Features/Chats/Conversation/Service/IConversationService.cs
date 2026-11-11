@@ -77,6 +77,11 @@ public interface IConversationService
     Task<ServiceResponse<bool>> UpdateLandingConversationTitleAsync(UpdateConversationTitleDto updateConversationTitleDto);
 
     /// <summary>
+    /// Pins or unpins one of the current user's landing conversations.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationPinAsync(UpdateConversationPinDto updateConversationPinDto);
+
+    /// <summary>
     /// Archives a conversation, making it read-only and moving it to the archived list.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>

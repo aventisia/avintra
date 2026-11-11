@@ -30,6 +30,11 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public string? Title { get; set; }
 
     /// <summary>
+    /// Gets or sets whether a landing conversation is pinned above the rest of the history.
+    /// </summary>
+    public bool IsPinned { get; set; }
+
+    /// <summary>
     /// Gets or sets the Flow Version this conversation is associated with.
     /// </summary>
     [ForeignKey("FlowVersionId")]
