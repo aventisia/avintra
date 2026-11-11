@@ -1,4 +1,10 @@
-import { ChatHistory, type ChatHistoryItem, ChatTitle, toChatMarkdown } from "@avplatform/chat";
+import {
+  ChatHistory,
+  type ChatHistoryItem,
+  ChatTitle,
+  printChat,
+  toChatMarkdown,
+} from "@avplatform/chat";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { downloadBlob } from "@avplatform/ui/utils";
 import { useState } from "react";
@@ -63,6 +69,9 @@ export const HomeChatLayout = () => {
               title={activeChat.title}
               onRename={(title) => renameChat(activeChat.id, title)}
               onExport={() => void exportChat(activeChat)}
+              onExportPdf={() =>
+                printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
+              }
               onDelete={() => confirmDelete(activeChat)}
             />
           )

@@ -205,6 +205,7 @@ const UserMessage = () => {
             <MessagePrimitive.Parts />
           </div>
           <ActionBarPrimitive.Root
+            data-chat-print-hide
             hideWhenRunning
             className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100"
           >
@@ -278,6 +279,7 @@ const AssistantMessage = () => {
       <MessageError />
       {(hasText || isLast) && (
         <ActionBarPrimitive.Root
+          data-chat-print-hide
           hideWhenRunning
           className={cn(
             "-ml-2 mt-1 flex transition-opacity focus-within:opacity-100 group-hover/message:opacity-100",

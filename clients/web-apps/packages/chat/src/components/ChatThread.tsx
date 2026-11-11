@@ -107,6 +107,7 @@ export const ChatThread = ({
             className="flex h-full min-h-0 flex-col bg-surface text-ink dark:bg-bg"
           >
             <ThreadPrimitive.Viewport
+              data-chat-transcript
               turnAnchor="top"
               scrollToBottomOnInitialize
               scrollToBottomOnThreadSwitch
@@ -121,7 +122,10 @@ export const ChatThread = ({
                 </div>
               </AuiIf>
               <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
-              <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6">
+              <ThreadPrimitive.ViewportFooter
+                data-chat-print-hide
+                className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6"
+              >
                 <ScrollToLatest />
                 <ChatComposer
                   placeholder={placeholder}

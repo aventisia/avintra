@@ -5,7 +5,12 @@ import {
   DropdownMenuTrigger,
   SimpleDDMenuItem,
 } from "@avplatform/ui/dropdown-menu";
-import { CaretDownIcon, DownloadSimpleIcon, PencilSimpleIcon } from "@phosphor-icons/react";
+import {
+  CaretDownIcon,
+  DownloadSimpleIcon,
+  FilePdfIcon,
+  PencilSimpleIcon,
+} from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 
 import { ChatTitleInput } from "./ChatTitleInput";
@@ -14,11 +19,12 @@ type ChatTitleProps = {
   title: string;
   onRename: (title: string) => void;
   onExport: () => void;
+  onExportPdf: () => void;
   onDelete: () => void;
 };
 
 /** The open chat's title as a menu of Rename (edits it in place), Export and Delete. */
-export const ChatTitle = ({ title, onRename, onExport, onDelete }: ChatTitleProps) => {
+export const ChatTitle = ({ title, onRename, onExport, onExportPdf, onDelete }: ChatTitleProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
   const isRenamingRef = useRef(false);
 
@@ -67,6 +73,7 @@ export const ChatTitle = ({ title, onRename, onExport, onDelete }: ChatTitleProp
             Icon={DownloadSimpleIcon}
             onSelect={onExport}
           />
+          <SimpleDDMenuItem content="Export as PDF" Icon={FilePdfIcon} onSelect={onExportPdf} />
           <DeleteDDMenuItem onSelect={onDelete} />
         </DropdownMenuContent>
       </DropdownMenu>

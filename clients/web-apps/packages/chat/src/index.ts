@@ -12,6 +12,7 @@ export type { ChatHistoryItem } from "./utils/history-groups.util";
 export { NAVIGATE_TOOL_NAME, pickReachablePrompts } from "./utils/chat-intent.util";
 export type { ChatBlueprint, ChatDestinationOption } from "./utils/chat-intent.util";
 export { withAttachmentText } from "./utils/attachment-text.util";
+export { printChat } from "./utils/print-chat.util";
 export { createChatAttachmentAdapter } from "./utils/chat-attachment-adapter.util";
 export {
   createConversationHistoryAdapter,
