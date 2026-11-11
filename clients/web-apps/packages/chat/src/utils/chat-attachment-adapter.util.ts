@@ -6,6 +6,8 @@ import {
   SimpleTextAttachmentAdapter,
 } from "@assistant-ui/react";
 
+import { extractOfficeText } from "./office-text.util";
+
 /** Most files one message may carry; the composer blocks sending above it. */
 export const CHAT_ATTACHMENT_LIMIT = 3;
 
@@ -45,15 +47,29 @@ class ChatTextAdapter extends SimpleTextAttachmentAdapter {
     "text/plain,text/markdown,text/csv,text/tab-separated-values,text/xml,application/xml,application/json,.txt,.md,.csv,.tsv,.xml,.json";
 }
 
+class ChatOfficeAdapter extends SimpleTextAttachmentAdapter {
+  override accept =
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.oasis.opendocument.spreadsheet,.docx,.xlsx,.xls,.ods";
+
+  override async send(attachment: PendingAttachment, options?: { signal?: AbortSignal }) {
+    const text = await extractOfficeText(attachment.file);
+    return super.send(
+      { ...attachment, file: new File([text], attachment.name, { type: "text/plain" }) },
+      options,
+    );
+  }
+}
+
 /**
- * Accepts images and PDFs (sent to the model as files) and text files (inlined
- * into the message), up to 10 MB each.
+ * Accepts images and PDFs (sent to the model as files), and text files, Word
+ * documents and spreadsheets (inlined into the message as text), up to 10 MB each.
  */
 export const createChatAttachmentAdapter = () => {
   const adapter = new CompositeAttachmentAdapter([
     new ChatImageAdapter(),
     new ChatPdfAdapter(),
     new ChatTextAdapter(),
+    new ChatOfficeAdapter(),
   ]);
 
   return {

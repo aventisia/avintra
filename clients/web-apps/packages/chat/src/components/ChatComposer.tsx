@@ -25,7 +25,8 @@ type ChatComposerProps = {
   commands?: readonly ChatCommand[];
 };
 
-const UNSUPPORTED_FILE = "That file type isn't supported. Attach images, PDFs or text files.";
+const UNSUPPORTED_FILE =
+  "That file type isn't supported. Attach images, PDFs, text, Word or Excel files.";
 
 const roundButtonClass =
   "inline-flex size-9 items-center justify-center rounded-full transition-[background-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface active:scale-95";
@@ -110,7 +111,7 @@ export const ChatComposer = ({
           <div className="flex items-center gap-1 px-3 pb-3">
             <ComposerPrimitive.AddAttachment asChild>
               <ChatIconButton
-                label={`Attach up to ${CHAT_ATTACHMENT_LIMIT} images, PDFs or text files (10 MB each)`}
+                label={`Attach up to ${CHAT_ATTACHMENT_LIMIT} images, PDFs, text, Word or Excel files (10 MB each)`}
                 className="size-9 rounded-full"
               >
                 <PaperclipIcon />
