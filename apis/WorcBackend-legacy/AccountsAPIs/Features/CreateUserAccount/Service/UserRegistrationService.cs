@@ -168,7 +168,7 @@ public class UserRegistrationService : IUserRegistrationService
                     Name = newUser.Email,
                     ContainerName = TenantContainerUtil.GenerateName(newUser.Email),
                     Domain = string.Empty,
-                    Type = TenantTypesEnum.Unspecified,
+                    Type = TenantTypesEnum.Organization,
                     ResourceType = TenantResourceTypesEnum.Shared,
                     Currency = CurrencyTypesEnum.USD,
                     ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it,
@@ -280,6 +280,21 @@ public class UserRegistrationService : IUserRegistrationService
 
         try
         {
+            // Retrieve the tenant for this user (assuming tenantId is already associated with the user)
+            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found for this user.";
+                return serviceResponse;
+            }
+
+            if (!await TenantSetupHelpers.IsSetupPendingAsync(_unitOfWork, tenant))
+            {
+                serviceResponse.StatusCode = 409;
+                serviceResponse.Message = "Organization setup is already complete.";
+                return serviceResponse;
+            }
+
             // Validate required fields: Domain and OrganizationName must not be empty or whitespace if the tenant is an organization
             if (tenantOrganizationDto.Type == TenantTypesEnum.Organization &&
                 (string.IsNullOrWhiteSpace(tenantOrganizationDto.Domain) ||
@@ -289,13 +304,20 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
+            if (tenantOrganizationDto.Type == TenantTypesEnum.Organization &&
+                string.Equals(tenantOrganizationDto.OrganizationName.Trim(), _username.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                serviceResponse.Message = "Enter your organization's name.";
+                return serviceResponse;
+            }
+
             // Check if the tenant type is NOT 'Individual'
             if (tenantOrganizationDto.Type != TenantTypesEnum.Individual)
             {
 
-                // Retrieve any existing tenant with the same organization name (case-insensitive)
+                // Retrieve any existing tenant with the same organization name (case-insensitive), excluding this tenant
                 var existingTenant = await _unitOfWork.TenantRepo
-                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower())
+                    .GetByConditionAsync(w => w.Name.ToLower() == tenantOrganizationDto.OrganizationName.ToLower() && w.Id != _tenantId)
                     .FirstOrDefaultAsync();
 
                 if (existingTenant != null)
@@ -303,7 +325,7 @@ public class UserRegistrationService : IUserRegistrationService
                     _logger.LogWarning("Organization name '{OrganizationName}' already exists for TenantId: {TenantId}",
                         tenantOrganizationDto.OrganizationName, existingTenant.Id);
 
-                    serviceResponse.Message = $"Organization name '{tenantOrganizationDto.OrganizationName}' already exists.";
+                    serviceResponse.Message = "Organization name already exists.";
                     return serviceResponse;
                 }
             }
@@ -324,18 +346,10 @@ public class UserRegistrationService : IUserRegistrationService
             // Clean domain by removing 'www.' prefix if present
             var cleanDomain = domain.StartsWith("www.") ? domain.Substring(4) : domain;
 
-            if (tenantOrganizationDto.Type == TenantTypesEnum.Organization && SsoConfigHelpers.IsConsumerEmailDomain(cleanDomain))
+            // IMPORTANT NOTE: Consumer mail domains are shared by many tenants, so they must never be stored as the organization domain.
+            if (SsoConfigHelpers.IsConsumerEmailDomain(cleanDomain))
             {
-                serviceResponse.Message = "Public email domains cannot be used for an organization. Choose Individual or use your organization email address.";
-                return serviceResponse;
-            }
-
-            // Retrieve the tenant for this user (assuming tenantId is already associated with the user)
-            var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
-            if (tenant == null)
-            {
-                serviceResponse.Message = "Tenant not found for this user.";
-                return serviceResponse;
+                cleanDomain = string.Empty;
             }
 
             // Check if the tenant type is individual or organization
@@ -412,7 +426,7 @@ public class UserRegistrationService : IUserRegistrationService
             IsActive = true,
             Status = SubscriptionStatusTypesEnum.Active,
             NextBillingDate = isStarterPlan
-                ? DateTimeOffset.UtcNow.Date.AddMonths(1)
+                ? DateTime.UtcNow.Date.AddMonths(1)
                 : new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
             MaxCredits = subscriptionPlan.MaxCredits,
             MaxPublishedItems = subscriptionPlan.MaxPublishedItems,

@@ -8,7 +8,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { hasPlanIntent, resolvePostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
-import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -18,13 +17,6 @@ export const useValidateUserSession = () => {
   // Get navigate function
   const navigate = useNavigate();
 
-  const { onBoardingStep, setOnBoardingStep } = useOnboardingStore(
-    useShallow((state) => ({
-      onBoardingStep: state.onBoardingStep,
-      setOnBoardingStep: state.setOnBoardingStep,
-    })),
-  );
-
   const { userSession, setUserSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
@@ -33,7 +25,7 @@ export const useValidateUserSession = () => {
   );
 
   // Validate user session
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, isIdle, data } = useMutation({
     mutationFn: refreshSession,
     onSuccess: (data) => {
       // Return, If response is null
@@ -45,21 +37,11 @@ export const useValidateUserSession = () => {
       const userSession = setUserSessionLocally(data.data);
       setUserSession(userSession);
 
-      // Check if backend message indicates incomplete tenant setup
-      if (data.message.includes(ADD_TENANT)) {
-        setOnBoardingStep("account-setup");
-      } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
-        setOnBoardingStep("choose-plan");
-      } else {
-        if (!userSession.hasPaidPlan && hasPlanIntent()) {
-          setOnBoardingStep("choose-plan");
-          return;
-        }
+      const staysOnOnboarding =
+        lacksSubscription(data.message) || (!userSession.hasPaidPlan && hasPlanIntent());
+      if (staysOnOnboarding) return;
 
-        navigate(
-          "/redirect?msg=Logging In...&url=" + resolvePostLoginDestination(userSession.email),
-        );
-      }
+      navigate("/redirect?msg=Logging In...&url=" + resolvePostLoginDestination(userSession.email));
     },
     onError: () => {
       // Remove user session from store
@@ -73,5 +55,12 @@ export const useValidateUserSession = () => {
   }, [mutate]);
 
   // return isPending state
-  return { isPending, userSession, onBoardingStep };
+  return {
+    isPending: isPending || isIdle,
+    userSession,
+    hasActiveSubscription: !!data && !lacksSubscription(data.message),
+  };
 };
+
+const lacksSubscription = (message: string) =>
+  message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION);

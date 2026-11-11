@@ -574,8 +574,8 @@ public class WebhookService : IWebhookService
             SubscriptionId = tenantSubscription.Id,
             CreditedOn = DateTimeOffset.UtcNow,
             ExpiredOn = tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
-                        ? DateTimeOffset.UtcNow.Date.AddMonths(1)
-                        : DateTimeOffset.UtcNow.Date.AddYears(1),
+                        ? DateTime.UtcNow.Date.AddMonths(1)
+                        : DateTime.UtcNow.Date.AddYears(1),
             AvailableCredits = totalCredits,
             Type = CreditTypesEnum.Subscription,
             TenantId = tenantSubscription.TenantId,
@@ -841,9 +841,9 @@ public class WebhookService : IWebhookService
                     tenantSubscription.IsActive = true;
 
                     // Determine the base date (either now or the existing NextBillingDate)
-                    DateTimeOffset baseDate = tenantSubscription.NextBillingDate <= DateTimeOffset.UtcNow.Date
-                        ? DateTimeOffset.UtcNow.Date
-                        : tenantSubscription.NextBillingDate.Date;
+                    DateTimeOffset baseDate = tenantSubscription.NextBillingDate <= DateTime.UtcNow.Date
+                        ? DateTime.UtcNow.Date
+                        : tenantSubscription.NextBillingDate.UtcDateTime.Date;
 
                     // Adjust the NextBillingDate based on the frequency (monthly or yearly)
                     tenantSubscription.NextBillingDate = tenantSubscription.Frequency switch
@@ -899,7 +899,7 @@ public class WebhookService : IWebhookService
                     AvailableCredits = totalCredits,
                     Type = CreditTypesEnum.TopUp,
                     CreditedOn = DateTimeOffset.UtcNow,
-                    ExpiredOn = DateTimeOffset.UtcNow.Date.AddYears(1),
+                    ExpiredOn = DateTime.UtcNow.Date.AddYears(1),
                     SubscriptionId = billingHistory.BillingDetail.SubscriptionId,
                     TenantId = billingHistory.TenantId,
                     CreatedByUserId = billingHistory.CreatedByUserId,
