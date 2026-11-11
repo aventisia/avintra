@@ -8,7 +8,7 @@ export const billingInfoSchema = z
 
     organizationName: z
       .string()
-      .max(255, { message: maxLenError("Organization name", 255) })
+      .max(100, { message: maxLenError("Organization name", 100) })
       .optional(),
 
     firstName: z
@@ -33,7 +33,10 @@ export const billingInfoSchema = z
       .max(255, { message: maxLenError("Address Line 1", 255) }),
     addressLine2: z.string().optional(),
 
-    state: z.string().optional(),
+    state: z
+      .string()
+      .min(1, { message: reqError("State") })
+      .max(255, { message: maxLenError("State", 255) }),
 
     city: z
       .string()

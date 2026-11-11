@@ -38,9 +38,14 @@ public static class AccountsDbInitialSeed
                 // corrected to the running edition's limits.
                 if (!await IsSeedingRequired(_accountsDbContext, logger))
                 {
-                    var existingSuperUser = await _accountsDbContext.Users
+                    var defaultUsers = await _accountsDbContext.Users
                         .Where(w => w.IsDefault)
-                        .SingleOrDefaultAsync();
+                        .ToListAsync();
+
+                    // IMPORTANT NOTE: other accounts (e.g. support users) can also be flagged IsDefault, so the platform admin is matched by email.
+                    var existingSuperUser = defaultUsers.Count == 1
+                        ? defaultUsers[0]
+                        : defaultUsers.FirstOrDefault(u => string.Equals(u.Email, environmentConfig.OnPremAdminEmail, StringComparison.OrdinalIgnoreCase));
 
                     if (existingSuperUser != null)
                     {
@@ -50,6 +55,11 @@ public static class AccountsDbInitialSeed
                         {
                             return app;
                         }
+                    }
+                    else if (defaultUsers.Count > 0)
+                    {
+                        logger.LogWarning("{Count} users are flagged IsDefault and none matches OnPremAdminEmail; seeding subscription plans only", defaultUsers.Count);
+                        await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, defaultUsers[0], logger);
                     }
 
                     return app;

@@ -61,10 +61,7 @@ export const useAuthenticateUserMutation = () => {
 
       // ----------User is authenticated Now----------
 
-      // Check if backend message indicates incomplete tenant setup
-      if (message.includes(ADD_TENANT)) {
-        window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
-      } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+      if (message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
         // Reset login process

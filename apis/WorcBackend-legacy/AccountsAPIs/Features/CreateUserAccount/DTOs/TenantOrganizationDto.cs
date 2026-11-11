@@ -12,15 +12,15 @@ public class TenantOrganizationDto
     public TenantTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the organization.
+    /// Gets or sets the name of the organization. Maximum length is 100 characters.
     /// </summary>
-    [StringLength(50)]
+    [StringLength(100)]
     public required string OrganizationName { get; set; }
 
     /// <summary>
-    /// Gets or sets the domain associated with the organization's email.
+    /// Gets or sets the domain associated with the organization's email. Maximum length is 100 characters.
     /// </summary>
-    [StringLength(50)]
+    [StringLength(100)]
     public required string Domain { get; set; }
 
     /// <summary>

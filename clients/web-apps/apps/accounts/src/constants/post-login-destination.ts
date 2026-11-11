@@ -54,8 +54,11 @@ const getSameOriginRedirect = (): string | null => {
 const resolvePostLoginDestination = (email: string): string =>
   getSameOriginRedirect() ?? getPostLoginDestination(email);
 
-/** True when the user arrived intending to buy a plan (a `plan` query param is present). */
-const hasPlanIntent = (): boolean => new URLSearchParams(window.location.search).has("plan");
+/** True when the user arrived intending to buy a paid plan (a `plan` query param other than Starter). */
+const hasPlanIntent = (): boolean => {
+  const plan = new URLSearchParams(window.location.search).get("plan");
+  return plan !== null && plan.toLowerCase() !== "starter";
+};
 
 export {
   AVENTISIA_EMAIL_DOMAIN,
