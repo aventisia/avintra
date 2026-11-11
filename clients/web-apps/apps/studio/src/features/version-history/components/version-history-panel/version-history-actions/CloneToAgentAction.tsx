@@ -1,25 +1,26 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { toast } from "@avplatform/ui/sonner";
 import { CopySimpleIcon } from "@phosphor-icons/react";
-import { useShallow } from "zustand/react/shallow";
 
 import { useCloneToAgentMutation } from "@/features/version-history/hooks/useCloneToAgentMutation";
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
-import { useAppLoaderStore } from "@/stores/app-loader-store";
 
 export default function CloneToAgentAction({ id }: { id: string }) {
   const detailQuery = useFetchVersionHistoryDetail(id);
   const cloneToNewAgentMutation = useCloneToAgentMutation();
 
-  const { showLoader } = useAppLoaderStore(
-    useShallow((state) => ({ showLoader: state.showLoader })),
-  );
-
   const handleClone = async () => {
-    showLoader("Cloning in process...");
-    const { data } = await detailQuery.refetch();
-    if (!data) return;
+    try {
+      const { data } = await detailQuery.refetch();
+      if (!data) {
+        toast.error("Unable to load version details. Please try again.");
+        return;
+      }
 
-    cloneToNewAgentMutation.mutate(data);
+      cloneToNewAgentMutation.mutate(data);
+    } catch {
+      toast.error("Clone failed. Please try again.");
+    }
   };
 
   return (
@@ -27,6 +28,7 @@ export default function CloneToAgentAction({ id }: { id: string }) {
       Icon={CopySimpleIcon}
       size="sm"
       content="Clone to new agent"
+      disabled={detailQuery.isFetching || cloneToNewAgentMutation.isPending}
       onClick={handleClone}
     />
   );
