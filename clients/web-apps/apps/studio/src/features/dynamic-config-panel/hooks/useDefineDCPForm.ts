@@ -56,6 +56,7 @@ export const useDefineDCPForm = () => {
     if (!nodeUniqueName) return;
 
     setIsLoading(true);
+    setIsFormReady(false);
 
     const getErrorFieldJson = (errorHandling?: string): DCPFieldSchemaType[] => {
       if (errorHandling == "standard") return onErrorFieldsJson;

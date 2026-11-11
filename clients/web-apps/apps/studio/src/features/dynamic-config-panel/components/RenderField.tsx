@@ -24,6 +24,7 @@ import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
 import { VaultCredentialSelectField } from "./fields-for-form/VaultCredentialSelectField";
 import { PromptConfigFieldV2 } from "./fields-for-form/prompt-field/PromptConfigFieldV2";
 import { PromptConfigField } from "./fields-for-form/prompt-field/PromptField";
+import { ConfigPanelRichTextField } from "./fields-for-form/rich-text-field/ConfigPanelRichTextField";
 import { QueueConditionGroupsField } from "./queue-condition-groups/QueueConditionGroupsField";
 import { QueuePriorityGroupsField } from "./queue-condition-groups/QueuePriorityGroupsField";
 
@@ -49,6 +50,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "text":
     case "textarea":
       return <ConfigPanelAutosizeTextareaField {...baseProps} minHeight={0} />;
+    case "rich-text":
+      return <ConfigPanelRichTextField {...baseProps} richTextIf={field.richTextIf} />;
     case "select":
       return (
         <SelectField

@@ -19,7 +19,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "rich-text",
       "name": "BodyContent",
       "label": "Body Content",
       "description": "The body content of the HTML document.",
