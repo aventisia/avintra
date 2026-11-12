@@ -7,6 +7,7 @@ export type { ChatModelGroup, ChatModelPickerProps } from "./components/ChatMode
 export type { ChatStarterGroup } from "./components/ChatStarters";
 export { ChatThread } from "./components/ChatThread";
 export type { ChatCommand } from "./components/ChatCommandMenu";
+export type { ChatMention } from "./components/ChatMentionMenu";
 export type { ChatThreadProps } from "./components/ChatThread";
 export type { ChatHistoryItem } from "./utils/history-groups.util";
 export { NAVIGATE_TOOL_NAME, pickReachablePrompts } from "./utils/chat-intent.util";

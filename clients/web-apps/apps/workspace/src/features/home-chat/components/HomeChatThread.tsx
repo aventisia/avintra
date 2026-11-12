@@ -19,6 +19,7 @@ import {
 import { useHomeChatCommands } from "../hooks/useHomeChatCommands.hook";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
 import { useHomeChatFiles } from "../hooks/useHomeChatFiles.hook";
+import { useHomeChatMentions } from "../hooks/useHomeChatMentions.hook";
 import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
@@ -55,6 +56,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   const destinationsRef = useRef(destinations);
   destinationsRef.current = destinations;
   const starters = useHomeChatStarters(destinations);
+  const mentions = useHomeChatMentions();
   const navigate = useNavigate();
   const commands = useHomeChatCommands();
 
@@ -161,6 +163,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             onNavigate={navigate}
             files={files.handlers}
             commands={commands}
+            mentions={mentions}
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
               groups.length > 0 && (

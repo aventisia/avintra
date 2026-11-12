@@ -12,6 +12,7 @@ import { CHAT_ATTACHMENT_LIMIT } from "../utils/chat-attachment-adapter.util";
 import { ChatAttachment } from "./ChatAttachment";
 import { type ChatCommand, ChatCommandMenu } from "./ChatCommandMenu";
 import { ChatIconButton } from "./ChatIconButton";
+import { type ChatMention, ChatMentionMenu } from "./ChatMentionMenu";
 import { ChatVoiceInput } from "./ChatVoiceInput";
 
 type ChatComposerProps = {
@@ -23,6 +24,8 @@ type ChatComposerProps = {
   transcribe?: (audio: Blob) => Promise<string>;
   /** Offered when the message starts with `/`. */
   commands?: readonly ChatCommand[];
+  /** Offered when the message contains `@`. */
+  mentions?: readonly ChatMention[];
 };
 
 const UNSUPPORTED_FILE =
@@ -34,7 +37,7 @@ const roundButtonClass =
 /**
  * Auto-growing message box that takes dropped, pasted or picked files. Enter
  * sends, Shift+Enter adds a line, Escape stops a reply, ↑ in an empty box
- * recalls the last message, a leading `/` lists commands, and the microphone
+ * recalls the last message, a leading `/` lists commands, `@` mentions a file, and the microphone
  * dictates when transcription is given.
  */
 export const ChatComposer = ({
@@ -43,6 +46,7 @@ export const ChatComposer = ({
   tools,
   transcribe,
   commands,
+  mentions,
 }: ChatComposerProps) => {
   const aui = useAui();
   const attachmentCount = useAuiState((s) => s.composer.attachments.length);
@@ -86,6 +90,7 @@ export const ChatComposer = ({
         {commands && commands.length > 0 && (
           <ChatCommandMenu commands={commands} inputRef={inputRef} />
         )}
+        {mentions && mentions.length > 0 && <ChatMentionMenu mentions={mentions} />}
         <ComposerPrimitive.AttachmentDropzone className="flex w-full flex-col rounded-[1.375rem] border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_32px_-16px_rgb(0_0_0/0.18)] transition-[border-color,box-shadow] focus-within:border-line-strong data-[dragging=true]:border-primary data-[dragging=true]:ring-4 data-[dragging=true]:ring-primary/15 dark:bg-surface dark:shadow-[0_0_0_1px_rgb(255_255_255/0.02),0_16px_40px_-20px_rgb(0_0_0/0.8)]">
           <AuiIf condition={(s) => s.composer.attachments.length > 0}>
             <div className="flex flex-wrap gap-2 px-3 pt-3">

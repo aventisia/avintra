@@ -9,6 +9,7 @@ import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.
 import type { ChatDestinationOption } from "../utils/chat-intent.util";
 import { type ChatCommand } from "./ChatCommandMenu";
 import { ChatComposer } from "./ChatComposer";
+import { type ChatMention } from "./ChatMentionMenu";
 import { ChatMessage } from "./ChatMessage";
 import { type ChatStarterGroup, ChatStarters } from "./ChatStarters";
 
@@ -23,6 +24,8 @@ export type ChatThreadProps = {
   transcribe?: (audio: Blob) => Promise<string>;
   /** Offered when the message starts with `/`. */
   commands?: readonly ChatCommand[];
+  /** Offered when the message contains `@`. */
+  mentions?: readonly ChatMention[];
   /** Composer placeholder. */
   placeholder?: string;
   /** Pages the assistant may offer; a suggested page outside this list isn't shown. */
@@ -81,6 +84,7 @@ export const ChatThread = ({
   composerTools,
   transcribe,
   commands,
+  mentions,
   placeholder = "Message",
   destinations = NO_DESTINATIONS,
   onNavigate,
@@ -133,6 +137,7 @@ export const ChatThread = ({
                   tools={composerTools}
                   transcribe={transcribe}
                   commands={commands}
+                  mentions={mentions}
                 />
               </ThreadPrimitive.ViewportFooter>
               <AuiIf condition={(s) => s.thread.isEmpty}>
