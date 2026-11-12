@@ -4,8 +4,10 @@
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
-# committed `.env.example` template to the local env file its service expects
-# and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
+# committed `.env.example` template to the local env file its service expects,
+# replaces each __GENERATED_BY_INITIAL_SETUP__ key with a local secret (an existing
+# env-file value, else the OS environment value, else a random one; JWT_SECRET_KEY
+# is shared by every service), and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
 # the local stack from dekit.yaml), so the checkout can be built and run without
 # doing it by hand. It also installs the pinned gitleaks binary and enables the
 # committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
@@ -157,6 +159,56 @@ ENV_FILES=(
   tests/bruno/.env
 )
 
+GENERATED_MARKER="__GENERATED_BY_INITIAL_SETUP__"
+GENERATED_KEYS=(JWT_SECRET_KEY AES_ENCRYPTION_KEY AES_INITIALIZATION_VECTOR CORSAIR_KEK)
+
+random_base64() { head -c "$1" /dev/urandom | base64 | tr -d '\n'; }
+random_hex() { head -c "$1" /dev/urandom | od -An -tx1 | tr -d ' \n'; }
+
+generate_secret() {
+  case "$1" in
+    JWT_SECRET_KEY) random_base64 64 ;;
+    AES_ENCRYPTION_KEY) random_base64 32 ;;
+    AES_INITIALIZATION_VECTOR) random_base64 16 ;;
+    CORSAIR_KEK) random_hex 32 ;;
+  esac
+}
+
+existing_secret() {
+  local key="$1" rel value
+  for rel in "${ENV_FILES[@]}"; do
+    [ -f "$ROOT/$rel" ] || continue
+    value="$(sed -n "s/^${key}=//p" "$ROOT/$rel" | head -n1 | tr -d '\r')"
+    if [ -n "$value" ] && [ "$value" != "$GENERATED_MARKER" ]; then
+      printf '%s' "$value"
+      return 0
+    fi
+  done
+  printf '%s' "${!key:-}"
+}
+
+# IMPORTANT NOTE: keys are resolved before any template is copied, so --force keeps them;
+# a new AES key or Corsair KEK cannot decrypt data already stored in the local databases.
+resolve_generated_secrets() {
+  local key value
+  for key in "${GENERATED_KEYS[@]}"; do
+    value="$(existing_secret "$key")"
+    [ -n "$value" ] || value="$(generate_secret "$key")"
+    printf -v "SECRET_$key" '%s' "$value"
+  done
+}
+
+fill_generated_secrets() {
+  local rel="$1" dst="$ROOT/$1" key var
+  grep -q "=${GENERATED_MARKER}" "$dst" || return 0
+  for key in "${GENERATED_KEYS[@]}"; do
+    var="SECRET_$key"
+    KEY="$key" VALUE="${!var}" MARKER="$GENERATED_MARKER" \
+      perl -i -pe 's/^\Q$ENV{KEY}=$ENV{MARKER}\E(?=\r?$)/$ENV{KEY}=$ENV{VALUE}/' "$dst"
+  done
+  okmark "$rel (generated keys filled)"
+}
+
 copy_env_template() {
   local rel="$1"
   local dst="$ROOT/$rel"
@@ -171,8 +223,12 @@ copy_env_template() {
 }
 
 step "Creating gitignored env files from .env.example templates"
+resolve_generated_secrets
 for rel in "${ENV_FILES[@]}"; do
   copy_env_template "$rel"
+done
+for rel in "${ENV_FILES[@]}"; do
+  fill_generated_secrets "$rel"
 done
 
 # ---------------------------------------------------------------------------
@@ -209,6 +265,25 @@ install_npm() {
   fi
 }
 
+# IMPORTANT NOTE: the committed web-apps lockfile is generated on Windows/Linux, and npm's
+# optional-dependency bug (https://github.com/npm/cli/issues/4828) then omits the macOS native
+# builds. Install them with --no-save, matching each installed parent's version, so package.json
+# and package-lock.json stay unchanged. One command keeps --no-save installs from removing each other.
+install_macos_native_builds() {
+  local dir="$1" arch entry parent version specs=()
+  [ "$(uname -s)" = "Darwin" ] || return 0
+  command -v node >/dev/null 2>&1 || return 0
+  arch="$(node -p process.arch)"
+  for entry in "@swc/core:@swc/core-darwin-$arch" "rollup:@rollup/rollup-darwin-$arch" "@napi-rs/canvas:@napi-rs/canvas-darwin-$arch"; do
+    parent="${entry%%:*}"
+    [ -f "$dir/node_modules/$parent/package.json" ] || continue
+    version="$(cd "$dir" && node -p "require('./node_modules/$parent/package.json').version")"
+    specs+=("${entry#*:}@$version")
+  done
+  [ "${#specs[@]}" -gt 0 ] || return 0
+  run_install "web apps macOS native builds (npm install --no-save)" "$dir" npm install --no-save --force "${specs[@]}"
+}
+
 step "Installing dependencies"
 if [ "$SKIP_INSTALL" -eq 1 ]; then
   detail "skipped (--skip-install)"
@@ -217,6 +292,7 @@ else
   trap 'rm -rf "$LOGDIR"' EXIT
 
   install_npm "web apps (npm install)" "$ROOT/clients/web-apps"
+  [ "$RUN_OK" -eq 1 ] && install_macos_native_builds "$ROOT/clients/web-apps"
   TAURI_DIR="$ROOT/clients/web-apps/apps/desktop-app/src-tauri"
   if [ ! -f "$TAURI_DIR/Cargo.toml" ]; then
     omitmark "desktop-app Rust deps (cargo fetch)" "src-tauri/Cargo.toml not found"
@@ -282,9 +358,8 @@ fi
 # ---------------------------------------------------------------------------
 printf '\nDone. Repository is bootstrapped.\n'
 printf 'Next steps:\n'
-printf '  - Set the secrets listed (commented out) in each generated env file, either\n'
-printf '    in your OS environment or by uncommenting them there, before running the\n'
-printf '    services. Also set your Bruno login in tests/bruno/.env.\n'
+printf '  - Local keys (JWT, AES, Corsair KEK) are generated. Set your PostgreSQL credentials\n'
+printf '    and admin email in the API env files, and your Bruno login in tests/bruno/.env.\n'
 printf '  - Run the stack: dekit up, then dekit attach (more commands at the top of dekit.yaml)\n'
 
 if [ "$INSTALL_FAILED" -eq 1 ]; then
