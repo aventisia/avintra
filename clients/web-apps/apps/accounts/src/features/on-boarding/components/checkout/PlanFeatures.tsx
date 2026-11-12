@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { CheckIcon } from "@phosphor-icons/react";
 
 import type { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
 
@@ -35,7 +35,7 @@ export const PlanFeatures = ({ plan }: { plan: SubscriptionPlanDTO }) => (
     {getPlanFeatures(plan).map((feature) => (
       <li key={feature} className="flex items-start gap-2.5">
         <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Check className="h-3 w-3" strokeWidth={3} />
+          <CheckIcon weight="bold" className="h-3 w-3" />
         </span>
         {feature}
       </li>

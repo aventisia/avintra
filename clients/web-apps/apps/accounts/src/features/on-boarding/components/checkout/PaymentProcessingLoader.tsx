@@ -2,7 +2,7 @@ import { AppLogo } from "@avplatform/layout/logo";
 import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { Check, PartyPopper } from "lucide-react";
+import { CheckIcon, ConfettiIcon } from "@phosphor-icons/react";
 
 import type { PaymentStatusDto } from "../../dtos/payment-status-dto";
 
@@ -43,7 +43,7 @@ const PaymentProcessingLoader = ({
             )}
           >
             {showRedirectMessage ? (
-              <PartyPopper className="h-7 w-7" />
+              <ConfettiIcon className="h-7 w-7" />
             ) : (
               <LoadingSpinner className="h-7 w-7" />
             )}
@@ -72,7 +72,7 @@ const PaymentProcessingLoader = ({
                     )}
                   >
                     {isDone ? (
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                      <CheckIcon weight="bold" className="h-3.5 w-3.5" />
                     ) : isActive ? (
                       <LoadingSpinner className="h-3.5 w-3.5" />
                     ) : null}

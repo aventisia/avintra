@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
-import { Archive, ArchiveRestore } from "lucide-react";
+import { ArchiveIcon, TrayArrowUpIcon } from "@phosphor-icons/react";
 
 import { useArchiveFlowVersionsMutation } from "../../hooks/useArchiveFlowVersions.hook";
 
@@ -27,7 +27,7 @@ export const FlowRowArchiveAction = ({
   if (isArchived) {
     return (
       <SimpleDDMenuItem
-        Icon={ArchiveRestore}
+        Icon={TrayArrowUpIcon}
         content="Unarchive"
         onClick={() =>
           showCustomAlertDialog({
@@ -45,7 +45,7 @@ export const FlowRowArchiveAction = ({
 
   return (
     <SimpleDDMenuItem
-      Icon={Archive}
+      Icon={ArchiveIcon}
       content="Archive"
       onClick={() =>
         // IMPORTANT NOTE: the list only carries the latest version's published state, so an
