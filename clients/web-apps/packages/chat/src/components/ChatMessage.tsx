@@ -1,6 +1,7 @@
 import {
   ActionBarPrimitive,
   AuiIf,
+  BranchPickerPrimitive,
   ComposerPrimitive,
   ErrorPrimitive,
   MessagePrimitive,
@@ -12,6 +13,8 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
   ArrowClockwiseIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
   CheckIcon,
   CopyIcon,
   PencilSimpleIcon,
@@ -118,6 +121,27 @@ const MessageFeedback = () => (
   </>
 );
 
+const MessageBranches = () => (
+  <BranchPickerPrimitive.Root
+    hideWhenSingleBranch
+    className="mr-1 inline-flex items-center text-xs text-muted-foreground"
+  >
+    <BranchPickerPrimitive.Previous asChild>
+      <ChatIconButton label="Previous">
+        <CaretLeftIcon />
+      </ChatIconButton>
+    </BranchPickerPrimitive.Previous>
+    <span className="font-medium">
+      <BranchPickerPrimitive.Number /> / <BranchPickerPrimitive.Count />
+    </span>
+    <BranchPickerPrimitive.Next asChild>
+      <ChatIconButton label="Next">
+        <CaretRightIcon />
+      </ChatIconButton>
+    </BranchPickerPrimitive.Next>
+  </BranchPickerPrimitive.Root>
+);
+
 const MessageError = () => (
   <MessagePrimitive.Error>
     <ErrorPrimitive.Root
@@ -212,6 +236,7 @@ const UserMessage = () => {
             <MessageTime />
             <MessageEdit />
             <MessageCopy />
+            <MessageBranches />
           </ActionBarPrimitive.Root>
         </>
       )}
@@ -286,6 +311,7 @@ const AssistantMessage = () => {
             !isLast && "opacity-0",
           )}
         >
+          {hasText && <MessageBranches />}
           {hasText && <MessageCopy />}
           {hasText && <MessageFeedback />}
           {isLast && <MessageRegenerate />}
