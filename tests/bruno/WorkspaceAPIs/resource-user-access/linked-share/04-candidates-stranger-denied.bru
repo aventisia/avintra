@@ -1,0 +1,31 @@
+meta {
+  name: A stranger cannot enumerate an agent's linked items
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_FLOW_ID}}/linked-share-candidates?userIds={{LINK_RECIPIENT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_STRANGER_TOKEN}}
+}
+
+script:post-response {
+  test("a user with no access to the agent is refused", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("the refusal names no linked item", function() {
+    const text = typeof res.getBody() === "string" ? res.getBody() : "";
+    expect(text).to.not.include(bru.getEnvVar("LINK_DEV_CREDENTIAL_NAME") || "VaultCredential");
+  });
+}
+
+docs {
+  > Read gate: the endpoint mirrors the share-list read (creator, tenant-wide or an
+  > existing share row), so item names and owners never leak to strangers.
+}

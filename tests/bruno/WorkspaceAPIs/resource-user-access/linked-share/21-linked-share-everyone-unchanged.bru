@@ -1,0 +1,44 @@
+meta {
+  name: Everyone on the agent leaves linked items closed (AC7)
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_FLOW_ID}}/linked-share-candidates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const queue = data.find((candidate) => candidate.resourceId === bru.getEnvVar("LINK_QUEUE_ID"));
+  const everyoneItem = data.find(
+    (candidate) => candidate.resourceId === bru.getEnvVar("LINK_EVERYONE_CREDENTIAL_ID")
+  );
+
+  test("candidates are still readable after the agent went to Everyone", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("a linked item that was not open to everyone stays closed", function() {
+    expect(queue, "queue is missing from the candidates").to.be.an("object");
+    expect(queue.isTenantWideAccess).to.equal(false);
+  });
+
+  test("a linked item that was already open to everyone keeps its flag", function() {
+    expect(everyoneItem, "Everyone credential is missing from the candidates").to.be.an("object");
+    expect(everyoneItem.isTenantWideAccess).to.equal(true);
+  });
+}
+
+docs {
+  > AC7: the Everyone save touches only the agent's tenant-wide flag. The dialog
+  > sends no tenant-access call for a linked item, and this list shows the linked
+  > flags unchanged; the closed ones are what it lists in Everyone mode.
+}

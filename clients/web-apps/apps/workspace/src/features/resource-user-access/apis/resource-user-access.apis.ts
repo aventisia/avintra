@@ -5,11 +5,14 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 import {
   CreateResourceUserAccessDto,
+  LinkedShareCandidateDto,
   ResourceUserAccessDto,
   UpdateTenantWideAccessDto,
 } from "../dtos/resource-user-access.dto";
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 
 const resourceUserAccessApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-user-access`;
+const resourceFlowAccessApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/resource-flows`;
 
 /**
  * Retrieves all ResourceUserAccess list.
@@ -30,6 +33,23 @@ const getResourceUserAccessById = (resourceId: string) => {
     .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`, {
       headers: getSpaceHeaders(),
     })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the resources an agent uses, with who may share each and which recipients still need access.
+ * The `resource-flows` route belongs to the agent access API; it lives here because the share dialog owns the call.
+ */
+const getLinkedShareCandidates = (
+  resourceType: ResourceTypeEnum,
+  resourceId: string,
+  userIds: string[] = [],
+) => {
+  return axiosInstance
+    .get<IHttpResponse<LinkedShareCandidateDto[]>>(
+      `${resourceFlowAccessApiUrl}/${resourceType}/${resourceId}/linked-share-candidates`,
+      { params: { userIds: userIds.join(",") }, headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
@@ -93,6 +113,7 @@ const deleteResourceUserAccess = (id: string) => {
 export {
   getAllResourceUserAccess,
   getResourceUserAccessById,
+  getLinkedShareCandidates,
   insertResourceUserAccess,
   updateResourceUserAccess,
   updateTenantWideAccess,

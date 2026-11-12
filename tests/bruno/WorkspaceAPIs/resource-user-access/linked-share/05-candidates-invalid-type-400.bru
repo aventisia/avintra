@@ -1,0 +1,26 @@
+meta {
+  name: Linked share candidates reject a non-agent resource type
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Queue/{{LINK_FLOW_ID}}/linked-share-candidates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("only Flow and FlowVersion are accepted", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}
+
+docs {
+  > The endpoint serves the agent share dialogs only; every other resource type
+  > keeps its current share flow untouched.
+}

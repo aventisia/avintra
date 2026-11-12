@@ -32,4 +32,38 @@ public class ResourceFlowAccessController : BaseApiController
     {
         return ResultHelper(await _resourceFlowAccessService.GetAssignedFlowsAsync(resourceType, resourceId));
     }
+
+    /// <summary>
+    /// Retrieves the resources an agent uses, with who may share each and which recipients still need access.
+    /// </summary>
+    [HttpGet("{resourceType}/{resourceId}/linked-share-candidates")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<LinkedShareCandidateDto>>>> GetLinkedShareCandidates(ResourceTypeEnum resourceType, Guid resourceId, [FromQuery] string? userIds)
+    {
+        if (!TryParseUserIds(userIds, out var recipientIds))
+        {
+            return PlainTextError(400, "User identifiers are invalid.");
+        }
+
+        return ResultHelper(await _resourceFlowAccessService.GetLinkedShareCandidatesAsync(resourceType, resourceId, recipientIds));
+    }
+
+    private static bool TryParseUserIds(string? userIds, out List<Guid> recipientIds)
+    {
+        recipientIds = [];
+
+        foreach (var value in (userIds ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (!Guid.TryParse(value, out var userId))
+            {
+                return false;
+            }
+
+            if (userId != Guid.Empty)
+            {
+                recipientIds.Add(userId);
+            }
+        }
+
+        return true;
+    }
 }

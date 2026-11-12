@@ -767,6 +767,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
         }
     }
 
+    public async Task<bool> CanShareResourceAsync(Guid resourceId, ResourceTypeEnum resourceType)
+    {
+        var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
+
+        return shareTarget != null && await HasShareRightsAsync(resourceId, resourceType, shareTarget);
+    }
+
     private sealed record ShareTarget(Guid CreatedByUserId, bool IsTenantWideAccess, Action<bool> SetTenantWideAccess);
 
     private async Task<ShareTarget?> FindShareTargetAsync(Guid resourceId, ResourceTypeEnum resourceType)

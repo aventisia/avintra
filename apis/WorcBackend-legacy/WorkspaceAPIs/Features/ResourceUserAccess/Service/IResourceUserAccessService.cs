@@ -98,6 +98,15 @@ public interface IResourceUserAccessService
         params ResourceAccessTypeEnum[] accessLevels);
 
     /// <summary>
+    /// Checks whether the current user may share a resource.
+    /// Only the resource creator or a holder of an Owner row may share it; tenant-wide access does not.
+    /// </summary>
+    /// <param name="resourceId">The unique identifier of the resource.</param>
+    /// <param name="resourceType">The type of resource.</param>
+    /// <returns><c>true</c> when the resource exists and the current user may share it; otherwise, <c>false</c>.</returns>
+    Task<bool> CanShareResourceAsync(Guid resourceId, ResourceTypeEnum resourceType);
+
+    /// <summary>
     /// Retrieves identifiers of resources shared with a user based on allowed access levels.
     /// </summary>
     /// <param name="userId">The user identifier.</param>

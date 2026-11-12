@@ -29,3 +29,13 @@ export interface ResourceUserAccessDto {
   lastName: string | null;
   username: string | null;
 }
+
+export interface LinkedShareCandidateDto {
+  resourceType: ResourceTypeEnum;
+  resourceId: string;
+  name: string;
+  ownerName: string | null;
+  isTenantWideAccess: boolean;
+  canShare: boolean;
+  userIdsNeedingShare: string[];
+}
