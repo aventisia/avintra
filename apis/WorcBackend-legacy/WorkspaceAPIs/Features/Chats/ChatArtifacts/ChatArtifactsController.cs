@@ -58,6 +58,33 @@ public class ChatArtifactsController : BaseApiController
     }
 
     /// <summary>
+    /// Shares a chat artifact by issuing a read-only token (idempotent).
+    /// </summary>
+    [HttpPost("{chatArtifactId}/share")]
+    public async Task<ActionResult<ServiceResponse<string>>> ShareChatArtifact(Guid chatArtifactId)
+    {
+        return ResultHelper(await _chatArtifactsService.ShareChatArtifactAsync(chatArtifactId));
+    }
+
+    /// <summary>
+    /// Stops sharing a chat artifact by clearing its read-only token.
+    /// </summary>
+    [HttpPost("{chatArtifactId}/unshare")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UnshareChatArtifact(Guid chatArtifactId)
+    {
+        return ResultHelper(await _chatArtifactsService.UnshareChatArtifactAsync(chatArtifactId));
+    }
+
+    /// <summary>
+    /// Retrieves a shared chat artifact by its read-only token.
+    /// </summary>
+    [HttpGet("shared/{shareToken}")]
+    public async Task<ActionResult<ServiceResponse<ChatArtifactDto>>> GetSharedChatArtifact(string shareToken)
+    {
+        return ResultHelper(await _chatArtifactsService.GetSharedChatArtifactAsync(shareToken));
+    }
+
+    /// <summary>
     /// Deletes multiple chat artifacts by their IDs.
     /// </summary>
     [HttpPost("delete-multiple")]

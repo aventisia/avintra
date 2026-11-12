@@ -3,8 +3,8 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
-import { ConversationDto } from "../dtos/conversation.dto";
 import { ChatArtifactDto } from "../dtos/chat-artifact.dto";
+import { ConversationDto } from "../dtos/conversation.dto";
 import { InsertChatArtifactDto } from "../dtos/insert-chat-artifact.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
@@ -82,6 +82,43 @@ export const createChatArtifact = (insertChatArtifactDto: InsertChatArtifactDto)
 export const deleteChatArtifact = (chatArtifactId: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${artifactAPIURL}/${chatArtifactId}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Shares a chat artifact, returning its read-only token (idempotent).
+ */
+export const shareChatArtifact = (chatArtifactId: string) => {
+  return axiosInstance
+    .post<IHttpResponse<string>>(
+      `${artifactAPIURL}/${chatArtifactId}/share`,
+      {},
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
+ * Stops sharing a chat artifact, invalidating its link.
+ */
+export const unshareChatArtifact = (chatArtifactId: string) => {
+  return axiosInstance
+    .post<IHttpResponse<boolean>>(
+      `${artifactAPIURL}/${chatArtifactId}/unshare`,
+      {},
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
+ * Gets a shared chat artifact by its read-only token.
+ */
+export const getSharedChatArtifact = (shareToken: string) => {
+  return axiosInstance
+    .get<IHttpResponse<ChatArtifactDto>>(`${artifactAPIURL}/shared/${shareToken}`, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

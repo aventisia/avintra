@@ -71,6 +71,7 @@ import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
 import { HomeChatPage } from "./pages/HomeChatPage";
 import { MyNotificationsPage } from "./pages/MyNotificationsPage";
+import { SharedArtifactPage } from "./pages/SharedArtifactPage";
 import { SharedChatPage } from "./pages/SharedChatPage";
 
 const routerConfig: RouteObject[] = [
@@ -90,6 +91,11 @@ const routerConfig: RouteObject[] = [
             {
               path: `${HOME_CHAT_SHARED_ROUTE}/:shareToken`,
               element: <SharedChatPage />,
+              handle: { fullBleed: true },
+            },
+            {
+              path: `${HOME_CHAT_SHARED_ROUTE}/file/:shareToken`,
+              element: <SharedArtifactPage />,
               handle: { fullBleed: true },
             },
           ]

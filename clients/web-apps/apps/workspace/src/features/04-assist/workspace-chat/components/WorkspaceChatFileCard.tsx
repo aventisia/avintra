@@ -13,6 +13,8 @@ import {
   FilePptIcon,
   FileTextIcon,
   FileXlsIcon,
+  LinkBreakIcon,
+  LinkSimpleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
 import type { FC, MouseEvent } from "react";
@@ -33,6 +35,10 @@ type WorkspaceChatFileCardProps = {
   chatHref?: string;
   onPreview?: (artifactId: string) => void;
   onDelete?: (artifactId: string) => void;
+  /** Copies the read-only share link; without it no share button is shown. */
+  onCopyShareLink?: (artifactId: string) => void;
+  /** Stops sharing; without it no stop-sharing button is shown. */
+  onStopSharing?: (artifactId: string) => void;
   /** Shows a selection checkbox when set. */
   onSelectedChange?: (artifactId: string, selected: boolean) => void;
   selected?: boolean;
@@ -81,6 +87,8 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   chatHref,
   onPreview,
   onDelete,
+  onCopyShareLink,
+  onStopSharing,
   onSelectedChange,
   selected = false,
 }) => {
@@ -96,6 +104,11 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete?.(artifactId);
+  };
+
+  const handleShare = (event: MouseEvent<HTMLButtonElement>, action: (id: string) => void) => {
+    event.stopPropagation();
+    action(artifactId);
   };
 
   return (
@@ -143,6 +156,26 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
             <ChatCircleIcon className="size-4" />
           </Link>
         </Tooltip>
+      )}
+      {onCopyShareLink && (
+        <TooltipIconButton
+          tooltip="Copy read-only link"
+          aria-label={`Copy read-only link for ${label}`}
+          onClick={(event) => handleShare(event, onCopyShareLink)}
+          className="shrink-0"
+        >
+          <LinkSimpleIcon className="size-4" />
+        </TooltipIconButton>
+      )}
+      {onStopSharing && (
+        <TooltipIconButton
+          tooltip="Stop sharing"
+          aria-label={`Stop sharing ${label}`}
+          onClick={(event) => handleShare(event, onStopSharing)}
+          className="shrink-0"
+        >
+          <LinkBreakIcon className="size-4" />
+        </TooltipIconButton>
       )}
       {onDelete && (
         <TooltipIconButton

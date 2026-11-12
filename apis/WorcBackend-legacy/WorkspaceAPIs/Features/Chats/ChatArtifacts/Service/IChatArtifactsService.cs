@@ -40,6 +40,27 @@ public interface IChatArtifactsService
     Task<ServiceResponse<bool>> DeleteChatArtifactAsync(Guid chatArtifactId);
 
     /// <summary>
+    /// Shares a chat artifact by issuing a read-only token (idempotent).
+    /// </summary>
+    /// <param name="chatArtifactId">The unique identifier of the artifact.</param>
+    /// <returns>A service response containing the read-only share token.</returns>
+    Task<ServiceResponse<string>> ShareChatArtifactAsync(Guid chatArtifactId);
+
+    /// <summary>
+    /// Stops sharing a chat artifact by clearing its read-only token.
+    /// </summary>
+    /// <param name="chatArtifactId">The unique identifier of the artifact.</param>
+    /// <returns>A service response indicating success or failure.</returns>
+    Task<ServiceResponse<bool>> UnshareChatArtifactAsync(Guid chatArtifactId);
+
+    /// <summary>
+    /// Retrieves a shared chat artifact by its read-only token.
+    /// </summary>
+    /// <param name="shareToken">The read-only share token.</param>
+    /// <returns>A service response containing the shared artifact.</returns>
+    Task<ServiceResponse<ChatArtifactDto>> GetSharedChatArtifactAsync(string shareToken);
+
+    /// <summary>
     /// Deletes multiple chat artifacts by their IDs.
     /// </summary>
     /// <param name="chatArtifactIds">A collection of artifact IDs to delete.</param>

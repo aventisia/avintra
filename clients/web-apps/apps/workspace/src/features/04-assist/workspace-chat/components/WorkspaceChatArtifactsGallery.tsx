@@ -14,12 +14,18 @@ import { MagnifyingGlassIcon, TrashIcon } from "@phosphor-icons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
-import { createChatArtifact, getChatArtifact } from "../apis/workspace-chat.apis";
+import {
+  createChatArtifact,
+  getChatArtifact,
+  shareChatArtifact,
+  unshareChatArtifact,
+} from "../apis/workspace-chat.apis";
 import {
   WORKSPACE_CHAT_ARTIFACTS_KEY,
   useWorkspaceChatArtifacts,
@@ -130,6 +136,25 @@ export const WorkspaceChatArtifactsGallery = () => {
       });
     } finally {
       setIsSavingVersion(false);
+    }
+  };
+
+  const copyShareLink = async (artifactId: string) => {
+    try {
+      const token = (await shareChatArtifact(artifactId)).data;
+      await navigator.clipboard.writeText(`${window.location.origin}/s/file/${token}`);
+      toast.success("Read-only link copied");
+    } catch {
+      toast.error("Couldn't create the share link");
+    }
+  };
+
+  const stopSharing = async (artifactId: string) => {
+    try {
+      await unshareChatArtifact(artifactId);
+      toast.success("Sharing stopped");
+    } catch {
+      toast.error("Couldn't stop sharing");
     }
   };
 
@@ -313,6 +338,8 @@ export const WorkspaceChatArtifactsGallery = () => {
                         }
                         onPreview={setPreviewArtifactId}
                         onDelete={confirmDeleteArtifact}
+                        onCopyShareLink={(id) => void copyShareLink(id)}
+                        onStopSharing={(id) => void stopSharing(id)}
                       />
                     ))}
                   </div>

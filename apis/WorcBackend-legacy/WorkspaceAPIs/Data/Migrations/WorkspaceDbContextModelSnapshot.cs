@@ -308,6 +308,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid?>("PreviousVersionId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ShareToken")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
 

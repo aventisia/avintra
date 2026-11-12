@@ -72,6 +72,12 @@ public class ChatArtifact : BaseEntity, IMustHaveTenant
     public Guid? PreviousVersionId { get; set; }
 
     /// <summary>
+    /// Gets or sets the read-only share token. Null when the artifact is not shared. Max-64 characters.
+    /// </summary>
+    [MaxLength(64)]
+    public string? ShareToken { get; set; }
+
+    /// <summary>
     /// Gets or sets the previous version of this artifact.
     /// </summary>
     [ForeignKey("PreviousVersionId")]

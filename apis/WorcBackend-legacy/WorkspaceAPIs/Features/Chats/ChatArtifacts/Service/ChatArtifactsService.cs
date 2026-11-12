@@ -212,6 +212,111 @@ public class ChatArtifactsService : IChatArtifactsService
         }
     }
 
+    public async Task<ServiceResponse<string>> ShareChatArtifactAsync(Guid chatArtifactId)
+    {
+        var serviceResponse = ServiceResponse<string>.Create("Failed to share chat artifact", 500);
+
+        try
+        {
+            var artifact = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.Id == chatArtifactId)
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            var ownsConversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == artifact.ConversationId && w.UserId == _userId)
+                .AnyAsync();
+
+            if (!ownsConversation)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            if (!string.IsNullOrEmpty(artifact.ShareToken))
+                return serviceResponse.Update("Chat artifact is already shared", 200, artifact.ShareToken);
+
+            artifact.ShareToken = Guid.NewGuid().ToString("N");
+
+            _unitOfWork.ChatArtifactRepo.Update(artifact);
+
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("An error occurred while saving changes.", 500);
+
+            return serviceResponse.Update("Chat artifact shared", 200, artifact.ShareToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while sharing chat artifact {chatArtifactId}", chatArtifactId);
+            return serviceResponse;
+        }
+    }
+
+    public async Task<ServiceResponse<bool>> UnshareChatArtifactAsync(Guid chatArtifactId)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to stop sharing chat artifact", 500);
+
+        try
+        {
+            var artifact = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.Id == chatArtifactId)
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            var ownsConversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == artifact.ConversationId && w.UserId == _userId)
+                .AnyAsync();
+
+            if (!ownsConversation)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            artifact.ShareToken = null;
+
+            _unitOfWork.ChatArtifactRepo.Update(artifact);
+
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("An error occurred while saving changes.", 500);
+
+            return serviceResponse.Update("Sharing stopped", 200, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while unsharing chat artifact {chatArtifactId}", chatArtifactId);
+            return serviceResponse;
+        }
+    }
+
+    public async Task<ServiceResponse<ChatArtifactDto>> GetSharedChatArtifactAsync(string shareToken)
+    {
+        var serviceResponse = ServiceResponse<ChatArtifactDto>.Create("Failed to fetch shared chat artifact", 500);
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(shareToken))
+                return serviceResponse.Update("Shared chat artifact not found", 404);
+
+            var artifact = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.ShareToken == shareToken)
+                .AsNoTracking()
+                .ProjectToType<ChatArtifactDto>()
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
+                return serviceResponse.Update("Shared chat artifact not found", 404);
+
+            if (artifact.BlobPath.StartsWith(ChatArtifactsHelpers.BlobPrefix, StringComparison.Ordinal))
+                artifact.BlobPath = await ReadBlobAsDataUrlAsync(artifact.BlobPath, artifact.ContentType);
+
+            return serviceResponse.Update(null, 200, artifact);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving shared chat artifact.");
+            return serviceResponse;
+        }
+    }
+
     public async Task<ServiceResponse<int>> DeleteMultipleChatArtifactsAsync(IEnumerable<Guid> chatArtifactIds)
     {
         var serviceResponse = ServiceResponse<int>.Create("Failed to delete chat artifacts", 500);
