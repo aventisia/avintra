@@ -12,7 +12,11 @@ import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import { InterfaceDetailPane } from "./features/04-assist/my-interfaces/components/InterfaceDetailPane";
 import { InterfaceNoSelection } from "./features/04-assist/my-interfaces/components/InterfaceNoSelection";
 import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
-import { HOME_CHAT_CONVERSATION_ROUTE, isHomeChatEnabled } from "./features/home-chat";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_SHARED_ROUTE,
+  isHomeChatEnabled,
+} from "./features/home-chat";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -67,6 +71,7 @@ import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
 import { HomeChatPage } from "./pages/HomeChatPage";
 import { MyNotificationsPage } from "./pages/MyNotificationsPage";
+import { SharedChatPage } from "./pages/SharedChatPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -80,6 +85,11 @@ const routerConfig: RouteObject[] = [
             {
               path: `${HOME_CHAT_CONVERSATION_ROUTE}/:conversationId`,
               element: <HomeChatPage />,
+              handle: { fullBleed: true },
+            },
+            {
+              path: `${HOME_CHAT_SHARED_ROUTE}/:shareToken`,
+              element: <SharedChatPage />,
               handle: { fullBleed: true },
             },
           ]

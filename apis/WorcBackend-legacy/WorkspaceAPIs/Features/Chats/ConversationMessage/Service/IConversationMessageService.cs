@@ -21,6 +21,13 @@ public interface IConversationMessageService
     Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetMessagesAsync(Guid conversationId);
 
     /// <summary>
+    /// Retrieves all messages of a shared conversation by its read-only token.
+    /// </summary>
+    /// <param name="shareToken">The read-only share token.</param>
+    /// <returns> A service response containing an ordered list of messages for the shared conversation. </returns>
+    Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetSharedMessagesAsync(string shareToken);
+
+    /// <summary>
     /// Retrieves the most recent messages from a conversation. Useful for limiting context size when interacting with an LLM.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>

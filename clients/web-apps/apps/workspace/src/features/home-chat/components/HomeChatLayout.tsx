@@ -12,6 +12,7 @@ import { useHref, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { getMessages } from "../apis/conversation-message.apis";
+import { shareConversation, unshareConversation } from "../apis/conversation.apis";
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
@@ -20,6 +21,25 @@ import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatThread } from "./HomeChatThread";
 
 const conversationHref = (id: string) => `${HOME_CHAT_CONVERSATION_ROUTE}/${id}`;
+
+const copyShareLink = async (id: string) => {
+  try {
+    const token = (await shareConversation(id)).data;
+    await navigator.clipboard.writeText(`${window.location.origin}/s/${token}`);
+    toast.success("Read-only link copied");
+  } catch {
+    toast.error("Couldn't create the share link");
+  }
+};
+
+const stopSharing = async (id: string) => {
+  try {
+    await unshareConversation(id);
+    toast.success("Sharing stopped");
+  } catch {
+    toast.error("Couldn't stop sharing");
+  }
+};
 
 const exportChat = async ({ id, title }: ChatHistoryItem) => {
   try {
@@ -72,6 +92,8 @@ export const HomeChatLayout = () => {
               onExportPdf={() =>
                 printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
               }
+              onCopyShareLink={() => void copyShareLink(activeChat.id)}
+              onStopSharing={() => void stopSharing(activeChat.id)}
               onDelete={() => confirmDelete(activeChat)}
             />
           )

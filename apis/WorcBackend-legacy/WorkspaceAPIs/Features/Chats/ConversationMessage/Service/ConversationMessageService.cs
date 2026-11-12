@@ -231,6 +231,56 @@ public class ConversationMessageService : IConversationMessageService
         return serviceResponse;
     }
 
+    // Gets all messages of a shared conversation by its read-only token.
+    public async Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetSharedMessagesAsync(string shareToken)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationMessageDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve shared messages. Please try again."
+        };
+
+        try
+        {
+            // A blank token never matches
+            if (string.IsNullOrWhiteSpace(shareToken))
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // The token authorizes the read; ownership is not required
+            var conversationId = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.ShareToken == shareToken)
+                .Select(s => (Guid?)s.Id)
+                .SingleOrDefaultAsync();
+
+            if (conversationId == null)
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // Fetch messages belonging to the shared conversation
+            var messages = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w => w.ConversationId == conversationId)
+                .OrderBy(o => o.CreatedOn)
+                .ProjectToType<ConversationMessageDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = messages;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Shared messages retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetSharedMessages] Failed for share token.");
+        }
+
+        return serviceResponse;
+    }
+
     // Retrieves the most recent messages for LLM context.
     public async Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetRecentMessagesAsync(Guid conversationId, int count)
     {

@@ -107,6 +107,33 @@ public class ConversationController : BaseApiController
         return ResultHelper(await _conversationService.UnarchiveAsync(conversationId));
     }
 
+    /// <summary>
+    /// Shares one of the current user's conversations by issuing a read-only token (idempotent).
+    /// </summary>
+    [HttpPost("{conversationId}/share")]
+    public async Task<ActionResult<ServiceResponse<string>>> Share(Guid conversationId)
+    {
+        return ResultHelper(await _conversationService.ShareAsync(conversationId));
+    }
+
+    /// <summary>
+    /// Stops sharing one of the current user's conversations by clearing its read-only token.
+    /// </summary>
+    [HttpPost("{conversationId}/unshare")]
+    public async Task<ActionResult<ServiceResponse<bool>>> Unshare(Guid conversationId)
+    {
+        return ResultHelper(await _conversationService.UnshareAsync(conversationId));
+    }
+
+    /// <summary>
+    /// Retrieves a shared conversation by its read-only token.
+    /// </summary>
+    [HttpGet("shared/{shareToken}")]
+    public async Task<ActionResult<ServiceResponse<ConversationDto>>> GetShared(string shareToken)
+    {
+        return ResultHelper(await _conversationService.GetSharedAsync(shareToken));
+    }
+
     //Archives multiple conversations.
     [HttpPost("bulk/archive")]
     public async Task<ActionResult<ServiceResponse<bool>>> BulkArchive([FromBody] IEnumerable<Guid> conversationIds)

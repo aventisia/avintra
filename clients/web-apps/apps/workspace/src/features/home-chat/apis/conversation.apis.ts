@@ -65,3 +65,31 @@ export const deleteConversation = (conversationId: string) =>
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
+
+/** Shares one of the user's conversations, returning its read-only token (idempotent). */
+export const shareConversation = (conversationId: string) =>
+  axiosInstance
+    .post<IHttpResponse<string>>(
+      `${baseAPIURL}/${conversationId}/share`,
+      {},
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+
+/** Stops sharing one of the user's conversations, invalidating its link. */
+export const unshareConversation = (conversationId: string) =>
+  axiosInstance
+    .post<IHttpResponse<boolean>>(
+      `${baseAPIURL}/${conversationId}/unshare`,
+      {},
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+
+/** Gets a shared conversation by its read-only token. */
+export const getSharedConversation = (shareToken: string) =>
+  axiosInstance
+    .get<IHttpResponse<ConversationDto>>(`${baseAPIURL}/shared/${shareToken}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);

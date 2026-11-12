@@ -15,6 +15,14 @@ export const getMessages = (conversationId: string) =>
     })
     .then((res) => res.data);
 
+/** Gets all messages of a shared conversation by its read-only token. */
+export const getSharedMessages = (shareToken: string) =>
+  axiosInstance
+    .get<IHttpResponse<ConversationMessageDto[]>>(`${baseAPIURL}/shared/${shareToken}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
 /** Rates the reply to one user turn (zero-based) of a conversation. */
 export const setMessageFeedback = (
   conversationId: string,

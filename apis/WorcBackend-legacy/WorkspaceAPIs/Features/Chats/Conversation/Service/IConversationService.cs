@@ -100,6 +100,33 @@ public interface IConversationService
     Task<ServiceResponse<bool>> UnarchiveAsync(Guid conversationId);
 
     /// <summary>
+    /// Shares one of the current user's conversations by issuing a read-only token (idempotent).
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <returns>
+    /// A service response containing the read-only share token.
+    /// </returns>
+    Task<ServiceResponse<string>> ShareAsync(Guid conversationId);
+
+    /// <summary>
+    /// Stops sharing one of the current user's conversations by clearing its read-only token.
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <returns>
+    /// A service response indicating whether the operation was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> UnshareAsync(Guid conversationId);
+
+    /// <summary>
+    /// Retrieves a shared conversation by its read-only token.
+    /// </summary>
+    /// <param name="shareToken">The read-only share token.</param>
+    /// <returns>
+    /// A service response containing the shared conversation details if found.
+    /// </returns>
+    Task<ServiceResponse<ConversationDto>> GetSharedAsync(string shareToken);
+
+    /// <summary>
     /// Archives multiple conversations in a single operation.
     /// </summary>
     /// <param name="conversationIds">A collection of conversation identifiers.</param>

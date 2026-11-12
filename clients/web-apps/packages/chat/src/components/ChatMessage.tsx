@@ -210,7 +210,7 @@ const MessageTime = () => {
   );
 };
 
-const UserMessage = () => {
+const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
   const hasText = useHasText();
   return (
     <MessagePrimitive.Root
@@ -228,16 +228,18 @@ const UserMessage = () => {
           <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
             <MessagePrimitive.Parts />
           </div>
-          <ActionBarPrimitive.Root
-            data-chat-print-hide
-            hideWhenRunning
-            className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100"
-          >
-            <MessageTime />
-            <MessageEdit />
-            <MessageCopy />
-            <MessageBranches />
-          </ActionBarPrimitive.Root>
+          {!readOnly && (
+            <ActionBarPrimitive.Root
+              data-chat-print-hide
+              hideWhenRunning
+              className="flex opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100"
+            >
+              <MessageTime />
+              <MessageEdit />
+              <MessageCopy />
+              <MessageBranches />
+            </ActionBarPrimitive.Root>
+          )}
         </>
       )}
     </MessagePrimitive.Root>
@@ -264,7 +266,7 @@ const EditComposer = () => (
   </MessagePrimitive.Root>
 );
 
-const AssistantMessage = () => {
+const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
   const isLast = useAuiState((s) => s.message.isLast);
   const hasText = useHasText();
   return (
@@ -302,7 +304,7 @@ const AssistantMessage = () => {
         <ChatApprovalBulkBar />
       </div>
       <MessageError />
-      {(hasText || isLast) && (
+      {!readOnly && (hasText || isLast) && (
         <ActionBarPrimitive.Root
           data-chat-print-hide
           hideWhenRunning
@@ -323,9 +325,13 @@ const AssistantMessage = () => {
 };
 
 /** Renders the current thread message by role. */
-export const ChatMessage = () => {
+export const ChatMessage = ({ readOnly }: { readOnly?: boolean }) => {
   const role = useAuiState((s) => s.message.role);
   const isEditing = useAuiState((s) => s.message.composer.isEditing);
-  if (isEditing) return <EditComposer />;
-  return role === "user" ? <UserMessage /> : <AssistantMessage />;
+  if (isEditing) return readOnly ? null : <EditComposer />;
+  return role === "user" ? (
+    <UserMessage readOnly={readOnly} />
+  ) : (
+    <AssistantMessage readOnly={readOnly} />
+  );
 };

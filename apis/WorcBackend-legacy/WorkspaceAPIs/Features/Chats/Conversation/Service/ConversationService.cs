@@ -609,6 +609,165 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
+    // Shares a conversation by issuing a read-only token (idempotent).
+    public async Task<ServiceResponse<string>> ShareAsync(Guid conversationId)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Failed to share conversation. Please try again."
+        };
+
+        try
+        {
+            // Fetch conversation and ensure ownership
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                return serviceResponse;
+            }
+
+            // Reuse the existing token so resharing keeps the same link
+            if (!string.IsNullOrEmpty(conversation.ShareToken))
+            {
+                serviceResponse.Data = conversation.ShareToken;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Conversation is already shared.";
+                return serviceResponse;
+            }
+
+            conversation.ShareToken = Guid.NewGuid().ToString("N");
+            conversation.LastModifiedByUserId = _userId;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.ConversationRepo.Update(conversation);
+
+            // Persist changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = conversation.ShareToken;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Conversation shared successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[ShareConversation] Unexpected error. ConversationId: {ConversationId}, UserId: {UserId}",
+                conversationId,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Stops sharing a conversation by clearing its read-only token.
+    public async Task<ServiceResponse<bool>> UnshareAsync(Guid conversationId)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to stop sharing conversation. Please try again."
+        };
+
+        try
+        {
+            // Fetch conversation and ensure ownership
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                return serviceResponse;
+            }
+
+            conversation.ShareToken = null;
+            conversation.LastModifiedByUserId = _userId;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.ConversationRepo.Update(conversation);
+
+            // Persist changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Sharing stopped successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[UnshareConversation] Unexpected error. ConversationId: {ConversationId}, UserId: {UserId}",
+                conversationId,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Gets a shared conversation by its read-only token.
+    public async Task<ServiceResponse<ConversationDto>> GetSharedAsync(string shareToken)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<ConversationDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve shared conversation. Please try again."
+        };
+
+        try
+        {
+            // A blank token never matches
+            if (string.IsNullOrWhiteSpace(shareToken))
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.ShareToken == shareToken)
+                .ProjectToType<ConversationDto>()
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = conversation;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Shared conversation retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetSharedConversation] Failed for share token.");
+        }
+
+        return serviceResponse;
+    }
+
     // Archives multiple conversations.
     public async Task<ServiceResponse<bool>> ArchiveBulkAsync(IEnumerable<Guid> conversationIds)
     {

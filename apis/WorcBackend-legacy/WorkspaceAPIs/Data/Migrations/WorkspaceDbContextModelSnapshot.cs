@@ -450,6 +450,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ShareToken")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
 

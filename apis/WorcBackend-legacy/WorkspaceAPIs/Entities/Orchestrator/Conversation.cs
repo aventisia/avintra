@@ -35,6 +35,12 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public bool IsPinned { get; set; }
 
     /// <summary>
+    /// Gets or sets the read-only share token. Null when the conversation is not shared. Max-64 characters.
+    /// </summary>
+    [MaxLength(64)]
+    public string? ShareToken { get; set; }
+
+    /// <summary>
     /// Gets or sets the Flow Version this conversation is associated with.
     /// </summary>
     [ForeignKey("FlowVersionId")]

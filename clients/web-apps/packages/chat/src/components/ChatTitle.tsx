@@ -9,6 +9,8 @@ import {
   CaretDownIcon,
   DownloadSimpleIcon,
   FilePdfIcon,
+  LinkBreakIcon,
+  LinkSimpleIcon,
   PencilSimpleIcon,
 } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
@@ -21,10 +23,22 @@ type ChatTitleProps = {
   onExport: () => void;
   onExportPdf: () => void;
   onDelete: () => void;
+  /** Copies the read-only share link; without it no share item is shown. */
+  onCopyShareLink?: () => void;
+  /** Stops sharing; without it no stop-sharing item is shown. */
+  onStopSharing?: () => void;
 };
 
 /** The open chat's title as a menu of Rename (edits it in place), Export and Delete. */
-export const ChatTitle = ({ title, onRename, onExport, onExportPdf, onDelete }: ChatTitleProps) => {
+export const ChatTitle = ({
+  title,
+  onRename,
+  onExport,
+  onExportPdf,
+  onDelete,
+  onCopyShareLink,
+  onStopSharing,
+}: ChatTitleProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
   const isRenamingRef = useRef(false);
 
@@ -74,6 +88,20 @@ export const ChatTitle = ({ title, onRename, onExport, onExportPdf, onDelete }: 
             onSelect={onExport}
           />
           <SimpleDDMenuItem content="Export as PDF" Icon={FilePdfIcon} onSelect={onExportPdf} />
+          {onCopyShareLink && (
+            <SimpleDDMenuItem
+              content="Copy read-only link"
+              Icon={LinkSimpleIcon}
+              onSelect={onCopyShareLink}
+            />
+          )}
+          {onStopSharing && (
+            <SimpleDDMenuItem
+              content="Stop sharing"
+              Icon={LinkBreakIcon}
+              onSelect={onStopSharing}
+            />
+          )}
           <DeleteDDMenuItem onSelect={onDelete} />
         </DropdownMenuContent>
       </DropdownMenu>

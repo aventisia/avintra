@@ -30,6 +30,8 @@ export type ChatThreadProps = {
   placeholder?: string;
   /** Pages the assistant may offer; a suggested page outside this list isn't shown. */
   destinations?: readonly ChatDestinationOption[];
+  /** Hides the composer and message actions for a read-only transcript. */
+  readOnly?: boolean;
   /** Opens a suggested page; without it no page is offered. */
   onNavigate?: (route: string) => void;
   /** Turns files in replies into cards; without it they render as code. */
@@ -85,6 +87,7 @@ export const ChatThread = ({
   transcribe,
   commands,
   mentions,
+  readOnly,
   placeholder = "Message",
   destinations = NO_DESTINATIONS,
   onNavigate,
@@ -125,21 +128,25 @@ export const ChatThread = ({
                   {welcome}
                 </div>
               </AuiIf>
-              <ThreadPrimitive.Messages>{() => <ChatMessage />}</ThreadPrimitive.Messages>
-              <ThreadPrimitive.ViewportFooter
-                data-chat-print-hide
-                className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6"
-              >
-                <ScrollToLatest />
-                <ChatComposer
-                  placeholder={placeholder}
-                  inputRef={inputRef}
-                  tools={composerTools}
-                  transcribe={transcribe}
-                  commands={commands}
-                  mentions={mentions}
-                />
-              </ThreadPrimitive.ViewportFooter>
+              <ThreadPrimitive.Messages>
+                {() => <ChatMessage readOnly={readOnly} />}
+              </ThreadPrimitive.Messages>
+              {!readOnly && (
+                <ThreadPrimitive.ViewportFooter
+                  data-chat-print-hide
+                  className="sticky bottom-0 mx-auto mt-auto w-full max-w-[var(--chat-column)] bg-surface pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-10 before:bg-gradient-to-t before:from-surface before:to-transparent dark:bg-bg dark:before:from-bg sm:pb-6"
+                >
+                  <ScrollToLatest />
+                  <ChatComposer
+                    placeholder={placeholder}
+                    inputRef={inputRef}
+                    tools={composerTools}
+                    transcribe={transcribe}
+                    commands={commands}
+                    mentions={mentions}
+                  />
+                </ThreadPrimitive.ViewportFooter>
+              )}
               <AuiIf condition={(s) => s.thread.isEmpty}>
                 <div className="mx-auto w-full max-w-[var(--chat-column)] flex-1 pb-10">
                   {starters && <ChatStarters groups={starters} onPick={fillComposer} />}
