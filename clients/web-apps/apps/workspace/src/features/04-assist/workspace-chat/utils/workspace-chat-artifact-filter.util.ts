@@ -33,6 +33,23 @@ const COMPARERS: Record<ArtifactSort, (a: ChatArtifactDto, b: ChatArtifactDto) =
 
 const extensionOf = (name: string) => /\.([^.]+)$/.exec(name)?.[1]?.toLowerCase() ?? "";
 
+/** One row per file name in a conversation: the latest version only, so history stays behind the preview switcher. */
+export const latestArtifacts = (artifacts: ChatArtifactDto[]) => {
+  const byFile = new Map<string, ChatArtifactDto>();
+  for (const artifact of artifacts) {
+    const key = `${artifact.conversationId}␟${artifact.name.toLowerCase()}`;
+    const current = byFile.get(key);
+    if (
+      !current ||
+      artifact.versionNumber > current.versionNumber ||
+      (artifact.versionNumber === current.versionNumber &&
+        Date.parse(artifact.createdOn) > Date.parse(current.createdOn))
+    )
+      byFile.set(key, artifact);
+  }
+  return [...byFile.values()];
+};
+
 /** Artifacts whose name or chat title matches the search, of the chosen kind, in the chosen order. */
 export const filterArtifacts = (
   artifacts: ChatArtifactDto[],

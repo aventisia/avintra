@@ -27,6 +27,7 @@ import {
   type ArtifactKind,
   type ArtifactSort,
   filterArtifacts,
+  latestArtifacts,
 } from "../utils/workspace-chat-artifact-filter.util";
 import {
   WORKSPACE_CHAT_PREVIEW_PANEL_ID,
@@ -47,7 +48,7 @@ export const WorkspaceChatArtifactsGallery = () => {
     })),
   );
   const { all, deleteArtifact, deleteArtifacts } = useWorkspaceChatArtifacts();
-  const artifacts = useMemo(() => all.data?.data ?? [], [all.data]);
+  const artifacts = useMemo(() => latestArtifacts(all.data?.data ?? []), [all.data]);
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<ArtifactKind>("all");
   const [sort, setSort] = useState<ArtifactSort>("newest");
@@ -72,6 +73,19 @@ export const WorkspaceChatArtifactsGallery = () => {
     queryFn: async () => (await getChatArtifact(previewArtifactId!)).data,
     enabled: !!previewArtifactId,
   });
+  const previewVersions = useMemo(
+    () =>
+      previewArtifact.data
+        ? (all.data?.data ?? [])
+            .filter(
+              (artifact) =>
+                artifact.conversationId === previewArtifact.data!.conversationId &&
+                artifact.name === previewArtifact.data!.name,
+            )
+            .map((artifact) => ({ id: artifact.id, versionNumber: artifact.versionNumber }))
+        : [],
+    [all.data, previewArtifact.data],
+  );
   const { showCustomAlertDialog } = useShowAlertHandler();
   const isHomeChatAvailable = useIsHomeChatAvailable();
 
@@ -245,6 +259,7 @@ export const WorkspaceChatArtifactsGallery = () => {
                         sizeBytes={artifact.sizeBytes}
                         createdOn={artifact.createdOn}
                         conversationTitle={artifact.conversationTitle}
+                        versionNumber={artifact.versionNumber}
                         selected={selectedIds.has(artifact.id)}
                         onSelectedChange={toggleSelected}
                         chatHref={
@@ -284,6 +299,9 @@ export const WorkspaceChatArtifactsGallery = () => {
                       }
                     : null
                 }
+                versions={previewVersions}
+                activeVersionId={previewArtifactId ?? undefined}
+                onSelectVersion={setPreviewArtifactId}
                 isLoading={previewArtifact.isLoading}
                 onClose={() => setPreviewArtifactId(null)}
               />

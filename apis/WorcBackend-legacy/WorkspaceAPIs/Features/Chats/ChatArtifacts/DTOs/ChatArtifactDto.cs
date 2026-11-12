@@ -50,6 +50,16 @@ public class ChatArtifactDto
     public required string Origin { get; set; }
 
     /// <summary>
+    /// Gets or sets the 1-based version within the conversation's artifacts sharing this name.
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the previous version's artifact ID, or null for the first version.
+    /// </summary>
+    public Guid? PreviousVersionId { get; set; }
+
+    /// <summary>
     /// Gets or sets when the artifact was stored.
     /// </summary>
     public DateTimeOffset CreatedOn { get; set; }

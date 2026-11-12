@@ -27,6 +27,8 @@ type WorkspaceChatFileCardProps = {
   sizeBytes?: number | null;
   createdOn?: string | null;
   conversationTitle?: string | null;
+  /** 1-based version of the file; shown as a badge past the first version. */
+  versionNumber?: number | null;
   /** Route of the chat that produced the file; without it no link is shown. */
   chatHref?: string;
   onPreview?: (artifactId: string) => void;
@@ -75,6 +77,7 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   sizeBytes,
   createdOn,
   conversationTitle,
+  versionNumber,
   chatHref,
   onPreview,
   onDelete,
@@ -85,6 +88,7 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   const Icon = iconForWorkspaceChatFile(contentType, label);
   const details = [
     sizeBytes != null ? formatWorkspaceChatFileSize(sizeBytes) : null,
+    versionNumber != null && versionNumber > 1 ? `v${versionNumber}` : null,
     createdOn ? formatDate(createdOn) : null,
     conversationTitle?.trim() || null,
   ].filter(Boolean);

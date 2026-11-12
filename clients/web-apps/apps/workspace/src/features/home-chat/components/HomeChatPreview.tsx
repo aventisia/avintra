@@ -1,4 +1,4 @@
-import { ChatFilePreview, type ChatPreviewFile } from "@avplatform/chat";
+import { ChatFilePreview, type ChatPreviewFile, type ChatPreviewVersion } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
 import { useContext, useEffect } from "react";
 
@@ -7,6 +7,9 @@ import { useMediaQuery } from "../hooks/useMediaQuery.hook";
 
 type HomeChatPreviewProps = {
   file: ChatPreviewFile | null;
+  versions?: ChatPreviewVersion[];
+  activeVersionId?: string;
+  onSelectVersion?: (id: string) => void;
   isLoading: boolean;
   onClose: () => void;
 };
@@ -20,7 +23,14 @@ const useReturnFocusOnClose = () =>
   }, []);
 
 /** The open file: a panel beside the thread from 1024px, a full-screen sheet below. */
-export const HomeChatPreview = ({ file, isLoading, onClose }: HomeChatPreviewProps) => {
+export const HomeChatPreview = ({
+  file,
+  versions,
+  activeVersionId,
+  onSelectVersion,
+  isLoading,
+  onClose,
+}: HomeChatPreviewProps) => {
   useReturnFocusOnClose();
   const isWide = useMediaQuery("(min-width: 1024px)");
   const yieldRail = useContext(HomeChatRailYieldContext);
@@ -29,7 +39,16 @@ export const HomeChatPreview = ({ file, isLoading, onClose }: HomeChatPreviewPro
     yieldRail(true);
     return () => yieldRail(false);
   }, [isWide, yieldRail]);
-  const preview = <ChatFilePreview file={file} isLoading={isLoading} onClose={onClose} />;
+  const preview = (
+    <ChatFilePreview
+      file={file}
+      versions={versions}
+      activeVersionId={activeVersionId}
+      onSelectVersion={onSelectVersion}
+      isLoading={isLoading}
+      onClose={onClose}
+    />
+  );
 
   if (isWide)
     return (

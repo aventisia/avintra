@@ -155,6 +155,14 @@ public class ChatArtifactsService : IChatArtifactsService
             artifact.CreatedByUserId = _userId;
             artifact.LastModifiedByUserId = _userId;
 
+            var latest = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.ConversationId == artifact.ConversationId && w.Name.ToLower() == artifact.Name.ToLower())
+                .OrderByDescending(o => o.VersionNumber)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+            artifact.VersionNumber = (latest?.VersionNumber ?? 0) + 1;
+            artifact.PreviousVersionId = latest?.Id;
+
             await _unitOfWork.ChatArtifactRepo.InsertAsync(artifact);
 
             if (!await _unitOfWork.SaveAsync())
@@ -270,10 +278,12 @@ public class ChatArtifactsService : IChatArtifactsService
             if (!ownsConversation)
                 return;
 
-            var isStored = await _unitOfWork.ChatArtifactRepo
-                .GetByConditionAsync(w => w.ConversationId == conversationId && w.ContentType == file.ContentType && w.SizeBytes == bytes.Length)
-                .AnyAsync(cancellationToken);
-            if (isStored)
+            var latest = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.ConversationId == conversationId && w.Name.ToLower() == file.Name.ToLower())
+                .OrderByDescending(o => o.VersionNumber)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+            if (latest is not null && latest.ContentType == file.ContentType && latest.SizeBytes == bytes.Length)
                 return;
 
             var artifact = new ChatArtifact
@@ -284,6 +294,8 @@ public class ChatArtifactsService : IChatArtifactsService
                 SizeBytes = bytes.Length,
                 BlobPath = await StoreFileAsync(conversationId, file, bytes),
                 Origin = "Generated",
+                VersionNumber = (latest?.VersionNumber ?? 0) + 1,
+                PreviousVersionId = latest?.Id,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
             };

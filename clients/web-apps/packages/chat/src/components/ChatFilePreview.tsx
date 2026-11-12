@@ -28,10 +28,20 @@ export type ChatPreviewFile = {
   url: string | null;
 };
 
+export type ChatPreviewVersion = {
+  id: string;
+  versionNumber: number;
+};
+
 type ChatFilePreviewProps = {
   file: ChatPreviewFile | null;
   isLoading: boolean;
   onClose: () => void;
+  /** Older and newer versions of the same file, by version number; the switcher hides for a single version. */
+  versions?: ChatPreviewVersion[];
+  /** ID of the version currently shown. */
+  activeVersionId?: string;
+  onSelectVersion?: (id: string) => void;
 };
 
 const linkClassName =
@@ -175,7 +185,14 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
 };
 
 /** A generated file: rendered by type in a sandbox, with its source and copy for text files, download, open in a new tab and close. */
-export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewProps) => {
+export const ChatFilePreview = ({
+  file,
+  isLoading,
+  onClose,
+  versions = [],
+  activeVersionId,
+  onSelectVersion,
+}: ChatFilePreviewProps) => {
   const loadable = file?.url ? { ...file, url: file.url } : null;
   const language = loadable && SOURCE_LANGUAGES[loadable.contentType.toLowerCase()];
   const source = language ? readDataUrl(loadable.url) : null;
@@ -213,6 +230,23 @@ export const ChatFilePreview = ({ file, isLoading, onClose }: ChatFilePreviewPro
           <span className="shrink-0 text-xs text-muted-foreground">
             {formatFileSize(file.sizeBytes)}
           </span>
+        )}
+        {versions.length > 1 && (
+          <select
+            value={activeVersionId ?? ""}
+            onChange={(event) => onSelectVersion?.(event.target.value)}
+            aria-label="Artifact version"
+            title="Artifact version"
+            className="h-8 shrink-0 rounded-lg border border-line bg-surface px-1 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-focus"
+          >
+            {[...versions]
+              .sort((a, b) => a.versionNumber - b.versionNumber)
+              .map((version) => (
+                <option key={version.id} value={version.id}>
+                  v{version.versionNumber}
+                </option>
+              ))}
+          </select>
         )}
         {source !== null && (
           <>

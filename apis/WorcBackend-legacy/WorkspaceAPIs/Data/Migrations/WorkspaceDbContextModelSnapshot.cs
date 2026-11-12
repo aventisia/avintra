@@ -305,6 +305,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<Guid?>("PreviousVersionId")
+                        .HasColumnType("uuid");
+
                     b.Property<long>("SizeBytes")
                         .HasColumnType("bigint");
 
@@ -323,6 +326,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationId");
@@ -330,6 +336,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("PreviousVersionId");
 
                     b.ToTable("chat_artifacts");
                 });
@@ -3142,11 +3150,18 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WorkspaceAPIs.Entities.ChatArtifact", "PreviousVersion")
+                        .WithMany()
+                        .HasForeignKey("PreviousVersionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Conversation");
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("PreviousVersion");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ConfigStore", b =>

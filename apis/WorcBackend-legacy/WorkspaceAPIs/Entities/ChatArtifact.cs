@@ -60,4 +60,20 @@ public class ChatArtifact : BaseEntity, IMustHaveTenant
     /// </summary>
     [MaxLength(20)]
     public required string Origin { get; set; }
+
+    /// <summary>
+    /// Gets or sets the 1-based version within the conversation's artifacts sharing this name.
+    /// </summary>
+    public int VersionNumber { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the previous version's artifact ID, or null for the first version.
+    /// </summary>
+    public Guid? PreviousVersionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the previous version of this artifact.
+    /// </summary>
+    [ForeignKey("PreviousVersionId")]
+    public virtual ChatArtifact? PreviousVersion { get; set; }
 }

@@ -3,7 +3,7 @@ import { type ChatModelSelection } from "@avplatform/assistant-chat";
 import { ChatModelPicker, ChatThread } from "@avplatform/chat";
 import { useBranding } from "@avplatform/ui/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
@@ -75,6 +75,19 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
     sizeBytes: preview.data.sizeBytes,
     url: preview.data.blobPath.startsWith("data:") ? preview.data.blobPath : null,
   };
+  const previewVersions = useMemo(
+    () =>
+      preview.data
+        ? files.artifacts
+            .filter(
+              (artifact) =>
+                artifact.conversationId === preview.data!.conversationId &&
+                artifact.name === preview.data!.name,
+            )
+            .map((artifact) => ({ id: artifact.id, versionNumber: artifact.versionNumber }))
+        : [],
+    [files.artifacts, preview.data],
+  );
 
   const runtime = useHomeChatRuntime({
     ...props,
@@ -111,6 +124,9 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         {previewId && (
           <HomeChatPreview
             file={previewFile ?? null}
+            versions={previewVersions}
+            activeVersionId={previewId}
+            onSelectVersion={setPreviewId}
             isLoading={preview.isLoading}
             onClose={() => setPreviewId(null)}
           />

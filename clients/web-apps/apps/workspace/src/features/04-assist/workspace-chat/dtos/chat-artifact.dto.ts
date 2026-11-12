@@ -24,6 +24,12 @@ export interface ChatArtifactDto {
   /** Artifact origin: Generated or Uploaded. */
   origin: "Generated" | "Uploaded";
 
+  /** 1-based version within the conversation's artifacts sharing this name. */
+  versionNumber: number;
+
+  /** Previous version's artifact ID, or null for the first version. */
+  previousVersionId: string | null;
+
   /** When the artifact was stored (ISO 8601). */
   createdOn: string;
 

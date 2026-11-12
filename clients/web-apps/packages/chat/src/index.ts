@@ -24,7 +24,7 @@ export { resolveRolloutFlag } from "./utils/resolve-rollout-flag.util";
 export type { RolloutFlagInput } from "./utils/resolve-rollout-flag.util";
 export { ChatFileCard } from "./components/ChatFileCard";
 export { ChatFilePreview } from "./components/ChatFilePreview";
-export type { ChatPreviewFile } from "./components/ChatFilePreview";
+export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
 export { chatFileSize, findChatFile } from "./utils/chat-file.util";

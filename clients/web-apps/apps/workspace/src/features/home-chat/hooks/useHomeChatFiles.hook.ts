@@ -7,7 +7,7 @@ import { HOME_CHAT_FILES_QUERY_KEY } from "../constants/home-chat.constant";
 
 /**
  * Resolves each reply's file to the copy the server stored as a chat artifact.
- * Files are matched back by type and size, so renamed files still match.
+ * Files are matched back by name, type and size, so each reply opens its own version.
  */
 export const useHomeChatFiles = (
   conversationId: string | undefined,
@@ -22,9 +22,12 @@ export const useHomeChatFiles = (
 
   const resolveFile: ChatFileHandlers["resolveFile"] = (file) => {
     const sizeBytes = chatFileSize(file.body);
-    const match = stored.find(
-      (item) => item.contentType === file.contentType && item.sizeBytes === sizeBytes,
+    const candidates = stored.filter(
+      (item) => item.name === file.name && item.contentType === file.contentType,
     );
+    const match =
+      candidates.find((item) => item.sizeBytes === sizeBytes) ??
+      stored.find((item) => item.contentType === file.contentType && item.sizeBytes === sizeBytes);
     if (match) return { id: match.id };
     return isFetching ? "saving" : null;
   };
@@ -34,5 +37,9 @@ export const useHomeChatFiles = (
       void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
   };
 
-  return { handlers: { resolveFile, onOpenFile } satisfies ChatFileHandlers, refreshAfterReply };
+  return {
+    handlers: { resolveFile, onOpenFile } satisfies ChatFileHandlers,
+    refreshAfterReply,
+    artifacts: stored,
+  };
 };
