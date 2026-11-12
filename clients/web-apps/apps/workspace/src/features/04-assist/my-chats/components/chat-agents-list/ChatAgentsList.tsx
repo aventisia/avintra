@@ -1,15 +1,17 @@
 import { EmptyState } from "@avplatform/ui";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 import NewChatIcon from "@/components/NewChatIcon";
-import {
-  SEGMENTED_TABS_LIST_CLASS,
-  SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { AssistChatDto } from "../../dtos/assist-chat-dto";

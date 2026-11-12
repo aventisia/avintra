@@ -44,11 +44,7 @@ export const AppLayout = () => {
       ) : (
         <div className="relative flex min-h-screen flex-col items-center">
           <AppHeader />
-          <main
-            className={cn(
-              "w-full overflow-hidden h-[calc(100vh-var(--header-height)-var(--header-padding))]",
-            )}
-          >
+          <main className={cn("w-full overflow-hidden h-[calc(100vh-var(--header-height))]")}>
             <Outlet />
           </main>
         </div>

@@ -2,14 +2,16 @@ import { EmptyState, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { BellSlashIcon, ChecksIcon, MagnifyingGlassMinusIcon } from "@phosphor-icons/react";
-import { useState } from "react";
-
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
+import { BellSlashIcon, ChecksIcon, MagnifyingGlassMinusIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+
 import { useFetchNotificationHistory } from "@/react-toolkit/features/unread-notifications/hooks/useFetchNotificationHistory";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 import { groupNotificationsByDay } from "@/react-toolkit/features/unread-notifications/utils/group-notifications-by-day.util";

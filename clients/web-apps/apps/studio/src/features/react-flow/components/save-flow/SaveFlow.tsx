@@ -1,5 +1,6 @@
+import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
+import { CheckIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
@@ -74,19 +75,25 @@ export default function SaveFlow() {
         : "Saved";
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1.5">
       <span
         aria-live="polite"
-        className={cn(
-          "whitespace-nowrap font-mono text-[12px] text-muted-foreground",
-          !isPending && isDirty && "text-bad",
-        )}
+        className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] leading-3 text-muted-foreground"
       >
+        {isPending ? (
+          <LoadingSpinner className="size-2.5" />
+        ) : isDirty ? (
+          <span aria-hidden="true" className="size-1.5 rounded-full bg-warn" />
+        ) : (
+          <CheckIcon className="size-3" />
+        )}
         {saveState}
       </span>
-      <Button disabled={!isDirty} variant="ghost" size="sm" onClick={handleSave}>
-        Save
-      </Button>
+      {isDirty && !isPending ? (
+        <Button variant="link" className="text-[11px] leading-3" onClick={handleSave}>
+          Save
+        </Button>
+      ) : null}
     </div>
   );
 }

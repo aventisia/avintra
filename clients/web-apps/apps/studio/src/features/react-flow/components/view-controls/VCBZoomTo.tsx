@@ -1,5 +1,4 @@
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { useReactFlow, useStore } from "@xyflow/react";
 import { useEffect, useState } from "react";
@@ -34,12 +33,10 @@ export const VCBZoomTo = () => {
     <Tooltip content="Reset zoom" side="right">
       <Button
         variant={"ghost"}
-        size="icon6"
-        className={cn("max-w-[2.8rem] rounded-md font-mono text-3xs font-medium")}
+        className="h-6 w-12 rounded-md px-0 font-mono text-[11.5px] font-medium tabular-nums text-ink-2"
         onClick={() => zoomTo(1, { duration: ZOOM_ANIMATION_DURATION })}
       >
-        <span>{Math.round(zoomLevel * 100)}</span>
-        <span className="ml-[0.5px] font-mono text-2xs">%</span>
+        {Math.round(zoomLevel * 100)}%
       </Button>
     </Tooltip>
   );

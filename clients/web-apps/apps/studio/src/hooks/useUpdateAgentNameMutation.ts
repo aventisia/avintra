@@ -8,7 +8,7 @@ export const useUpdateAgentNameMutation = () => {
     mutationFn: updateFlow,
     onSuccess: () => {
       // Success message
-      toast.success("Agent name updated successfully", {
+      toast.success("Agent updated", {
         className: "sonner-toaster-sm",
       });
     },

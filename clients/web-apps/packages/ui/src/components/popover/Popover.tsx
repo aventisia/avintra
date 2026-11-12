@@ -13,6 +13,8 @@ const PopoverTrigger = PopoverPrimitive.Trigger;
 
 const PopoverClose = PopoverPrimitive.Close;
 
+const PopoverAnchor = PopoverPrimitive.Anchor;
+
 // ------------------------------------------------------------------------------------------------
 
 interface PopoverContentProps
@@ -70,4 +72,11 @@ const PopoverDefaultHeader = ({ heading, className, children }: PopoverDefaultHe
   );
 };
 
-export { Popover, PopoverClose, PopoverContent, PopoverDefaultHeader, PopoverTrigger };
+export {
+  Popover,
+  PopoverAnchor,
+  PopoverClose,
+  PopoverContent,
+  PopoverDefaultHeader,
+  PopoverTrigger,
+};

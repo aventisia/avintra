@@ -7,14 +7,15 @@ import {
   TableCNToolbar,
   useTableCN,
 } from "@avplatform/ui/table-cn";
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
   SA_TICKETS_INITIAL_STATE,

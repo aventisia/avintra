@@ -5,17 +5,19 @@ import { useThemeStore } from "@avplatform/ui/stores";
 
 interface AppLogoProps {
   showFullLogo?: boolean;
+  /** Icon mark only, without the product wordmark (tenant branding still wins). */
+  markOnly?: boolean;
   className?: string;
   label?: string;
 }
 
-const AppLogo = ({ showFullLogo = false, className, label }: AppLogoProps) => {
+const AppLogo = ({ showFullLogo = false, markOnly = false, className, label }: AppLogoProps) => {
   const isDark = useThemeStore((state) => state.isDark);
   const brandingLogoUrl = useBrandLogo(showFullLogo ? "company" : "short", !isDark);
 
   const logoSrcWithBaseUrl =
     brandingLogoUrl ??
-    `${import.meta.env.BASE_URL}${showFullLogo ? (isDark ? "logo_light.svg" : "logo.svg") : isDark ? "app_logo_light.svg" : "app_logo_dark.svg"}`;
+    `${import.meta.env.BASE_URL}${markOnly ? "favicon.svg" : showFullLogo ? (isDark ? "logo_light.svg" : "logo.svg") : isDark ? "app_logo_light.svg" : "app_logo_dark.svg"}`;
 
   return (
     <LogoLink className="shrink-0 gap-1.5">

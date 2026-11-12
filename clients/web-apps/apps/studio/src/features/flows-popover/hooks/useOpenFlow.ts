@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
-import { useFlowVersionPopoverStore } from "@/features/flow-versions/stores/flow-version-popover-store";
 import { useUnsavedChangesGuard } from "@/hooks/useUnsavedChangesGuard";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -27,13 +26,6 @@ export const useOpenFlow = () => {
   // Ask before dropping unsaved canvas/config changes
   const guardUnsavedChanges = useUnsavedChangesGuard();
 
-  // Get store state and actions
-  const { togglePopoverOpen } = useFlowVersionPopoverStore(
-    useShallow((state) => ({
-      togglePopoverOpen: state.togglePopoverOpen,
-    })),
-  );
-
   // Get global store state & actions
   const { setIsFlowLoading } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -56,9 +48,6 @@ export const useOpenFlow = () => {
     versionId?: string,
     { skipUnsavedGuard = false }: OpenFlowOptions = {},
   ) => {
-    // Close popover
-    togglePopoverOpen(false);
-
     const proceed = () => {
       // The canvas is being replaced — close the config panel so it never keeps
       // pointing at a node from the previous flow/version.

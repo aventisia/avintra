@@ -1,4 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import { formatCredits, formatCreditsExact } from "@avplatform/ui/utils";
+import { CoinsIcon } from "@phosphor-icons/react";
 
 import { cn } from "@/ui/lib";
 
@@ -10,16 +13,23 @@ const AvailableCredits = () => {
   const availableCredits = data?.data?.availableCredits ?? 0;
 
   return (
-    <span className="hidden h-control-sm items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 font-mono text-code tabular-nums text-ink-2 md:inline-flex">
-      {isLoading ? (
-        <LoadingSpinner className="size-3 text-muted-foreground" />
-      ) : (
-        <span className={cn("text-ink", availableCredits < 0 && "text-bad")}>
-          {availableCredits.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-        </span>
-      )}
-      credits
-    </span>
+    <Tooltip content={`Available credits: ${formatCreditsExact(availableCredits)}`}>
+      <span className="hidden items-center gap-1.5 whitespace-nowrap text-[12.5px] md:inline-flex">
+        <CoinsIcon className="size-3.5 shrink-0 text-muted-foreground" />
+        {isLoading ? (
+          <LoadingSpinner className="size-3 text-muted-foreground" />
+        ) : (
+          <b
+            className={cn(
+              "font-mono font-medium tabular-nums text-ink",
+              availableCredits < 0 && "text-bad",
+            )}
+          >
+            {formatCredits(availableCredits)}
+          </b>
+        )}
+      </span>
+    </Tooltip>
   );
 };
 

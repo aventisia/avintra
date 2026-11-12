@@ -1,9 +1,10 @@
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 
 import { PLATFORMS, PLATFORM_LABELS } from "../constants/desktop-download.constant";
 import type { Platform } from "../utils/detect-platform.util";
