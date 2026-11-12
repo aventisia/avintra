@@ -1,5 +1,11 @@
-import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 import { useNavigate } from "react-router-dom";
 
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
@@ -29,26 +35,18 @@ export const StudioViewSwitch = () => {
   };
 
   return (
-    <div
-      role="tablist"
-      aria-label="Studio view"
-      className="hidden gap-0.5 rounded-md border border-line bg-sunken p-0.5 md:inline-flex"
+    <Tabs
+      value={views.find((view) => view.isActive)?.path}
+      onValueChange={openView}
+      className="hidden md:flex"
     >
-      {views.map((view) => (
-        <button
-          key={view.path}
-          type="button"
-          role="tab"
-          aria-selected={view.isActive}
-          onClick={() => !view.isActive && openView(view.path)}
-          className={cn(
-            "inline-flex h-[22px] items-center rounded-sm px-2.5 text-[12.5px]/[18px] font-semibold text-muted-foreground hover:text-ink focus-visible:shadow-focus focus-visible:outline-none",
-            view.isActive && "bg-fill text-ink shadow-[0_0_0_1px_var(--line-strong)]",
-          )}
-        >
-          {view.label}
-        </button>
-      ))}
-    </div>
+      <TabsList aria-label="Studio view" className={SEGMENTED_TABS_LIST_CLASS}>
+        {views.map((view) => (
+          <TabsTrigger key={view.path} value={view.path} className={SEGMENTED_TABS_TRIGGER_CLASS}>
+            {view.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   );
 };

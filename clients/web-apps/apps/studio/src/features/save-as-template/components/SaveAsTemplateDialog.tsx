@@ -38,7 +38,7 @@ export const SaveAsTemplateDialog = () => {
         setShowDialog(!showDialog);
       }}
     >
-      <DialogContent className="!max-w-[60vw]" side="right">
+      <DialogContent className="!max-w-2xl">
         {/* Header with static title */}
         <DialogDefaultHeader heading="Save as template" />
 

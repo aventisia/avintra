@@ -42,15 +42,10 @@ export const ViewControls = memo(() => {
             {/* Zoom out */}
             <VCActionButton action="zoomOut" Icon={MinusIcon} />
 
+            {import.meta.env.MODE !== "production" && <VCBZoomTo />}
+
             {/* Zoom in */}
             <VCActionButton action="zoomIn" Icon={PlusIcon} />
-
-            {import.meta.env.MODE !== "production" && (
-              <>
-                <Separator orientation="vertical" className="mx-1 w-[0.5px]" />
-                <VCBZoomTo />
-              </>
-            )}
           </VCBContainer>
         )}
 

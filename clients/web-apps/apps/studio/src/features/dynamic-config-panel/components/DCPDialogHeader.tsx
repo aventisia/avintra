@@ -88,9 +88,9 @@ const DCPDialogHeader = () => {
 
   const nodeIcon =
     nodeData?.type === "callAgentNode" ? (
-      <NodeImage src="/assets/NewAgentIcon.svg" />
+      iconMapper.CallAgentIcon
     ) : nodeData?.type === "blockNode" ? (
-      <NodeImage src="/assets/BlockNodeIconLight.svg" />
+      iconMapper.BlockNodeIcon
     ) : nodeData?.iconUrl ? (
       <NodeImage src={nodeData.iconUrl} />
     ) : nodeData?.icon && iconMapper[nodeData.icon] ? (

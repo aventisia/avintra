@@ -28,7 +28,7 @@
 .cm-gutters {
   background-color: var(--muted) !important;
   color: var(--muted-foreground) !important;
-  border: 0x !important;
+  border: 0 !important;
   border-top-left-radius: var(--radius);
   border-bottom-left-radius: var(--radius);
   border-right: 1px solid var(--border) !important;
@@ -49,4 +49,9 @@
 .dcp-code-editor .cm-line {
   max-width: 28rem;
   text-wrap: wrap;
+}
+
+/* Match the Workspace header height. */
+:root {
+  --header-height: 3.5rem;
 }

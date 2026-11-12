@@ -7,25 +7,41 @@ import {
   ArrowSquareOutIcon,
   ArrowsLeftRightIcon,
   BooksIcon,
+  GearIcon,
   KeyboardIcon,
   LockOpenIcon,
+  MagnifyingGlassIcon,
+  SlidersHorizontalIcon,
   UploadSimpleIcon,
 } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
+import { useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/useDirtyNodeConfigGuard";
 import { ExecutionLogsTrigger } from "@/features/execution-logs/components/execution-log-panel/ExecutionLogsTrigger";
+import { PANEL_ID as SETTINGS_PANEL_ID } from "@/features/flow-settings/constants";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
 import { useSaveAsTemplateStore } from "@/features/save-as-template/stores/save-as-template-store";
+import { useSearchStore } from "@/features/search/stores/serach-store";
 import { useExportFlow } from "@/hooks/useExportFlow.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { HeaderActionMenuTrigger } from "./HeaderActionMenuTrigger";
 
-export const HeaderActionMenu: React.FC = () => {
+type HeaderActionMenuProps = {
+  /** Shows the Preferences item; the header owns the popover it opens. */
+  onOpenPreferences?: () => void;
+};
+
+export const HeaderActionMenu = ({ onOpenPreferences }: HeaderActionMenuProps) => {
+  const setSearchOpen = useSearchStore((state) => state.setShowDialog);
+  const openPanel = usePanelStore((state) => state.openPanel);
+  const afterCloseRef = useRef<() => void>();
+
   const { setShowDialog: setExportDialog } = useInputOutputsStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
@@ -86,7 +102,44 @@ export const HeaderActionMenu: React.FC = () => {
       <HeaderActionMenuTrigger />
 
       {/* Header actions menu content */}
-      <DropdownMenuContent align="end" className="mt-0 flex w-fit min-w-[12rem] flex-col mlg:mt-4">
+      <DropdownMenuContent
+        align="end"
+        className="mt-0 flex w-fit min-w-[12rem] flex-col mlg:mt-4"
+        // IMPORTANT NOTE: the menu traps focus until it fully closes, so the preferences popover opens only after that
+        onCloseAutoFocus={(e) => {
+          if (!afterCloseRef.current) return;
+          e.preventDefault();
+          afterCloseRef.current();
+          afterCloseRef.current = undefined;
+        }}
+      >
+        {!isChatAgent ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={MagnifyingGlassIcon}
+            content="Search"
+            onClick={() => setSearchOpen(true)}
+          />
+        ) : null}
+
+        {!isChatAgent && import.meta.env.MODE !== "production" ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={GearIcon}
+            content="Settings"
+            onClick={() => openPanel(SETTINGS_PANEL_ID, "right")}
+          />
+        ) : null}
+
+        {onOpenPreferences ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={SlidersHorizontalIcon}
+            content="Preferences"
+            onClick={() => (afterCloseRef.current = onOpenPreferences)}
+          />
+        ) : null}
+
         {/* <FlowLogHeader /> */}
         <ExecutionLogsTrigger />
 

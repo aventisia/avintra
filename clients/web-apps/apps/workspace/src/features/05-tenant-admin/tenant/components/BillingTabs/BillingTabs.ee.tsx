@@ -1,9 +1,11 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 
 import { BillingHistoryTable } from "./billing-history/components/BillingHistoryTable.ee";
 import CompanyDetails from "./comapny-details/CompanyDetails";

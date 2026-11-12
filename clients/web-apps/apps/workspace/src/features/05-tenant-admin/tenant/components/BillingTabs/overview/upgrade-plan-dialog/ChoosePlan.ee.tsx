@@ -3,15 +3,17 @@ import { Button } from "@avplatform/ui/buttons";
 import { RadioGroup } from "@avplatform/ui/radio-group";
 import { RecordEmpty, RecordSection } from "@avplatform/ui/record-sheet";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 import { ArrowLeftIcon, InfoIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import {
-  SEGMENTED_TABS_LIST_CLASS,
-  SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
 import { useFetchCompanyDetails } from "@/features/05-tenant-admin/tenant/hooks/useFetchCompanyDetails.ee";
 import { useFetchSubscriptionPlans } from "@/features/05-tenant-admin/tenant/hooks/useFetchSubscriptionPlans.ee";
 import { useUpgradePlanDialogStore } from "@/features/05-tenant-admin/tenant/store/overview/upgrade-plan-dialog.store.ee";

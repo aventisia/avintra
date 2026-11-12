@@ -69,7 +69,7 @@ export const SaveAsTemplateForm = () => {
 
   return (
     // Scrollable container to support long forms within the viewport
-    <ScrollArea className="h-[calc(100vh-3rem)]">
+    <ScrollArea viewportClassName="max-h-[calc(85vh-4rem)]">
       <Form
         methods={form}
         disabled={viewMode}

@@ -14,6 +14,7 @@ export * from "./route-match.util";
 export * from "./sleep-util";
 export * from "./user-session-utils";
 export * from "./currency-formatter";
+export * from "./credits-formatter";
 export * from "./timezone-utils";
 export * from "./deep-parse.util";
 export * from "./file-download.util";
