@@ -1,4 +1,5 @@
 import { Skeleton } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
 import {
   ArrowSquareOutIcon,
   CodeIcon,
@@ -8,6 +9,7 @@ import {
   EyeIcon,
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
+  PencilSimpleIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { type ComponentProps, type RefObject, useEffect, useRef, useState } from "react";
@@ -42,6 +44,10 @@ type ChatFilePreviewProps = {
   /** ID of the version currently shown. */
   activeVersionId?: string;
   onSelectVersion?: (id: string) => void;
+  /** Saves edited text as a new version; without it no edit button is shown. */
+  onSaveVersion?: (body: string) => void | Promise<unknown>;
+  /** True while the edited text is being saved. */
+  isSavingVersion?: boolean;
 };
 
 const linkClassName =
@@ -192,10 +198,26 @@ export const ChatFilePreview = ({
   versions = [],
   activeVersionId,
   onSelectVersion,
+  onSaveVersion,
+  isSavingVersion,
 }: ChatFilePreviewProps) => {
   const loadable = file?.url ? { ...file, url: file.url } : null;
   const language = loadable && SOURCE_LANGUAGES[loadable.contentType.toLowerCase()];
-  const source = language ? readDataUrl(loadable.url) : null;
+  const body = loadable ? readDataUrl(loadable.url) : null;
+  const source = language && body !== null ? body : null;
+  const canEdit =
+    !!onSaveVersion &&
+    !!loadable &&
+    body !== null &&
+    (loadable.contentType.toLowerCase().startsWith("text/") || !!language);
+  const [draft, setDraft] = useState<string | null>(null);
+  useEffect(() => {
+    setDraft(null);
+  }, [loadable?.url]);
+  const isEditing = draft !== null && canEdit;
+  const saveDraft = () => {
+    if (draft !== null) void onSaveVersion?.(draft);
+  };
   const [sourceShownFor, setSourceShownFor] = useState<string | null>(null);
   const showsSource = source !== null && sourceShownFor === loadable?.url;
   const [zoomFor, setZoomFor] = useState({ url: "", index: ZOOM_LEVELS.indexOf(1) });
@@ -259,61 +281,79 @@ export const ChatFilePreview = ({
             <ChatCopyButton text={source} label="Copy code" />
           </>
         )}
-        {loadable && (
+        {isEditing ? (
           <>
-            <div className="hidden items-center sm:flex">
-              <ChatIconButton
-                label="Zoom out"
-                disabled={zoomIndex === 0}
-                onClick={() => zoomTo(zoomIndex - 1)}
-              >
-                <MagnifyingGlassMinusIcon />
-              </ChatIconButton>
-              <button
-                type="button"
-                aria-label="Reset zoom"
-                title="Reset zoom"
-                onClick={() => zoomTo(ZOOM_LEVELS.indexOf(1))}
-                className="h-8 min-w-11 rounded-lg px-1 text-xs tabular-nums text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                {Math.round(zoom * 100)}%
-              </button>
-              <ChatIconButton
-                label="Zoom in"
-                disabled={zoomIndex === ZOOM_LEVELS.length - 1}
-                onClick={() => zoomTo(zoomIndex + 1)}
-              >
-                <MagnifyingGlassPlusIcon />
-              </ChatIconButton>
-            </div>
-            {document.fullscreenEnabled && (
-              <ChatIconButton
-                label={isFullscreen ? "Exit full screen" : "Full screen"}
-                onClick={toggleFullscreen}
-              >
-                {isFullscreen ? <CornersInIcon /> : <CornersOutIcon />}
+            <Button variant="ghost" size="sm" onClick={() => setDraft(null)}>
+              Cancel
+            </Button>
+            <Button size="sm" disabled={isSavingVersion || draft === body} onClick={saveDraft}>
+              {isSavingVersion ? "Saving…" : "Save as new version"}
+            </Button>
+          </>
+        ) : (
+          <>
+            {canEdit && (
+              <ChatIconButton label="Edit file" onClick={() => setDraft(body)}>
+                <PencilSimpleIcon />
               </ChatIconButton>
             )}
-            <a
-              href={loadable.url}
-              download={loadable.name}
-              aria-label={`Download ${loadable.name}`}
-              title="Download"
-              className={linkClassName}
-            >
-              <DownloadSimpleIcon />
-            </a>
-            <a
-              href="about:blank"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(event) => pointAtStandalonePage(event.currentTarget, loadable)}
-              aria-label={`Open ${loadable.name} in a new tab`}
-              title="Open in new tab"
-              className={linkClassName}
-            >
-              <ArrowSquareOutIcon />
-            </a>
+            {loadable && (
+              <>
+                <div className="hidden items-center sm:flex">
+                  <ChatIconButton
+                    label="Zoom out"
+                    disabled={zoomIndex === 0}
+                    onClick={() => zoomTo(zoomIndex - 1)}
+                  >
+                    <MagnifyingGlassMinusIcon />
+                  </ChatIconButton>
+                  <button
+                    type="button"
+                    aria-label="Reset zoom"
+                    title="Reset zoom"
+                    onClick={() => zoomTo(ZOOM_LEVELS.indexOf(1))}
+                    className="h-8 min-w-11 rounded-lg px-1 text-xs tabular-nums text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    {Math.round(zoom * 100)}%
+                  </button>
+                  <ChatIconButton
+                    label="Zoom in"
+                    disabled={zoomIndex === ZOOM_LEVELS.length - 1}
+                    onClick={() => zoomTo(zoomIndex + 1)}
+                  >
+                    <MagnifyingGlassPlusIcon />
+                  </ChatIconButton>
+                </div>
+                {document.fullscreenEnabled && (
+                  <ChatIconButton
+                    label={isFullscreen ? "Exit full screen" : "Full screen"}
+                    onClick={toggleFullscreen}
+                  >
+                    {isFullscreen ? <CornersInIcon /> : <CornersOutIcon />}
+                  </ChatIconButton>
+                )}
+                <a
+                  href={loadable.url}
+                  download={loadable.name}
+                  aria-label={`Download ${loadable.name}`}
+                  title="Download"
+                  className={linkClassName}
+                >
+                  <DownloadSimpleIcon />
+                </a>
+                <a
+                  href="about:blank"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(event) => pointAtStandalonePage(event.currentTarget, loadable)}
+                  aria-label={`Open ${loadable.name} in a new tab`}
+                  title="Open in new tab"
+                  className={linkClassName}
+                >
+                  <ArrowSquareOutIcon />
+                </a>
+              </>
+            )}
           </>
         )}
         <ChatIconButton label="Close preview" onClick={onClose}>
@@ -326,6 +366,14 @@ export const ChatFilePreview = ({
             <Skeleton className="h-6 w-1/2 rounded" />
             <Skeleton className="h-40 w-full rounded-xl" />
           </div>
+        ) : isEditing ? (
+          <textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            aria-label={`Edit ${file?.name ?? "file"}`}
+            spellCheck={false}
+            className="h-full w-full resize-none bg-surface p-6 font-mono text-[13px] leading-6 text-ink focus:outline-none"
+          />
         ) : fileBody ? (
           <div
             className="origin-top-left"

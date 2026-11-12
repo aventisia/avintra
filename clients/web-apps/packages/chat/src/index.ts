@@ -27,6 +27,6 @@ export { ChatFilePreview } from "./components/ChatFilePreview";
 export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
-export { chatFileSize, findChatFile } from "./utils/chat-file.util";
+export { chatFileSize, findChatFile, toDataUrl } from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
 export { modelDisplayName } from "./utils/model-name.util";

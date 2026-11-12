@@ -10,6 +10,8 @@ type HomeChatPreviewProps = {
   versions?: ChatPreviewVersion[];
   activeVersionId?: string;
   onSelectVersion?: (id: string) => void;
+  onSaveVersion?: (body: string) => void | Promise<unknown>;
+  isSavingVersion?: boolean;
   isLoading: boolean;
   onClose: () => void;
 };
@@ -28,6 +30,8 @@ export const HomeChatPreview = ({
   versions,
   activeVersionId,
   onSelectVersion,
+  onSaveVersion,
+  isSavingVersion,
   isLoading,
   onClose,
 }: HomeChatPreviewProps) => {
@@ -45,6 +49,8 @@ export const HomeChatPreview = ({
       versions={versions}
       activeVersionId={activeVersionId}
       onSelectVersion={onSelectVersion}
+      onSaveVersion={onSaveVersion}
+      isSavingVersion={isSavingVersion}
       isLoading={isLoading}
       onClose={onClose}
     />

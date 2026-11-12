@@ -1,4 +1,4 @@
-import { ChatFilePreview } from "@avplatform/chat";
+import { ChatFilePreview, toDataUrl } from "@avplatform/chat";
 import { Input, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
@@ -11,7 +11,7 @@ import {
 } from "@avplatform/ui/select";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { MagnifyingGlassIcon, TrashIcon } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/react/shallow";
@@ -19,8 +19,11 @@ import { useShallow } from "zustand/react/shallow";
 import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
-import { getChatArtifact } from "../apis/workspace-chat.apis";
-import { useWorkspaceChatArtifacts } from "../hooks/useWorkspaceChatArtifacts.hook";
+import { createChatArtifact, getChatArtifact } from "../apis/workspace-chat.apis";
+import {
+  WORKSPACE_CHAT_ARTIFACTS_KEY,
+  useWorkspaceChatArtifacts,
+} from "../hooks/useWorkspaceChatArtifacts.hook";
 import {
   ARTIFACT_KIND_LABELS,
   ARTIFACT_SORT_LABELS,
@@ -87,7 +90,48 @@ export const WorkspaceChatArtifactsGallery = () => {
     [all.data, previewArtifact.data],
   );
   const { showCustomAlertDialog } = useShowAlertHandler();
+  const queryClient = useQueryClient();
+  const [isSavingVersion, setIsSavingVersion] = useState(false);
   const isHomeChatAvailable = useIsHomeChatAvailable();
+
+  const saveVersion = async (body: string) => {
+    const current = previewArtifact.data;
+    if (!current || isSavingVersion) return;
+    if (new Blob([body]).size > 10 * 1024 * 1024) {
+      showCustomAlertDialog({
+        isDestructive: false,
+        title: "File too large",
+        description: "Each file must be 10 MB or smaller.",
+        confirmBtnText: "OK",
+        confirmActionFn: () => {},
+      });
+      return;
+    }
+    setIsSavingVersion(true);
+    try {
+      const saved = await createChatArtifact({
+        conversationId: current.conversationId,
+        name: current.name,
+        contentType: current.contentType,
+        sizeBytes: new Blob([body]).size,
+        blobPath: toDataUrl(current.contentType, body),
+        sourceArtifact: null,
+        origin: "Generated",
+      });
+      await queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+      setPreviewArtifactId(saved.data.id);
+    } catch {
+      showCustomAlertDialog({
+        isDestructive: false,
+        title: "Version not saved",
+        description: "The edited file could not be saved. Try again.",
+        confirmBtnText: "OK",
+        confirmActionFn: () => {},
+      });
+    } finally {
+      setIsSavingVersion(false);
+    }
+  };
 
   const confirmDeleteArtifact = (artifactId: string) =>
     showCustomAlertDialog({
@@ -302,6 +346,8 @@ export const WorkspaceChatArtifactsGallery = () => {
                 versions={previewVersions}
                 activeVersionId={previewArtifactId ?? undefined}
                 onSelectVersion={setPreviewArtifactId}
+                onSaveVersion={saveVersion}
+                isSavingVersion={isSavingVersion}
                 isLoading={previewArtifact.isLoading}
                 onClose={() => setPreviewArtifactId(null)}
               />

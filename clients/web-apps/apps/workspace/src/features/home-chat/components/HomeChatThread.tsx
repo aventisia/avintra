@@ -1,15 +1,21 @@
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { type ChatModelSelection } from "@avplatform/assistant-chat";
-import { ChatModelPicker, ChatThread } from "@avplatform/chat";
-import { useBranding } from "@avplatform/ui/hooks";
-import { useQuery } from "@tanstack/react-query";
+import { ChatModelPicker, ChatThread, toDataUrl } from "@avplatform/chat";
+import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
+import {
+  createChatArtifact,
+  getChatArtifact,
+} from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 
 import { transcribeSpeech } from "../apis/speech.apis";
-import { HOME_CHAT_FILE_QUERY_KEY } from "../constants/home-chat.constant";
+import {
+  HOME_CHAT_FILES_QUERY_KEY,
+  HOME_CHAT_FILE_QUERY_KEY,
+} from "../constants/home-chat.constant";
 import { useHomeChatCommands } from "../hooks/useHomeChatCommands.hook";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
 import { useHomeChatFiles } from "../hooks/useHomeChatFiles.hook";
@@ -100,6 +106,48 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
     onReplyComplete: files.refreshAfterReply,
   });
   const { companyName } = useBranding();
+  const queryClient = useQueryClient();
+  const [isSavingVersion, setIsSavingVersion] = useState(false);
+  const { showCustomAlertDialog } = useShowAlertHandler();
+
+  const saveVersion = async (body: string) => {
+    const current = preview.data;
+    if (!current || isSavingVersion) return;
+    if (new Blob([body]).size > 10 * 1024 * 1024) {
+      showCustomAlertDialog({
+        isDestructive: false,
+        title: "File too large",
+        description: "Each file must be 10 MB or smaller.",
+        confirmBtnText: "OK",
+        confirmActionFn: () => {},
+      });
+      return;
+    }
+    setIsSavingVersion(true);
+    try {
+      const saved = await createChatArtifact({
+        conversationId: current.conversationId,
+        name: current.name,
+        contentType: current.contentType,
+        sizeBytes: new Blob([body]).size,
+        blobPath: toDataUrl(current.contentType, body),
+        sourceArtifact: null,
+        origin: "Generated",
+      });
+      await queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+      setPreviewId(saved.data.id);
+    } catch {
+      showCustomAlertDialog({
+        isDestructive: false,
+        title: "Version not saved",
+        description: "The edited file could not be saved. Try again.",
+        confirmBtnText: "OK",
+        confirmActionFn: () => {},
+      });
+    } finally {
+      setIsSavingVersion(false);
+    }
+  };
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
@@ -127,6 +175,8 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             versions={previewVersions}
             activeVersionId={previewId}
             onSelectVersion={setPreviewId}
+            onSaveVersion={saveVersion}
+            isSavingVersion={isSavingVersion}
             isLoading={preview.isLoading}
             onClose={() => setPreviewId(null)}
           />

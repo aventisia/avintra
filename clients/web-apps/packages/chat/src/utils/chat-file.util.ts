@@ -74,6 +74,15 @@ export const textAfterChatFile = (text: string) => splitAroundChatFile(text)[1];
 /** The UTF-8 size of a file body, which with the type is how stored files are matched back to replies. */
 export const chatFileSize = (body: string) => new Blob([body]).size;
 
+/** Encodes file text as the data: URL the server stores, mirroring the backend artifact writer. */
+export const toDataUrl = (contentType: string, body: string) => {
+  const bytes = new TextEncoder().encode(body);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return `data:${contentType};charset=utf-8;base64,${btoa(binary)}`;
+};
+
 /** Formats a byte count for people: 512 B, 3.4 KB, 1.2 MB. */
 export const formatFileSize = (bytes: number) => {
   if (bytes < 1024) return `${bytes} B`;
