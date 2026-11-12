@@ -1,0 +1,25 @@
+meta {
+  name: Linked share candidates answer 404 for an unknown agent
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/00000000-0000-0000-0000-000000000000/linked-share-candidates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  test("an unknown agent id is not found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > An id no Flow table holds answers 404 before any item is resolved.
+}

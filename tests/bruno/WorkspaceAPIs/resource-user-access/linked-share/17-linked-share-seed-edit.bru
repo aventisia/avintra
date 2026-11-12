@@ -1,0 +1,35 @@
+meta {
+  name: Seed a Can edit row on a linked item (AC6)
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{LINK_HIGHER_LEVEL_QUEUE_ID}}",
+    "accessLevel": "Edit",
+    "userId": "{{LINK_RECIPIENT_ID}}"
+  }
+}
+
+script:post-response {
+  test("the recipient starts with Can edit on the queue", function() {
+    expect([200, 409]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  > AC6 setup: a leftover row from an interrupted run answers 409 and is already
+  > at Can edit, so `18-`/`19-` stay repeatable.
+}

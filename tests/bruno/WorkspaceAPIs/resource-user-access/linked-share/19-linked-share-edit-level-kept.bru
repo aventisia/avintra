@@ -1,0 +1,36 @@
+meta {
+  name: The existing Can edit level survived the share (AC6)
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{LINK_HIGHER_LEVEL_QUEUE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const recipientId = bru.getEnvVar("LINK_RECIPIENT_ID");
+  const mine = data.find((share) => share.userId === recipientId);
+
+  test("the owner reads the queue's share list", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the recipient still holds Can edit", function() {
+    expect(mine, "share row for " + recipientId + " is missing").to.be.an("object");
+    expect(mine.accessLevel).to.equal("Edit");
+  });
+}
+
+docs {
+  > AC6 read-back. Nothing in the linked-share flow updates or deletes a linked
+  > row, so sharing and unsharing the agent never lowers or removes access here.
+}

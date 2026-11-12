@@ -14,6 +14,7 @@ import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceUserAccessDraft } from "../hooks/useResourceUserAccessDraft.hook";
 import { useResourceUserAccessStore } from "../stores/resource-user-access.store";
 import { getResourceDisplayName, getResourceTypeLabel } from "../utils/resource-display.util";
+import { LinkedItemsSection } from "./user-access-dialog/LinkedItemsSection";
 import { ShareMark } from "./user-access-dialog/ShareMark";
 import { SharePanels } from "./user-access-dialog/SharePanels";
 import { ShareSummary } from "./user-access-dialog/ShareSummary";
@@ -116,6 +117,8 @@ const ResourceUserAccessCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKe
             )}
 
             <SharePanels draft={draft} spaceName={spaceName} />
+
+            <LinkedItemsSection draft={draft} />
 
             {draft.resourceType === ResourceTypeEnum.Flow && (
               <p className="mt-5 flex gap-2 text-[12px] leading-5 text-muted-foreground">

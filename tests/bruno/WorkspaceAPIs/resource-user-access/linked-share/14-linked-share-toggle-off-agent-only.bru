@@ -1,0 +1,39 @@
+meta {
+  name: Toggle off shares only the agent (AC4)
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Flow",
+    "resourceId": "{{LINK_FLOW_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{LINK_SECOND_RECIPIENT_ID}}"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  test("the agent is shared as usual with the toggle off", function() {
+    expect([200, 409]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  > AC4: with "Also share these items" off the dialog sends this one bulk call
+  > and no linked-item call at all. `15-` proves a linked item stayed closed.
+}

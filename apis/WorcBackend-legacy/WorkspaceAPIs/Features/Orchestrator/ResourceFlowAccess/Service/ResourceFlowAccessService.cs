@@ -490,6 +490,76 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
         }
     }
 
+    public async Task<ServiceResponse<IEnumerable<LinkedShareCandidateDto>>> GetLinkedShareCandidatesAsync(ResourceTypeEnum resourceType, Guid resourceId, IEnumerable<Guid> userIds)
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<LinkedShareCandidateDto>>.Create("Failed to retrieve linked share candidates", 500);
+
+        try
+        {
+            if (resourceType is not (ResourceTypeEnum.Flow or ResourceTypeEnum.FlowVersion))
+            {
+                return serviceResponse.Update($"Resource type '{resourceType}' is not an agent", 400);
+            }
+
+            var agent = await LoadAgentRunGraphAsync(resourceType, resourceId);
+            if (agent == null)
+            {
+                return serviceResponse.Update("The agent does not exist", 404);
+            }
+
+            var (canRead, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+                _userId,
+                resourceId,
+                resourceType,
+                agent.CreatedByUserId,
+                agent.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.FullAccess,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.View,
+                });
+
+            if (!canRead)
+            {
+                return serviceResponse.Update("You do not have access to view this agent", 403);
+            }
+
+            var recipientIds = userIds.Distinct().ToList();
+            var linkedResources = await ResolveLinkedResourcesAsync(agent);
+            var assignedKeys = await GetRecipientAccessKeysAsync(linkedResources, recipientIds);
+            var ownerNames = await GetOwnerNamesAsync(linkedResources);
+            var candidates = new List<LinkedShareCandidateDto>();
+
+            foreach (var linkedResource in linkedResources)
+            {
+                candidates.Add(new LinkedShareCandidateDto
+                {
+                    ResourceType = linkedResource.ResourceType,
+                    ResourceId = linkedResource.ResourceId,
+                    Name = linkedResource.Name,
+                    OwnerName = ownerNames.GetValueOrDefault(linkedResource.CreatedByUserId),
+                    IsTenantWideAccess = linkedResource.IsTenantWideAccess,
+                    CanShare = await _resourceUserAccessService.CanShareResourceAsync(linkedResource.ResourceId, linkedResource.ResourceType),
+                    UserIdsNeedingShare = linkedResource.IsTenantWideAccess
+                        ? []
+                        : recipientIds
+                            .Where(w => w != linkedResource.CreatedByUserId &&
+                                !assignedKeys.Contains((linkedResource.ResourceType, linkedResource.ResourceId, w)))
+                            .ToList(),
+                });
+            }
+
+            return serviceResponse.Update(null, 200, candidates);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve linked share candidates for {ResourceType} {ResourceId}.", resourceType, resourceId);
+            return serviceResponse;
+        }
+    }
+
     public async Task<Dictionary<Guid, HashSet<Guid>>> GetAssignedFlowIdsAsync(ResourceTypeEnum resourceType, IEnumerable<Guid> resourceIds)
     {
         var idList = resourceIds.ToList();
@@ -501,6 +571,236 @@ public class ResourceFlowAccessService : IResourceFlowAccessService
         return rows
             .GroupBy(w => w.ResourceId)
             .ToDictionary(g => g.Key, g => g.Select(w => w.FlowId).ToHashSet());
+    }
+
+    private sealed record AgentRunGraph(
+        Guid FlowId,
+        Guid TenantId,
+        Guid? SpaceId,
+        Guid CreatedByUserId,
+        bool IsTenantWideAccess,
+        ConfigureEnvironmentType EnvType,
+        string? ReactFlowObject);
+
+    private sealed record LinkedResource(
+        ResourceTypeEnum ResourceType,
+        Guid ResourceId,
+        string Name,
+        Guid CreatedByUserId,
+        bool IsTenantWideAccess);
+
+    private async Task<AgentRunGraph?> LoadAgentRunGraphAsync(ResourceTypeEnum resourceType, Guid resourceId)
+    {
+        if (resourceType == ResourceTypeEnum.FlowVersion)
+        {
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == resourceId)
+                .Include(w => w.Flow)
+                .SingleOrDefaultAsync();
+
+            return flowVersion?.Flow == null
+                ? null
+                : new AgentRunGraph(
+                    flowVersion.FlowId,
+                    flowVersion.TenantId,
+                    flowVersion.Flow.SpaceId,
+                    flowVersion.CreatedByUserId,
+                    flowVersion.IsTenantWideAccess,
+                    flowVersion.IsPublished ? ConfigureEnvironmentType.Prod : ConfigureEnvironmentType.Dev,
+                    flowVersion.ReactFlowObject);
+        }
+
+        var flow = await _unitOfWork.FlowRepo
+            .GetByConditionAsync(w => w.Id == resourceId)
+            .SingleOrDefaultAsync();
+
+        if (flow == null)
+        {
+            return null;
+        }
+
+        // IMPORTANT NOTE: a Flow share covers every version, so the Dev items come from its newest
+        // non-archived version, the graph a draft run of the agent executes.
+        var draftVersion = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w => w.FlowId == flow.Id && !w.IsArchived)
+            .OrderByDescending(w => w.VersionNumber)
+            .ThenByDescending(w => w.CreatedOn)
+            .FirstOrDefaultAsync();
+
+        return new AgentRunGraph(
+            flow.Id,
+            flow.TenantId,
+            flow.SpaceId,
+            flow.CreatedByUserId,
+            flow.IsTenantWideAccess,
+            ConfigureEnvironmentType.Dev,
+            draftVersion?.ReactFlowObject);
+    }
+
+    private async Task<List<LinkedResource>> ResolveLinkedResourcesAsync(AgentRunGraph agent)
+    {
+        var graphs = new List<(Guid FlowId, ReactFlowDataModel Graph)>();
+        await CollectRunGraphsAsync(agent.TenantId, agent.FlowId, agent.ReactFlowObject, graphs, new HashSet<Guid>());
+
+        if (graphs.Count == 0)
+        {
+            return [];
+        }
+
+        var references = await CollectRunReferencedNamesAsync(graphs, agent);
+        var targetSpaceId = agent.SpaceId == Guid.Empty ? null : agent.SpaceId;
+        var linkedResources = new List<LinkedResource>();
+
+        linkedResources.AddRange((await ResolveRunToolsAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["tools"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.Tool, w.Id, w.Name, w.CreatedByUserId ?? Guid.Empty, w.IsTenantWideAccess)));
+        linkedResources.AddRange((await ResolveRunQueuesAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["queues"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.Queue, w.Id, w.Name, w.CreatedByUserId, w.IsTenantWideAccess)));
+        linkedResources.AddRange((await ResolveRunVaultCredentialsAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["credentials"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.VaultCredential, w.Id, w.Name, w.CreatedByUserId, w.IsTenantWideAccess)));
+        linkedResources.AddRange((await ResolveRunConfigStoresAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["configStores"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.ConfigStore, w.Id, w.Name, w.CreatedByUserId, w.IsTenantWideAccess)));
+        linkedResources.AddRange((await ResolveRunKnowledgeBasesAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["knowledgeBases"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.KnowledgeBase, w.Id, w.Name, w.CreatedByUserId, w.IsTenantWideAccess)));
+        linkedResources.AddRange((await ResolveRunSkillsAsync(agent.TenantId, agent.EnvType, targetSpaceId, references["skills"]))
+            .Values.Select(w => new LinkedResource(ResourceTypeEnum.Skill, w.Id, w.Name, w.CreatedByUserId, w.IsTenantWideAccess)));
+
+        // IMPORTANT NOTE: a trigger and a called agent are never linked items; a trigger starts a
+        // published agent by itself and a run never checks the runner's access to a called agent.
+        return linkedResources
+            .GroupBy(w => (w.ResourceType, w.ResourceId))
+            .Select(group => group.First())
+            .OrderBy(w => w.ResourceType)
+            .ThenBy(w => w.Name)
+            .ToList();
+    }
+
+    private async Task<Dictionary<string, List<string>>> CollectRunReferencedNamesAsync(
+        List<(Guid FlowId, ReactFlowDataModel Graph)> graphs,
+        AgentRunGraph agent)
+    {
+        var references = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var (_, graph) in graphs)
+        {
+            foreach (var (referenceKey, names) in ResourceFlowAccessHelpers.CollectReferencedResourceNames(graph))
+            {
+                if (!references.TryGetValue(referenceKey, out var collectedNames))
+                {
+                    collectedNames = [];
+                    references[referenceKey] = collectedNames;
+                }
+
+                collectedNames.AddRange(names.Where(w => !collectedNames.Contains(w, StringComparer.OrdinalIgnoreCase)));
+            }
+        }
+
+        await NormalizeLegacyCredentialNamesAsync(references["credentials"], agent);
+
+        return references;
+    }
+
+    // IMPORTANT NOTE: legacy graphs store a credential GUID where newer ones store its name, so the
+    // value is resolved the same way publish resolves it before run-time resolution looks it up.
+    private async Task NormalizeLegacyCredentialNamesAsync(List<string> credentialNames, AgentRunGraph agent)
+    {
+        if (credentialNames.Count == 0)
+        {
+            return;
+        }
+
+        var normalizedNames = credentialNames.Select(w => w.ToLowerInvariant()).ToList();
+        var knownNames = (await _unitOfWork.VaultCredentialRepo
+                .GetByConditionAsync(w => normalizedNames.Contains(w.Name.ToLower()) && w.TenantId == agent.TenantId && w.EnvType == agent.EnvType)
+                .IgnoreQueryFilters()
+                .Select(w => w.Name.ToLower())
+                .ToListAsync())
+            .ToHashSet();
+
+        var legacyIds = credentialNames
+            .Where(w => !knownNames.Contains(w.ToLowerInvariant()) && Guid.TryParse(w, out _))
+            .Select(Guid.Parse)
+            .ToList();
+
+        if (legacyIds.Count == 0)
+        {
+            return;
+        }
+
+        var namesById = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w => legacyIds.Contains(w.Id) && w.TenantId == agent.TenantId && w.EnvType == agent.EnvType)
+            .IgnoreQueryFilters()
+            .Select(w => new { w.Id, w.Name })
+            .ToDictionaryAsync(w => w.Id, w => w.Name);
+
+        for (var index = 0; index < credentialNames.Count; index++)
+        {
+            var value = credentialNames[index];
+            if (knownNames.Contains(value.ToLowerInvariant()) || !Guid.TryParse(value, out var legacyId))
+            {
+                continue;
+            }
+
+            if (namesById.TryGetValue(legacyId, out var resolvedName))
+            {
+                credentialNames[index] = resolvedName;
+            }
+        }
+    }
+
+    private async Task<HashSet<(ResourceTypeEnum ResourceType, Guid ResourceId, Guid UserId)>> GetRecipientAccessKeysAsync(
+        List<LinkedResource> linkedResources,
+        List<Guid> recipientIds)
+    {
+        var accessKeys = new HashSet<(ResourceTypeEnum, Guid, Guid)>();
+
+        if (linkedResources.Count == 0 || recipientIds.Count == 0)
+        {
+            return accessKeys;
+        }
+
+        foreach (var resourceGroup in linkedResources.GroupBy(w => w.ResourceType))
+        {
+            var resourceIds = resourceGroup.Select(w => w.ResourceId).ToList();
+            var rows = await _unitOfWork.ResourceUserAccessRepo
+                .GetByConditionAsync(w =>
+                    w.ResourceType == resourceGroup.Key &&
+                    resourceIds.Contains(w.ResourceId) &&
+                    recipientIds.Contains(w.UserId))
+                .Select(w => new { w.ResourceType, w.ResourceId, w.UserId })
+                .ToListAsync();
+
+            foreach (var row in rows)
+            {
+                accessKeys.Add((row.ResourceType, row.ResourceId, row.UserId));
+            }
+        }
+
+        return accessKeys;
+    }
+
+    private async Task<Dictionary<Guid, string>> GetOwnerNamesAsync(List<LinkedResource> linkedResources)
+    {
+        var ownerIds = linkedResources
+            .Select(w => w.CreatedByUserId)
+            .Where(w => w != Guid.Empty)
+            .Distinct()
+            .ToList();
+
+        if (ownerIds.Count == 0)
+        {
+            return [];
+        }
+
+        var owners = await _unitOfWork.WorkspaceUserRepo
+            .GetByConditionAsync(w => ownerIds.Contains(w.Id))
+            .Select(w => new { w.Id, w.UserName, w.FirstName, w.LastName })
+            .ToListAsync();
+
+        return owners.ToDictionary(w => w.Id, w =>
+        {
+            var name = $"{w.FirstName} {w.LastName}".Trim();
+            return string.IsNullOrWhiteSpace(name) ? w.UserName : name;
+        });
     }
 
     public async Task<ServiceResponse<bool>> ValidateRunResourceAccessAsync(Guid tenantId, ConfigureEnvironmentType envType, Guid? spaceId, Guid flowId, string? reactFlowObject)

@@ -1,0 +1,37 @@
+meta {
+  name: Everyone-flagged linked items need no per-person share
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_FLOW_ID}}/linked-share-candidates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const everyoneId = bru.getEnvVar("LINK_EVERYONE_CREDENTIAL_ID");
+  const everyoneItem = data.find((candidate) => candidate.resourceId === everyoneId);
+
+  test("candidates are readable without recipients", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("an item open to everyone is flagged and needs no share rows", function() {
+    expect(everyoneItem, "Everyone credential " + everyoneId + " is missing").to.be.an("object");
+    expect(everyoneItem.isTenantWideAccess).to.equal(true);
+    expect(everyoneItem.userIdsNeedingShare).to.deep.equal([]);
+  });
+}
+
+docs {
+  > AC7 discovery: with no recipients in the query the dialog gets the
+  > Everyone-mode list, and an item already open to everyone needs nothing shared.
+}
