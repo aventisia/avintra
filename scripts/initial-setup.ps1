@@ -2,8 +2,10 @@
 #
 # A fresh clone is missing every local, gitignored `.env` / `.env.local` file,
 # and none of the project dependencies are installed. This script copies each
-# committed `.env.example` template to the local env file its service expects
-# and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
+# committed `.env.example` template to the local env file its service expects,
+# replaces each __GENERATED_BY_INITIAL_SETUP__ key with a local secret (an existing
+# env-file value, else the OS environment value, else a random one; JWT_SECRET_KEY
+# is shared by every service), and installs the dependencies plus dekit (npm install -g @dekit/cli, which runs
 # the local stack from dekit.yaml), so the checkout can be built and run without
 # doing it by hand. It also installs the pinned gitleaks binary and enables the
 # committed pre-commit hook (core.hooksPath=scripts/hooks) that scans staged
@@ -198,6 +200,67 @@ $EnvFiles = @(
     'tests/bruno/.env'
 )
 
+$GeneratedMarker = '__GENERATED_BY_INITIAL_SETUP__'
+$GeneratedKeys = @('JWT_SECRET_KEY', 'AES_ENCRYPTION_KEY', 'AES_INITIALIZATION_VECTOR', 'CORSAIR_KEK')
+
+function New-RandomBytes([int]$Count) {
+    $bytes = New-Object byte[] $Count
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }
+    return ,$bytes
+}
+
+function New-Secret([string]$Key) {
+    switch ($Key) {
+        'JWT_SECRET_KEY' { return [Convert]::ToBase64String((New-RandomBytes 64)) }
+        'AES_ENCRYPTION_KEY' { return [Convert]::ToBase64String((New-RandomBytes 32)) }
+        'AES_INITIALIZATION_VECTOR' { return [Convert]::ToBase64String((New-RandomBytes 16)) }
+        'CORSAIR_KEK' { return -join ((New-RandomBytes 32) | ForEach-Object { $_.ToString('x2') }) }
+    }
+}
+
+function Get-ExistingSecret([string]$Key) {
+    $pattern = '^' + [regex]::Escape($Key) + '=(.*)$'
+    foreach ($rel in $EnvFiles) {
+        $path = Join-Path $Root $rel
+        if (-not (Test-Path -LiteralPath $path)) { continue }
+        foreach ($line in [System.IO.File]::ReadAllLines($path)) {
+            if ($line -cmatch $pattern -and $Matches[1] -and $Matches[1] -ne $GeneratedMarker) {
+                return $Matches[1]
+            }
+        }
+    }
+    return [Environment]::GetEnvironmentVariable($Key)
+}
+
+# IMPORTANT NOTE: keys are resolved before any template is copied, so -Force keeps them;
+# a new AES key or Corsair KEK cannot decrypt data already stored in the local databases.
+function Resolve-GeneratedSecrets {
+    $secrets = @{}
+    foreach ($key in $GeneratedKeys) {
+        $value = Get-ExistingSecret $key
+        if (-not $value) { $value = New-Secret $key }
+        $secrets[$key] = $value
+    }
+    return $secrets
+}
+
+function Set-GeneratedSecrets([string]$RelativePath, [hashtable]$Secrets) {
+    $path = Join-Path $Root $RelativePath
+    if (-not (Test-Path -LiteralPath $path)) { return }
+    $content = [System.IO.File]::ReadAllText($path)
+    $updated = $content
+    foreach ($key in $GeneratedKeys) {
+        $pattern = '(?m)^' + [regex]::Escape("$key=$GeneratedMarker") + '(?=\r?$)'
+        $replacement = "$key=" + $Secrets[$key].Replace('$', '$$')
+        $updated = [regex]::Replace($updated, $pattern, $replacement)
+    }
+    if ($updated -cne $content) {
+        [System.IO.File]::WriteAllText($path, $updated)
+        OkMark "$RelativePath (generated keys filled)"
+    }
+}
+
 function Copy-EnvTemplate([string]$RelativePath) {
     $dst = Join-Path $Root $RelativePath
     $src = Join-Path (Split-Path -Parent $dst) '.env.example'
@@ -213,8 +276,12 @@ function Copy-EnvTemplate([string]$RelativePath) {
 }
 
 Step 'Creating gitignored env files from .env.example templates'
+$generatedSecrets = Resolve-GeneratedSecrets
 foreach ($rel in $EnvFiles) {
     Copy-EnvTemplate $rel
+}
+foreach ($rel in $EnvFiles) {
+    Set-GeneratedSecrets $rel $generatedSecrets
 }
 
 # ---------------------------------------------------------------------------
@@ -349,9 +416,8 @@ if ($SkipInstall.IsPresent) {
 Write-Output ''
 Write-Output 'Done. Repository is bootstrapped.'
 Write-Output 'Next steps:'
-Write-Output '  - Set the secrets listed (commented out) in each generated env file, either'
-Write-Output '    in your OS environment or by uncommenting them there, before running the'
-Write-Output '    services. Also set your Bruno login in tests/bruno/.env.'
+Write-Output '  - Local keys (JWT, AES, Corsair KEK) are generated. Set your PostgreSQL credentials'
+Write-Output '    and admin email in the API env files, and your Bruno login in tests/bruno/.env.'
 Write-Output '  - Run the stack: dekit up, then dekit attach (more commands at the top of dekit.yaml)'
 
 if ($script:InstallFailed) {

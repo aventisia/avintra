@@ -13,8 +13,8 @@ public static partial class AppServicesExtension
         var environmentConfig = Guard.Against.Null(config.GetSection("EnvironmentConfig").Get<EnvironmentConfig>(), message: "EnvironmentConfig cannot be null");
         var onPremTenantType = environmentConfig.OnPremTenantType ?? "Enterprise";
 
-        // Check if the tenant type is Commercial, as Razorpay integration is only needed for Commercial tenants
-        if (onPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
+        // Razorpay is needed only for Commercial tenants that enable it; the env loader reads its keys under the same rule
+        if (environmentConfig.RazorpayEnabled && onPremTenantType == OnPremTenantTypesEnum.Commercial.ToString())
         {
             // Retrieve the Razorpay configuration section from the configuration provider
             var razorpayKeyId = environmentConfig.RazorpayKeyId;
@@ -31,7 +31,7 @@ public static partial class AppServicesExtension
         }
         else
         {
-            // Register null RazorpayClient for non-Commercial tenants to satisfy DI requirements
+            // Register a null RazorpayClient when Razorpay is off to satisfy DI requirements
             services.AddSingleton<Razorpay.Api.RazorpayClient>(provider => null!);
         }
     }
