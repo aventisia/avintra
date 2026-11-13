@@ -42,7 +42,7 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
 
   // Render action button
   return (
-    <Tooltip content={tooltips[action]} side="right">
+    <Tooltip content={tooltips[action]} side="top">
       <Button size="icon6" className={cn("rounded-md")} variant={"ghost"} onClick={actionHandler}>
         <Icon className="h-4 w-4 text-[--icon-color]" />
       </Button>

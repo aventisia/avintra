@@ -30,7 +30,7 @@ export const VCBZoomTo = () => {
 
   // Render zoom in button
   return (
-    <Tooltip content="Reset zoom" side="right">
+    <Tooltip content="Reset zoom" side="top">
       <Button
         variant={"ghost"}
         className="h-6 w-12 rounded-md px-0 font-mono text-[11.5px] font-medium tabular-nums text-ink-2"

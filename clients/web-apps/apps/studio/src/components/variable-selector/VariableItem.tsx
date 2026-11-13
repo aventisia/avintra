@@ -1,15 +1,20 @@
 import { CommandItem } from "@avplatform/ui/command";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 
 interface VariableItemProps {
   value: string;
+  Icon: PhosphorIcon;
   isConfigValue?: boolean;
 }
 
-export const VariableItem: React.FC<VariableItemProps> = ({ value, isConfigValue = false }) => {
-  // Get variable selector store state and actions
+export const VariableItem: React.FC<VariableItemProps> = ({
+  value,
+  Icon,
+  isConfigValue = false,
+}) => {
   const { setOpenState, setSelectedValue } = useVariableSelectorStore(
     useShallow((state) => ({
       setOpenState: state.setOpenState,
@@ -17,21 +22,20 @@ export const VariableItem: React.FC<VariableItemProps> = ({ value, isConfigValue
     })),
   );
 
-  // Handle onValueSelect from Variable List
-  const handleOnSelectValue = (val: string) => {
-    setSelectedValue(isConfigValue ? "__config__" + val : val);
+  const handleSelect = () => {
+    setSelectedValue(isConfigValue ? "__config__" + value : value);
     setOpenState(false);
   };
 
   return (
     <CommandItem
       value={value}
-      onSelect={() => {
-        handleOnSelectValue(value);
-      }}
-      className="cursor-pointer rounded-lg px-2.5 py-1.5"
+      onSelect={handleSelect}
+      title={value}
+      className="group/item cursor-pointer gap-2 rounded-md px-2 py-1.5"
     >
-      {value}
+      <Icon className="size-3.5 shrink-0 text-muted-foreground group-aria-selected/item:text-primary-text" />
+      <span className="min-w-0 truncate font-mono text-[12px]">{value}</span>
     </CommandItem>
   );
 };

@@ -147,15 +147,14 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
     }
   };
 
-  // Width parity with the old dialog variants (default 20rem inspector, wide nodes 40rem,
-  // AIAgent/WorkItem half viewport, file-viewer full width).
+  // Default 29.25rem inspector, wide nodes 40rem, AIAgent/WorkItem half viewport, file-viewer full width.
   const panelWidth = showViewer
-    ? "w-[calc(100vw-2*var(--header-padding))]"
+    ? "w-screen"
     : nodeData?.name.includes("AIAgent") || nodeData?.name.includes("WorkItem")
-      ? "w-[calc((100vw-(2*var(--header-padding)))/2)]"
+      ? "w-[50vw]"
       : nodeData?.name === "ConditionalBranchActivity" || nodeData?.name === "LoopActivity"
         ? "w-[40rem]"
-        : "w-80";
+        : "w-[29.25rem]";
 
   return (
     <>
@@ -163,7 +162,8 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
       <Panel
         id={DCP_PANEL_ID}
         side="right"
-        contained
+        contained={isChatAgent}
+        flush={!isChatAgent}
         fill={isChatAgent}
         width={panelWidth}
         className="rounded-none border-y-0 border-r-0 shadow-none"

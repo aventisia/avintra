@@ -10,7 +10,7 @@ export const DCPTabsFooterWrapper = ({
   return (
     <div
       className={cn(
-        "!mt-0 flex h-14 w-full items-center justify-end gap-2 border-t border-line px-4",
+        "!mt-0 flex h-14 w-full shrink-0 items-center justify-end gap-2 border-t border-line px-4",
         className,
       )}
     >

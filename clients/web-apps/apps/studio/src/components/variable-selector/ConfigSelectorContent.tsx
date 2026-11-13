@@ -1,14 +1,11 @@
-import { EmptyState } from "@avplatform/ui";
-import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
-import { ScrollArea } from "@avplatform/ui/scroll";
+import { GearSixIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
-import { VariableItem } from "./VariableItem";
+import { SelectorSearchList } from "./SelectorSearchList";
 
 export const ConfigSelectorContent = () => {
-  // Get ReactFlowExt store state & actions
   const { configVariables } = useReactFlowExtStore(
     useShallow((state) => ({
       configVariables: state.configVariables,
@@ -16,28 +13,13 @@ export const ConfigSelectorContent = () => {
   );
 
   return (
-    <Command className="h-full">
-      {/* Search Box */}
-      <div className="mx-3 rounded-lg bg-sunken">
-        <CommandInput className="h-9 text-xs" placeholder="Search key..." autoFocus />
-      </div>
-
-      {/* No content message */}
-      <CommandEmpty className="h-full">
-        <EmptyState
-          className="mt-5"
-          primaryMessage="No key found"
-          secondaryMessage="Try a different search term."
-        />
-      </CommandEmpty>
-
-      <ScrollArea className="h-full w-full" viewportClassName="h-full">
-        <CommandList className="px-4 py-2">
-          {configVariables?.map((item, index) => (
-            <VariableItem key={index} value={item} isConfigValue />
-          ))}
-        </CommandList>
-      </ScrollArea>
-    </Command>
+    <SelectorSearchList
+      items={configVariables}
+      isConfigValue
+      ItemIcon={GearSixIcon}
+      placeholder="Search keys…"
+      emptyTitle="No keys yet"
+      emptyHint="Keys added to the key store appear here."
+    />
   );
 };

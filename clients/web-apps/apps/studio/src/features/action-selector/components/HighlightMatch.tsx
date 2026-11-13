@@ -5,7 +5,7 @@ export const HighlightMatch = ({ text, query }: { text: string; query: string })
   return (
     <>
       {text.slice(0, start)}
-      <mark className="bg-transparent text-primary-text underline underline-offset-[3px]">
+      <mark className="rounded-[3px] bg-primary/15 px-px text-primary-text">
         {text.slice(start, end)}
       </mark>
       {text.slice(end)}

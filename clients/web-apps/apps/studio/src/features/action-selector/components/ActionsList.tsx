@@ -76,8 +76,8 @@ const ActionsList = ({
             onKeyDown={(e) => handleRightPaneKeyDown(e, idx, action)}
             title={action.description}
             className={cn(
-              "w-full rounded-md text-left outline-none transition-colors focus-visible:shadow-focus",
-              isFocused ? "bg-hover" : "hover:bg-hover",
+              "group w-full rounded-lg text-left outline-none transition-colors focus-visible:shadow-focus",
+              isFocused ? "bg-primary/[0.06]" : "hover:bg-hover",
               (isDisabled || (isChatAiNode && !isChatAgent)) && "cursor-not-allowed opacity-50",
             )}
           >

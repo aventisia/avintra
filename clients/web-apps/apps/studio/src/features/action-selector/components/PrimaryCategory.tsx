@@ -1,5 +1,4 @@
-import { Badge } from "@avplatform/ui/badge";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { CaretRightIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import { iconMapper } from "@/components/icon-mapper";
@@ -14,77 +13,67 @@ interface PrimaryCategoryProps {
 }
 
 export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
-  const { totalActions } = useMemo(() => {
-    let totalActions = 0;
-
-    for (const category of data.actionCategories) {
-      totalActions += category.actions?.length ?? 0;
-    }
-
-    return {
-      totalActions,
-    };
-  }, [data.actionCategories]);
+  const totalActions = useMemo(
+    () => data.actionCategories.reduce((sum, category) => sum + (category.actions?.length ?? 0), 0),
+    [data.actionCategories],
+  );
 
   const isDisabled = data.disabled;
-
   const isCustomToolsL1 = data.label === CUSTOM_TOOLS_L1_LABEL;
   const customToolNodesCount = useNodeSelectorStore((state) => state.customToolNodesCount);
 
+  const countLabel = isCustomToolsL1
+    ? customToolNodesCount === null
+      ? "…"
+      : String(customToolNodesCount)
+    : String(totalActions);
+
   return (
     <>
-      <div className="flex w-full items-start justify-between gap-2">
-        <div className="flex items-center gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-md border border-line bg-sunken text-ink-2 [&_svg]:text-ink-2">
-            {data.icon ? (
-              iconMapper[data.icon]
-            ) : (
-              <FallbackImageIcon className="h-6 w-6" src={data.img} />
-            )}
-          </div>
-
-          <div className="flex flex-col items-start gap-1">
-            <h2
-              className={`text-[15px]/5 font-semibold tracking-[-0.01em] text-ink transition-colors ${
-                isDisabled
-                  ? ""
-                  : "group-hover:text-primary-text group-focus-visible:text-primary-text"
-              }`}
-            >
-              {data.label}
-            </h2>
-            {isDisabled && <Badge variant="review">Coming soon</Badge>}
-          </div>
-        </div>
-
-        <ArrowRightIcon
-          className={`size-4 shrink-0 transition-colors ${
-            isDisabled
-              ? "text-muted-foreground/60"
-              : "text-muted-foreground group-hover:text-primary-text group-focus-visible:text-primary-text"
-          }`}
-        />
-      </div>
-
-      <p
-        className={`text-body-sm ${
-          isDisabled ? "text-muted-foreground/80" : "text-muted-foreground"
-        }`}
+      <span
+        aria-hidden="true"
+        className={
+          isDisabled
+            ? "grid size-10 shrink-0 place-items-center rounded-lg bg-sunken text-muted-foreground ring-1 ring-line [&_svg]:size-5 [&_svg]:text-current [&>div]:bg-transparent"
+            : "grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary-text ring-1 ring-primary/15 transition-colors duration-150 group-hover:bg-primary group-hover:text-primary-foreground group-hover:ring-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground group-focus-visible:ring-primary [&_svg]:size-5 [&_svg]:text-current [&>div]:bg-transparent"
+        }
       >
-        {data.description}
-      </p>
+        {data.icon ? (
+          iconMapper[data.icon]
+        ) : (
+          <FallbackImageIcon className="h-5 w-5" src={data.img} />
+        )}
+      </span>
 
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[11.5px] text-muted-foreground">
-          {isCustomToolsL1
-            ? customToolNodesCount === null
-              ? "…"
-              : `${customToolNodesCount} nodes`
-            : isDisabled
-              ? "Coming soon"
-              : `${totalActions} nodes`}
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="flex items-center gap-2">
+          <span className="truncate text-[14px]/5 font-semibold tracking-[-0.01em] text-ink">
+            {data.label}
+          </span>
+          {isDisabled ? (
+            <span className="shrink-0 rounded-full bg-warn/10 px-1.5 text-[11px]/[18px] font-medium text-warn">
+              Coming soon
+            </span>
+          ) : (
+            <span
+              className="shrink-0 rounded-full bg-sunken px-1.5 font-mono text-[11px]/[18px] tabular-nums text-ink-2 ring-1 ring-line"
+              aria-label={`${countLabel} nodes`}
+            >
+              {countLabel}
+            </span>
+          )}
         </span>
-      </div>
+        <span className="line-clamp-2 text-[12.5px]/[18px] text-muted-foreground">
+          {data.description}
+        </span>
+      </span>
+
+      {!isDisabled && (
+        <CaretRightIcon
+          aria-hidden="true"
+          className="size-4 shrink-0 -translate-x-1 text-muted-foreground opacity-0 transition duration-150 group-hover:translate-x-0 group-hover:text-primary-text group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-primary-text group-focus-visible:opacity-100 motion-reduce:transition-none"
+        />
+      )}
     </>
   );
 };

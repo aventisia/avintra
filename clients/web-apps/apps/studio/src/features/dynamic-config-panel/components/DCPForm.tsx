@@ -78,6 +78,16 @@ export const DCPForm = () => {
     [nodeConfig?.fields, selectedTab, watchedValues],
   );
 
+  // Test tab: the standard screen is a dev-only preview, the LLM screen is available everywhere
+  // except the prod build's current-version view.
+  const testScreenType = nodeConfig?.testScreenType;
+  const isTestTabVisible = isAgentHistory
+    ? testScreenType == "llmGenerateRequest"
+    : import.meta.env.MODE !== "production"
+      ? testScreenType == "standard" || testScreenType == "llmGenerateRequest"
+      : testScreenType == "llmGenerateRequest";
+  const TestIcon = testScreenType == "standard" ? PlayIcon : FlaskIcon;
+
   // Return the form
   return (
     <>
@@ -95,58 +105,17 @@ export const DCPForm = () => {
           <DCPTabsListWrapper>
             <DCPTabsList>
               {tabKeys?.map((key) => (
-                <DCPTabsTrigger tabValue={key} children={key.replace(/([a-z])([A-Z])/g, "$1 $2")} />
+                <DCPTabsTrigger key={key} tabValue={key}>
+                  {key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                </DCPTabsTrigger>
               ))}
+              {isTestTabVisible && (
+                <DCPTabsTrigger tabValue="Test" handleClick={() => void flushNow()}>
+                  <TestIcon className="size-3.5" />
+                  Test
+                </DCPTabsTrigger>
+              )}
             </DCPTabsList>
-            {!isAgentHistory ? (
-              import.meta.env.MODE !== "production" ? (
-                <>
-                  {nodeConfig.testScreenType == "standard" && (
-                    <DCPTabsList>
-                      <DCPTabsTrigger
-                        tabValue="Test"
-                        className="flex items-center gap-1 text-primary hover:text-primary"
-                        handleClick={() => {
-                          void flushNow();
-                        }}
-                      >
-                        <PlayIcon className="h-3 w-3" />
-                        <span> Test</span>
-                      </DCPTabsTrigger>
-                    </DCPTabsList>
-                  )}
-                  {nodeConfig.testScreenType == "llmGenerateRequest" && (
-                    <DCPTabsList>
-                      <DCPTabsTrigger
-                        tabValue="Test"
-                        className="flex items-center gap-1 text-primary hover:text-primary"
-                        handleClick={() => {
-                          void flushNow();
-                        }}
-                      >
-                        <FlaskIcon className="h-3.5 w-3.5" />
-                        <span> Test</span>
-                      </DCPTabsTrigger>
-                    </DCPTabsList>
-                  )}
-                </>
-              ) : (
-                nodeConfig.testScreenType == "llmGenerateRequest" && (
-                  <DCPTabsList>
-                    <DCPTabsTrigger
-                      tabValue="Test"
-                      className="flex items-center gap-1 text-primary hover:text-primary"
-                      handleClick={() => {
-                        flushNow();
-                      }}
-                    >
-                      <FlaskIcon className="h-3.5 w-3.5" />
-                      <span> Test</span>
-                    </DCPTabsTrigger>
-                  </DCPTabsList>
-                )
-              )
-            ) : null}
           </DCPTabsListWrapper>
 
           <Form
