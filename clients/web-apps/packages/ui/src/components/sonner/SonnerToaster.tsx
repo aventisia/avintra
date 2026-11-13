@@ -7,7 +7,7 @@ type SonnerToasterProps = {
 };
 
 const TOASTER_STYLE = {
-  "--width": "360px",
+  "--width": "480px",
   "--border-radius": "8px",
   "--normal-bg": "var(--surface)",
   "--normal-border": "var(--line)",
