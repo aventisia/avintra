@@ -68,6 +68,7 @@ export const VoiceBrainSection = ({ renderField }: VoiceBrainSectionProps) => {
           <VoiceOutputFields
             provider={realtime.provider}
             model={realtime.model}
+            capability="realtime"
             credentialName={realtime.credential_name}
             isByokEnabled={realtime.is_byok_enabled}
             showPreview={false}

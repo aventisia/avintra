@@ -12,6 +12,7 @@ from .embeddings.routes import router as embeddings_router
 from .stt.routes import router as stt_router
 from .text_generation.routes import router as text_generation_router
 from .tts.routes import router as tts_router
+from .voice_catalog.routes import router as voice_catalog_router
 
 router = APIRouter()
 
@@ -20,3 +21,4 @@ router.include_router(text_generation_router)
 router.include_router(embeddings_router)
 router.include_router(stt_router)
 router.include_router(tts_router)
+router.include_router(voice_catalog_router)

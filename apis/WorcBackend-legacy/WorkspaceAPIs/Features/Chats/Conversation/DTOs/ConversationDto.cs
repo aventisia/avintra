@@ -21,8 +21,8 @@ public class ConversationDto
     public required Guid FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the conversation title, generated from the most recent message
-    /// by taking its first 5 words. Defaults to "Untitled Conversation" if no message content is available.
+    /// Gets or sets the conversation title, taken from the most recent message content
+    /// and truncated to 120 characters. Defaults to "Untitled Conversation" if no message content is available.
     /// </summary>
     public string Title { get; set; } = "Untitled Conversation";
 
@@ -35,4 +35,14 @@ public class ConversationDto
     /// Gets or sets the channel that created the conversation.
     /// </summary>
     public ConversationChannelEnum Channel { get; set; } = ConversationChannelEnum.Chat;
+
+    /// <summary>
+    /// Gets or sets the date and time when the conversation was created.
+    /// </summary>
+    public DateTimeOffset CreatedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when the conversation was last modified.
+    /// </summary>
+    public DateTimeOffset LastModifiedOn { get; set; }
 }

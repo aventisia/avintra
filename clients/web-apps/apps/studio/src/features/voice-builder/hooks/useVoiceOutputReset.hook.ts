@@ -13,6 +13,7 @@ export const useVoiceOutputReset = (
   language: string | undefined,
   selectedVoice: string | undefined,
   providerData: VoiceProviderData,
+  isCatalogReady: boolean,
 ) => {
   const { setValue } = useFormContext();
   const previous = useRef<PreviousSelection>({});
@@ -20,24 +21,24 @@ export const useVoiceOutputReset = (
   // IMPORTANT NOTE: the voice setting is shared by both engine modes, so a value
   // saved under a different provider must be cleared when the panel mounts.
   useEffect(() => {
+    if (!provider || !isCatalogReady) return;
+
     const isFirstRun = previous.current.provider === undefined;
     const providerChanged = previous.current.provider !== provider;
     const languageChanged = previous.current.language !== language;
     previous.current = { provider, language };
 
-    if (!provider) return;
-
     if (isFirstRun) {
       const languageIsKnown =
         !language || providerData.languages.some((option) => option.value === language);
       if (!languageIsKnown) {
-        setValue(VOICE_OUTPUT_FIELDS.language, "", { shouldDirty: true });
-        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+        setValue(VOICE_OUTPUT_FIELDS.language, "", { shouldDirty: false });
+        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: false });
       } else if (
         selectedVoice &&
         !providerData.voices.some((voice) => voice.value === selectedVoice)
       ) {
-        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: false });
       }
       return;
     }
@@ -48,5 +49,5 @@ export const useVoiceOutputReset = (
     } else if (languageChanged) {
       setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
     }
-  }, [provider, language, providerData, selectedVoice, setValue]);
+  }, [provider, language, providerData, isCatalogReady, selectedVoice, setValue]);
 };

@@ -206,6 +206,16 @@ def test_connection_metrics_do_not_report_a_response_timing(monkeypatch):
     assert recorder.take_response_timing() is None
 
 
+def test_response_without_ttft_still_reports_its_duration():
+    recorder = RealtimeUsageRecorder(_claims(), _settings())
+
+    recorder.on_metrics_collected(
+        SimpleNamespace(metrics=_realtime_metrics(input_audio=5, output_audio=5, ttft=-1.0))
+    )
+
+    assert recorder.take_response_timing() == {"duration_ms": 1500}
+
+
 # ---------------------------------------------------------------------------
 # Live transcript persistence
 # ---------------------------------------------------------------------------
@@ -278,6 +288,24 @@ def test_live_writer_persists_items_in_order_and_attaches_timing(monkeypatch):
         writer = VoiceRealtimeTranscriptWriter(claims, _settings())
         writer.start()
         writer.add("user", "  hello there  ", "user-1")
+        writer.add_tool_call(
+            {
+                "tool_call_id": "call-1",
+                "name": "demo_lookup",
+                "content": "demo-result",
+                "status": "success",
+                "duration_ms": 42,
+            }
+        )
+        writer.add_tool_call(
+            {
+                "tool_call_id": "call-1",
+                "name": "demo_lookup",
+                "content": "demo-result",
+                "status": "success",
+                "duration_ms": 42,
+            }
+        )
         writer.add("assistant", "Hi.", "agent-1", TIMING)
         writer.add("assistant", "Hi.", "agent-1", TIMING)
         writer.add("system", "ignored", "system-1")
@@ -290,14 +318,16 @@ def test_live_writer_persists_items_in_order_and_attaches_timing(monkeypatch):
         for saved in service.saved
     ] == [
         ("HumanMessage", "hello there", "user-1"),
+        ("ToolMessage", "demo-result", None),
         ("AIMessage", "Hi.", "agent-1"),
     ]
     assert service.saved[0]["metadata"] is None
-    assert service.saved[1]["metadata"] == {"voice_turn_timing": TIMING}
+    assert service.saved[1]["metadata"] == {"status": "success", "duration_ms": 42}
+    assert service.saved[2]["metadata"] == {"voice_turn_timing": TIMING}
     assert service.saved[0]["request"].channel == "voice"
     assert service.saved[0]["request"].is_temp_chat is False
     assert service.saved[0]["conversation_id"] == claims.conversation_id
-    assert session.commits == 2
+    assert session.commits == 3
 
 
 def test_writer_failure_keeps_draining_without_raising(monkeypatch):
