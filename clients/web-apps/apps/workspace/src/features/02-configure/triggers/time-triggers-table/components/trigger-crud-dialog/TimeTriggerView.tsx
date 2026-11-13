@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
   RecordFact,
@@ -24,8 +25,6 @@ import {
   UserCircleIcon,
   UserGearIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { TriggerAgentsSection } from "../../../components/TriggerAgentsSection";
 import { generateHourlyWithRangeOptions, numbersToWeekdays } from "../../constants/form-utils";

@@ -1,8 +1,8 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useState } from "react";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 
 import { useAccountDialogUrlState } from "../../hooks/useAccountDialogUrlState";

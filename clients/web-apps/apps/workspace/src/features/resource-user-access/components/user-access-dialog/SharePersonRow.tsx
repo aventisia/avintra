@@ -1,8 +1,7 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
 import { ArrowUUpLeftIcon, LockIcon, TrashIcon } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { ResourceUserAccessDraft } from "../../hooks/useResourceUserAccessDraft.hook";
 import { ShareChange, ShareRow } from "../../types/resource-user-access-draft.type";

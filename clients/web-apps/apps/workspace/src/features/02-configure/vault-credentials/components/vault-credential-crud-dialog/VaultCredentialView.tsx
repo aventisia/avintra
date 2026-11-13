@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
@@ -31,7 +32,6 @@ import {
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { getNodeConfig } from "@/features/dynamic-config-panel";
 
 import type { VaultCredentialDto } from "../../dtos/vault-credentials.dto";

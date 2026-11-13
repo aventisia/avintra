@@ -106,10 +106,6 @@ export const useSaveFlow = () => {
       queryClient.invalidateQueries({
         queryKey: ["AGENT_HISTORY", persisted.versionId],
       });
-
-      toast.success("Flow saved successfully", {
-        className: "sonner-toaster-sm",
-      });
     },
     onError: (error) => {
       toast.error(error.toString());

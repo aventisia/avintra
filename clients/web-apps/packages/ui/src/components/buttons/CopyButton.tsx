@@ -53,9 +53,9 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
         {...buttonProps}
       >
         {isCopied ? (
-          <CheckIcon className={cn("size-[0.8em]", iconClassName)} />
+          <CheckIcon className={cn("size-[0.9em]", iconClassName)} />
         ) : (
-          <CopyIcon className={cn("size-[0.8em]", iconClassName)} />
+          <CopyIcon className={cn("size-[0.9em]", iconClassName)} />
         )}
       </Button>
     );

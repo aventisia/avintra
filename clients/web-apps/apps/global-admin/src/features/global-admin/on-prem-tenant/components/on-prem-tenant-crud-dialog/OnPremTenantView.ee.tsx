@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -29,7 +30,6 @@ import {
   UserGearIcon,
 } from "@phosphor-icons/react";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { formatSecondsToCompactDuration } from "@/utils/format-time-utils.ee";
 
 import type { OnPremTenantDto } from "../../dtos/on-prem-tenant-dto.ee";

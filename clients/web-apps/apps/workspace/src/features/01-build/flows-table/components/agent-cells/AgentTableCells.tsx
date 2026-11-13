@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { cn } from "@avplatform/ui/lib";
 import { ListChecksIcon } from "@phosphor-icons/react";
@@ -9,7 +10,6 @@ import {
   AgentTypeAvatar,
   AgentVersion,
 } from "@/components/AgentIdentity";
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { AGENT_PLATFORMS, AGENT_TYPES } from "../../constants/agent-attributes.constant";

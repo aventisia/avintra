@@ -14,7 +14,7 @@ export const buttonVariants = cva(
         outline: "border-line-strong bg-surface text-ink hover:bg-hover",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
         ghost: "bg-transparent text-ink-2 hover:bg-hover hover:text-ink",
-        dropdownItem: [MENU_ITEM, "text-ink"],
+        dropdownItem: [MENU_ITEM, "w-full text-ink"],
         dropdownCautionItem: [
           MENU_ITEM,
           "w-full text-bad hover:bg-bad/10 focus:bg-bad/10 focus-visible:bg-bad/10 data-[highlighted]:bg-bad/10",

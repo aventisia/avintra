@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { cn } from "@avplatform/ui/lib";
@@ -24,8 +25,6 @@ import {
   UserCircleIcon,
   UserGearIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { AccessType, permissionTypes, roles } from "../../constants/permissions-and-acesses";
 import { useFetchRoleById } from "../../hooks/useFetchRoleById";

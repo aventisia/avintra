@@ -1,69 +1,36 @@
 import { CopyableText } from "@avplatform/ui";
-import { format, formatDistanceToNowStrict } from "date-fns";
-import { type ReactNode } from "react";
+import { KeyIcon } from "@phosphor-icons/react";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
-import { FlowVersionDto } from "../../dtos/flow-version-dto";
-import { AuthorChip } from "./AuthorChip";
-
-interface AgentFactsProps {
-  versions: FlowVersionDto[] | undefined;
-}
+const OWNER_ACCESS = "Owner";
 
 /**
- * Who created and last changed the agent, derived from its oldest and newest versions.
+ * The viewer's access to the agent and its copyable ID, pinned below the scrolling details.
  */
-export const AgentFacts = ({ versions }: AgentFactsProps) => {
-  const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
-  const newest = versions?.[0];
-  const oldest = versions?.[versions.length - 1];
-
-  const facts: [string, ReactNode][] = [
-    [
-      "Created",
-      oldest?.createdOn ? (
-        <span className="flex min-w-0 items-center gap-1.5">
-          <AuthorChip version={oldest} />
-          <span className="shrink-0 text-muted-foreground">
-            {format(new Date(oldest.createdOn), "MMM d, yyyy")}
-          </span>
-        </span>
-      ) : null,
-    ],
-    [
-      "Last change",
-      newest?.createdOn ? (
-        <span className="flex min-w-0 items-center gap-1.5">
-          <AuthorChip version={newest} />
-          <span className="shrink-0 text-muted-foreground">
-            {formatDistanceToNowStrict(new Date(newest.createdOn), { addSuffix: true })}
-          </span>
-        </span>
-      ) : null,
-    ],
-    ["Access", currentFlow.accessType],
-    [
-      "Agent ID",
-      <CopyableText
-        key="id"
-        value={currentFlow.id}
-        className="min-w-0"
-        textClassName="font-mono text-hint text-ink-2"
-      />,
-    ],
-  ];
+export const AgentFacts = () => {
+  const { id, accessType } = useCurrentFlowStore((state) => state.currentFlow);
 
   return (
-    <dl className="mx-4 mb-4 grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2.5 text-body-sm">
-      {facts
-        .filter(([, value]) => value)
-        .map(([label, value]) => (
-          <div key={label} className="contents">
-            <dt className="text-muted-foreground">{label}</dt>
-            <dd className="min-w-0 text-ink">{value}</dd>
-          </div>
-        ))}
-    </dl>
+    <footer className="flex shrink-0 items-center justify-between gap-4 border-t border-line bg-surface px-4 py-2.5 text-hint">
+      {accessType ? (
+        <span className="flex min-w-0 items-center gap-1.5 text-ink-2">
+          <KeyIcon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+          <span className="truncate">
+            {accessType === OWNER_ACCESS ? "You own this agent" : `${accessType} access`}
+          </span>
+        </span>
+      ) : (
+        <span />
+      )}
+      <span className="flex min-w-0 items-center gap-1.5">
+        <span className="shrink-0 text-muted-foreground">ID</span>
+        <CopyableText
+          value={id}
+          className="min-w-0 max-w-[10.5rem]"
+          textClassName="font-mono text-hint text-ink-2"
+        />
+      </span>
+    </footer>
   );
 };

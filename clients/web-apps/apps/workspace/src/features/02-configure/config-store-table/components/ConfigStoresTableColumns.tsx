@@ -1,10 +1,10 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { ConfigStoreTypesEnum } from "@avplatform/ui/enums/config-store-types-enum";
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { ACCESS_LEVELS } from "@/features/01-build/flows-table/constants/agent-attributes.constant";
 import { getAccessLevelLabel } from "@/features/01-build/flows-table/utils/agent-attributes.util";
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";

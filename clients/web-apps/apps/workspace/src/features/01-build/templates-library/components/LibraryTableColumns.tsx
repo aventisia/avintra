@@ -1,9 +1,8 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { TEMPLATE_ACCESS_OPTIONS, TEMPLATE_TYPES } from "../constants/library.constant";
 import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";

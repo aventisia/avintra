@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
@@ -32,8 +33,6 @@ import {
   UserGearIcon,
   UsersIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { PROCESSING_MODE_LABELS } from "../../constants/processing-mode-labels.constant";
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";

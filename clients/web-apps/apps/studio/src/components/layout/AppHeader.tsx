@@ -4,7 +4,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { useAlertDialogStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits.ee";
@@ -17,10 +17,8 @@ import { FlowVersions } from "@/features/flow-versions/components";
 import { FLOW_TYPE_LABELS } from "@/features/flow-versions/constants";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
-import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import AgentName from "./AgentName";
@@ -43,10 +41,6 @@ const AppHeader: React.FC = () => {
   const isCanvas = !isAgentHistory && !isExecutionLog;
   const isPublished = useReactFlowExtStore((state) => state.isPublished);
   const flowType = useReactFlowExtStore((state) => state.flowType);
-  const [isPreferencesOpen, setPreferencesOpen] = useState(false);
-
-  // ChatAgent flows hide studio preferences.
-  const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
 
   // Persistent watcher for the publish alert dialog close. The Publish button does not own
   // the dialog lifecycle, so this header component watches the alert dialog
@@ -88,15 +82,7 @@ const AppHeader: React.FC = () => {
                 <span className="truncate text-[11px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
                   {FLOW_TYPE_LABELS[flowType]}
                 </span>
-                {isCanvas ? (
-                  <>
-                    <span
-                      aria-hidden="true"
-                      className="size-0.5 shrink-0 rounded-full bg-muted-foreground"
-                    />
-                    <SaveFlow />
-                  </>
-                ) : null}
+                {isCanvas ? <SaveFlow /> : null}
               </div>
               {isCanvas ? (
                 <FlowVersions />
@@ -128,19 +114,7 @@ const AppHeader: React.FC = () => {
               <div className="ml-3 flex items-center gap-2">
                 <ExecuteFlow />
                 <PublishFlow />
-                {isChatAgent ? (
-                  <HeaderActionMenu />
-                ) : (
-                  <StudioPreferences
-                    open={isPreferencesOpen}
-                    onOpenChange={setPreferencesOpen}
-                    className="mt-0 mlg:mt-4"
-                  >
-                    <div className="flex">
-                      <HeaderActionMenu onOpenPreferences={() => setPreferencesOpen(true)} />
-                    </div>
-                  </StudioPreferences>
-                )}
+                <HeaderActionMenu />
               </div>
             </>
           ) : (

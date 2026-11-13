@@ -1,7 +1,5 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 
-import { ExecutionSettings } from "@/features/flow-settings/types/setting-types";
-
 /** To get flow props to load when user opens a flow in studio */
 export interface LoadFlowDto {
   /** Flow record's primary key (Guid). FlowId */
@@ -51,7 +49,4 @@ export interface LoadFlowDto {
 
   /** Gets or sets the supported platforms for the flow version as a comma-separated string. */
   supportedPlatform?: string;
-
-  /** Gets or sets the maximum allowed execution time in minutes. */
-  settings?: ExecutionSettings;
 }

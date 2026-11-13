@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge, type BadgeProps } from "@avplatform/ui/badge";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
@@ -7,7 +8,6 @@ import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
 import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
-import { PersonAvatar } from "@/components/PersonAvatar";
 import {
   AGENT_PLATFORMS,
   AGENT_TYPES,

@@ -1,4 +1,5 @@
 import { ThemeSwitcher } from "@avplatform/layout";
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { IS_TAURI } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
@@ -18,7 +19,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { adminHubs } from "@/components/layout/sidebar-hubs.constant";
 import { getHubRoutes } from "@/components/layout/sidebar-hubs.util";
 import { ROLE_SA } from "@/constants/roles";

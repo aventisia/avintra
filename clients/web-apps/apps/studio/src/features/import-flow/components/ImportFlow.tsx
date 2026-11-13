@@ -1,6 +1,6 @@
 import { Input } from "@avplatform/ui";
 import { toast } from "@avplatform/ui/sonner";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -9,7 +9,25 @@ import { useFileUpload } from "../hooks/useFileUpload";
 import { useFlowMutation } from "../hooks/useUpdateFlowMutation";
 import { useImportStore } from "../stores/import-flow-store";
 import { remapImportedFlowIds } from "../utils/remap-imported-flow-ids.util";
-import { ImportConfirmationDialog } from "./ImportConfirmationDialog";
+import { ImportConfirmationDialog, ImportSummary } from "./ImportConfirmationDialog";
+
+const EMPTY_SUMMARY: ImportSummary = { nodes: 0, connections: 0, variables: 0 };
+
+/** Counts what the uploaded file would bring into the canvas. */
+const summarizeUpload = (uploadedData: string): ImportSummary => {
+  try {
+    const parsed = JSON.parse(uploadedData);
+    const canvas = parsed.reactFlowObject ?? {};
+    const variables = canvas.flowVariablesObject ?? parsed.flowVariablesObject ?? [];
+    return {
+      nodes: Array.isArray(canvas.nodes) ? canvas.nodes.length : 0,
+      connections: Array.isArray(canvas.edges) ? canvas.edges.length : 0,
+      variables: Array.isArray(variables) ? variables.length : 0,
+    };
+  } catch {
+    return EMPTY_SUMMARY;
+  }
+};
 
 /**
  * Main component that allows users to import a flow.
@@ -42,6 +60,8 @@ const ImportFlow = () => {
     versionId,
     setUploadedData,
   );
+
+  const uploadSummary = useMemo(() => summarizeUpload(uploadedData), [uploadedData]);
 
   // Trigger file input click when the `upload` state changes
   useEffect(() => {
@@ -93,6 +113,7 @@ const ImportFlow = () => {
         open={showDialog}
         onOpenChange={setShowDialog}
         isPending={isImportPending}
+        summary={uploadSummary}
         onConfirm={handleUpdate}
       />
     </div>

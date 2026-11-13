@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -25,8 +26,6 @@ import {
   UserGearIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { getApiKey } from "../../apis/api-key.apis";
 import { API_KEY_PERMISSION_ITEMS } from "../../constants/api-key-permissions.constant";
