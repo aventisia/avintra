@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any
+from typing import Any, Callable
 
 from langchain_core.tools import BaseTool
 from livekit.agents import RunContext, llm
@@ -65,8 +65,9 @@ def _tool_request(claims: VoiceJobClaims, agent_settings: dict):
     """
 
     effective_settings = agent_settings
-    if not agent_settings.get("llm"):
-        effective_settings = {**agent_settings, "llm": {"provider": "openai", "model": ""}}
+    llm_settings = agent_settings.get("llm") or {}
+    if not llm_settings.get("provider"):
+        effective_settings = {**agent_settings, "llm": {**llm_settings, "provider": "openai"}}
     return build_voice_llm_request(claims, effective_settings, "")
 
 
@@ -94,10 +95,12 @@ class RealtimeToolBridge:
         events: VoiceSessionEvents,
         *,
         registry: ToolRegistry | None = None,
+        on_tool_call: Callable[[dict], None] | None = None,
     ) -> None:
         self._claims = claims
         self._agent_settings = agent_settings
         self._events = events
+        self._on_tool_call = on_tool_call
         self._registry = registry or ToolRegistry()
         self._request = _tool_request(claims, agent_settings)
         self._user = build_user(claims)
@@ -285,16 +288,17 @@ class RealtimeToolBridge:
         status: str,
         started_at: float,
     ) -> None:
-        self._events.tool_call(
-            {
-                "tool_call_id": call_id,
-                "name": tool_name,
-                "args": args,
-                "content": content,
-                "status": status,
-                "duration_ms": max(
-                    0,
-                    round((time.perf_counter() - started_at) * 1000),
-                ),
-            }
-        )
+        payload = {
+            "tool_call_id": call_id,
+            "name": tool_name,
+            "args": args,
+            "content": content,
+            "status": status,
+            "duration_ms": max(
+                0,
+                round((time.perf_counter() - started_at) * 1000),
+            ),
+        }
+        self._events.tool_call(payload)
+        if self._on_tool_call is not None:
+            self._on_tool_call(payload)

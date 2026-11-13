@@ -197,14 +197,14 @@ class TestRequestMapping:
         assert tool_config.actions[0].action == "lookup"
         assert tool_config.actions[0].approval == "auto"
 
-    def test_test_mode_is_temporary_and_missing_manager_is_omitted(self):
+    def test_test_mode_is_persisted_and_missing_manager_is_omitted(self):
         request = build_voice_llm_request(
             _claims(mode="test"),
             _agent_settings(managerAgentTarget=None, knowledgeBase={"names": []}),
             "hello",
         )
 
-        assert request.is_temp_chat is True
+        assert request.is_temp_chat is False
         assert request.manager_agent is None
         assert request.kb_names is None
         assert request.top_k is None
@@ -315,7 +315,7 @@ class TestFrameMapping:
         assert engine.requests[0].input == "hi"
         assert session.commits == 1
 
-    def test_temp_mode_never_commits(self, monkeypatch):
+    def test_test_mode_commits_messages(self, monkeypatch):
         session = _FakeSession()
         _patch_session(monkeypatch, session)
         engine = _FakeEngine([_Chunk("delta", "Hello "), _Chunk("done", "")])
@@ -328,8 +328,8 @@ class TestFrameMapping:
 
         _collect(bridge.stream_turn("hi"))
 
-        assert engine.requests[0].is_temp_chat is True
-        assert session.commits == 0
+        assert engine.requests[0].is_temp_chat is False
+        assert session.commits == 1
 
     def test_done_text_is_spoken_when_no_delta_arrived(self, monkeypatch):
         _patch_session(monkeypatch, _FakeSession())
@@ -813,11 +813,11 @@ class TestRealEngineTurn:
             for message in second_turn
         )
 
-    def test_test_mode_skips_persistence(self, monkeypatch):
+    def test_test_mode_persists_messages(self, monkeypatch):
         session = _FakeSession()
         _patch_session(monkeypatch, session)
         planner = _ScriptedPlanner([{"tool_names": [], "skill_names": []}])
-        conversation = _ScriptedModel([AIMessage(id="ai-1", content="Temp answer.")])
+        conversation = _ScriptedModel([AIMessage(id="ai-1", content="Test answer.")])
         _patch_models(monkeypatch, planner, conversation)
 
         recorder = _RecordingConversationService()
@@ -833,9 +833,16 @@ class TestRealEngineTurn:
         frames = _collect_with_timeout(bridge.stream_turn("hello"))
 
         assert frames[-1].kind == "done"
-        assert recorder.saved == []
-        assert recorder.transcripts == []
-        assert session.commits == 0
+        assert any(
+            isinstance(message, HumanMessage) and message.content == "hello"
+            for message in recorder.saved
+        )
+        assert any(
+            isinstance(message, AIMessage) and message.content == "Test answer."
+            for message in recorder.saved
+        )
+        assert len(recorder.transcripts) == 1
+        assert session.commits > 0
 
     def test_human_approval_pauses_and_fails_closed(self, monkeypatch):
         _patch_session(monkeypatch, _FakeSession())

@@ -80,20 +80,23 @@ def _patch_session(monkeypatch) -> tuple[_FakeSession, _FakeSessionContext]:
     return session, context
 
 
-def test_temp_mode_never_writes_turn_timing(monkeypatch):
-    calls: list[str] = []
-    monkeypatch.setattr(
-        persistence,
-        "get_db_session_context",
-        lambda _name: calls.append(_name),
+def test_test_mode_writes_turn_timing(monkeypatch):
+    session, _context = _patch_session(monkeypatch)
+    save = AsyncMock()
+    monkeypatch.setattr(persistence.conversation_service, "save_voice_turn_timing", save)
+    claims = _claims(mode="test")
+
+    asyncio.run(VoiceTurnTimingRecorder(claims)(1, TIMING))
+
+    save.assert_awaited_once_with(
+        db_session=session,
+        conversation_id=claims.conversation_id,
+        timing=TIMING,
     )
-
-    asyncio.run(VoiceTurnTimingRecorder(_claims(mode="test"))(1, TIMING))
-
-    assert calls == []
+    assert session.commits == 1
 
 
-def test_temp_mode_still_closes_the_conversation_row_created_by_the_api(monkeypatch):
+def test_lifecycle_closes_the_conversation_row_created_by_the_api(monkeypatch):
     session, _context = _patch_session(monkeypatch)
     finish = AsyncMock()
     monkeypatch.setattr(

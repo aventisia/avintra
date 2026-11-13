@@ -5,6 +5,9 @@ export const playVoiceToolCue = () => {
   if (typeof window === "undefined" || !window.AudioContext) return;
 
   const context = new window.AudioContext();
+  // IMPORTANT NOTE: browsers start the context suspended until playback is
+  // unlocked, so an unresumed context plays the cue silently.
+  if (context.state === "suspended") void context.resume();
   const oscillator = context.createOscillator();
   const gain = context.createGain();
 

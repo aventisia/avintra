@@ -448,6 +448,9 @@ class _FakeTranscriptWriter:
     def add(self, role, text, message_id=None, timing=None) -> None:
         self.items.append((role, text, message_id, timing))
 
+    def add_tool_call(self, tool_call) -> None:
+        self.items.append(("tool", tool_call.get("name", ""), None, tool_call))
+
     async def aclose(self) -> None:
         self.closed = True
 
@@ -668,7 +671,7 @@ def test_realtime_knowledge_search_adds_tools_and_prompt_line(
     _realtime_model(monkeypatch)
 
     class FakeToolBridge:
-        def __init__(self, claims, agent_settings, events) -> None:
+        def __init__(self, claims, agent_settings, events, **_kwargs) -> None:
             self.has_knowledge_search = True
             self.built = ["search-tool"]
 
@@ -954,7 +957,7 @@ def _history_loader(monkeypatch, chat_ctx=None):
     return calls
 
 
-def test_test_mode_realtime_persists_nothing_and_loads_no_history(
+def test_test_mode_realtime_persists_and_loads_no_history(
     monkeypatch, voice_persistence
 ):
     ctx = _FakeJobContext()
@@ -965,7 +968,9 @@ def test_test_mode_realtime_persists_nothing_and_loads_no_history(
     asyncio.run(run_session(ctx, _claims(), _realtime_settings()))
 
     assert history_calls == []
-    assert voice_persistence.writers == []
+    [writer] = voice_persistence.writers
+    assert writer.started is True
+    assert writer.closed is True
     [usage] = voice_persistence.usage
     assert usage.flushes == 1
 
@@ -985,6 +990,9 @@ def test_live_realtime_persists_finalized_items_in_spoken_order(
                     role="user", content=["hello there"], id="user-1"
                 )
             )
+        )
+        session.handlers["agent_state_changed"](
+            SimpleNamespace(new_state="speaking", old_state="listening")
         )
         _FakeUsageRecorder.instances[0].timing = {
             "ttft_ms": 250,
@@ -1011,16 +1019,12 @@ def test_live_realtime_persists_finalized_items_in_spoken_order(
         ("assistant", "Hi.", "agent-1"),
     ]
     assert writer.items[0][3] is None
-    assert writer.items[1][3] == {
-        "stt_ms": None,
-        "llm_first_token_ms": None,
-        "tts_first_audio_ms": None,
-        "turn_total_ms": None,
-        "endpointing_ms": None,
-        "caller_to_speaking_ms": None,
-        "ttft_ms": 250,
-        "duration_ms": 900,
-    }
+    timing = writer.items[1][3]
+    assert isinstance(timing["tts_first_audio_ms"], int)
+    assert timing["tts_first_audio_ms"] >= 0
+    assert timing["caller_to_speaking_ms"] == timing["tts_first_audio_ms"]
+    assert timing["ttft_ms"] == 250
+    assert timing["duration_ms"] == 900
 
     turn_timing = [event for event in _of_type(_payloads(ctx), "timing") if event["stage"] == "turn"]
     [timing] = turn_timing

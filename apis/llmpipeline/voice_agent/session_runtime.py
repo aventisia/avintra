@@ -10,6 +10,7 @@ leave no room or task behind when a call ends or fails.
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass, field
 
 from livekit.agents import (
@@ -163,6 +164,8 @@ class VoiceSession:
     close_failed: bool = False
     close_code: str | None = None
     failed: bool = False
+    realtime_caller_final_at: float | None = None
+    realtime_first_audio_at: float | None = None
 
     def mark_closed(self, reason: str, *, error: bool = False) -> None:
         if error:
@@ -174,6 +177,11 @@ class VoiceSession:
         self.disconnected.set()
 
     def on_agent_state_changed(self, event) -> None:
+        if (
+            str(getattr(event.new_state, "value", event.new_state)) == "speaking"
+            and self.realtime_caller_final_at is not None
+        ):
+            self.realtime_first_audio_at = time.perf_counter()
         self.events.state(event.new_state, event.old_state)
 
     def on_user_state_changed(self, event) -> None:
@@ -181,6 +189,9 @@ class VoiceSession:
 
     def on_user_input_transcribed(self, event) -> None:
         if event.is_final:
+            if event.transcript.strip():
+                self.realtime_caller_final_at = time.perf_counter()
+                self.realtime_first_audio_at = None
             self.events.caller_transcript(event.transcript)
         else:
             self.events.caller_interim(event.transcript)
@@ -196,12 +207,32 @@ class VoiceSession:
 
         timing = None
         if item.role == "assistant" and self.realtime_usage is not None:
-            response_timing = self.realtime_usage.take_response_timing()
-            if response_timing is not None:
-                timing = self.events.realtime_response_timing(response_timing)
+            first_audio_ms = self._take_realtime_first_audio_ms()
+            response_timing = self.realtime_usage.take_response_timing() or {}
+            if first_audio_ms is not None or response_timing:
+                timing = self.events.realtime_response_timing(
+                    response_timing, first_audio_ms=first_audio_ms
+                )
 
         if self.realtime_transcript is not None:
             self.realtime_transcript.add(item.role, text, item.id, timing)
+
+    def _take_realtime_first_audio_ms(self) -> int | None:
+        if (
+            self.realtime_caller_final_at is None
+            or self.realtime_first_audio_at is None
+        ):
+            return None
+        elapsed_ms = max(
+            0,
+            round(
+                (self.realtime_first_audio_at - self.realtime_caller_final_at)
+                * 1000
+            ),
+        )
+        self.realtime_caller_final_at = None
+        self.realtime_first_audio_at = None
+        return elapsed_ms
 
     def on_metrics_collected(self, event) -> None:
         if self.realtime_usage is not None:
@@ -460,17 +491,17 @@ async def run_realtime_session(
     session.agent_session.on("metrics_collected", session.on_metrics_collected)
 
     session.realtime_usage = RealtimeUsageRecorder(session.claims, agent_settings)
-    if session.claims.mode != "test":
-        session.realtime_transcript = VoiceRealtimeTranscriptWriter(
-            session.claims, agent_settings
-        )
-        session.realtime_transcript.start()
+    session.realtime_transcript = VoiceRealtimeTranscriptWriter(
+        session.claims, agent_settings
+    )
+    session.realtime_transcript.start()
 
     chat_ctx = await _realtime_chat_context(session)
     tool_bridge = RealtimeToolBridge(
         session.claims,
         agent_settings,
         session.events,
+        on_tool_call=session.realtime_transcript.add_tool_call,
     )
     tools = await tool_bridge.build()
     instructions = voice_system_prompt(agent_settings) or ""

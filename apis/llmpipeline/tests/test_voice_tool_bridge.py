@@ -316,7 +316,14 @@ class TestRealtimeToolBridge:
             ]
         )
         events = _Events()
-        bridge = RealtimeToolBridge(_claims(), settings, events, registry=registry)
+        persisted: list[dict] = []
+        bridge = RealtimeToolBridge(
+            _claims(),
+            settings,
+            events,
+            registry=registry,
+            on_tool_call=persisted.append,
+        )
         [function_tool] = asyncio.run(bridge.build())
         ctx = SimpleNamespace(function_call=SimpleNamespace(call_id="call-7"))
 
@@ -325,6 +332,7 @@ class TestRealtimeToolBridge:
         assert content == "demo-result"
         assert calls == ["order status"]
         [event] = events.tool_calls
+        assert persisted == [event]
         assert event["tool_call_id"] == "call-7"
         assert event["name"] == "demo_lookup"
         assert event["args"] == {"query": "order status"}
@@ -402,6 +410,18 @@ class TestRealtimeToolBridge:
         )
 
         assert asyncio.run(bridge.build()) == []
+
+    def test_realtime_agent_without_a_chat_provider_still_builds(self, monkeypatch):
+        _patch_tool_context(monkeypatch)
+        settings = _agent_settings(
+            knowledge_base={"names": ["kb-one"], "topK": 3}
+        )
+        settings["llm"] = {"provider": "", "model": ""}
+
+        bridge = RealtimeToolBridge(_claims(), settings, _Events())
+
+        [tool] = asyncio.run(bridge.build())
+        assert tool.info.name == KNOWLEDGE_TOOL_NAME
 
 
 # ---------------------------------------------------------------------------

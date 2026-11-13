@@ -99,7 +99,6 @@ def build_voice_llm_request(
         pronunciations=_pronunciations(agent_settings.get("pronunciations") or []),
         sfx=_sound_effects(agent_settings.get("soundEffects")),
         stream=True,
-        is_temp_chat=claims.mode == "test",
         conversation_id=claims.conversation_id,
         temperature=llm.get("temperature", 1),
         top_p=llm.get("topP", 1),

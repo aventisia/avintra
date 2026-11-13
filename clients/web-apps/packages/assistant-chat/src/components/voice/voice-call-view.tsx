@@ -54,6 +54,8 @@ export type VoiceCallViewProps = {
   idleDescription?: string;
   /** Shows per-turn timing and the tool-call sound switch. */
   showDiagnostics?: boolean;
+  /** Blocks starting a new call; an in-progress call stays controllable. */
+  startDisabled?: boolean;
   className?: string;
 };
 
@@ -66,6 +68,7 @@ export const VoiceCallView = ({
   idleTitle,
   idleDescription,
   showDiagnostics,
+  startDisabled,
   className,
 }: VoiceCallViewProps) => {
   const [isToolCueOn, setIsToolCueOn] = useState(true);
@@ -147,18 +150,22 @@ export const VoiceCallView = ({
 
         {showDiagnostics && (
           <div className="flex flex-col gap-2 border-t border-line bg-sunken px-4 py-2.5">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-label uppercase text-muted-foreground">Last turn</span>
-              {lastLatency ? (
+            {lastLatency ? (
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-label uppercase text-muted-foreground">Last turn</span>
                 <VoiceLatencyStrip latency={lastLatency} />
-              ) : (
-                <span className="text-hint text-muted-foreground">
-                  Timing shows after the first reply
-                </span>
-              )}
-            </div>
-            <label className="flex items-center justify-end gap-2 text-hint text-ink-2">
-              <Switch size="sm" checked={isToolCueOn} onCheckedChange={setIsToolCueOn} />
+              </div>
+            ) : null}
+            <label
+              htmlFor="voice-tool-cue"
+              className="flex items-center justify-end gap-2 text-hint text-ink-2"
+            >
+              <Switch
+                id="voice-tool-cue"
+                size="sm"
+                checked={isToolCueOn}
+                onCheckedChange={setIsToolCueOn}
+              />
               Tool-call sound
             </label>
           </div>
@@ -205,9 +212,9 @@ export const VoiceCallView = ({
               </span>
             </>
           ) : (
-            <Button size={isFull ? "lg" : "default"} onClick={call.start}>
+            <Button size={isFull ? "lg" : "default"} disabled={startDisabled} onClick={call.start}>
               <Phone aria-hidden="true" className="mr-1.5 size-4" />
-              {call.state === "ended" ? "Call again" : "Start call"}
+              {call.state === "ended" ? "Start voice call" : "Start call"}
             </Button>
           )}
         </div>

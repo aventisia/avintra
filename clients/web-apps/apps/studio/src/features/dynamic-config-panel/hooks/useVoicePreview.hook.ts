@@ -11,6 +11,7 @@ type VoicePreviewRequest = {
   provider?: string;
   model?: string;
   voice?: string;
+  sample?: string | null;
   language?: string;
   speed?: number;
   credentialName?: string;
@@ -18,14 +19,16 @@ type VoicePreviewRequest = {
   pronunciations?: Array<{ term: string; pronunciation: string }>;
 };
 
-/**
- * Plays a voice sample through the LiteLLM TTS route and reports whether the
- * selected provider supports preview at all.
- */
+// IMPORTANT NOTE: each voice row renders its own player, so the shared registry
+// stops the playing preview before another row starts one.
+const activeStoppers = new Set<() => void>();
+
+/** Plays a voice sample through its provider preview URL or the LiteLLM TTS route. */
 export const useVoicePreview = ({
   provider,
   model,
   voice,
+  sample,
   language,
   speed,
   credentialName,
@@ -36,16 +39,9 @@ export const useVoicePreview = ({
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isSupported = isTtsPreviewSupported(provider);
-  const canPreview = isSupported && !!model && !isPreviewing;
-
-  useEffect(
-    () => () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
-    },
-    [],
-  );
+  const hasSample = Boolean(sample);
+  const isSupported = hasSample || isTtsPreviewSupported(provider);
+  const canPreview = isSupported && (hasSample || !!model) && !isPreviewing;
 
   const stopPreview = useCallback(() => {
     audioRef.current?.pause();
@@ -53,51 +49,79 @@ export const useVoicePreview = ({
     setIsPreviewing(false);
   }, []);
 
-  const playPreview = useCallback(async () => {
-    if (!isSupported || !provider || !model) return;
+  useEffect(() => {
+    activeStoppers.add(stopPreview);
+    return () => {
+      activeStoppers.delete(stopPreview);
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
+  }, [stopPreview]);
 
+  const playPreview = useCallback(async () => {
+    if (!isSupported) return;
+    if (!hasSample && (!provider || !model)) return;
+
+    const ttsProvider = provider as string;
+    const ttsModel = model as string;
+
+    activeStoppers.forEach((stop) => {
+      if (stop !== stopPreview) stop();
+    });
     setError(null);
     setIsPreviewing(true);
 
-    try {
-      const response = await synthesizeVoicePreview({
-        provider,
-        model,
-        input: VOICE_PREVIEW_SAMPLE_TEXT,
-        voice_id: voice || null,
-        language: language || null,
-        speed: speed ?? 1,
-        pronunciations: pronunciations && pronunciations.length > 0 ? pronunciations : null,
-        stream: false,
-        credential_name: credentialName || null,
-        is_byok_enabled: isByokEnabled ?? false,
-        ref_type: "",
-        ref_id: "",
-        ref_name: "",
-        action: "voice-preview",
-        agent_name: null,
-      });
+    const audio = new Audio();
+    audioRef.current = audio;
+    audio.onended = () => setIsPreviewing(false);
+    audio.onerror = () => {
+      setError("Voice preview could not be played.");
+      setIsPreviewing(false);
+    };
 
-      if (!response?.output) {
-        setError(response?.error || "Voice preview could not be generated.");
-        setIsPreviewing(false);
-        return;
+    try {
+      if (hasSample) {
+        audio.src = sample as string;
+      } else {
+        const response = await synthesizeVoicePreview({
+          provider: ttsProvider,
+          model: ttsModel,
+          input: VOICE_PREVIEW_SAMPLE_TEXT,
+          voice_id: voice || null,
+          language: language || null,
+          speed: speed ?? 1,
+          pronunciations: pronunciations && pronunciations.length > 0 ? pronunciations : null,
+          stream: false,
+          credential_name: credentialName || null,
+          is_byok_enabled: isByokEnabled ?? false,
+          ref_type: "",
+          ref_id: "",
+          ref_name: "",
+          action: "voice-preview",
+          agent_name: null,
+        });
+
+        if (audioRef.current !== audio) return;
+
+        if (!response?.output) {
+          setError(response?.error || "Voice preview could not be generated.");
+          setIsPreviewing(false);
+          return;
+        }
+
+        audio.src = buildAudioDataUrl(response.output);
       }
 
-      const audio = new Audio(buildAudioDataUrl(response.output));
-      audioRef.current = audio;
-      audio.onended = () => setIsPreviewing(false);
-      audio.onerror = () => {
-        setError("Voice preview could not be played.");
-        setIsPreviewing(false);
-      };
       await audio.play();
     } catch {
-      setError("Voice preview request failed.");
+      if (audioRef.current !== audio) return;
+      setError(hasSample ? "Voice preview could not be played." : "Voice preview request failed.");
       setIsPreviewing(false);
     }
   }, [
     isSupported,
+    hasSample,
+    sample,
     provider,
     model,
     voice,
@@ -106,6 +130,7 @@ export const useVoicePreview = ({
     credentialName,
     isByokEnabled,
     pronunciations,
+    stopPreview,
   ]);
 
   return { isSupported, canPreview, isPreviewing, error, playPreview, stopPreview };

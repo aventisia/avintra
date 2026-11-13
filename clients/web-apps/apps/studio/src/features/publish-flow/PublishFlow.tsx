@@ -15,31 +15,39 @@ import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/u
 
 import { LoadFlowDto } from "../react-flow/dtos/load-flow-dto";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
+import { useSaveFlow } from "../react-flow/hooks/useSaveFlow";
 import { validateChatAgentGraph } from "../react-flow/utils/chat-agent-graph.util";
 import {
   validateVoiceAgentConversation,
   validateVoiceAgentGraph,
 } from "../react-flow/utils/voice-agent-graph.util";
 
+const parseFlowObject = (reactFlowObject: string) =>
+  deepParse(reactFlowObject) as unknown as {
+    nodes: Node[];
+    edges: Edge[];
+    viewport: Viewport;
+  };
+
 const PublishFlow = () => {
   const { search } = useLocation();
 
-  // Parse params (no need for useMemo here)
   const params = new URLSearchParams(search);
   const flowId = params.get("f") ?? undefined;
   const versionId = params.get("v") ?? undefined;
 
   const queryClient = useQueryClient();
 
-  // Read from cache once
   const flowQueryKey = ["flow", flowId, versionId];
-  const flowData = queryClient.getQueryData<{ data: LoadFlowDto }>(flowQueryKey)?.data;
+  const getCachedFlow = () => queryClient.getQueryData<{ data: LoadFlowDto }>(flowQueryKey)?.data;
 
   const { mutate: publish, isPending, publishLocked } = usePublishFlowMutation();
+  const { saveData } = useSaveFlow();
   const { showCustomAlertDialog } = useShowAlertHandler();
-
-  // Flush a dirty node-config form before publishing.
   const guardDirtyNodeConfig = useDirtyNodeConfigGuard();
+
+  const flowData = getCachedFlow();
+  const isDisabled = !flowData || flowData.isPublished || isPending || publishLocked;
 
   const handlePublish = () => {
     if (!flowId || !versionId) return;
@@ -48,22 +56,23 @@ const PublishFlow = () => {
       flowId,
       id: versionId,
       isPublished: true,
+      type: getCachedFlow()?.type,
     });
   };
 
-  const isDisabled = !flowData || flowData.isPublished || isPending || publishLocked;
+  const handlePublishClick = async () => {
+    try {
+      if (!(await saveData())) return;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "The flow could not be saved.");
+      return;
+    }
 
-  const type = flowData?.type?.replace(/([a-z])([A-Z])/g, "$1 $2");
+    const currentFlowData = getCachedFlow();
+    if (!currentFlowData) return;
 
-  const handlePublishClick = () => {
-    if (!flowData) return;
-    if (flowData?.type == FlowTypesEnum.ChatAgent) {
-      // Parse flow JSON safely
-      const flow = deepParse(flowData.reactFlowObject) as unknown as {
-        nodes: Node[];
-        edges: Edge[];
-        viewport: Viewport;
-      };
+    if (currentFlowData.type === FlowTypesEnum.ChatAgent) {
+      const flow = parseFlowObject(currentFlowData.reactFlowObject);
 
       const chatAgentError = validateChatAgentGraph(flow.nodes, flow.edges);
 
@@ -72,13 +81,8 @@ const PublishFlow = () => {
         return;
       }
     }
-    if (flowData?.type == FlowTypesEnum.VoiceAgent) {
-      // Parse flow JSON safely
-      const flow = deepParse(flowData.reactFlowObject) as unknown as {
-        nodes: Node[];
-        edges: Edge[];
-        viewport: Viewport;
-      };
+    if (currentFlowData.type === FlowTypesEnum.VoiceAgent) {
+      const flow = parseFlowObject(currentFlowData.reactFlowObject);
 
       const voiceAgentError =
         validateVoiceAgentGraph(flow.nodes, flow.edges) ??
@@ -89,8 +93,10 @@ const PublishFlow = () => {
         return;
       }
     }
-    // Notify collaborators that publishing is in progress so they can't publish
-    // concurrently (their Publish button becomes disabled / banner shows).
+
+    const type = currentFlowData.type?.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+    // Notify collaborators that publishing is in progress so they cannot publish concurrently.
     broadcastFlowActionEvent(FlowActionType.Publish);
     showCustomAlertDialog({
       confirmActionFn: handlePublish,

@@ -64,9 +64,9 @@ runtime accept exactly the same providers.
 
 ## Realtime limits
 
-- Live calls seed `ChatContext` from history capped by `memory.maxShortTermTurns`
-  and persist finalized caller and assistant items. Test calls persist nothing;
-  both modes write the terminal conversation status on close.
+- Live calls seed `ChatContext` from history capped by `memory.maxShortTermTurns`;
+  test calls start without history. Both modes persist finalized caller,
+  assistant, and tool items and write the terminal conversation status on close.
 - BYOK usage posts `RealtimeModelMetrics` at session end and periodically on long
   calls, and does not fail the call when posting fails.
 - Realtime exposes only `approval == "auto"` tool actions as LiveKit function
