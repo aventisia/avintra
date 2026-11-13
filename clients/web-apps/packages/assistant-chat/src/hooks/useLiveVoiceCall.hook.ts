@@ -1,6 +1,5 @@
 import {
   type VoiceCallSnapshot,
-  type VoiceCaptionTurn,
   type VoiceSessionClient,
   type VoiceSessionClientOptions,
   type VoiceSessionMode,
@@ -19,8 +18,6 @@ export type UseLiveVoiceCallOptions = {
   flowVersionId: string;
   mode: VoiceSessionMode;
   createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
-  /** Turns shown before the worker sends its first event, e.g. the spoken introduction. */
-  initialTurns?: VoiceCaptionTurn[] | (() => VoiceCaptionTurn[]);
 };
 
 /** Runs one live voice call and mirrors the shared client's snapshot into React state. */
@@ -28,25 +25,13 @@ export const useLiveVoiceCall = ({
   flowVersionId,
   mode,
   createSession,
-  initialTurns,
 }: UseLiveVoiceCallOptions): VoiceCallController => {
   const [snapshot, setSnapshot] = useState<VoiceCallSnapshot>(createVoiceCallSnapshot);
   const clientRef = useRef<VoiceSessionClient | null>(null);
   const createSessionRef = useRef(createSession);
-  const initialTurnsRef = useRef(initialTurns);
   const startGenerationRef = useRef(0);
 
   createSessionRef.current = createSession;
-  initialTurnsRef.current = initialTurns;
-
-  const mergeInitialTurns = useCallback((turns: VoiceCaptionTurn[]): VoiceCaptionTurn[] => {
-    const source = initialTurnsRef.current;
-    const seed = typeof source === "function" ? source() : (source ?? []);
-    if (seed.length === 0) return turns;
-
-    const turnIds = new Set(turns.map((turn) => turn.id));
-    return [...seed.filter((turn) => !turnIds.has(turn.id)), ...turns];
-  }, []);
 
   const fail = useCallback((code: string, error: unknown, fallback: string) => {
     setSnapshot((current) => ({
@@ -80,7 +65,7 @@ export const useLiveVoiceCall = ({
         createSession: (request) => createSessionRef.current(request),
         onSnapshot: (next) => {
           if (generation !== startGenerationRef.current) return;
-          setSnapshot({ ...next, turns: mergeInitialTurns(next.turns) });
+          setSnapshot(next);
         },
       });
       clientRef.current = client;
@@ -93,7 +78,7 @@ export const useLiveVoiceCall = ({
         await client.dispose();
       }
     })();
-  }, [fail, flowVersionId, mergeInitialTurns, mode]);
+  }, [fail, flowVersionId, mode]);
 
   const end = useCallback(() => {
     const client = clientRef.current;

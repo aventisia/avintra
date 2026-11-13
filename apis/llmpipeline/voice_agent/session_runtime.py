@@ -25,7 +25,13 @@ from livekit.rtc import RemoteParticipant
 
 from app.core.logger import logger
 
-from .chat_bridge import VoiceChatBridge, load_realtime_chat_context, voice_system_prompt
+from .chat_bridge import (
+    VoiceChatBridge,
+    load_realtime_chat_context,
+    load_realtime_skill_prompt,
+    pronunciation_instruction,
+    voice_system_prompt,
+)
 from .events import (
     RoomEventPublisher,
     VoiceSessionEvents,
@@ -63,16 +69,25 @@ def introduction_for(agent_settings: dict) -> str | None:
     return introduction or None
 
 
-def introduction_instruction(introduction: str) -> str:
+def introduction_instruction(
+    introduction: str,
+    *,
+    has_pronunciations: bool = False,
+) -> str:
     """Return the realtime reply instruction that speaks the introduction verbatim."""
 
     # IMPORTANT NOTE: a realtime model has no TTS path in this SDK, so its reply
     # cannot carry fixed text; the instruction has to rule out every paraphrase.
+    pronunciation = (
+        " Apply your pronunciation guide when you reach a matching term."
+        if has_pronunciations
+        else ""
+    )
     return (
         "Your first turn is a scripted opening. Say the text below exactly as written, "
         "word for word, and nothing else: do not add a greeting, a question, or a "
-        "closing line, and do not continue the conversation. Then stop and wait for "
-        f"the caller.\n\n{introduction}"
+        f"closing line, and do not continue the conversation.{pronunciation} Then stop "
+        f"and wait for the caller.\n\n{introduction}"
     )
 
 
@@ -412,6 +427,13 @@ async def run_pipeline_session(session: VoiceSession) -> None:
         introduction = introduction_for(agent_settings)
         if introduction:
             session.agent_session.say(introduction, add_to_chat_ctx=False)
+            # IMPORTANT NOTE: `say(add_to_chat_ctx=False)` never emits
+            # `conversation_item_added`, so the caller would not see the spoken
+            # introduction without this event. Turn IDs start at 1; id 0 keeps
+            # the introduction from being replaced by the first reply.
+            session.events.assistant_transcript(introduction, turn_id=0)
+        for skill_name in agent_settings.get("skills") or []:
+            session.events.skill_call(str(skill_name))
         await _wait_for_disconnect(session)
     except asyncio.CancelledError:
         raise
@@ -452,6 +474,14 @@ async def run_realtime_session(
     )
     tools = await tool_bridge.build()
     instructions = voice_system_prompt(agent_settings) or ""
+    pronunciation_prompt = pronunciation_instruction(
+        agent_settings.get("pronunciations") or []
+    )
+    if pronunciation_prompt:
+        instructions = f"{instructions}\n\n{pronunciation_prompt}".strip()
+    skill_prompt = await load_realtime_skill_prompt(session.claims, agent_settings)
+    if skill_prompt:
+        instructions = f"{instructions}\n\n{skill_prompt}".strip()
     if tool_bridge.has_knowledge_search:
         instructions = (
             f"{instructions}\n\n{KNOWLEDGE_SYSTEM_INSTRUCTION}".strip()
@@ -470,8 +500,13 @@ async def run_realtime_session(
         introduction = introduction_for(agent_settings)
         if introduction:
             session.agent_session.generate_reply(
-                instructions=introduction_instruction(introduction)
+                instructions=introduction_instruction(
+                    introduction,
+                    has_pronunciations=pronunciation_prompt is not None,
+                )
             )
+        for skill_name in agent_settings.get("skills") or []:
+            session.events.skill_call(str(skill_name))
         await _wait_for_disconnect(session)
     except asyncio.CancelledError:
         raise

@@ -13,9 +13,12 @@ stable event contract, and cleans up once.
 | `realtime` | A LiveKit provider plugin that transcribes, reasons, and speaks end to end. No LiteLLM STT/TTS and no chat-engine call. |
 
 Both engines publish the same `avintra.voice` events. Pipeline assistant
-transcripts come from the chat-engine deltas; realtime assistant transcripts
-come from LiveKit's `conversation_item_added`, and caller transcripts from
-`user_input_transcribed`.
+transcripts come from the chat-engine deltas plus the spoken introduction;
+realtime assistant transcripts come from LiveKit's `conversation_item_added`,
+which includes the spoken introduction, and caller transcripts from
+`user_input_transcribed`. Both engines bind every configured tool and skill for
+the whole call instead of planning per message, and publish each configured
+skill once as `skill.call` when the call starts.
 
 ## Pipeline latency
 
@@ -73,6 +76,14 @@ runtime accept exactly the same providers.
 - With `knowledgeBase.names` set, `search_knowledge` is registered and the model
   is told to search before product answers; retrieval happens on demand, not on
   every turn. Memory summarization arrives in a later phase.
+- With `skills` set, the configured skill instructions (including uploaded
+  `SKILL.md` files) are resolved for the call's tenant, environment, and space
+  and appended to the agent instructions before the call starts. Realtime has no
+  per-message planner, so every configured skill stays available for the whole
+  call.
+- Pronunciation aliases are appended to the realtime instructions, including the
+  scripted introduction, because a speech-to-speech model has no TTS text path
+  to rewrite.
 - Enhanced noise cancellation (`standard` / `telephony`) is not wired in the
   worker. WorkspaceAPIs rejects both modes at publish, so only `none` and `auto`
   reach a session; the browser capture constraints follow the resolved mode.

@@ -336,7 +336,7 @@
       "type": "json-editor",
       "name": "__Pronunciation__Voice",
       "label": "Pronunciation",
-      "description": "Speak terms, names, and acronyms with an intended pronunciation. Add a term and how it should be spoken, for example term API spoken as A P I. Matching is case-insensitive and uses the longest term first. Applies to providers that support speech synthesis.",
+      "description": "Speak terms, names, and acronyms with an intended pronunciation. Add a term and how it should be spoken, for example term API spoken as A P I. Matching is case-insensitive and uses the longest term first. Applies to pipeline speech synthesis and realtime speech.",
       "defaultValue": [],
       "required": false,
       "category": "Pronunciation"
@@ -356,7 +356,7 @@
       "type": "json-editor",
       "name": "__Variables__Voice",
       "label": "Variables",
-      "description": "Default values for placeholders used in the Goal, Role, Instructions, and Introduction. Add a name and value pair, for example name company_name with value Acme. Each {{name}} placeholder is replaced with its default during conversations. Names without a default are left as written. Realtime sessions do not resolve these placeholders.",
+      "description": "Default values for placeholders used in the Goal, Role, Instructions, and Introduction. Add a name and value pair, for example name company_name with value Acme. Each {{name}} placeholder is replaced with its default during conversations. Names without a default are left as written.",
       "defaultValue": {},
       "required": false,
       "category": "Features"

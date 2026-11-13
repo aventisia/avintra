@@ -10,6 +10,9 @@ import { applyVoiceEvent, parseVoiceEvent } from "./voice-events";
 
 const TIMER_INTERVAL_MS = 500;
 
+// IMPORTANT NOTE: the browser can still play buffered agent audio after the worker reports `listening`.
+const MIC_RESUME_DELAY_MS = 300;
+
 const ignoreRejections = (promise: Promise<unknown>): Promise<void> =>
   promise.then(
     () => undefined,
@@ -52,6 +55,8 @@ export class VoiceSessionClient {
   private _room: Room | null = null;
   private _audioTracks = new Set<RemoteTrack>();
   private _timer: ReturnType<typeof setInterval> | null = null;
+  private _micResumeTimer: ReturnType<typeof setTimeout> | null = null;
+  private _micGated = false;
   private _generation = 0;
   private _startedAt = 0;
   private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
@@ -124,6 +129,7 @@ export class VoiceSessionClient {
     }
 
     if (generation !== this._generation) return;
+    this._syncSpeechGate();
   }
 
   async end(): Promise<void> {
@@ -140,12 +146,25 @@ export class VoiceSessionClient {
   }
 
   async toggleMute(): Promise<void> {
-    const participant = this._room?.localParticipant;
-    if (!participant) return;
+    if (!this._room) return;
 
     const isMuted = !this._snapshot.isMuted;
-    await participant.setMicrophoneEnabled(!isMuted, this._captureOptions);
     this._update({ isMuted });
+    this._clearMicResumeTimer();
+
+    if (isMuted) {
+      this._micGated = false;
+      await this._setMicEnabled(false);
+      return;
+    }
+
+    if (this._snapshot.state === "speaking") {
+      this._micGated = true;
+      return;
+    }
+
+    this._micGated = false;
+    await this._setMicEnabled(true);
   }
 
   async resumeAudio(): Promise<void> {
@@ -243,6 +262,8 @@ export class VoiceSessionClient {
     const room = this._room;
     this._room = null;
     this._stopTimer();
+    this._clearMicResumeTimer();
+    this._micGated = false;
     this._detachAudioTracks();
 
     if (!room) return;
@@ -285,7 +306,47 @@ export class VoiceSessionClient {
   }
 
   private _setSnapshot(snapshot: VoiceCallSnapshot): void {
+    const previousState = this._snapshot.state;
     this._snapshot = snapshot;
     if (!this._disposed) this._onSnapshot(snapshot);
+    if (previousState !== snapshot.state) this._syncSpeechGate();
+  }
+
+  private _syncSpeechGate(): void {
+    this._clearMicResumeTimer();
+
+    if (this._snapshot.state === "speaking") {
+      if (this._micGated || !this._snapshot.isActive || this._snapshot.isMuted) return;
+      const room = this._room;
+      if (!room || !room.localParticipant.isMicrophoneEnabled) return;
+      this._micGated = true;
+      void ignoreRejections(this._setMicEnabled(false));
+      return;
+    }
+
+    if (!this._micGated) return;
+
+    if (!this._snapshot.isActive || this._snapshot.isMuted) {
+      this._micGated = false;
+      return;
+    }
+
+    this._micResumeTimer = setTimeout(() => {
+      this._micResumeTimer = null;
+      this._micGated = false;
+      void ignoreRejections(this._setMicEnabled(true));
+    }, MIC_RESUME_DELAY_MS);
+  }
+
+  private async _setMicEnabled(enabled: boolean): Promise<void> {
+    const room = this._room;
+    if (!room || room.localParticipant.isMicrophoneEnabled === enabled) return;
+    await room.localParticipant.setMicrophoneEnabled(enabled, this._captureOptions);
+  }
+
+  private _clearMicResumeTimer(): void {
+    if (this._micResumeTimer === null) return;
+    clearTimeout(this._micResumeTimer);
+    this._micResumeTimer = null;
   }
 }

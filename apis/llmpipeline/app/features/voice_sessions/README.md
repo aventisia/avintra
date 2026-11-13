@@ -82,9 +82,12 @@ events, and clean shutdown.
   `googlegemini`). Realtime is BYOK only; the credential resolves through the
   same path as the pipeline. The full matrix is in
   `apis/llmpipeline/voice_agent/README.md`.
-- The persona and spoken-style guidance become the agent instructions. An
-  AI-first introduction is spoken with `generate_reply`, so the model delivers
-  it naturally instead of reading a fixed string.
+- The persona, spoken-style guidance, and configured skill instructions become
+  the agent instructions; the knowledge-search directive is added when a
+  knowledge base is configured. An AI-first introduction is spoken with
+  `generate_reply`, so the model delivers it naturally instead of reading a
+  fixed string. The spoken introduction is published as an assistant
+  `transcript.final`, so the caller sees the text that was actually spoken.
 - Captions: caller transcripts come from `user_input_transcribed`; assistant
   transcripts come from `conversation_item_added`. Each assistant response also
   publishes a `timing` turn event with the provider's `ttft_ms` / `duration_ms`.
@@ -216,6 +219,7 @@ Every event carries `type`, `conversationId`, and `timestamp`.
 | `transcript.interim` | `role`, `text` | Live caller caption from a streaming STT; replaced by the final transcript. |
 | `timing` | `stage`, `durationMs`, and turn fields | `stage = "session"` at close, or `stage = "turn"` with `turnId`, `interrupted`, and `voice_turn_timing`. Realtime turn events carry no `turnId` yet. |
 | `tool.call` | `tool`, `turnId` | One engine tool call reported for the turn. |
+| `skill.call` | `skill`, `turnId` | One configured skill active for the call; emitted when the session starts. |
 | `error` | `code`, `message`, `retryable`, `turnId` | A non-silent failure report; the session may continue. |
 | `session.closed` | `reason`, `code` | Terminal close with a close code. |
 
@@ -372,8 +376,9 @@ before quoting a latency number.
 
 ## Known v1 limits
 
-- Realtime agents run `approval == "auto"` tools and on-demand knowledge search
-  but do not summarize memory yet; memory arrives in a later phase.
+- Realtime agents apply configured skills, run `approval == "auto"` tools, and
+  search knowledge on demand, but do not summarize memory yet; memory arrives in
+  a later phase.
   Persistence, history seeding, and BYOK usage already work, but realtime
   assistant transcripts carry no `turnId`.
 - Voice conversations have no tool-approval UI. A tool action configured for

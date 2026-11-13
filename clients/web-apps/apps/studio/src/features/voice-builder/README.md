@@ -5,10 +5,10 @@ the saved graph is the only source of runtime settings.
 
 ## Engine modes
 
-| `__EngineMode__Voice` | Builder fields                                                                                                                     | Runtime                                                   |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `pipeline` (default)  | Language model, TTS model and voice, STT model.                                                                                    | `voice_agent` pipeline through the LangGraph chat engine. |
-| `realtime`            | Realtime model with provider, model, and BYOK credential, plus language, voice, and speed. STT, TTS, and pronunciation are hidden. | `voice_agent` provider speech-to-speech plugin.           |
+| `__EngineMode__Voice` | Builder fields                                                                                                                                                                | Runtime                                                   |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| `pipeline` (default)  | Language model, TTS model and voice, STT model.                                                                                                                               | `voice_agent` pipeline through the LangGraph chat engine. |
+| `realtime`            | Realtime model with provider, model, and BYOK credential, plus language, voice, and speed. STT and TTS are hidden; pronunciation is sent to the model as spoken instructions. | `voice_agent` provider speech-to-speech plugin.           |
 
 The engine choice uses the same two-card selector as Opening. Realtime provider,
 model, and credentials come from `ModelConfigField`; language, voice, and speed

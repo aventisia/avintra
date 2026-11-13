@@ -85,7 +85,7 @@ public sealed class VoiceAgentSettingsDto
     [JsonPropertyName("variables")]
     public Dictionary<string, string> Variables { get; init; } = new(StringComparer.Ordinal);
 
-    /// <summary>The pronunciation aliases to apply before speech synthesis.</summary>
+    /// <summary>The pronunciation aliases applied to spoken output.</summary>
     [JsonPropertyName("pronunciations")]
     public List<VoicePronunciationSettingsDto> Pronunciations { get; init; } = [];
 

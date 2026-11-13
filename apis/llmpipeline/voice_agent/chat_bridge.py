@@ -25,6 +25,13 @@ from app.features.langgraph.services.conversation_service import (
     ConversationService,
     conversation_service,
 )
+from app.features.langgraph.skills.skill_loader import (
+    build_skill_prompt,
+    load_custom_skills,
+    load_platform_skills,
+    resolve_skill_configs,
+)
+from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
 from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest,
@@ -126,6 +133,29 @@ def voice_system_prompt(agent_settings: dict) -> str | None:
     return prompt or None
 
 
+def pronunciation_instruction(entries: list[dict]) -> str | None:
+    """Return the realtime instruction that maps terms to spoken pronunciations."""
+
+    pairs = [
+        (str(entry.get("term") or "").strip(), str(entry.get("pronunciation") or "").strip())
+        for entry in entries
+    ]
+    pairs = [(term, pronunciation) for term, pronunciation in pairs if term and pronunciation]
+    if not pairs:
+        return None
+
+    # IMPORTANT NOTE: a realtime model speaks directly, so unlike the pipeline
+    # TTS path there is no synthesis text to rewrite; the aliases have to reach
+    # the model as instructions.
+    pairs.sort(key=lambda pair: len(pair[0]), reverse=True)
+    lines = [f'- Say "{term}" as "{pronunciation}".' for term, pronunciation in pairs]
+    return (
+        "Pronunciation guide. Whenever you speak one of these terms, use the listed "
+        "pronunciation. Matching is case-insensitive and the longest term wins:\n"
+        + "\n".join(lines)
+    )
+
+
 async def load_realtime_chat_context(
     claims: VoiceJobClaims,
     agent_settings: dict,
@@ -145,6 +175,45 @@ async def load_realtime_chat_context(
 
     items = realtime_chat_items(history, memory.get("maxShortTermTurns"))
     return llm.ChatContext(items=items) if items else None
+
+
+async def load_realtime_skill_prompt(
+    claims: VoiceJobClaims,
+    agent_settings: dict,
+) -> str | None:
+    """Build the realtime instructions fragment for the configured skills."""
+
+    skill_names = [
+        str(skill or "").strip() for skill in agent_settings.get("skills") or []
+    ]
+    skill_names = [name for name in skill_names if name]
+    if not skill_names:
+        return None
+
+    registry = SkillRegistry()
+    load_platform_skills(registry)
+    user = build_user(claims)
+    tenant_id = str(claims.tenant_id)
+    try:
+        async with get_db_session_context(
+            settings.POSTGRESQL_WORKSPACE_DB_NAME
+        ) as session:
+            await load_custom_skills(
+                registry=registry,
+                db_session=session,
+                tenant_id=tenant_id,
+                env_type=user.env_type,
+                space_id=user.space_id,
+            )
+    except Exception:
+        logger.exception(
+            "[voice-agent] realtime skill load failed conversation=%s",
+            claims.conversation_id,
+        )
+
+    return build_skill_prompt(
+        resolve_skill_configs(registry, skill_names, tenant_id=tenant_id)
+    )
 
 
 def realtime_chat_items(

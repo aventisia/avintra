@@ -8,7 +8,10 @@ from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
-from app.features.langgraph.skills.skill_loader import load_custom_skills
+from app.features.langgraph.skills.skill_loader import (
+    load_custom_skills,
+    resolve_skill_configs,
+)
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_DENIED,
@@ -202,7 +205,7 @@ async def resolve_requested_or_selected_tools_and_skills(
             explicit_tools,
             explicit_skills,
         )
-        selected_skills = _resolve_skill_configs(
+        selected_skills = resolve_skill_configs(
             skill_registry,
             explicit_skills or [],
             tenant_id=tenant_id,
@@ -226,35 +229,13 @@ async def resolve_requested_or_selected_tools_and_skills(
         selection.skill_names,
     )
 
-    selected_skills = _resolve_skill_configs(
+    selected_skills = resolve_skill_configs(
         skill_registry,
         selection.skill_names,
         tenant_id=tenant_id,
     )
 
     return selection.tool_names, selected_skills
-
-
-def _resolve_skill_configs(
-    skill_registry: SkillRegistry,
-    skill_names: list[str],
-    tenant_id: str | None = None,
-) -> list[SkillConfig]:
-    """Resolve a list of skill names to their registered configs."""
-
-    configs: list[SkillConfig] = []
-
-    for name in skill_names:
-        skill = skill_registry.get_for_tenant(name, tenant_id)
-        if skill is not None and skill.is_active:
-            configs.append(skill)
-        else:
-            logger.warning(
-                "Selected skill %s is not available in the registry.",
-                name,
-            )
-
-    return configs
 
 
 async def _build_catalog(

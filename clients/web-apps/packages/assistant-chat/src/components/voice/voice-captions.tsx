@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { LoaderCircle, Wrench } from "lucide-react";
+import { LoaderCircle, Sparkles, Wrench } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 import type { VoiceCaptionTurn, VoiceToolCall } from "../../types/voice-call.type";
@@ -26,6 +26,13 @@ const VoiceToolChip = ({ tool }: { tool: VoiceToolCall }) => (
   </span>
 );
 
+const VoiceSkillChip = ({ name }: { name: string }) => (
+  <span className="inline-flex h-6 items-center gap-1.5 rounded-sm border border-line bg-sunken px-2 text-[11.5px] text-ink-2">
+    <Sparkles aria-hidden="true" className="size-3 text-muted-foreground" />
+    Using skill: {name}
+  </span>
+);
+
 export type VoiceCaptionsProps = {
   turns: VoiceCaptionTurn[];
   agentName?: string;
@@ -49,7 +56,7 @@ export const VoiceCaptions = ({
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "nearest" });
-  }, [turns.length, lastTurn?.text, lastTurn?.toolCalls?.length]);
+  }, [turns.length, lastTurn?.text, lastTurn?.toolCalls?.length, lastTurn?.skillCalls?.length]);
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
@@ -63,6 +70,14 @@ export const VoiceCaptions = ({
           >
             {turn.speaker === "agent" ? agentName : callerName}
           </span>
+
+          {turn.skillCalls?.length ? (
+            <div className="flex flex-wrap gap-1.5">
+              {turn.skillCalls.map((skill, index) => (
+                <VoiceSkillChip key={`${skill}-${index}`} name={skill} />
+              ))}
+            </div>
+          ) : null}
 
           {turn.toolCalls?.length ? (
             <div className="flex flex-wrap gap-1.5">

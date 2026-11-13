@@ -688,10 +688,28 @@ def test_ai_first_speaks_the_resolved_introduction_and_wires_the_pipeline(
 
     events = _payloads(ctx)
     assert _of_type(events, "error") == []
+    [intro] = _of_type(events, "transcript.final")
+    assert intro["role"] == "assistant"
+    assert intro["text"] == "Hi Alice from Acme."
+    assert intro["turnId"] == 0
     [closed] = _of_type(events, "session.closed")
     assert closed["reason"] == "participant_disconnected"
     assert closed["code"] == WS_CLOSE_NORMAL
     assert events[-1] is closed
+
+
+def test_configured_skills_are_published_when_the_call_starts(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+
+    asyncio.run(
+        run_session(ctx, _claims(), _settings(skills=["demo-skill", "  "]))
+    )
+
+    [skill] = _of_type(_payloads(ctx), "skill.call")
+    assert skill["skill"] == "demo-skill"
 
 
 def test_saved_preemptive_generation_setting_enables_the_livekit_option(
@@ -720,7 +738,9 @@ def test_human_first_stays_silent_until_the_caller_speaks(
     [session] = fake_session.instances
     assert session.said == []
     assert session.calls == ["start", "aclose"]
-    assert _of_type(_payloads(ctx), "session.closed")[0]["code"] == WS_CLOSE_NORMAL
+    events = _payloads(ctx)
+    assert _of_type(events, "transcript.final") == []
+    assert _of_type(events, "session.closed")[0]["code"] == WS_CLOSE_NORMAL
     assert voice_persistence.lifecycles[0].failed is False
     assert ctx.deleted_rooms == 1
 
@@ -842,9 +862,11 @@ def test_state_caller_transcript_and_provider_error_events_are_published(
     [state] = _of_type(events, "session.state")
     assert state["state"] == "listening"
     assert state["previousState"] == "idle"
-    [transcript] = _of_type(events, "transcript.final")
-    assert transcript["role"] == "user"
-    assert transcript["text"] == "hello there"
+    transcripts = _of_type(events, "transcript.final")
+    assert sorted((event["role"], event["text"]) for event in transcripts) == [
+        ("assistant", "Hi Alice from Acme."),
+        ("user", "hello there"),
+    ]
     [interim] = _of_type(events, "transcript.interim")
     assert interim["role"] == "user"
     assert interim["text"] == "hel"

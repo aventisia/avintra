@@ -13,6 +13,7 @@ export const VOICE_EVENT_TOPIC = "avintra.voice";
 const CALLER_TURN_PREFIX = "caller";
 const AGENT_TURN_PREFIX = "turn";
 const FALLBACK_TOOL_NAME = "Tool";
+const FALLBACK_SKILL_NAME = "Skill";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -80,6 +81,13 @@ export const parseVoiceEvent = (data: Uint8Array, topic?: string): VoiceServerEv
     }
     case "tool.call":
       return { type, conversationId, tool: payload.tool, turnId: toNumber(payload.turnId) };
+    case "skill.call":
+      return {
+        type,
+        conversationId,
+        skill: getName(payload.skill, FALLBACK_SKILL_NAME),
+        turnId: toNumber(payload.turnId),
+      };
     case "timing": {
       const stage = payload.stage;
       if (stage !== "session" && stage !== "turn") return null;
@@ -150,16 +158,18 @@ const toMaybeName = (value: unknown): string | undefined => {
   return name ? name : undefined;
 };
 
-const getToolName = (tool: unknown): string => {
-  if (typeof tool === "string") return tool.trim() || FALLBACK_TOOL_NAME;
-  if (isRecord(tool)) {
+const getName = (value: unknown, fallback: string): string => {
+  if (typeof value === "string") return value.trim() || fallback;
+  if (isRecord(value)) {
     for (const key of ["name", "tool", "tool_name"]) {
-      const value = toMaybeName(tool[key]);
-      if (value) return value;
+      const name = toMaybeName(value[key]);
+      if (name) return name;
     }
   }
-  return FALLBACK_TOOL_NAME;
+  return fallback;
 };
+
+const getToolName = (tool: unknown): string => getName(tool, FALLBACK_TOOL_NAME);
 
 const toLatency = (timing?: VoiceTurnTiming): VoiceTurnLatency | null => {
   if (!timing) return null;
@@ -175,20 +185,22 @@ const toLatency = (timing?: VoiceTurnTiming): VoiceTurnLatency | null => {
   return Object.values(latency).some(isNumber) ? latency : null;
 };
 
+const findAnnotationTurnIndex = (turns: VoiceCaptionTurn[], turnId: number | undefined): number => {
+  if (turnId !== undefined) return turns.findIndex((turn) => turn.id === agentTurnId(turnId));
+  const last = lastAgentTurnIndex(turns);
+  return last !== -1 && !turns[last].text ? last : -1;
+};
+
 const appendToolCall = (
   snapshot: VoiceCallSnapshot,
   name: string,
   turnId: number | undefined,
 ): VoiceCallSnapshot => {
-  const id = turnId !== undefined ? agentTurnId(turnId) : null;
-  const index =
-    id === null
-      ? lastAgentTurnIndex(snapshot.turns)
-      : snapshot.turns.findIndex((turn) => turn.id === id);
+  const index = findAnnotationTurnIndex(snapshot.turns, turnId);
 
   if (index === -1) {
     const placeholder: VoiceCaptionTurn = {
-      id: id ?? agentTurnId(snapshot.turns.length + 1),
+      id: turnId !== undefined ? agentTurnId(turnId) : agentTurnId(snapshot.turns.length + 1),
       speaker: "agent",
       text: "",
       toolCalls: [{ name, isRunning: true }],
@@ -205,6 +217,44 @@ const appendToolCall = (
       toolCalls: [...(turn.toolCalls ?? []), toolCall],
     }),
   };
+};
+
+const appendSkillCall = (
+  snapshot: VoiceCallSnapshot,
+  name: string,
+  turnId: number | undefined,
+): VoiceCallSnapshot => {
+  const index = findAnnotationTurnIndex(snapshot.turns, turnId);
+
+  if (index === -1) {
+    const placeholder: VoiceCaptionTurn = {
+      id: turnId !== undefined ? agentTurnId(turnId) : agentTurnId(snapshot.turns.length + 1),
+      speaker: "agent",
+      text: "",
+      skillCalls: [name],
+    };
+    return { ...snapshot, turns: [...snapshot.turns, placeholder] };
+  }
+
+  const turn = snapshot.turns[index];
+  return {
+    ...snapshot,
+    turns: replaceTurn(snapshot.turns, index, {
+      ...turn,
+      skillCalls: [...(turn.skillCalls ?? []), name],
+    }),
+  };
+};
+
+const appendCallerTurn = (
+  turns: VoiceCaptionTurn[],
+  turn: VoiceCaptionTurn,
+): VoiceCaptionTurn[] => {
+  const last = turns[turns.length - 1];
+  // IMPORTANT NOTE: an annotation placeholder created before the caller spoke
+  // belongs to the reply that follows, not above the utterance.
+  const pendingReply = last?.speaker === "agent" && !last.text;
+  return pendingReply ? [...turns.slice(0, -1), turn, last] : [...turns, turn];
 };
 
 const appendCallerInterim = (
@@ -226,10 +276,12 @@ const appendCallerInterim = (
 
   return {
     ...snapshot,
-    turns: [
-      ...snapshot.turns,
-      { id: `${CALLER_TURN_PREFIX}-interim`, speaker: "caller", text, isInterim: true },
-    ],
+    turns: appendCallerTurn(snapshot.turns, {
+      id: `${CALLER_TURN_PREFIX}-interim`,
+      speaker: "caller",
+      text,
+      isInterim: true,
+    }),
   };
 };
 
@@ -249,15 +301,22 @@ const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) 
     if (interimIndex !== -1) {
       return { ...snapshot, turns: replaceTurn(snapshot.turns, interimIndex, callerTurn) };
     }
-    return { ...snapshot, turns: [...snapshot.turns, callerTurn] };
+    return { ...snapshot, turns: appendCallerTurn(snapshot.turns, callerTurn) };
   }
 
-  const id =
-    event.turnId !== undefined ? agentTurnId(event.turnId) : agentTurnId(snapshot.turns.length + 1);
-  const index = snapshot.turns.findIndex((turn) => turn.id === id);
+  const id = event.turnId !== undefined ? agentTurnId(event.turnId) : null;
+  const lastIndex = lastAgentTurnIndex(snapshot.turns);
+  const matchingIndex = id !== null ? snapshot.turns.findIndex((turn) => turn.id === id) : -1;
+  const placeholderIndex =
+    matchingIndex === -1 && lastIndex !== -1 && !snapshot.turns[lastIndex].text ? lastIndex : -1;
+  const index = matchingIndex !== -1 ? matchingIndex : placeholderIndex;
 
   if (index === -1) {
-    const agentTurn: VoiceCaptionTurn = { id, speaker: "agent", text };
+    const agentTurn: VoiceCaptionTurn = {
+      id: id ?? agentTurnId(snapshot.turns.length + 1),
+      speaker: "agent",
+      text,
+    };
     return { ...snapshot, turns: [...snapshot.turns, agentTurn] };
   }
 
@@ -266,6 +325,7 @@ const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) 
     ...snapshot,
     turns: replaceTurn(snapshot.turns, index, {
       ...turn,
+      id: id ?? turn.id,
       text,
       toolCalls: turn.toolCalls?.map((toolCall) => ({ ...toolCall, isRunning: false })),
     }),
@@ -345,6 +405,8 @@ export const applyVoiceEvent = (
       return appendCallerInterim(active, event);
     case "tool.call":
       return appendToolCall(active, getToolName(event.tool), event.turnId);
+    case "skill.call":
+      return appendSkillCall(active, event.skill, event.turnId);
     case "timing":
       return appendLatency(active, event);
     case "error":
