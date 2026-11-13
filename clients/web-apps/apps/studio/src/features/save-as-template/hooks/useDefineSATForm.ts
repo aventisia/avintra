@@ -71,11 +71,12 @@ export const useDefineSATForm = () => {
   );
 
   // Fetch template details
-  const { data } = useFetchTemplateDetails();
+  const { data, isLoading } = useFetchTemplateDetails();
 
   const { mutate: validateTemplate } = useValidateTemplateMutation();
 
   useEffect(() => {
+    setValidationStatus([]);
     const childIds = getSelectedEntitiesFromNodes(nodes as Node<NodeDataType>[]);
     const obj = childIds?.map((i) => {
       return { refId: i?.id, name: i?.name };
@@ -188,6 +189,7 @@ export const useDefineSATForm = () => {
 
   return {
     form,
+    isLoading,
     isPending,
     isUpdatePending,
     showSpaces,

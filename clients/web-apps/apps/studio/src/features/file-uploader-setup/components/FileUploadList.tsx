@@ -1,14 +1,20 @@
-import { Button } from "@avplatform/ui/buttons";
-import { TrashIcon, XCircleIcon } from "@phosphor-icons/react";
+import { FileIcon, TrashIcon, XIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
-
-import { Progress } from "@/react-toolkit/ui/progress";
 
 import { FileState, useFileStore } from "../stores/file-uploader-store";
 import { formatFileSize } from "../utils";
 import FileDropzone from "./FileDropzone";
 
-const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
+type FileUploadListProps = {
+  isPublic?: boolean;
+  isDisabled?: boolean;
+};
+
+/**
+ * Files attached to the form: a drop area and the uploaded or uploading files with their
+ * progress.
+ */
+const FileUploadList = ({ isPublic, isDisabled = false }: FileUploadListProps) => {
   const {
     files,
     filesToUpload,
@@ -31,14 +37,8 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
     })),
   );
 
-  const cancelUpload = (controller?: AbortController | null) => {
-    controller?.abort();
-  };
-
   const removeAll = () => {
-    filesToUpload.forEach((file) => {
-      addFileToDelete(file); // server delete
-    });
+    filesToUpload.forEach((file) => addFileToDelete(file));
   };
 
   const handleDelete = (name: string) => {
@@ -46,74 +46,89 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
     if (uploadedFile) addFileToDelete(uploadedFile);
   };
 
-  const handleDeleteBefore = (file: FileState) => {
-    cancelUpload(file.currentController);
+  const cancelUpload = (file: FileState) => {
+    file.currentController?.abort();
     removeFile(file.name);
   };
 
-  const getProgressForFile = (name: string): FileState | undefined =>
-    files.find((f) => f.name === name);
+  const allFiles = [...filesToUpload, ...files];
 
   return (
-    <div className="h-full rounded-lg border">
-      <div className="flex items-center justify-between p-2">
-        <h2 className="text-xs font-medium">Upload files ({filesToUpload.length})</h2>
-        <div className="flex gap-2">
-          <FileDropzone
-            addFile={addFile}
-            addFileToUpload={addFileToUpload}
-            updateProgress={updateProgress}
-            clearFiles={clearFiles}
-            isPublic={isPublic}
-          />
-          {filesToUpload.length > 0 && (
-            <Button variant="ghost" size="xs" type="button" onClick={removeAll}>
-              Delete all
-            </Button>
-          )}
-        </div>
+    <div>
+      <div className="mb-1.5 flex items-baseline justify-between gap-3">
+        <p className="text-[12.5px] font-semibold text-ink-2">
+          Files
+          <span className="ml-1.5 font-normal text-muted-foreground">Optional</span>
+        </p>
+        {filesToUpload.length > 0 && !isDisabled && (
+          <button
+            type="button"
+            onClick={removeAll}
+            className="rounded-sm text-[12px] text-muted-foreground outline-none transition-colors hover:text-bad focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            Remove all
+          </button>
+        )}
       </div>
 
-      {(filesToUpload.length > 0 || files.length > 0) && (
-        <div className="grid grid-cols-1 gap-2 border-t p-2 xs:grid-cols-2">
-          {[...filesToUpload, ...files].map((file, idx) => {
-            const fileState = getProgressForFile(file.name);
-            const isUploading = fileState && fileState.progress < 100;
+      <FileDropzone
+        addFile={addFile}
+        addFileToUpload={addFileToUpload}
+        updateProgress={updateProgress}
+        clearFiles={clearFiles}
+        isPublic={isPublic}
+        isDisabled={isDisabled}
+      />
+
+      {allFiles.length > 0 && (
+        <ul className="mt-2 divide-y divide-line overflow-hidden rounded-md bg-popover ring-1 ring-line">
+          {allFiles.map((file, idx) => {
+            const fileState = files.find((f) => f.name === file.name);
+            const isUploading = fileState !== undefined && fileState.progress < 100;
             const progress = fileState?.progress ?? 100;
 
             return (
-              <div key={`${file.name}-${idx}`} className="rounded-lg border p-2">
-                <div className="flex items-center justify-between pb-2">
-                  <div className="flex flex-col">
-                    <p className="text-2xs font-medium">{file.name}</p>
-                    <p className="text-2xs text-muted-foreground">
-                      {isUploading
-                        ? `Uploading... ${progress}%`
-                        : `${progress}% · ${formatFileSize(file.size)}`}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="caution"
-                    size="icon7"
-                    onClick={() =>
-                      isUploading && fileState
-                        ? handleDeleteBefore(fileState)
-                        : handleDelete(file.name)
-                    }
-                  >
-                    {isUploading ? (
-                      <XCircleIcon className="h-5 w-5" />
-                    ) : (
-                      <TrashIcon className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-                <Progress value={progress} className={progress === 100 ? "bg-ok" : "bg-primary"} />
-              </div>
+              <li
+                key={`${file.name}-${idx}`}
+                className="relative flex items-center gap-3 px-3 py-2"
+              >
+                <span className="grid size-7 shrink-0 place-items-center rounded-md bg-sunken text-ink-2 ring-1 ring-line">
+                  <FileIcon className="size-3.5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13px] font-medium text-ink">
+                    {file.name}
+                  </span>
+                  <span className="block text-[11.5px] tabular-nums text-muted-foreground">
+                    {isUploading ? `Uploading ${progress}%` : formatFileSize(file.size)}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  aria-label={isUploading ? `Cancel uploading ${file.name}` : `Remove ${file.name}`}
+                  onClick={() =>
+                    isUploading && fileState ? cancelUpload(fileState) : handleDelete(file.name)
+                  }
+                  className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-bad/10 hover:text-bad focus-visible:ring-2 focus-visible:ring-focus disabled:hidden"
+                >
+                  {isUploading ? (
+                    <XIcon className="size-3.5" />
+                  ) : (
+                    <TrashIcon className="size-3.5" />
+                  )}
+                </button>
+                {isUploading && (
+                  <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 bg-sunken">
+                    <span
+                      className="block h-full bg-primary transition-[width] duration-200"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </span>
+                )}
+              </li>
             );
           })}
-        </div>
+        </ul>
       )}
     </div>
   );
