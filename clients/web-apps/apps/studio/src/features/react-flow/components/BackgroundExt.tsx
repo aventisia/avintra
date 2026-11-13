@@ -7,7 +7,7 @@ export const BackgroundExt = memo(() => {
       variant={BackgroundVariant.Dots}
       gap={15}
       size={1}
-      color="color-mix(in srgb, var(--line-strong) 55%, var(--bg))"
+      color="color-mix(in srgb, var(--line-strong) 85%, var(--bg))"
       className="!bg-bg"
     />
   );

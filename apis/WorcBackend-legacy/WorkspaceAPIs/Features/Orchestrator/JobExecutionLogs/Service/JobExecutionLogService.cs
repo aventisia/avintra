@@ -105,4 +105,33 @@ public class JobExecutionLogService : IJobExecutionLogService
         // Return final response
         return serviceResponse;
     }
+
+    // Get run counts, outcomes, and average duration for an agent across all its versions
+    public async Task<ServiceResponse<AgentRunActivityDto>> GetRunActivityAsync(Guid flowId, int days, int utcOffsetMinutes)
+    {
+        var serviceResponse = ServiceResponse<AgentRunActivityDto>.Create("Failed to retrieve run activity. Please try again.", 500);
+
+        try
+        {
+            var windowDays = JobRunActivityHelpers.ClampDays(days);
+            var offsetMinutes = JobRunActivityHelpers.ClampUtcOffsetMinutes(utcOffsetMinutes);
+            var windowStart = JobRunActivityHelpers.GetWindowStart(windowDays, offsetMinutes);
+            var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
+            var readableFrom = (windowStart > earliestReadable ? windowStart : earliestReadable).ToUniversalTime();
+
+            var jobRuns = await _unitOfWork.JobRepo
+                .GetByConditionAsync(j => j.FlowVersion.FlowId == flowId && j.CreatedOn >= readableFrom)
+                .Select(j => new JobRunSample(j.CreatedOn, j.Status, j.StartTime, j.EndTime))
+                .ToListAsync();
+
+            var activity = JobRunActivityHelpers.Build(jobRuns, windowDays, offsetMinutes);
+            serviceResponse.Update("Run activity retrieved successfully.", 200, activity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get run activity for FlowId: {FlowId}", flowId);
+        }
+
+        return serviceResponse;
+    }
 }

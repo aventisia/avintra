@@ -20,6 +20,18 @@ public class JobExecutionLogController : BaseApiController
         );
     }
 
+    // Retrieves run counts, outcomes, and average duration for an agent across all its versions.
+    [HttpGet("activity/{flowId}")]
+    public async Task<ActionResult<ServiceResponse<AgentRunActivityDto>>> GetRunActivity(
+        Guid flowId,
+        [FromQuery] int days = 14,
+        [FromQuery] int utcOffsetMinutes = 0)
+    {
+        return ResultHelper(
+            await _jobExecutionLogService.GetRunActivityAsync(flowId, days, utcOffsetMinutes)
+        );
+    }
+
     // Retrieves detailed information for the specified job execution.
     [HttpGet("detail/{jobId}")]
     public async Task<ActionResult<ServiceResponse<JobExecutionLogDetailDto>>> GetLogDetail(Guid jobId)

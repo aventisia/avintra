@@ -3,6 +3,7 @@ import { axiosInstance } from "@avplatform/ui/lib";
 
 import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
+import { AgentRunActivityDto } from "../dtos/agent-run-activity.dto";
 import { JobExecutionLogDetailDto } from "../dtos/job-execution-log-details-dto";
 import { JobExecutionLogDto } from "../dtos/job-execution-log-dto";
 
@@ -30,4 +31,16 @@ const getAgentsExecutionLogsById = (jobId: string) => {
     .then((res) => res.data);
 };
 
-export { getAgentsExecutionLogs, getAgentsExecutionLogsById };
+/**
+ * Get an agent's run counts, outcomes, and average duration across all its versions
+ */
+const getAgentRunActivity = (flowId: string, days: number, utcOffsetMinutes: number) => {
+  return axiosInstance
+    .get<IHttpResponse<AgentRunActivityDto>>(`${baseAPIURL}/activity/${flowId}`, {
+      params: { days, utcOffsetMinutes },
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+export { getAgentsExecutionLogs, getAgentsExecutionLogsById, getAgentRunActivity };

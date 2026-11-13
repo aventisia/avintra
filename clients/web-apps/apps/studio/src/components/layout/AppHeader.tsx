@@ -79,7 +79,7 @@ const AppHeader: React.FC = () => {
           <div className="flex min-w-0 items-center gap-0.5">
             <div className="flex min-w-0 flex-col">
               <div className="flex min-w-0 items-center gap-1.5 pl-[7px]">
-                <span className="truncate text-[11px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
+                <span className="mb-px truncate text-[11px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
                   {FLOW_TYPE_LABELS[flowType]}
                 </span>
                 {isCanvas ? <SaveFlow /> : null}

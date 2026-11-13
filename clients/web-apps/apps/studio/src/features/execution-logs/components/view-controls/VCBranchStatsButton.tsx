@@ -16,7 +16,7 @@ export const VCBranchStatsButton = () => {
 
   // Render action button
   return (
-    <Tooltip content={!showBranchStats ? "Show branch stats" : "Hide branch stats"} side="right">
+    <Tooltip content={!showBranchStats ? "Show branch stats" : "Hide branch stats"} side="top">
       <Button
         size="icon6"
         className={cn("rounded-md")}
