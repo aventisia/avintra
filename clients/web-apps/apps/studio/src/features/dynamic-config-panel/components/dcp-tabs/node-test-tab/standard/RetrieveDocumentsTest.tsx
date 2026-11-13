@@ -120,8 +120,6 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
         ref_name: currentFlow.name,
 
         action: "AgentExecution",
-
-        agent_name: currentFlow.name,
       };
 
       /* Knowledge base filters */

@@ -18,7 +18,6 @@ type UseAssistantVoiceParams = {
   isTextToSpeechConfigured: boolean;
   refId: string;
   refName: string;
-  agentName?: string | null;
 };
 
 const resolveAudioMimeType = (audio: string): string =>
@@ -31,7 +30,6 @@ export const useAssistantVoice = ({
   isTextToSpeechConfigured,
   refId,
   refName,
-  agentName,
 }: UseAssistantVoiceParams) => {
   const speakReplies = useVoicePlaybackStore((state) => state.speakReplies);
   const isPlaying = useVoicePlaybackStore((state) => state.isPlaying);
@@ -44,7 +42,6 @@ export const useAssistantVoice = ({
     isTextToSpeechConfigured,
     refId,
     refName,
-    agentName,
     speakReplies,
   });
   configRef.current = {
@@ -53,7 +50,6 @@ export const useAssistantVoice = ({
     isTextToSpeechConfigured,
     refId,
     refName,
-    agentName,
     speakReplies,
   };
 
@@ -83,7 +79,6 @@ export const useAssistantVoice = ({
         ref_id: config.refId,
         ref_name: config.refName,
         action: "AgentExecution",
-        agent_name: config.agentName ?? null,
       };
 
       const response = await synthesizeTts(requestDto, signal);

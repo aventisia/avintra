@@ -239,7 +239,6 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     ref_id=llm_request.ref_id,
                     ref_name=llm_request.ref_name,
                     action=llm_request.action,
-                    agent_name=llm_request.agent_name,
                 )
 
                 # Execute semantic search against vector store

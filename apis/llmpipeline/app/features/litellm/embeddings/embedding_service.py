@@ -108,8 +108,7 @@ class EmbeddingService:
                 req.reference_id,
                 req.reference_name,
                 req.action,
-                None,
-                user.space_id,
+                space_id=user.space_id,
             )
             post_platform_credit_usage(req.provider, [entry], user.access_token)
         except Exception as e:
@@ -134,8 +133,7 @@ class EmbeddingService:
                 req.reference_id,
                 req.reference_name,
                 req.action,
-                None,
-                user.space_id,
+                space_id=user.space_id,
             )
             post_byok_usage(req.provider, [entry], user.access_token)
         except Exception as e:

@@ -240,8 +240,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 ref_type = llmRequest.RefType,
                 ref_id = llmRequest.RefId,
                 ref_name = llmRequest.RefName,
-                action = llmRequest.Action,
-                agent_name = llmRequest.AgentName
+                action = llmRequest.Action
             };
 
             // Add authorization header using the JWT

@@ -118,7 +118,6 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             ref_id=tts_request.ref_id,
             ref_type=tts_request.ref_type,
             ref_name=tts_request.ref_name,
-            agent_name=tts_request.agent_name,
             action=tts_request.action,
         )
         # Post credit usage only for platform (non-BYOK) requests.
@@ -147,8 +146,8 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                         tts_request.ref_id,
                         tts_request.ref_name,
                         tts_request.action,
-                        tts_request.agent_name,
-                        user.space_id,
+                        triggered_by_agent=tts_request.ref_name,
+                        space_id=user.space_id,
                         display_name=resolved_name,
                     )
                     post_byok_usage(tts_request.provider, [entry], user.access_token)

@@ -185,7 +185,6 @@ const RuntimeWrapper = ({
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
   const refId = currentFlow?.id ?? "";
   const refName = currentFlow?.name ?? "";
-  const agentName = currentFlow?.name ?? null;
 
   const assistantVoice = useAssistantVoice({
     ttsConfig,
@@ -193,7 +192,6 @@ const RuntimeWrapper = ({
     isTextToSpeechConfigured,
     refId,
     refName,
-    agentName,
   });
 
   const handleSuggestionsUpdate = useCallback((actions: string[]) => {
@@ -322,7 +320,6 @@ const RuntimeWrapper = ({
       language: voiceConfig?.language ?? null,
       refId,
       refName,
-      agentName,
     }),
     [
       assistantVoice.speakReplies,
@@ -333,7 +330,6 @@ const RuntimeWrapper = ({
       voiceConfig?.language,
       refId,
       refName,
-      agentName,
     ],
   );
 

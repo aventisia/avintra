@@ -208,10 +208,6 @@ public class VectorConnectorsService : IVectorConnectorsService
             ? actionValue?.ToString()
             : null;
 
-        string? agentName = payload.TryGetValue("agent_name", out var agentNameValue)
-            ? agentNameValue?.ToString()
-            : null;
-
         // Optional Embedding Model Configuration
         JsonNode? embeddingConfig = null;
         string? embeddingProvider = null;
@@ -330,8 +326,7 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["ref_type"] = refType,
                     ["ref_id"] = refId,
                     ["ref_name"] = refName,
-                    ["action"] = actionName,
-                    ["agent_name"] = agentName
+                    ["action"] = actionName
                 };
 
             case PgVectorActionsEnum.RetrieveDocuments:
@@ -427,8 +422,7 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["ref_type"] = refType,
                     ["ref_id"] = refId,
                     ["ref_name"] = refName,
-                    ["action"] = actionName,
-                    ["agent_name"] = agentName
+                    ["action"] = actionName
                 };
 
             case PgVectorActionsEnum.Delete:

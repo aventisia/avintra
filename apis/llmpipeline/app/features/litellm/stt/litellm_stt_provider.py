@@ -149,7 +149,6 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
             ref_id=stt_request.ref_id,
             ref_type=stt_request.ref_type,
             ref_name=stt_request.ref_name,
-            agent_name=stt_request.agent_name,
             action=stt_request.action,
         )
         # Compute audio duration (seconds) for response metadata and billing.
@@ -182,8 +181,8 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
                         stt_request.ref_id,
                         stt_request.ref_name,
                         stt_request.action,
-                        stt_request.agent_name,
-                        space_id,
+                        triggered_by_agent=stt_request.ref_name,
+                        space_id=space_id,
                         display_name=resolved_name,
                     )
                     post_byok_usage(stt_request.provider, [entry], access_token)

@@ -110,12 +110,14 @@ def build_credit_entry(
     ref_id: str,
     ref_name: str,
     action: str,
-    agent_name: str | None,
+    triggered_by_agent: str | None = None,
     space_id: str | None = None,
 ) -> dict:
     """Build a single credit-usage payload entry (PascalCase fields).
 
     Shared by Text Generation and Embeddings so billing payloads stay identical.
+    Agent flows pass their single name field (`ref_name`) as
+    `triggered_by_agent`; embeddings record no triggering agent.
     """
     return {
         "ServiceType": service_type,
@@ -124,7 +126,7 @@ def build_credit_entry(
         "RefId": ref_id,
         "RefName": ref_name,
         "Action": action or "AgentExecution",
-        "TriggeredByAgent": agent_name,
+        "TriggeredByAgent": triggered_by_agent,
         "SpaceId": space_id,
     }
 
@@ -183,7 +185,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
         "RefId": request.ref_id,
         "RefName": request.ref_name,
         "Action": request.action,
-        "TriggeredByAgent": request.agent_name,
+        "TriggeredByAgent": request.ref_name,
         "SpaceId": space_id,
     }
 
@@ -226,7 +228,7 @@ def build_byok_entry(
     ref_id: str,
     ref_name: str,
     action: str,
-    agent_name: str | None,
+    triggered_by_agent: str | None = None,
     space_id: str | None = None,
     *,
     display_name: str | None = None,
@@ -250,7 +252,8 @@ def build_byok_entry(
         ref_id: The reference id (e.g. AgentId).
         ref_name: The reference display name.
         action: The action type (e.g. "AgentExecution").
-        agent_name: The triggering agent name.
+        triggered_by_agent: The agent name recorded as the trigger; agent flows
+            pass their single name field (`ref_name`).
         space_id: The current space id (None = Central).
 
     Returns:
@@ -267,7 +270,7 @@ def build_byok_entry(
         "RefId": ref_id,
         "RefName": ref_name,
         "Action": action or "AgentExecution",
-        "TriggeredByAgent": agent_name,
+        "TriggeredByAgent": triggered_by_agent,
         "SpaceId": space_id,
     }
 
