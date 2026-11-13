@@ -62,7 +62,6 @@ public class ProcessSTTRequestNode : BaseNode
                 ref_id = flowMetadata.Id,
                 ref_name = flowMetadata.Name,
                 action = "AgentExecution",
-                agent_name = flowMetadata.Name,
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
