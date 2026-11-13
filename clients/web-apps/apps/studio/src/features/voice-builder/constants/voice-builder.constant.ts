@@ -1,4 +1,8 @@
-import type { VoiceAgentTemplate, VoiceBuilderSectionId } from "../types/voice-builder.type";
+import type {
+  VoiceAgentTemplate,
+  VoiceBuilderSectionId,
+  VoiceComingLaterGroup,
+} from "../types/voice-builder.type";
 
 export const VOICE_FIELDS = {
   goal: "__Goal__Voice",
@@ -32,6 +36,24 @@ export const VOICE_BUILDER_SECTIONS: { id: VoiceBuilderSectionId; label: string 
   { id: "brain", label: "Brain" },
   { id: "knowledge", label: "Knowledge & tools" },
   { id: "pronunciation", label: "Pronunciation & variables" },
+  { id: "later", label: "Coming soon" },
+];
+
+export const VOICE_COMING_LATER: VoiceComingLaterGroup[] = [
+  {
+    phase: "Phase 4",
+    items: [
+      "Escalation to a person",
+      "Transcript webhook",
+      "Phone and widget channels",
+      "Redaction",
+    ],
+  },
+  { phase: "Phase 5", items: ["Preemptive generation", "Noise cancellation"] },
+  {
+    phase: "Phase 6",
+    items: ["Manager agent", "Call recording", "Custom sounds", "Avatar", "Screen share", "Camera"],
+  },
 ];
 
 export const VOICE_AGENT_TEMPLATES: VoiceAgentTemplate[] = [

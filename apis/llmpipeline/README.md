@@ -87,12 +87,13 @@ For other Uvicorn options, run `uvicorn app.main:app` directly and pass flags as
 ## Voice sessions
 
 `app/features/voice_sessions` creates LiveKit rooms and caller tokens for
-VoiceAgent sessions; the `voice_agent` worker runs the actual call. Both are
-optional and are not started by `dekit up`.
+VoiceAgent sessions; the `voice_agent` worker runs the actual call. The worker
+is part of this service: it starts automatically in the API event loop when
+LiveKit is configured and stops with the API. LiveKit itself runs independently
+through Docker Compose.
 
 ```sh
-dekit start livekit      # LiveKit dev server, ports 7880/7881 and 7882/udp
-dekit start voice_agent  # LiveKit Agents worker; start it after LiveKit registers
+docker compose -f deploy/livekit/docker-compose.yml up -d
 ```
 
 Set `LIVEKIT_HTTP_URL`, `LIVEKIT_WS_URL`, `LIVEKIT_API_KEY`,

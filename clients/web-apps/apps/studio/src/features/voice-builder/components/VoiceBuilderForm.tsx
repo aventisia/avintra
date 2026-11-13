@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Form } from "@avplatform/ui/form";
-import { CheckCircleIcon, CircleIcon } from "@phosphor-icons/react";
+import { CheckCircleIcon, CircleIcon, ClockIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import { RenderField, useDefineDCPForm } from "@/features/dynamic-config-panel";
@@ -9,7 +9,11 @@ import { VoiceFeatureCard } from "@/features/dynamic-config-panel/components/fie
 import { VoicePronunciationTab } from "@/features/dynamic-config-panel/components/fields-for-form/VoicePronunciationTab";
 import { VoiceVariablesField } from "@/features/dynamic-config-panel/components/fields-for-form/VoiceVariablesField";
 
-import { VOICE_BUILDER_SECTIONS, VOICE_FIELDS } from "../constants/voice-builder.constant";
+import {
+  VOICE_BUILDER_SECTIONS,
+  VOICE_COMING_LATER,
+  VOICE_FIELDS,
+} from "../constants/voice-builder.constant";
 import type { VoiceBuilderSectionId, VoiceReadinessCheck } from "../types/voice-builder.type";
 import { getVoiceReadiness, getVoiceSectionElementId } from "../utils/voice-builder.util";
 import { VoiceBrainSection } from "./VoiceBrainSection";
@@ -178,6 +182,36 @@ export const VoiceBuilderForm = () => {
                 size="sm"
               />
             </VoiceFeatureCard>
+          </VoiceBuilderSection>
+
+          <VoiceBuilderSection
+            id="later"
+            title="Coming soon"
+            description="Planned capabilities, shown so the full shape of the agent is visible."
+          >
+            <div className="grid gap-3 sm:grid-cols-3">
+              {VOICE_COMING_LATER.map((group) => (
+                <div
+                  key={group.phase}
+                  className="rounded-lg border border-dashed border-line-strong p-3"
+                >
+                  <Badge variant="draft" className="mb-2">
+                    {group.phase}
+                  </Badge>
+                  <ul className="space-y-1">
+                    {group.items.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-center gap-1.5 text-body-sm text-muted-foreground"
+                      >
+                        <ClockIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </VoiceBuilderSection>
         </Form>
       </div>

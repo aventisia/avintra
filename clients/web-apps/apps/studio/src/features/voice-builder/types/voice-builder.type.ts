@@ -1,4 +1,5 @@
-export type VoiceBuilderSectionId = "persona" | "opening" | "brain" | "knowledge" | "pronunciation";
+export type VoiceBuilderSectionId =
+  "persona" | "opening" | "brain" | "knowledge" | "pronunciation" | "later";
 
 export type VoiceReadinessCheck = {
   section: VoiceBuilderSectionId;
@@ -15,4 +16,9 @@ export type VoiceAgentTemplate = {
   role: string;
   instructions: string;
   introduction: string;
+};
+
+export type VoiceComingLaterGroup = {
+  phase: string;
+  items: string[];
 };
