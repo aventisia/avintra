@@ -52,6 +52,7 @@ export const AgentDescription = () => {
       <AutosizeTextarea
         aria-label="Agent description"
         placeholder="Describe what this agent does and when it runs"
+        rows={1}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         onFocus={() => setIsEditing(true)}

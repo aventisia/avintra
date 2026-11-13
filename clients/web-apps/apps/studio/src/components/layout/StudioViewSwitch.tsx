@@ -6,17 +6,21 @@ import {
   TabsList,
   TabsTrigger,
 } from "@avplatform/ui/tabs";
-import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
+import { getAgentsExecutionLogs } from "@/features/execution-logs/apis/job-execution-log-apis";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useFetchVersionHistoryList } from "@/features/version-history/hooks/useFetchVersionHistoryList";
+import { getAgentsHistory } from "@/features/version-history/apis/agents-history-apis";
 import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
+/** Fetches fresh data for a view and reports whether it has any entries, so the tab can stay put when empty. */
 export const StudioViewSwitch = () => {
   const withQueryParams = useCarryParams(["f", "v", "return"]);
   const navigate = useNavigate();
-  const { data } = useFetchVersionHistoryList();
+  const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
 
@@ -26,9 +30,39 @@ export const StudioViewSwitch = () => {
     { label: "History", path: "/agent-history", isActive: isAgentHistory },
   ];
 
-  const openView = (path: string) => {
-    if (path === "/agent-history" && !data?.data?.length) {
-      toast.info("No change history present");
+  const hasEntries = async (path: string) => {
+    const versionId = searchParams.get("v") || "";
+    if (!versionId) return true;
+
+    if (path === "/agent-history") {
+      const response = await queryClient.fetchQuery({
+        queryKey: ["AGENT_HISTORY", versionId],
+        queryFn: () => getAgentsHistory(versionId),
+      });
+      return (response.data?.length ?? 0) > 0;
+    }
+
+    const runsVersionId = searchParams.get("rv") || versionId;
+    const response = await queryClient.fetchQuery({
+      queryKey: ["AGENT_JOB_EXECUTION", runsVersionId],
+      queryFn: () => getAgentsExecutionLogs(runsVersionId),
+    });
+    return (response.data?.length ?? 0) > 0;
+  };
+
+  const openView = async (path: string) => {
+    let entriesExist: boolean;
+    try {
+      entriesExist = await hasEntries(path);
+    } catch (error) {
+      toast.error(String(error));
+      return;
+    }
+
+    if (!entriesExist) {
+      toast.info(
+        path === "/agent-history" ? "No change history present" : "No runs for this version yet",
+      );
       return;
     }
     navigate(withQueryParams(path));

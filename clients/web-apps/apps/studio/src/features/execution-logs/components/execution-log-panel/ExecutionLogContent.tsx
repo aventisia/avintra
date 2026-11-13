@@ -1,6 +1,6 @@
-import { EmptyState } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
 
 import { useFetchExecutionLogsList } from "../../hooks/useFetchExecutionLogsList.hook";
@@ -46,13 +46,12 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
 
   if (isError && !groupedLogs.length) {
     return (
-      <EmptyState
-        className="absolute inset-0"
+      <RunLogEmptyState
         Icon={WarningIcon}
-        primaryMessage="Could not load executions"
-        secondaryMessage="Something went wrong while fetching the execution logs."
+        title="Could not load runs"
+        description="Something went wrong while fetching the execution logs."
         action={
-          <Button className="mt-4" size="sm" variant="outline" onClick={() => refetch()}>
+          <Button className="mt-3" size="sm" variant="outline" onClick={() => refetch()}>
             Retry
           </Button>
         }
@@ -62,11 +61,10 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
 
   if (!groupedLogs.length) {
     return (
-      <EmptyState
-        className="absolute inset-0"
+      <RunLogEmptyState
         Icon={ListDashesIcon}
-        primaryMessage="No executions found for this flow version"
-        secondaryMessage="Run this version to create its first execution log."
+        title="No runs for this version"
+        description="Run this version to create its first execution log."
       />
     );
   }
@@ -85,3 +83,20 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
     </div>
   );
 }
+
+interface RunLogEmptyStateProps {
+  Icon: Icon;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}
+
+/** Dashed placeholder box, matching the empty state in the agent details panel. */
+const RunLogEmptyState = ({ Icon, title, description, action }: RunLogEmptyStateProps) => (
+  <div className="mx-4 my-4 flex h-36 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong/50 px-4 text-center">
+    <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
+    <p className="text-body-sm font-medium text-ink-2">{title}</p>
+    <p className="text-hint text-muted-foreground">{description}</p>
+    {action}
+  </div>
+);

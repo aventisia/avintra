@@ -12,8 +12,8 @@ import { useFlowsVersionsStore } from "../stores/flow-versions-store";
 import { AgentNameField } from "./AgentNameField";
 import { SaveStatusIndicator } from "./SaveStatusIndicator";
 
-const PILL_CLASS = "flex min-w-0 max-w-80 items-center gap-1 rounded-md py-0.5 pl-0.5 pr-1";
-const NAME_CLASS = "text-[15px] font-semibold leading-6 tracking-[-0.01em] text-ink";
+const PILL_CLASS = "flex min-w-0 max-w-80 items-center gap-1 rounded-md pl-0.5 pr-1";
+const NAME_CLASS = "text-[17px] font-semibold leading-5 tracking-[-0.01em] text-ink";
 const TOGGLE_CLASS =
   "flex size-5 shrink-0 items-center justify-center rounded transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-focus/[0.28] disabled:cursor-wait";
 
@@ -40,7 +40,7 @@ export const AgentDetailsTrigger = () => {
 
   const versionChip =
     versionNumber != null ? (
-      <span className="shrink-0 font-mono text-[11px] leading-4 text-muted-foreground">
+      <span className="shrink-0 font-mono text-[11px] leading-5 text-muted-foreground">
         v{versionNumber}
       </span>
     ) : null;

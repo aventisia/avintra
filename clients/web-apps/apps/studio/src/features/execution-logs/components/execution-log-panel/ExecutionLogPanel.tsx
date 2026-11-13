@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Panel, PanelContent, PanelHeader, PanelTitle } from "@/components/panel/components/Panel";
 
 import { PANEL_ID } from "../../constants";
-import { ExecutionLogCloseButton } from "./ExecutionLogCloseButton";
 import ExecutionLogContent from "./ExecutionLogContent";
 import { ExecutionLogFilter } from "./ExecutionLogFilter";
 
@@ -19,19 +18,14 @@ export const ExecutionLogPanel = ({ isSubFlowView = false }: Props) => {
   return (
     <Panel
       id={PANEL_ID}
-      width="w-[21rem]"
-      className="rounded-lg border-line bg-surface shadow-pop"
-      closeOnEscape={false}
       side="left"
+      width="w-[21rem]"
+      className="left-0 top-[var(--header-height)] h-[calc(100vh-var(--header-height))] rounded-none duration-200 animate-in fade-in-0 slide-in-from-top-1 motion-reduce:animate-none"
+      closeOnEscape={false}
     >
-      <PanelHeader className="h-10 gap-3 border-line pl-4 pr-2 tracking-normal">
-        <PanelTitle className="text-body-sm font-semibold text-ink">Run log</PanelTitle>
-        <div className="ml-auto flex items-center gap-1">
-          {!isSubFlowView && (
-            <ExecutionLogFilter errorsOnly={errorsOnly} onChange={setErrorsOnly} />
-          )}
-          <ExecutionLogCloseButton />
-        </div>
+      <PanelHeader>
+        <PanelTitle>Run log</PanelTitle>
+        {!isSubFlowView && <ExecutionLogFilter errorsOnly={errorsOnly} onChange={setErrorsOnly} />}
       </PanelHeader>
       <PanelContent>
         <ScrollArea className="h-[calc(100vh-7.5rem)]">
