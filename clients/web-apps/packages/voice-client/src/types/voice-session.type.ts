@@ -39,6 +39,7 @@ export type VoiceCaptionTurn = {
   text: string;
   isInterim?: boolean;
   toolCalls?: VoiceToolCall[];
+  skillCalls?: string[];
   latency?: VoiceTurnLatency;
 };
 
@@ -92,6 +93,12 @@ export type VoiceServerEvent =
       type: "tool.call";
       conversationId: string;
       tool: unknown;
+      turnId?: number;
+    }
+  | {
+      type: "skill.call";
+      conversationId: string;
+      skill: string;
       turnId?: number;
     }
   | {

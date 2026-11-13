@@ -312,6 +312,85 @@ def _build_custom_skill_config(skill: Skill) -> SkillConfig | None:
     )
 
 
+def resolve_skill_configs(
+    registry: SkillRegistry,
+    skill_names: list[str],
+    tenant_id: str | None = None,
+) -> list[SkillConfig]:
+    """Resolve a list of skill names to their registered configs."""
+
+    configs: list[SkillConfig] = []
+
+    for name in skill_names:
+        skill = registry.get_for_tenant(name, tenant_id)
+        if skill is not None and skill.is_active:
+            configs.append(skill)
+        else:
+            logger.warning(
+                "Selected skill %s is not available in the registry.",
+                name,
+            )
+
+    return configs
+
+
+def build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
+    """Build a system prompt fragment describing selected skills.
+
+    Skills are stored in graph state and survive checkpoint round-trips as
+    plain dicts, so each entry is normalized back to ``SkillConfig`` before
+    use (approval resumes re-enter the model node without the selector node).
+    """
+
+    if not skills:
+        return None
+
+    normalized: list[SkillConfig] = []
+    for raw in skills:
+        if isinstance(raw, SkillConfig):
+            normalized.append(raw)
+            continue
+        if isinstance(raw, dict):
+            try:
+                normalized.append(SkillConfig(**raw))
+            except Exception:
+                logger.warning(
+                    "Skipping unreadable skill from graph state: %s",
+                    raw.get("name"),
+                )
+    if not normalized:
+        return None
+
+    lines = [
+        "You have access to the following skills for this request:",
+        "",
+    ]
+
+    for skill in normalized:
+        lines.append(f"- {skill.name}: {skill.description}")
+
+        # If the skill was loaded from the DB, inject the full file contents
+        # (SKILL.md instructions + supporting scripts) into the prompt.
+        skill_files = skill.metadata.get("files")
+        if skill_files:
+            lines.append("")
+            lines.append(f"  Files for {skill.name}:")
+            for file_info in skill_files:
+                content = file_info.get("content")
+                if content:
+                    lines.append("")
+                    lines.append(f"  --- {file_info.get('file_name')} ---")
+                    lines.append(content)
+
+    lines.append("")
+    lines.append(
+        "Use these skills when they are relevant to the user's request. "
+        "Only reference skills from the list above."
+    )
+
+    return "\n".join(lines)
+
+
 async def load_custom_skills(
     registry: SkillRegistry,
     db_session,

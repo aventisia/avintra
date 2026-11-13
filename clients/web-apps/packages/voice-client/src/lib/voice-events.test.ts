@@ -82,6 +82,13 @@ describe("parseVoiceEvent", () => {
       turnId: 2,
     });
 
+    expect(parse({ ...basePayload, type: "skill.call", skill: "demo-skill", turnId: 2 })).toEqual({
+      type: "skill.call",
+      conversationId: CONVERSATION_ID,
+      skill: "demo-skill",
+      turnId: 2,
+    });
+
     expect(
       parse({
         ...basePayload,
@@ -302,6 +309,28 @@ describe("applyVoiceEvent", () => {
     expect(second.turns).toEqual([{ id: "turn-3", speaker: "agent", text: "second" }]);
   });
 
+  it("keeps the spoken introduction and the first reply as separate turns", () => {
+    const withIntro = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Hi Alice from Acme.",
+      turnId: 0,
+    });
+    const withReply = applyVoiceEvent(withIntro, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "How can I help?",
+      turnId: 1,
+    });
+
+    expect(withReply.turns).toEqual([
+      { id: "turn-0", speaker: "agent", text: "Hi Alice from Acme." },
+      { id: "turn-1", speaker: "agent", text: "How can I help?" },
+    ]);
+  });
+
   it("creates a running tool placeholder when the tool arrives before the text", () => {
     const withTool = applyVoiceEvent(activeSnapshot(), {
       type: "tool.call",
@@ -332,6 +361,163 @@ describe("applyVoiceEvent", () => {
       speaker: "agent",
       text: "Ticket created.",
       toolCalls: [{ name: "create_ticket", isRunning: false }],
+    });
+  });
+
+  it("fills the realtime tool placeholder with the reply that follows", () => {
+    const withTool = applyVoiceEvent(activeSnapshot(), {
+      type: "tool.call",
+      conversationId: CONVERSATION_ID,
+      tool: { name: "create_ticket" },
+    });
+    const withText = applyVoiceEvent(withTool, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Ticket created.",
+    });
+
+    expect(withText.turns).toEqual([
+      {
+        id: "turn-1",
+        speaker: "agent",
+        text: "Ticket created.",
+        toolCalls: [{ name: "create_ticket", isRunning: false }],
+      },
+    ]);
+  });
+
+  it("starts a new placeholder when a realtime tool call follows a spoken reply", () => {
+    const withReply = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "First answer.",
+      turnId: 1,
+    });
+    const withTool = applyVoiceEvent(withReply, {
+      type: "tool.call",
+      conversationId: CONVERSATION_ID,
+      tool: { name: "create_ticket" },
+    });
+    const withNext = applyVoiceEvent(withTool, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Ticket created.",
+    });
+
+    expect(withNext.turns).toEqual([
+      { id: "turn-1", speaker: "agent", text: "First answer." },
+      {
+        id: "turn-2",
+        speaker: "agent",
+        text: "Ticket created.",
+        toolCalls: [{ name: "create_ticket", isRunning: false }],
+      },
+    ]);
+  });
+
+  it("shows configured skills on the first reply turn", () => {
+    const withSkill = applyVoiceEvent(activeSnapshot(), {
+      type: "skill.call",
+      conversationId: CONVERSATION_ID,
+      skill: "demo-skill",
+    });
+    const withText = applyVoiceEvent(withSkill, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Hello.",
+    });
+
+    expect(withText.turns).toEqual([
+      {
+        id: "turn-1",
+        speaker: "agent",
+        text: "Hello.",
+        skillCalls: ["demo-skill"],
+      },
+    ]);
+  });
+
+  it("keeps the skill chip with the reply when the caller speaks first", () => {
+    const withSkill = applyVoiceEvent(activeSnapshot(), {
+      type: "skill.call",
+      conversationId: CONVERSATION_ID,
+      skill: "demo-skill",
+    });
+    const withCaller = applyVoiceEvent(withSkill, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "Hi.",
+    });
+    const withReply = applyVoiceEvent(withCaller, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Hello.",
+    });
+
+    expect(withReply.turns).toEqual([
+      { id: "caller-2", speaker: "caller", text: "Hi." },
+      { id: "turn-1", speaker: "agent", text: "Hello.", skillCalls: ["demo-skill"] },
+    ]);
+  });
+
+  it("moves a skill placeholder onto the first reply after an introduction", () => {
+    const withIntro = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Hi Alice from Acme.",
+      turnId: 0,
+    });
+    const withSkill = applyVoiceEvent(withIntro, {
+      type: "skill.call",
+      conversationId: CONVERSATION_ID,
+      skill: "demo-skill",
+    });
+    const withReply = applyVoiceEvent(withSkill, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "How can I help?",
+      turnId: 1,
+    });
+
+    expect(withReply.turns).toEqual([
+      { id: "turn-0", speaker: "agent", text: "Hi Alice from Acme." },
+      {
+        id: "turn-1",
+        speaker: "agent",
+        text: "How can I help?",
+        skillCalls: ["demo-skill"],
+      },
+    ]);
+  });
+
+  it("keeps a skill call keyed by turnId when the worker sends one", () => {
+    const withTurn = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "Done.",
+      turnId: 7,
+    });
+    const withSkill = applyVoiceEvent(withTurn, {
+      type: "skill.call",
+      conversationId: CONVERSATION_ID,
+      skill: "demo-skill",
+      turnId: 7,
+    });
+
+    expect(withSkill.turns[0]).toEqual({
+      id: "turn-7",
+      speaker: "agent",
+      text: "Done.",
+      skillCalls: ["demo-skill"],
     });
   });
 
