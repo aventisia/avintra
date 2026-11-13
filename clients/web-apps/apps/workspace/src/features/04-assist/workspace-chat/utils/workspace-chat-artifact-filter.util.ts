@@ -6,6 +6,7 @@ export const ARTIFACT_KIND_LABELS = {
   image: "Images",
   table: "Tables",
   document: "Documents",
+  presentation: "Presentations",
 } as const;
 export type ArtifactKind = keyof typeof ARTIFACT_KIND_LABELS;
 
@@ -22,6 +23,7 @@ const KIND_EXTENSIONS: Record<Exclude<ArtifactKind, "all">, string[]> = {
   image: ["svg", "png", "jpg", "jpeg", "gif", "webp"],
   table: ["csv", "tsv", "xlsx", "xls"],
   document: ["md", "txt", "pdf", "doc", "docx"],
+  presentation: ["ppt", "pptx"],
 };
 
 const COMPARERS: Record<ArtifactSort, (a: ChatArtifactDto, b: ChatArtifactDto) => number> = {

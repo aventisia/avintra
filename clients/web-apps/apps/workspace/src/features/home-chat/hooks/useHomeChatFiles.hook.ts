@@ -1,4 +1,9 @@
-import { type ChatFileHandlers, chatFileSize, findChatFile } from "@avplatform/chat";
+import {
+  type ChatFileHandlers,
+  SYNTHESIZED_FILE_TYPES,
+  chatFileSize,
+  findChatFile,
+} from "@avplatform/chat";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getChatArtifacts } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
@@ -25,6 +30,12 @@ export const useHomeChatFiles = (
     const candidates = stored.filter(
       (item) => item.name === file.name && item.contentType === file.contentType,
     );
+    // The server builds binaries from specs, so their stored size never matches the spec text.
+    if (SYNTHESIZED_FILE_TYPES.includes(file.contentType)) {
+      const match = candidates.sort((a, b) => b.versionNumber - a.versionNumber)[0];
+      if (match) return { id: match.id, sizeBytes: match.sizeBytes };
+      return isFetching ? "saving" : null;
+    }
     const match =
       candidates.find((item) => item.sizeBytes === sizeBytes) ??
       stored.find((item) => item.contentType === file.contentType && item.sizeBytes === sizeBytes);

@@ -36,8 +36,45 @@ describe("findChatFile", () => {
     expect(textAfterChatFile(text)).toBe("");
   });
 
-  it("leaves code and chart fences inline", () => {
-    const text = "```python\nprint(1)\n```\n```chart\n{}\n```";
+  it("names spec files after the document heading or JSON title, else by type", () => {
+    const doc = "```doc-spec\n# Q3 review\n\nBody\n```";
+    const sheet = '```sheet-spec\n{"title": "Spend: Q3", "columns": ["A"], "rows": [["x"]]}\n```';
+    const slides =
+      '```slide-spec\n{"title": "Launch", "slides": [{"title": "Goal", "bullets": ["Ship"]}]}\n```';
+    expect(findChatFile(doc)).toMatchObject({
+      name: "Q3 review.docx",
+      contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      isComplete: true,
+    });
+    expect(findChatFile(sheet)?.name).toBe("Spend Q3.xlsx");
+    expect(findChatFile(slides)?.name).toBe("Launch.pptx");
+    expect(findChatFile('```sheet-spec\n{"columns": ["A"], "rows": []}\n```')?.name).toBe(
+      "Data.xlsx",
+    );
+    expect(findChatFile("```doc-spec\nBody without heading\n```")?.name).toBe("Document.docx");
+  });
+
+  it("marks a spec fence that is still streaming as incomplete and hides it", () => {
+    // Truncated JSON has no readable title yet, so the card shows the fallback name.
+    const text = 'Building it\n```sheet-spec\n{"title": "Spend", "colu';
+    expect(findChatFile(text)).toMatchObject({ name: "Data.xlsx", isComplete: false });
+    expect(textBeforeChatFile(text)).toBe("Building it");
+    expect(textAfterChatFile(text)).toBe("");
+  });
+
+  it("keeps a doc-spec body with nested code fences whole", () => {
+    const text = "Memo\n```doc-spec\n# Plan\n\n```\nreconcile(total)\n```\nDone\n```";
+    expect(findChatFile(text)).toMatchObject({
+      name: "Plan.docx",
+      contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      body: "# Plan\n\n```\nreconcile(total)\n```\nDone",
+      isComplete: true,
+    });
+    expect(textAfterChatFile(text)).toBe("");
+  });
+
+  it("leaves code, chart and blueprint fences inline", () => {
+    const text = "```python\nprint(1)\n```\n```chart\n{}\n```\n```blueprint\n{}\n```";
     expect(findChatFile(text)).toBeNull();
     expect(textBeforeChatFile(text)).toBe(text.trim());
   });

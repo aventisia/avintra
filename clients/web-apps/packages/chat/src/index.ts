@@ -13,7 +13,7 @@ export type { ChatHistoryItem } from "./utils/history-groups.util";
 export { NAVIGATE_TOOL_NAME, pickReachablePrompts } from "./utils/chat-intent.util";
 export type { ChatBlueprint, ChatDestinationOption } from "./utils/chat-intent.util";
 export { withAttachmentText } from "./utils/attachment-text.util";
-export { printChat } from "./utils/print-chat.util";
+export { printArtifact, printChat } from "./utils/print-chat.util";
 export { createChatAttachmentAdapter } from "./utils/chat-attachment-adapter.util";
 export {
   createConversationHistoryAdapter,
@@ -28,6 +28,11 @@ export { ChatFilePreview } from "./components/ChatFilePreview";
 export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
-export { chatFileSize, findChatFile, toDataUrl } from "./utils/chat-file.util";
+export {
+  SYNTHESIZED_FILE_TYPES,
+  chatFileSize,
+  findChatFile,
+  toDataUrl,
+} from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
 export { modelDisplayName } from "./utils/model-name.util";

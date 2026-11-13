@@ -37,7 +37,6 @@ import { formatMessageTime } from "../utils/message-time.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
-import { ChatBlueprint } from "./ChatBlueprint";
 import { ChatDestination } from "./ChatDestination";
 import { ChatFileCard } from "./ChatFileCard";
 import { ChatIconButton } from "./ChatIconButton";
@@ -169,7 +168,7 @@ const AssistantText = ({ text }: { text: string }) => {
       <ChatFileCard
         name={file.name}
         contentType={file.contentType}
-        sizeBytes={chatFileSize(file.body)}
+        sizeBytes={state.sizeBytes ?? chatFileSize(file.body)}
         onOpen={() => files.onOpenFile(state.id)}
       />
     ) : (
@@ -289,7 +288,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
                 return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
               case "data":
                 if (part.name === "skill") return <ChatSkillStep name={skillName(part.data)} />;
-                return part.name === "blueprint" ? <ChatBlueprint data={part.data} /> : null;
+                return null;
               case "tool-call":
                 if (part.toolName === NAVIGATE_TOOL_NAME)
                   return <ChatDestination args={part.args} />;

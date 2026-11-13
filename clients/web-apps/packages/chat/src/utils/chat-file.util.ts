@@ -7,6 +7,13 @@ export type ChatFile = {
   isComplete: boolean;
 };
 
+const DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const PPTX_TYPE = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
+/** File types the server builds from a spec block, matched back by name and type. */
+export const SYNTHESIZED_FILE_TYPES = [DOCX_TYPE, XLSX_TYPE, PPTX_TYPE];
+
 const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
   html: { name: "Generated UI.html", contentType: "text/html" },
   svg: { name: "Image.svg", contentType: "image/svg+xml" },
@@ -14,11 +21,20 @@ const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
   tsv: { name: "Data.tsv", contentType: "text/tab-separated-values" },
   markdown: { name: "Document.md", contentType: "text/markdown" },
   md: { name: "Document.md", contentType: "text/markdown" },
+  "doc-spec": { name: "Document.docx", contentType: DOCX_TYPE },
+  "sheet-spec": { name: "Data.xlsx", contentType: XLSX_TYPE },
+  "slide-spec": { name: "Slides.pptx", contentType: PPTX_TYPE },
 };
 
-// Code and ```chart fences stay inline; only these languages are stored as files.
+// Code, ```chart and ```blueprint fences stay inline; only these languages are stored as files.
 const FILE_FENCE_PATTERN =
   /^```(html|svg|csv|tsv|markdown|md)[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/im;
+// IMPORTANT NOTE: mirrors the backend spec match; doc-spec bodies hold markdown that can
+// itself contain fenced code blocks, so the reply's last fence closes a doc-spec.
+const SPEC_FENCE_PATTERN =
+  /^```(sheet-spec|slide-spec)[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/im;
+const DOC_SPEC_FENCE_PATTERN = /^```(doc-spec)[ \t]*\n([\s\S]*)(^```[ \t]*$)/im;
+const DOC_SPEC_STREAMING_PATTERN = /^```(doc-spec)[ \t]*\n([\s\S]*)$/im;
 const BARE_HTML_PATTERN = /^(<!doctype html|<html[\s>])[\s\S]*<\/html>$/i;
 const TITLE_PATTERNS: Record<string, RegExp> = {
   "text/html": /<title[^>]*>([^<]*)<\/title>/i,
@@ -26,13 +42,56 @@ const TITLE_PATTERNS: Record<string, RegExp> = {
   "text/markdown": /^#[ \t]+(.+)$/m,
 };
 
+/** Reads the title a spec block carries: the first Markdown heading, or the JSON title. */
+const specTitle = (body: string, contentType: string) => {
+  if (contentType === DOCX_TYPE) return /^#[ \t]+(.+)$/m.exec(body)?.[1] ?? "";
+  try {
+    const title = (JSON.parse(body) as { title?: unknown }).title;
+    return typeof title === "string" ? title : "";
+  } catch {
+    return "";
+  }
+};
+
 const nameFromContent = (body: string, fallback: { name: string; contentType: string }) => {
-  const title = TITLE_PATTERNS[fallback.contentType]
-    ?.exec(body)?.[1]
-    ?.replace(/[\\/:*?"<>|#]/g, "")
+  const rawTitle = SYNTHESIZED_FILE_TYPES.includes(fallback.contentType)
+    ? specTitle(body, fallback.contentType)
+    : (TITLE_PATTERNS[fallback.contentType]?.exec(body)?.[1] ?? "");
+  const title = rawTitle
+    .replace(/[\\/:*?"<>|#]/g, "")
     .trim()
     .slice(0, 60);
   return title ? title + fallback.name.slice(fallback.name.lastIndexOf(".")) : fallback.name;
+};
+
+/** The leftmost complete file fence, or the leftmost still-streaming one when nothing closed. */
+const findFileMatch = (text: string) => {
+  const complete = [FILE_FENCE_PATTERN, SPEC_FENCE_PATTERN, DOC_SPEC_FENCE_PATTERN]
+    .map((pattern) => ({ pattern, match: pattern.exec(text) }))
+    .filter((entry) => entry.match !== null)
+    .sort((a, b) => a.match!.index - b.match!.index)[0];
+  if (complete)
+    return {
+      kind: complete.match![1]!,
+      body: complete.match![2]!.trim(),
+      isComplete: Boolean(complete.match![3]),
+      index: complete.match!.index,
+      length: complete.match![0].length,
+    };
+
+  const streaming = [FILE_FENCE_PATTERN, SPEC_FENCE_PATTERN, DOC_SPEC_STREAMING_PATTERN]
+    .map((pattern) => pattern.exec(text))
+    .filter((match) => match !== null)
+    .sort((a, b) => a.index - b.index)[0];
+  return streaming
+    ? {
+        kind: streaming[1]!,
+        body: streaming[2]!.trim(),
+        isComplete: false,
+        index: streaming.index,
+        length: streaming[0].length,
+      }
+    : null;
 };
 
 /** Finds the first file in a reply, complete or still streaming; null when there is none. */
@@ -46,23 +105,22 @@ export const findChatFile = (text: string): ChatFile | null => {
       isComplete: true,
     };
 
-  const match = FILE_FENCE_PATTERN.exec(text);
-  const fence = match && FILE_FENCES[match[1]!.toLowerCase()];
+  const match = findFileMatch(text);
+  const fence = match && FILE_FENCES[match.kind.toLowerCase()];
   if (!match || !fence) return null;
-  const body = match[2]!.trim();
   return {
-    name: nameFromContent(body, fence),
+    name: nameFromContent(match.body, fence),
     contentType: fence.contentType,
-    body,
-    isComplete: Boolean(match[3]),
+    body: match.body,
+    isComplete: match.isComplete,
   };
 };
 
 const splitAroundChatFile = (text: string): [before: string, after: string] => {
   if (BARE_HTML_PATTERN.test(text.trim())) return ["", ""];
-  const match = FILE_FENCE_PATTERN.exec(text);
+  const match = findFileMatch(text);
   if (!match) return [text.trim(), ""];
-  return [text.slice(0, match.index).trim(), text.slice(match.index + match[0].length).trim()];
+  return [text.slice(0, match.index).trim(), text.slice(match.index + match.length).trim()];
 };
 
 /** The reply text before its file, so the file card takes the file's place. */

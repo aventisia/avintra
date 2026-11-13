@@ -49,6 +49,15 @@ public class ChatArtifactsController : BaseApiController
     }
 
     /// <summary>
+    /// Builds a binary office file from a spec block and stores it as a generated artifact.
+    /// </summary>
+    [HttpPost("generate-from-spec")]
+    public async Task<ActionResult<ServiceResponse<ChatArtifactDto>>> GenerateFromSpec([FromBody] GenerateFromSpecDto generateFromSpecDto)
+    {
+        return ResultHelper(await _chatArtifactsService.GenerateFromSpecAsync(generateFromSpecDto));
+    }
+
+    /// <summary>
     /// Deletes an existing chat artifact.
     /// </summary>
     [HttpDelete("{chatArtifactId}")]

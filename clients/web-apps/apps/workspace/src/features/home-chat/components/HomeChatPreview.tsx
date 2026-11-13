@@ -1,6 +1,14 @@
 import { ChatFilePreview, type ChatPreviewFile, type ChatPreviewVersion } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
-import { useContext, useEffect } from "react";
+import { cn } from "@avplatform/ui/lib";
+import {
+  type KeyboardEvent,
+  type PointerEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
 import { useMediaQuery } from "../hooks/useMediaQuery.hook";
@@ -15,6 +23,10 @@ type HomeChatPreviewProps = {
   isLoading: boolean;
   onClose: () => void;
 };
+
+const MIN_PANEL_WIDTH = 320;
+const MIN_THREAD_WIDTH = 360;
+const KEY_STEP = 24;
 
 const useReturnFocusOnClose = () =>
   useEffect(() => {
@@ -43,6 +55,35 @@ export const HomeChatPreview = ({
     yieldRail(true);
     return () => yieldRail(false);
   }, [isWide, yieldRail]);
+  const asideRef = useRef<HTMLElement>(null);
+  const [panelWidth, setPanelWidth] = useState<number | null>(null);
+  const dragStart = useRef<{ x: number; width: number } | null>(null);
+  const clampWidth = (width: number) => {
+    const row = asideRef.current?.parentElement?.clientWidth ?? Infinity;
+    return Math.round(Math.min(Math.max(width, MIN_PANEL_WIDTH), row - MIN_THREAD_WIDTH));
+  };
+  const currentWidth = () => asideRef.current?.getBoundingClientRect().width ?? 0;
+  const resetWidth = () => setPanelWidth(null);
+
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragStart.current = { x: event.clientX, width: currentWidth() };
+  };
+  const drag = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragStart.current) return;
+    const { x, width } = dragStart.current;
+    setPanelWidth(clampWidth(width + (x - event.clientX)));
+  };
+  const endDrag = () => {
+    dragStart.current = null;
+  };
+  const nudge = (event: KeyboardEvent<HTMLDivElement>) => {
+    const step = event.key === "ArrowLeft" ? KEY_STEP : event.key === "ArrowRight" ? -KEY_STEP : 0;
+    if (!step) return;
+    event.preventDefault();
+    setPanelWidth(clampWidth(currentWidth() + step));
+  };
+
   const preview = (
     <ChatFilePreview
       file={file}
@@ -58,9 +99,34 @@ export const HomeChatPreview = ({
 
   if (isWide)
     return (
-      <aside className="w-[min(50%,44rem)] shrink-0 border-l border-line duration-200 animate-in fade-in-0 slide-in-from-right-4 motion-reduce:animate-none">
-        {preview}
-      </aside>
+      <>
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize file preview"
+          aria-valuenow={panelWidth ?? undefined}
+          aria-valuemin={MIN_PANEL_WIDTH}
+          tabIndex={0}
+          title="Drag to resize. Double-click to reset."
+          onPointerDown={startDrag}
+          onPointerMove={drag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onDoubleClick={resetWidth}
+          onKeyDown={nudge}
+          className="group relative w-px shrink-0 cursor-col-resize touch-none bg-line outline-none before:absolute before:inset-y-0 before:-left-1.5 before:-right-1.5 before:content-[''] focus-visible:bg-primary hover:bg-primary/60"
+        />
+        <aside
+          ref={asideRef}
+          style={panelWidth ? { width: panelWidth } : undefined}
+          className={cn(
+            "shrink-0 duration-200 animate-in fade-in-0 slide-in-from-right-4 motion-reduce:animate-none",
+            !panelWidth && "w-[min(50%,44rem)]",
+          )}
+        >
+          {preview}
+        </aside>
+      </>
     );
 
   return (

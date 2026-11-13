@@ -12,6 +12,8 @@ import remarkGfm from "remark-gfm";
 
 import { chatProseComponents } from "../constants/chat-prose.constant";
 import { parseChartSpec } from "../utils/chart-spec.util";
+import { parseBlueprintFence } from "../utils/chat-intent.util";
+import { ChatBlueprint } from "./ChatBlueprint";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 
@@ -30,8 +32,17 @@ const ChartFallback = () => (
   <div className="mt-5 h-72 animate-pulse rounded-xl border border-line bg-sunken" />
 );
 
-// A chart fence draws once its JSON parses; until then, or if it never does, it shows as code.
+// A chart or blueprint fence draws once its JSON parses; until then, or if it never does, it shows as code.
 const componentsByLanguage: MarkdownTextPrimitiveProps["componentsByLanguage"] = {
+  blueprint: {
+    CodeHeader: (props: CodeHeaderProps) =>
+      parseBlueprintFence(props.code) ? null : <CodeHeader {...props} />,
+    SyntaxHighlighter: (props: Omit<SyntaxHighlighterProps, "node">) => {
+      const blueprint = parseBlueprintFence(props.code);
+      if (!blueprint) return <ChatCodeBlock {...props} />;
+      return <ChatBlueprint data={blueprint} />;
+    },
+  },
   chart: {
     CodeHeader: (props: CodeHeaderProps) =>
       parseChartSpec(props.code) ? null : <CodeHeader {...props} />,

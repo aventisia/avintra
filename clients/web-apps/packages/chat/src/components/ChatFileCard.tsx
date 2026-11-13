@@ -18,7 +18,10 @@ const describeType = (contentType: string) =>
     "image/svg+xml": "Image",
     "text/csv": "Spreadsheet",
     "text/tab-separated-values": "Spreadsheet",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Spreadsheet",
     "text/markdown": "Document",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "Document",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": "Slides",
   })[contentType] ?? "File";
 
 type ChatFileCardProps = {

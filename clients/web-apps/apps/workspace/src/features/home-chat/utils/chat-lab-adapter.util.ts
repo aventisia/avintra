@@ -146,15 +146,18 @@ const NAVIGATE_FRAMES: NormalizedChatFrame[] = [
   ),
 ];
 
-const BLUEPRINT: ChatBlueprint = {
-  title: "Invoice intake agent",
-  summary: "Reads vendor invoices from a shared mailbox and files them for approval.",
-  steps: [
-    { title: "Watch the invoices mailbox", detail: "Email trigger on ap@yourcompany.com" },
-    { title: "Extract vendor, amount and due date", detail: "Document extraction on each PDF" },
-    { title: "Check against open purchase orders" },
-    { title: "Queue for approval", detail: "Over $10,000 goes to the finance lead" },
-  ],
+const BLUEPRINT_REPLY = (intent: string) => {
+  const blueprint: ChatBlueprint = {
+    title: `Build: ${intent.trim() || "your workflow"}`,
+    summary: "Here's what I'd build. Tell me what to change before I start.",
+    steps: [
+      { title: "Confirm the trigger and the systems involved" },
+      { title: "Pull the records it needs", detail: "Read-only until you approve" },
+      { title: "Run the steps in order", detail: "Ask before anything leaves the workspace" },
+      { title: "Report what changed", detail: "A summary in this chat" },
+    ],
+  };
+  return `Here's the plan I'd follow.\n\n\`\`\`blueprint\n${JSON.stringify(blueprint, null, 2)}\n\`\`\`\n\nSay what to change and I'll update it.`;
 };
 
 const FILE_REPLY = `Here's a one-page status board you can drop into a portal:
@@ -223,7 +226,7 @@ const summarizeDecisions = (content: ThreadMessage["content"]) => {
 
 /**
  * Dev-only model adapter that streams canned replies. "find" offers a page,
- * "blueprint" proposes a plan, "agent" streams reasoning and tool steps,
+ * "blueprint" streams a plan as a ```blueprint fence, "agent" streams reasoning and tool steps,
  * "approve" pauses on two approvals, and "error" fails.
  */
 export const chatLabAdapter: ChatModelAdapter = {
@@ -253,15 +256,11 @@ export const chatLabAdapter: ChatModelAdapter = {
     }
 
     if (/blueprint|build|automat/i.test(prompt)) {
-      const intro = "Here's what I'd build. Tell me what to change before I start.";
-      for await (const content of playFrames(toDeltas("delta", intro), abortSignal))
+      for await (const content of playFrames(
+        toDeltas("delta", BLUEPRINT_REPLY(prompt)),
+        abortSignal,
+      ))
         yield { content };
-      yield {
-        content: [
-          { type: "text", text: intro },
-          { type: "data", name: "blueprint", data: BLUEPRINT },
-        ],
-      };
       return;
     }
 

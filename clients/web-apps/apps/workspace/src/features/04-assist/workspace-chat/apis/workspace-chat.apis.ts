@@ -5,6 +5,7 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { ChatArtifactDto } from "../dtos/chat-artifact.dto";
 import { ConversationDto } from "../dtos/conversation.dto";
+import { GenerateFromSpecDto } from "../dtos/generate-from-spec.dto";
 import { InsertChatArtifactDto } from "../dtos/insert-chat-artifact.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
@@ -73,6 +74,21 @@ export const createChatArtifact = (insertChatArtifactDto: InsertChatArtifactDto)
     .post<IHttpResponse<ChatArtifactDto>>(artifactAPIURL, insertChatArtifactDto, {
       headers: getSpaceHeaders(),
     })
+    .then((res) => res.data);
+};
+
+/**
+ * Builds a binary office file from a spec block and stores it as a generated artifact.
+ */
+export const generateFromSpec = (generateFromSpecDto: GenerateFromSpecDto) => {
+  return axiosInstance
+    .post<IHttpResponse<ChatArtifactDto>>(
+      `${artifactAPIURL}/generate-from-spec`,
+      generateFromSpecDto,
+      {
+        headers: getSpaceHeaders(),
+      },
+    )
     .then((res) => res.data);
 };
 

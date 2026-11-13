@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { findDestination, parseBlueprint, pickReachablePrompts } from "../chat-intent.util";
+import {
+  findDestination,
+  parseBlueprint,
+  parseBlueprintFence,
+  pickReachablePrompts,
+} from "../chat-intent.util";
 
 const destinations = [
   { route: "/configure/queues", label: "Queues", section: "Configure" },
@@ -39,6 +44,19 @@ describe("parseBlueprint", () => {
     expect(parseBlueprint({ title: "Empty", steps: [] })).toBeNull();
     expect(parseBlueprint({ steps: [{ title: "Step" }] })).toBeNull();
     expect(parseBlueprint(null)).toBeNull();
+  });
+});
+
+describe("parseBlueprintFence", () => {
+  it("reads a blueprint fence's JSON", () => {
+    expect(
+      parseBlueprintFence('{"title":"Invoices","steps":[{"title":"Watch inbox"}]}')?.title,
+    ).toBe("Invoices");
+  });
+
+  it("returns null while the JSON is incomplete or not a plan", () => {
+    expect(parseBlueprintFence('{"title":"Invoi')).toBeNull();
+    expect(parseBlueprintFence('{"title":"No steps"}')).toBeNull();
   });
 });
 

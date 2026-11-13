@@ -33,6 +33,13 @@ public interface IChatArtifactsService
     Task<ServiceResponse<ChatArtifactDto>> InsertChatArtifactAsync(InsertChatArtifactDto insertChatArtifactDto);
 
     /// <summary>
+    /// Builds a binary office file from a spec block and stores it as a generated artifact.
+    /// </summary>
+    /// <param name="generateFromSpecDto">The conversation and spec block to synthesize.</param>
+    /// <returns>A service response containing the stored artifact.</returns>
+    Task<ServiceResponse<ChatArtifactDto>> GenerateFromSpecAsync(GenerateFromSpecDto generateFromSpecDto);
+
+    /// <summary>
     /// Deletes an existing chat artifact.
     /// </summary>
     /// <param name="chatArtifactId">The unique identifier of the artifact to delete.</param>

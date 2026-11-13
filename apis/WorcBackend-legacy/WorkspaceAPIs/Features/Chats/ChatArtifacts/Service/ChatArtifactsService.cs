@@ -177,6 +177,37 @@ public class ChatArtifactsService : IChatArtifactsService
         }
     }
 
+    public async Task<ServiceResponse<ChatArtifactDto>> GenerateFromSpecAsync(GenerateFromSpecDto generateFromSpecDto)
+    {
+        var serviceResponse = ServiceResponse<ChatArtifactDto>.Create("Failed to generate file from spec", 500);
+
+        try
+        {
+            generateFromSpecDto = TrimDtoStringPropsUtil.TrimDtoStringProps(generateFromSpecDto);
+
+            var synthesized = ChatArtifactsHelpers.TrySynthesizeSpecFile(generateFromSpecDto.Spec);
+            if (synthesized is null)
+                return serviceResponse.Update("Spec is not a valid doc-spec, sheet-spec or slide-spec block.", 400);
+
+            var ownsConversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == generateFromSpecDto.ConversationId && w.UserId == _userId)
+                .AnyAsync();
+            if (!ownsConversation)
+                return serviceResponse.Update("Conversation not found", 404);
+
+            var artifact = await StoreSynthesizedFileAsync(generateFromSpecDto.ConversationId, synthesized);
+            if (artifact is null)
+                return serviceResponse.Update("An error occurred while saving changes.", 500);
+
+            return serviceResponse.Update("File generated", 201, artifact.Adapt<ChatArtifactDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while generating file from spec for Conversation ID {conversationId}", generateFromSpecDto?.ConversationId);
+            return serviceResponse;
+        }
+    }
+
     public async Task<ServiceResponse<bool>> DeleteChatArtifactAsync(Guid chatArtifactId)
     {
         var serviceResponse = ServiceResponse<bool>.Create("Failed to delete chat artifact", 500);
@@ -364,6 +395,13 @@ public class ChatArtifactsService : IChatArtifactsService
 
     public async Task SaveGeneratedFileAsync(Guid conversationId, string replyText, CancellationToken cancellationToken)
     {
+        var synthesized = ChatArtifactsHelpers.TrySynthesizeSpecFile(replyText);
+        if (synthesized is not null)
+        {
+            await StoreSynthesizedFileAsync(conversationId, synthesized, cancellationToken);
+            return;
+        }
+
         var file = ChatArtifactsHelpers.FindGeneratedFile(replyText);
         if (file is null)
             return;
@@ -415,6 +453,60 @@ public class ChatArtifactsService : IChatArtifactsService
         }
     }
 
+    private async Task<ChatArtifact?> StoreSynthesizedFileAsync(Guid conversationId, SynthesizedChatFile file, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (file.Bytes.Length == 0 || file.Bytes.Length > ChatArtifactsHelpers.MaxFileBytes)
+            {
+                _logger.LogWarning("Generated file {Name} in Conversation ID {conversationId} is empty or over the size limit; not stored.", file.Name, conversationId);
+                return null;
+            }
+
+            var ownsConversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .AnyAsync(cancellationToken);
+            if (!ownsConversation)
+                return null;
+
+            var latest = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.ConversationId == conversationId && w.Name.ToLower() == file.Name.ToLower())
+                .OrderByDescending(o => o.VersionNumber)
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+            if (latest is not null && latest.ContentType == file.ContentType && latest.SizeBytes == file.Bytes.Length)
+                return latest;
+
+            var artifact = new ChatArtifact
+            {
+                ConversationId = conversationId,
+                Name = file.Name,
+                ContentType = file.ContentType,
+                SizeBytes = file.Bytes.Length,
+                BlobPath = await StoreFileBytesAsync(conversationId, file.Name, file.ContentType, file.Bytes),
+                Origin = "Generated",
+                VersionNumber = (latest?.VersionNumber ?? 0) + 1,
+                PreviousVersionId = latest?.Id,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+
+            await _unitOfWork.ChatArtifactRepo.InsertAsync(artifact);
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError("Generated file {Name} for Conversation ID {conversationId} could not be saved.", file.Name, conversationId);
+                return null;
+            }
+
+            return artifact;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while storing generated file {Name} for Conversation ID {conversationId}", file.Name, conversationId);
+            return null;
+        }
+    }
+
     private bool IsBlobStorageConfigured => !string.IsNullOrWhiteSpace(_environmentConfig.AzureBlobStorageConnectionString);
 
     // IMPORTANT NOTE: AzureBlobStorageService's constructor throws without a connection string, so it is resolved only once one is configured.
@@ -422,12 +514,17 @@ public class ChatArtifactsService : IChatArtifactsService
 
     private async Task<string> StoreFileAsync(Guid conversationId, GeneratedChatFile file, byte[] bytes)
     {
-        if (!IsBlobStorageConfigured)
-            return ToDataUrl(file.ContentType, bytes);
+        return await StoreFileBytesAsync(conversationId, file.Name, file.ContentType, bytes);
+    }
 
-        var blobName = $"{ChatArtifactsHelpers.BlobPrefix}{conversationId}/{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+    private async Task<string> StoreFileBytesAsync(Guid conversationId, string name, string contentType, byte[] bytes)
+    {
+        if (!IsBlobStorageConfigured)
+            return ToDataUrl(contentType, bytes);
+
+        var blobName = $"{ChatArtifactsHelpers.BlobPrefix}{conversationId}/{Guid.NewGuid()}{Path.GetExtension(name)}";
         using var stream = new MemoryStream(bytes);
-        await BlobStorage.UploadFileAsync(_currentTenantService.CurrentTenantContainerName, stream, blobName, file.ContentType);
+        await BlobStorage.UploadFileAsync(_currentTenantService.CurrentTenantContainerName, stream, blobName, contentType);
         return blobName;
     }
 
@@ -441,7 +538,15 @@ public class ChatArtifactsService : IChatArtifactsService
     }
 
     private static string ToDataUrl(string contentType, byte[] bytes) =>
-        $"data:{contentType};charset=utf-8;base64,{Convert.ToBase64String(bytes)}";
+        IsTextContentType(contentType)
+            ? $"data:{contentType};charset=utf-8;base64,{Convert.ToBase64String(bytes)}"
+            : $"data:{contentType};base64,{Convert.ToBase64String(bytes)}";
+
+    private static bool IsTextContentType(string contentType) =>
+        contentType.StartsWith("text/", StringComparison.OrdinalIgnoreCase) ||
+        contentType.Equals("application/json", StringComparison.OrdinalIgnoreCase) ||
+        contentType.Equals("application/xml", StringComparison.OrdinalIgnoreCase) ||
+        contentType.Equals("image/svg+xml", StringComparison.OrdinalIgnoreCase);
 
     private async Task DeleteBlobsAsync(IEnumerable<ChatArtifact> artifacts)
     {

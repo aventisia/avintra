@@ -10,6 +10,7 @@ import {
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
   PencilSimpleIcon,
+  PrinterIcon,
   XIcon,
 } from "@phosphor-icons/react";
 import { type ComponentProps, type RefObject, useEffect, useRef, useState } from "react";
@@ -18,6 +19,7 @@ import remarkGfm from "remark-gfm";
 
 import { chatProseComponents } from "../constants/chat-prose.constant";
 import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.util";
+import { printArtifact } from "../utils/print-chat.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 import { ChatIconButton } from "./ChatIconButton";
@@ -119,7 +121,7 @@ const SOURCE_COMPONENTS = { Pre: SourcePre, Code: SourceCode };
 const DelimitedTable = ({ rows }: { rows: string[][] }) => {
   const [head = [], ...body] = rows;
   return (
-    <div className="h-full overflow-auto">
+    <div data-artifact-print className="h-full overflow-auto">
       <table className="w-full border-collapse text-sm">
         <thead className="sticky top-0 bg-sunken">
           <tr>
@@ -149,6 +151,12 @@ const DelimitedTable = ({ rows }: { rows: string[][] }) => {
   );
 };
 
+/** Text bodies render as DOM and print to PDF; binaries and sandboxed pages use Download or a new tab. */
+const isPrintableType = (file: ChatPreviewFile) => {
+  const type = file.contentType.toLowerCase();
+  return type.startsWith("text/") || type === "application/json" || type === "application/xml";
+};
+
 const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
   const body = readDataUrl(file.url);
   const type = file.contentType.toLowerCase();
@@ -175,7 +183,10 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
     return <DelimitedTable rows={parseDelimited(body, type === "text/csv" ? "," : "\t")} />;
   if (type === "text/markdown")
     return (
-      <div className="h-full overflow-auto px-6 py-5 text-sm leading-6 text-ink">
+      <div
+        data-artifact-print
+        className="h-full overflow-auto px-6 py-5 text-sm leading-6 text-ink"
+      >
         <Markdown remarkPlugins={[remarkGfm]} components={chatProseComponents}>
           {body}
         </Markdown>
@@ -183,7 +194,10 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
     );
   if (type.startsWith("text/") || type === "application/json" || type === "application/xml")
     return (
-      <pre className="h-full overflow-auto whitespace-pre-wrap break-words p-6 font-mono text-[13px] leading-6 text-ink">
+      <pre
+        data-artifact-print
+        className="h-full overflow-auto whitespace-pre-wrap break-words p-6 font-mono text-[13px] leading-6 text-ink"
+      >
         {body}
       </pre>
     );
@@ -220,6 +234,8 @@ export const ChatFilePreview = ({
   };
   const [sourceShownFor, setSourceShownFor] = useState<string | null>(null);
   const showsSource = source !== null && sourceShownFor === loadable?.url;
+  const isPrintable =
+    !!loadable && body !== null && !isEditing && !showsSource && isPrintableType(loadable);
   const [zoomFor, setZoomFor] = useState({ url: "", index: ZOOM_LEVELS.indexOf(1) });
   const zoomIndex = zoomFor.url === loadable?.url ? zoomFor.index : ZOOM_LEVELS.indexOf(1);
   const zoom = ZOOM_LEVELS[zoomIndex]!;
@@ -352,6 +368,18 @@ export const ChatFilePreview = ({
                 >
                   <ArrowSquareOutIcon />
                 </a>
+                {isPrintable && (
+                  <ChatIconButton
+                    label="Print or save as PDF"
+                    onClick={() =>
+                      void printArtifact(loadable.name, sectionRef.current ?? document).catch(
+                        () => {},
+                      )
+                    }
+                  >
+                    <PrinterIcon />
+                  </ChatIconButton>
+                )}
               </>
             )}
           </>

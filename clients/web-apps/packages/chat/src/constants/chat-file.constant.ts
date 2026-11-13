@@ -1,17 +1,20 @@
 import {
   FileCodeIcon,
   FileCsvIcon,
+  FileDocIcon,
   FileImageIcon,
   FileMdIcon,
+  FilePptIcon,
   FileTextIcon,
+  FileXlsIcon,
   type Icon,
 } from "@phosphor-icons/react";
 import { createContext } from "react";
 
 import type { ChatFile } from "../utils/chat-file.util";
 
-/** Where a reply's file is: stored (with its id), being saved, or not stored. */
-export type ChatFileState = { id: string } | "saving" | null;
+/** Where a reply's file is: stored (with its id and, for binaries, its stored size), being saved, or not stored. */
+export type ChatFileState = { id: string; sizeBytes?: number } | "saving" | null;
 
 /** How the thread looks up and opens the files replies produce. */
 export type ChatFileHandlers = {
@@ -30,4 +33,7 @@ export const CHAT_FILE_ICONS: Record<string, Icon> = {
   "text/csv": FileCsvIcon,
   "text/tab-separated-values": FileTextIcon,
   "text/markdown": FileMdIcon,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": FileDocIcon,
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": FileXlsIcon,
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": FilePptIcon,
 };

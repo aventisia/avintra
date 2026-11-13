@@ -43,6 +43,15 @@ export const parseBlueprint = (data: unknown): ChatBlueprint | null => {
   return { title, summary: readText(data.summary), steps };
 };
 
+/** Reads a ```blueprint fence's JSON; null while it is incomplete or when it isn't a plan. */
+export const parseBlueprintFence = (code: string): ChatBlueprint | null => {
+  try {
+    return parseBlueprint(JSON.parse(code));
+  } catch {
+    return null;
+  }
+};
+
 /** Keeps the starter prompts whose page the user can open. */
 export const pickReachablePrompts = (
   candidates: readonly { prompt: string; route: string }[],
