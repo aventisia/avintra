@@ -16,6 +16,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
+from app.features.custom_tools.custom_tool_executor import create_client
+from app.features.custom_tools.url_guard import (
+    UnsafeUrlError,
+    resolve_public_addresses_async,
+)
 from app.features.langgraph.checkpoint.models import (
     Conversation,
     ConversationMessage,
@@ -24,15 +29,32 @@ from app.features.langgraph.checkpoint.models import (
 WEBHOOK_TIMEOUT_SECONDS = 15.0
 
 
-def is_absolute_http_url(url: str) -> bool:
-    """Return True when ``url`` is an absolute http or https URL."""
+async def validate_webhook_url(webhook_url: str) -> str:
+    """Return the URL rebuilt from validated parts, rejecting non-public hosts."""
 
     try:
-        parts = urlsplit((url or "").strip())
-    except ValueError:
-        return False
+        parts = urlsplit((webhook_url or "").strip())
+        port = parts.port
+    except ValueError as exc:
+        raise UnsafeUrlError("Webhook URL is not a valid URL.") from exc
 
-    return parts.scheme in ("http", "https") and bool(parts.netloc)
+    host = (parts.hostname or "").lower()
+    if (
+        parts.scheme not in ("http", "https")
+        or not parts.netloc
+        or not host
+        or parts.username
+        or parts.password
+    ):
+        raise UnsafeUrlError("Webhook URL must be an absolute http or https URL.")
+
+    await resolve_public_addresses_async(host)
+
+    scheme = "https" if parts.scheme == "https" else "http"
+    host_part = f"[{host}]" if ":" in host else host
+    port_part = f":{port}" if port is not None else ""
+    query = f"?{parts.query}" if parts.query else ""
+    return f"{scheme}://{host_part}{port_part}{parts.path or '/'}{query}"
 
 
 def _redacted_host(url: str) -> str:
@@ -86,8 +108,12 @@ async def deliver_transcript_webhook(
         if client is not None:
             response = await client.post(webhook_url, json=payload)
         else:
-            async with httpx.AsyncClient(timeout=WEBHOOK_TIMEOUT_SECONDS) as owned_client:
-                response = await owned_client.post(webhook_url, json=payload)
+            async with create_client() as owned_client:
+                response = await owned_client.post(
+                    webhook_url,
+                    json=payload,
+                    timeout=WEBHOOK_TIMEOUT_SECONDS,
+                )
     except Exception as exc:
         logger.warning(
             "Transcript webhook delivery failed | host=%s error=%s",
@@ -96,7 +122,7 @@ async def deliver_transcript_webhook(
         )
         return False
 
-    if response.status_code >= 400:
+    if not response.is_success:
         logger.warning(
             "Transcript webhook returned a non-success status | host=%s status=%s",
             host,
