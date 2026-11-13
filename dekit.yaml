@@ -24,6 +24,8 @@
 
 defaults:
   autostart: true
+  # Each service also writes its output to local-logs/dekit/<service>.log (gitignored), so logs can be read or shared after they scroll away.
+  log: local-logs/dekit
 
 # IMPORTANT NOTE: dekit starts only .exe programs on Windows, not the npm/npx .cmd shims, so npm scripts run via `node --run`.
 tasks:
