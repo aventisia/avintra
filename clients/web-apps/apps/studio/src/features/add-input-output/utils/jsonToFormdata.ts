@@ -45,7 +45,7 @@ export const DCPJsonToFormData = (data: DCPFieldSchemaType[]): InputsOutputsFiel
       return (value as { value: string }).value || "";
     }
     if (type === "switch") {
-      return Boolean(value);
+      return String(value === true || value === "true");
     }
     return value ?? "";
   };

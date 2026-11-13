@@ -54,7 +54,7 @@ export const useInputsOutputsForm = () => {
 
   const { control } = form;
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: () => getFlowToLoad(currentFlow.id || "flowId", currentFlow.versionId),
     queryKey: ["flow", currentFlow.id, currentFlow.versionId],
     enabled: !!currentFlow.id,
@@ -86,6 +86,7 @@ export const useInputsOutputsForm = () => {
 
   return {
     form,
+    isLoading,
     control,
     inputFields,
     appendInput,

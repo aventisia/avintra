@@ -1,153 +1,150 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@avplatform/ui/buttons";
-import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
-import { TrashIcon } from "@phosphor-icons/react";
-import { Control, Controller, UseFieldArrayRemove, useWatch } from "react-hook-form";
+import { Switch } from "@avplatform/ui";
+import { cn } from "@avplatform/ui/lib";
+import { useId } from "react";
+import { Controller, type UseFormReturn, useWatch } from "react-hook-form";
 
-import { FieldItemFormValues } from "../constants/inputs-outputs-zod-schema";
+import { FormField } from "@/components/card-dialog/FormField";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
-interface InputFieldsProps extends FieldItemFormValues {
-  id: string;
-}
+import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
+import { FieldCard } from "./FieldCard";
+import { InputTypePicker } from "./InputTypePicker";
 
-const InputFields = ({
-  field,
-  control,
-  index,
-  remove,
-}: {
-  field: InputFieldsProps;
-  control: Control<any>;
+type InputFieldsProps = {
+  form: UseFormReturn<InputsOutputsFieldsFormType>;
   index: number;
-  remove: UseFieldArrayRemove;
-}) => {
-  const type = useWatch({
+  onRemove: () => void;
+};
+
+const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
+  const fieldId = useId();
+  const { control, register } = form;
+  const [name, type] = useWatch({
     control,
-    name: `inputs.${index}.type`,
+    name: [`inputs.${index}.name`, `inputs.${index}.type`],
   });
+  const errors = form.formState.errors.inputs?.[index];
+  const ids = {
+    name: `${fieldId}-name`,
+    label: `${fieldId}-label`,
+    defaultValue: `${fieldId}-default`,
+    selectOptions: `${fieldId}-options`,
+    description: `${fieldId}-description`,
+    required: `${fieldId}-required`,
+  };
 
   return (
-    <div
-      key={field.id}
-      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-sunken p-4"
-    >
-      <div className="col-span-2 flex justify-between">
-        <span className="text-sm">Input {index + 1}</span>
-        <Button
-          variant="ghost"
-          type="button"
-          size="xs"
-          onClick={() => remove(index)}
-          className="text-bad hover:bg-bad/10 hover:text-bad"
-        >
-          <TrashIcon className="h-4 w-4" />
-        </Button>
+    <FieldCard heading={`Input ${index + 1}`} name={name} onRemove={onRemove}>
+      <FormField htmlFor={ids.name} label="Name" error={errors?.name?.message}>
+        <input
+          id={ids.name}
+          {...(index === 0 ? { "data-autofocus": "" } : {})}
+          autoComplete="off"
+          spellCheck={false}
+          placeholder="customerEmail"
+          aria-invalid={Boolean(errors?.name)}
+          aria-describedby={errors?.name ? `${ids.name}-error` : undefined}
+          {...register(`inputs.${index}.name`)}
+          className={cn(getFieldInputClassName(Boolean(errors?.name)), "h-9 font-mono")}
+        />
+      </FormField>
+
+      <FormField htmlFor={ids.label} label="Label" isOptional>
+        <input
+          id={ids.label}
+          autoComplete="off"
+          placeholder="Customer email"
+          {...register(`inputs.${index}.label`)}
+          className={cn(getFieldInputClassName(false), "h-9")}
+        />
+      </FormField>
+
+      <div className="xs:col-span-2">
+        <InputTypePicker selectedValue={type} registration={register(`inputs.${index}.type`)} />
       </div>
 
-      {/* Name Field */}
-      <Controller
-        name={`inputs.${index}.name`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="Unique identifier for the field "
-            label="Name"
-          />
-        )}
-      />
-      <Controller
-        name={`inputs.${index}.label`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="User-friendly name displayed in the form UI"
-            label="Label"
-          />
-        )}
-      />
-      <Controller
-        name={`inputs.${index}.defaultValue`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="Initial value for the field"
-            label="Default value"
-          />
-        )}
-      />
+      {type === "select" && (
+        <div className="xs:col-span-2">
+          <FormField
+            htmlFor={ids.selectOptions}
+            label="Options"
+            hint={
+              <p className="pt-1.5 text-[12px] text-muted-foreground">
+                Separate options with a semicolon
+              </p>
+            }
+          >
+            <input
+              id={ids.selectOptions}
+              autoComplete="off"
+              placeholder="Red; Green; Blue"
+              {...register(`inputs.${index}.selectOptions`)}
+              className={cn(getFieldInputClassName(false), "h-9")}
+            />
+          </FormField>
+        </div>
+      )}
 
-      <Controller
-        name={`inputs.${index}.type`}
-        control={control}
-        render={({ field }) => (
-          <SelectField
-            {...field}
-            label="Field type"
-            description="Select the input type"
-            size="xs"
-            selectOptions={[
-              { label: "TextBox", value: "text" },
-              { label: "Password", value: "password" },
-              { label: "Select (Dropdown)", value: "select" },
-              { label: "Toggle (Switch)", value: "switch" },
-            ]}
-          />
-        )}
-      />
-      {["select"].includes(type) && (
-        <div className="col-span-2">
+      {type === "switch" ? (
+        <div className="flex items-center justify-between gap-3 self-end rounded-md bg-sunken/80 px-3.5 py-2 ring-1 ring-line">
+          <label htmlFor={ids.defaultValue} className="text-[12.5px] font-semibold text-ink-2">
+            On by default
+          </label>
           <Controller
-            name={`inputs.${index}.selectOptions`}
             control={control}
+            name={`inputs.${index}.defaultValue`}
             render={({ field }) => (
-              <InputField
-                {...field}
-                fieldSize="xs"
-                description="Enter semicolon-separated options for the select input (e.g., 'Red; Green; Blue')"
-                label="Select options"
+              <Switch
+                id={ids.defaultValue}
+                size="sm"
+                checked={field.value === "true"}
+                onCheckedChange={(checked) => field.onChange(String(checked))}
               />
             )}
           />
         </div>
+      ) : (
+        <FormField htmlFor={ids.defaultValue} label="Default value" isOptional>
+          <input
+            id={ids.defaultValue}
+            type={type === "password" ? "password" : "text"}
+            autoComplete="off"
+            {...register(`inputs.${index}.defaultValue`)}
+            className={cn(getFieldInputClassName(false), "h-9")}
+          />
+        </FormField>
       )}
 
-      <div className="col-span-2">
+      <div className="flex items-center justify-between gap-3 self-end rounded-md bg-sunken/80 px-3.5 py-2 ring-1 ring-line">
+        <label htmlFor={ids.required} className="text-[12.5px] font-semibold text-ink-2">
+          Required
+        </label>
         <Controller
+          control={control}
           name={`inputs.${index}.required`}
-          control={control}
-          render={({ field: { value, onChange, ...rest } }) => (
-            <SwitchField
-              label="Is required"
-              size="xs"
-              description="Mark this field as required"
-              value={value ? "true" : "false"} // convert to string
-              onChange={onChange}
-              {...rest}
-            />
-          )}
-        />
-      </div>
-      <div className="col-span-2">
-        <Controller
-          name={`inputs.${index}.description`}
-          control={control}
           render={({ field }) => (
-            <InputField
-              {...field}
-              fieldSize="xs"
-              description="Optional helper text"
-              label="Description"
+            <Switch
+              id={ids.required}
+              size="sm"
+              checked={Boolean(field.value)}
+              onCheckedChange={field.onChange}
             />
           )}
         />
       </div>
-    </div>
+
+      <div className="xs:col-span-2">
+        <FormField htmlFor={ids.description} label="Description" isOptional>
+          <input
+            id={ids.description}
+            autoComplete="off"
+            placeholder="Helper text shown under the field"
+            {...register(`inputs.${index}.description`)}
+            className={cn(getFieldInputClassName(false), "h-9")}
+          />
+        </FormField>
+      </div>
+    </FieldCard>
   );
 };
 
