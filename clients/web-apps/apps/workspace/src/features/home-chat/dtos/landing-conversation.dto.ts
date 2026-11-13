@@ -11,4 +11,7 @@ export interface LandingConversationDto {
 
   /** Whether the chat is pinned above the rest of the history. */
   isPinned: boolean;
+
+  /** The project the chat is filed under, or null when ungrouped. */
+  projectId: string | null;
 }

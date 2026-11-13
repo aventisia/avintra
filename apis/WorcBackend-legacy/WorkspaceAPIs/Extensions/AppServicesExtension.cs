@@ -177,6 +177,7 @@ public static class AppServicesExtension
         services.AddScoped<IConversationMessageService, ConversationMessageService>();
         services.AddScoped<IChatArtifactsService, ChatArtifactsService>();
         services.AddScoped<IUserChatProfileService, UserChatProfileService>();
+        services.AddScoped<IChatProjectService, ChatProjectService>();
         services.AddScoped<IStreamingChatService, StreamingChatService>();
         services.AddScoped<IAdminConversationService, AdminConversationService>();
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();

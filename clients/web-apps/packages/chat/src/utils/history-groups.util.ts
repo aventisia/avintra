@@ -3,6 +3,8 @@ export type ChatHistoryItem = {
   title: string;
   lastModifiedOn: string;
   isPinned?: boolean;
+  /** The project the chat is filed under, or null when ungrouped. */
+  projectId?: string | null;
 };
 
 export type ChatHistoryGroup = { label: string; items: ChatHistoryItem[] };

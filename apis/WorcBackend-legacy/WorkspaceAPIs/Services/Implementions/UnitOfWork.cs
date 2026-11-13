@@ -42,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
     public IConversationMessageRepo ConversationMessageRepo => new ConversationMessageRepo(_workspaceDbContext);
     public IChatArtifactRepo ChatArtifactRepo => new ChatArtifactRepo(_workspaceDbContext);
     public IUserChatProfileRepo UserChatProfileRepo => new UserChatProfileRepo(_workspaceDbContext);
+    public IChatProjectRepo ChatProjectRepo => new ChatProjectRepo(_workspaceDbContext);
     public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);
     public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);

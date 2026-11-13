@@ -165,7 +165,7 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, int skip, int take)
+    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take)
     {
         var serviceResponse = ServiceResponse<IEnumerable<LandingConversationDto>>.Create("Failed to retrieve conversations", 500);
 
@@ -182,13 +182,18 @@ public class ConversationService : IConversationService
             query = query.Where(w => EF.Functions.ILike(w.Title!, pattern, "\\"));
         }
 
+        if (projectId.HasValue)
+        {
+            query = query.Where(w => w.ProjectId == projectId.Value);
+        }
+
         var conversations = await query
             .OrderByDescending(o => o.IsPinned)
             .ThenByDescending(o => o.LastModifiedOn)
             .ThenByDescending(o => o.Id)
             .Skip(Math.Max(skip, 0))
             .Take(Math.Clamp(take, 1, 100))
-            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned })
+            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned, ProjectId = s.ProjectId })
             .ToListAsync();
 
         return serviceResponse.Update(null, 200, conversations);
@@ -457,6 +462,33 @@ public class ConversationService : IConversationService
                 w.FlowVersionId == null &&
                 w.UserId == _userId)
             .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.IsPinned, updateConversationPinDto.IsPinned));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationProjectAsync(UpdateConversationProjectDto updateConversationProjectDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to move conversation", 500);
+
+        if (updateConversationProjectDto.ProjectId.HasValue)
+        {
+            var projectExists = await _unitOfWork.ChatProjectRepo
+                .GetByConditionAsync(w => w.Id == updateConversationProjectDto.ProjectId.Value && w.UserId == _userId)
+                .AnyAsync();
+
+            if (!projectExists)
+                return serviceResponse.Update("Project not found", 404);
+        }
+
+        // ExecuteUpdateAsync leaves LastModifiedOn alone, so moving a chat doesn't reorder the history.
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationProjectDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.ProjectId, updateConversationProjectDto.ProjectId));
 
         return updated == 0
             ? serviceResponse.Update("Conversation not found", 404)

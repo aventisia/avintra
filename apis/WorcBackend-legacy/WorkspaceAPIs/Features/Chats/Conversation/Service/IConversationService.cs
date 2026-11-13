@@ -40,9 +40,14 @@ public interface IConversationService
     Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync();
 
     /// <summary>
-    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title; archived ones when asked.
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title and project; archived ones when asked.
     /// </summary>
-    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, int skip, int take);
+    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take);
+
+    /// <summary>
+    /// Files one of the current user's landing conversations under a project, or ungroups it when the project is null.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationProjectAsync(UpdateConversationProjectDto updateConversationProjectDto);
 
     /// <summary>
     /// Retrieves a specific conversation by its unique identifier.

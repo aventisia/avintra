@@ -6,6 +6,7 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
 import { type UpdateConversationPinDto } from "../dtos/update-conversation-pin.dto";
+import { type UpdateConversationProjectDto } from "../dtos/update-conversation-project.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
@@ -14,6 +15,7 @@ const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversati
 export const getLandingConversations = (params: {
   search?: string;
   archived: boolean;
+  projectId?: string;
   skip: number;
   take: number;
 }) =>
@@ -44,6 +46,16 @@ export const updateLandingConversationTitle = (
 export const updateLandingConversationPin = (updateConversationPinDto: UpdateConversationPinDto) =>
   axiosInstance
     .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/pin`, updateConversationPinDto, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
+/** Files one of the user's Home conversations under a project, or ungroups it. */
+export const updateLandingConversationProject = (
+  updateConversationProjectDto: UpdateConversationProjectDto,
+) =>
+  axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/project`, updateConversationProjectDto, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

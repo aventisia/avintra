@@ -346,6 +346,55 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("chat_artifacts");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ChatProject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "UserId");
+
+                    b.ToTable("chat_projects");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ConfigStore", b =>
                 {
                     b.Property<Guid>("Id")
@@ -454,6 +503,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ShareToken")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -488,6 +540,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("FlowVersionId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("UserId");
 
@@ -3227,6 +3281,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("PreviousVersion");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ChatProject", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ConfigStore", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -3265,6 +3338,11 @@ namespace WorkspaceAPIs.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WorkspaceAPIs.Entities.ChatProject", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -3276,6 +3354,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("FlowVersion");
 
                     b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Project");
 
                     b.Navigation("User");
                 });

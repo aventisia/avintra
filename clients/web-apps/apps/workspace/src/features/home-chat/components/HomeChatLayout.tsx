@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { getMessages } from "../apis/conversation-message.apis";
 import { shareConversation, unshareConversation } from "../apis/conversation.apis";
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
+import { useChatProjects } from "../hooks/useChatProjects.hook";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
@@ -60,8 +61,11 @@ export const HomeChatLayout = () => {
   const appRoot = useHref("/").replace(/\/$/, "");
   const [showArchived, setShowArchived] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const history = useHomeChatHistory(showArchived);
-  const { renameChat, togglePin, setArchived, deleteChat } = useHomeChatHistoryActions();
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
+  const { renameChat, togglePin, setArchived, deleteChat, moveToProject } =
+    useHomeChatHistoryActions();
+  const chatProjects = useChatProjects();
   const { showCustomAlertDialog } = useShowAlertHandler();
   const activeChat = history.items.find((item) => item.id === session.conversationId);
 
@@ -123,6 +127,11 @@ export const HomeChatLayout = () => {
               if (!showArchived && id === session.conversationId) navigate("/", { replace: true });
             }}
             onDelete={confirmDelete}
+            projects={chatProjects.projects}
+            activeProjectId={showArchived ? null : projectId}
+            onProjectFilterChange={setProjectId}
+            onCreateProject={(name) => chatProjects.createProject(name, setProjectId)}
+            onMoveToProject={(item, nextProjectId) => moveToProject(item.id, nextProjectId)}
             onCollapse={close}
             search={history.search}
             onSearchChange={history.setSearch}

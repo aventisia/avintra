@@ -24,4 +24,9 @@ public class LandingConversationDto
     /// Gets or sets whether the conversation is pinned above the rest of the history.
     /// </summary>
     public bool IsPinned { get; set; }
+
+    /// <summary>
+    /// Gets or sets the project the conversation is filed under, or null when ungrouped.
+    /// </summary>
+    public Guid? ProjectId { get; set; }
 }

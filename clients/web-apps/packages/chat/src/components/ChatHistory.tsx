@@ -4,6 +4,9 @@ import {
   DeleteDDMenuItem,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   SimpleDDMenuItem,
 } from "@avplatform/ui/dropdown-menu";
@@ -12,11 +15,14 @@ import {
   ArchiveIcon,
   ArrowLeftIcon,
   ArrowUUpLeftIcon,
+  CheckIcon,
   CircleNotchIcon,
   DotsThreeIcon,
+  FolderSimpleIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
   PencilSimpleIcon,
+  PlusIcon,
   PushPinIcon,
   PushPinSlashIcon,
   SidebarSimpleIcon,
@@ -29,6 +35,8 @@ import { ChatTitleInput } from "./ChatTitleInput";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
 const NEW_CHAT_SHORTCUT_LABEL = IS_MAC ? "⌘⇧O" : "Ctrl+Shift+O";
+
+export type ChatHistoryProject = { id: string; name: string };
 
 export type ChatHistoryProps = {
   items: readonly ChatHistoryItem[];
@@ -57,6 +65,16 @@ export type ChatHistoryProps = {
   hasMore: boolean;
   isLoadingMore: boolean;
   onLoadMore: () => void;
+  /** The projects chats can be filed under; the filter row and move menu need them. */
+  projects?: readonly ChatHistoryProject[];
+  /** The project the list is filtered to, or null for all chats. */
+  activeProjectId?: string | null;
+  /** Filters the list to a project, or null for all chats; the filter row is hidden without it. */
+  onProjectFilterChange?: (projectId: string | null) => void;
+  /** Creates a project from the filter row's name field; the plus button is hidden without it. */
+  onCreateProject?: (name: string) => void;
+  /** Files a chat under a project, or ungroups it with null; the move menu is hidden without it. */
+  onMoveToProject?: (item: ChatHistoryItem, projectId: string | null) => void;
 };
 
 /**
@@ -84,6 +102,11 @@ export const ChatHistory = ({
   hasMore,
   isLoadingMore,
   onLoadMore,
+  projects = [],
+  activeProjectId = null,
+  onProjectFilterChange,
+  onCreateProject,
+  onMoveToProject,
 }: ChatHistoryProps) => {
   const groups = useMemo(() => groupHistoryByDate(items), [items]);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -139,6 +162,15 @@ export const ChatHistory = ({
         </div>
       </div>
 
+      {!showArchived && onProjectFilterChange && (
+        <ProjectFilter
+          projects={projects}
+          activeProjectId={activeProjectId}
+          onChange={onProjectFilterChange}
+          onCreate={onCreateProject}
+        />
+      )}
+
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-4 [scrollbar-gutter:stable]">
         {isLoading ? (
           <HistorySkeleton />
@@ -155,7 +187,9 @@ export const ChatHistory = ({
               ? `No chats match “${search.trim()}”.`
               : showArchived
                 ? "Chats you archive will show up here."
-                : "Your chats will show up here."}
+                : activeProjectId
+                  ? "Chats you move into this project will show up here."
+                  : "Your chats will show up here."}
           </HistoryNote>
         ) : (
           groups.map((group) => (
@@ -185,6 +219,12 @@ export const ChatHistory = ({
                         }
                         archiveLabel={showArchived ? "Unarchive" : "Archive"}
                         onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
+                        projects={projects}
+                        onMove={
+                          !showArchived && onMoveToProject
+                            ? (projectId) => onMoveToProject(item, projectId)
+                            : undefined
+                        }
                       />
                     )}
                   </li>
@@ -220,6 +260,8 @@ type HistoryLinkProps = {
   onTogglePin?: () => void;
   archiveLabel: "Archive" | "Unarchive";
   onToggleArchive?: () => void;
+  projects: readonly ChatHistoryProject[];
+  onMove?: (projectId: string | null) => void;
 };
 
 const HistoryLink = ({
@@ -232,6 +274,8 @@ const HistoryLink = ({
   onTogglePin,
   archiveLabel,
   onToggleArchive,
+  projects,
+  onMove,
 }: HistoryLinkProps) => {
   const isRenamingRef = useRef(false);
 
@@ -296,12 +340,128 @@ const HistoryLink = ({
               onSelect={onToggleArchive}
             />
           )}
+          {onMove && projects.length > 0 && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="gap-2 text-sm">
+                <FolderSimpleIcon className="size-4 shrink-0" />
+                Move to project
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="flex min-w-40 flex-col">
+                <SimpleDDMenuItem
+                  content="No project"
+                  Icon={item.projectId ? undefined : CheckIcon}
+                  onSelect={() => onMove(null)}
+                />
+                {projects.map((project) => (
+                  <SimpleDDMenuItem
+                    key={project.id}
+                    content={project.name}
+                    Icon={item.projectId === project.id ? CheckIcon : undefined}
+                    onSelect={() => onMove(project.id)}
+                  />
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )}
           <DeleteDDMenuItem onSelect={onDelete} />
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
 };
+
+const ProjectFilter = ({
+  projects,
+  activeProjectId,
+  onChange,
+  onCreate,
+}: {
+  projects: readonly ChatHistoryProject[];
+  activeProjectId: string | null;
+  onChange: (projectId: string | null) => void;
+  onCreate?: (name: string) => void;
+}) => {
+  const [draft, setDraft] = useState<string | null>(null);
+  const doneRef = useRef(false);
+
+  // Enter and blur can both fire for one name, so only the first one counts.
+  const finish = (name: string | null) => {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    setDraft(null);
+    if (name && onCreate) onCreate(name);
+  };
+
+  return (
+    <div
+      role="group"
+      aria-label="Filter by project"
+      className="flex items-center gap-1.5 overflow-x-auto px-3 pb-3 [scrollbar-width:none]"
+    >
+      <FilterPill active={activeProjectId === null} onClick={() => onChange(null)}>
+        All chats
+      </FilterPill>
+      {projects.map((project) => (
+        <FilterPill
+          key={project.id}
+          active={activeProjectId === project.id}
+          onClick={() => onChange(project.id)}
+        >
+          {project.name}
+        </FilterPill>
+      ))}
+      {onCreate &&
+        (draft === null ? (
+          <button
+            type="button"
+            aria-label="New project"
+            title="New project"
+            onClick={() => {
+              doneRef.current = false;
+              setDraft("");
+            }}
+            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <PlusIcon className="size-3.5" />
+          </button>
+        ) : (
+          <Input
+            autoFocus
+            value={draft}
+            maxLength={100}
+            aria-label="Project name"
+            placeholder="Project name"
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") finish(draft.trim() || null);
+              if (event.key === "Escape") finish(null);
+            }}
+            onBlur={() => finish(draft.trim() || null)}
+            className="h-7 w-32 shrink-0 rounded-full px-2.5 text-xs"
+          />
+        ))}
+    </div>
+  );
+};
+
+const FilterPill = ({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) => (
+  <button
+    type="button"
+    aria-pressed={active}
+    onClick={onClick}
+    className="h-7 max-w-40 shrink-0 truncate rounded-full border border-line px-2.5 text-xs text-ink-2 transition-colors hover:bg-hover aria-pressed:border-ink aria-pressed:font-medium aria-pressed:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+  >
+    {children}
+  </button>
+);
 
 const LoadMoreSentinel = ({ onVisible }: { onVisible: () => void }) => {
   const ref = useRef<HTMLDivElement>(null);

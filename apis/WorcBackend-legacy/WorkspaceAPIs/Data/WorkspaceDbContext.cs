@@ -72,6 +72,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<UserChatProfile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<UserChatProfile>().HasIndex(i => new { i.TenantId, i.UserId }).IsUnique();
+        modelBuilder.Entity<ChatProject>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ChatProject>().HasIndex(i => new { i.TenantId, i.UserId });
         modelBuilder.Entity<ChatArtifact>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         // API keys are tenant-global credentials (not scoped by space): authorization is
         // permission-based, and key-authenticated callers (RunnerApp, webhooks) send no space context.
@@ -291,6 +293,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersionHistory>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionHistories).HasForeignKey(fKey => fKey.FlowVersionId).OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Conversation>().HasOne(one => one.Project).WithMany().HasForeignKey(fKey => fKey.ProjectId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-Many relationship between Job and JobNodeExecutionLog
@@ -404,6 +407,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<Folder> Folders { get; set; }
 
     public DbSet<UserChatProfile> UserChatProfiles { get; set; }
+    public DbSet<ChatProject> ChatProjects { get; set; }
     public DbSet<Machine> Machines { get; set; }
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }

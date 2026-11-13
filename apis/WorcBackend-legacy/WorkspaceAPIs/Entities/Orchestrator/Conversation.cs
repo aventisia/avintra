@@ -35,6 +35,17 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public bool IsPinned { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the project this chat is filed under, or null when ungrouped.
+    /// </summary>
+    public Guid? ProjectId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the project this chat is filed under.
+    /// </summary>
+    [ForeignKey("ProjectId")]
+    public virtual ChatProject? Project { get; set; }
+
+    /// <summary>
     /// Gets or sets the read-only share token. Null when the conversation is not shared. Max-64 characters.
     /// </summary>
     [MaxLength(64)]

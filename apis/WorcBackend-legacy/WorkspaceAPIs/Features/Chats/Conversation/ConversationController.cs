@@ -49,9 +49,9 @@ public class ConversationController : BaseApiController
     /// </summary>
     [HttpGet("landing/list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<LandingConversationDto>>>> GetLandingConversations(
-        [FromQuery] string? search, [FromQuery] bool archived = false, [FromQuery] int skip = 0, [FromQuery] int take = 30)
+        [FromQuery] string? search, [FromQuery] bool archived = false, [FromQuery] Guid? projectId = null, [FromQuery] int skip = 0, [FromQuery] int take = 30)
     {
-        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, archived, skip, take));
+        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, archived, projectId, skip, take));
     }
 
     // Gets a conversation by its ID.
@@ -82,6 +82,15 @@ public class ConversationController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationTitle([FromBody] UpdateConversationTitleDto updateConversationTitleDto)
     {
         return ResultHelper(await _conversationService.UpdateLandingConversationTitleAsync(updateConversationTitleDto));
+    }
+
+    /// <summary>
+    /// Files one of the current user's landing conversations under a project, or ungroups it.
+    /// </summary>
+    [HttpPut("landing/project")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationProject([FromBody] UpdateConversationProjectDto updateConversationProjectDto)
+    {
+        return ResultHelper(await _conversationService.UpdateLandingConversationProjectAsync(updateConversationProjectDto));
     }
 
     /// <summary>

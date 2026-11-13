@@ -5,6 +5,7 @@ import {
   deleteConversation,
   setConversationArchived,
   updateLandingConversationPin,
+  updateLandingConversationProject,
   updateLandingConversationTitle,
 } from "../apis/conversation.apis";
 import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
@@ -44,6 +45,12 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const moveProject = useMutation({
+    mutationFn: updateLandingConversationProject,
+    onError: () => toast.error("Couldn't move that chat"),
+    onSettled: refreshHistory,
+  });
+
   const archive = useMutation({
     mutationFn: setConversationArchived,
     onSuccess: (_, { archived }) =>
@@ -66,6 +73,7 @@ export const useHomeChatHistoryActions = () => {
     renameChat: (id: string, title: string) => rename.mutate({ id, title }),
     togglePin: ({ id, isPinned }: { id: string; isPinned?: boolean }) =>
       pin.mutate({ id, isPinned: !isPinned }),
+    moveToProject: (id: string, projectId: string | null) => moveProject.mutate({ id, projectId }),
     setArchived: (id: string, archived: boolean) => archive.mutate({ id, archived }),
     deleteChat: remove.mutateAsync,
   };
