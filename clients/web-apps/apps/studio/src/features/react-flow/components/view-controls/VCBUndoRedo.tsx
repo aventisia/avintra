@@ -19,7 +19,7 @@ export const VCBUndoRedo = () => {
   return (
     <VCBContainer>
       {/* Undo Button */}
-      <Tooltip content="Undo" side="right">
+      <Tooltip content="Undo" side="top">
         <Button
           size="icon6"
           className={cn("rounded-md")}
@@ -35,7 +35,7 @@ export const VCBUndoRedo = () => {
       <Separator orientation="vertical" className="mx-1 w-[0.5px]" />
 
       {/* Redo Button */}
-      <Tooltip content="Redo" side="right">
+      <Tooltip content="Redo" side="top">
         <Button
           size="icon6"
           className={cn("rounded-md")}

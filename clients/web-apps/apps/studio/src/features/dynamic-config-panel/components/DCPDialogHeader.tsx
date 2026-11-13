@@ -15,6 +15,19 @@ import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIs
 import { useDCPNavigationGuard } from "../hooks/useDCPNavigationGuard";
 import { DCP_PANEL_ID, useDynamicConfigPanelStore } from "../stores/dcp-store";
 
+const NODE_TYPE_SUFFIX_PATTERN = /(Activity|Node|Connector)$/;
+
+const stripNodeTypeSuffix = (uniqueName: string) =>
+  uniqueName.replace(NODE_TYPE_SUFFIX_PATTERN, "");
+
+const toSnakeCase = (name: string) =>
+  name
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
+    .toLowerCase();
+
+const toNodeCodeName = (uniqueName: string) => toSnakeCase(stripNodeTypeSuffix(uniqueName));
+
 const DCPDialogHeader = () => {
   const [editing, setEditing] = useState(false);
 
@@ -112,14 +125,14 @@ const DCPDialogHeader = () => {
 
       <div className="flex min-w-0 flex-1 flex-col" title={description}>
         <span className="truncate font-mono text-label uppercase text-muted-foreground">
-          {nodeData?.category || nodeData?.name || "Step"}
+          {nodeData?.category || toNodeCodeName(nodeData?.name || "") || "Step"}
         </span>
-        <PanelTitle className="flex min-w-0 items-center text-heading text-ink">
+        <PanelTitle className="flex h-6 min-w-0 items-center text-[13px] font-semibold tracking-[-0.01em] text-ink">
           {editing ? (
             <Input
               name="label"
               fieldSize="xs"
-              className="w-full"
+              className="w-full text-[13px] font-semibold tracking-[-0.01em] text-ink"
               value={nodeLabel}
               autoFocus
               onChange={(e) => setNodeLabel(e.target.value)}

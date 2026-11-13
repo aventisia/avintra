@@ -43,6 +43,11 @@ interface PanelProps {
   contained?: boolean;
   /** When contained, span the full width of the ancestor instead of `side`/`width`. */
   fill?: boolean;
+  /**
+   * Not contained only: sit flush against the header and the browser's side and bottom edges,
+   * with no inset or rounded corners.
+   */
+  flush?: boolean;
 }
 
 const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
@@ -56,6 +61,7 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
       closeOnEscape = true,
       contained = false,
       fill = false,
+      flush = false,
     },
     ref,
   ) => {
@@ -122,17 +128,26 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
                   "absolute inset-y-0 border border-line",
                   fill ? "inset-x-0 w-auto" : cn(sideClasses[panelSide], width),
                 )
-              : cn(
-                  "fixed border-l border-r border-line",
-                  appBanner
-                    ? "top-[calc(var(--header-height)+var(--banner-height)+0.5rem)]"
-                    : "top-[calc(var(--header-height)+0.5rem)]",
-                  appBanner
-                    ? "h-[calc(100vh-var(--header-height)-var(--banner-height)-1rem)]"
-                    : "h-[calc(100vh-var(--header-height)-1rem)]",
-                  sideClasses[panelSide],
-                  width,
-                ),
+              : flush
+                ? cn(
+                    "fixed bottom-0 border-l border-line rounded-none",
+                    appBanner
+                      ? "top-[calc(var(--header-height)+var(--banner-height))]"
+                      : "top-[var(--header-height)]",
+                    sideClasses[panelSide],
+                    width,
+                  )
+                : cn(
+                    "fixed border-l border-r border-line",
+                    appBanner
+                      ? "top-[calc(var(--header-height)+var(--banner-height)+0.5rem)]"
+                      : "top-[calc(var(--header-height)+0.5rem)]",
+                    appBanner
+                      ? "h-[calc(100vh-var(--header-height)-var(--banner-height)-1rem)]"
+                      : "h-[calc(100vh-var(--header-height)-1rem)]",
+                    sideClasses[panelSide],
+                    width,
+                  ),
             className,
           )}
           role="dialog"
