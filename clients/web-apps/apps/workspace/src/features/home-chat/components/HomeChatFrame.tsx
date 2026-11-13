@@ -1,6 +1,6 @@
 import { ChatIconButton } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
-import { NotePencilIcon, SidebarSimpleIcon } from "@phosphor-icons/react";
+import { NotePencilIcon, SidebarSimpleIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
@@ -37,6 +37,8 @@ type HomeChatFrameProps = {
   onNewChat: () => void;
   /** Shown in the bar above the thread, such as the open chat's title. */
   header?: ReactNode;
+  /** Opens chat preferences from a button at the end of the bar. */
+  onOpenPreferences?: () => void;
   children: ReactNode;
 };
 
@@ -49,6 +51,7 @@ export const HomeChatFrame = ({
   renderHistory,
   onNewChat,
   header,
+  onOpenPreferences,
   children,
 }: HomeChatFrameProps) => {
   const isWide = useMediaQuery("(min-width: 1024px)");
@@ -107,7 +110,7 @@ export const HomeChatFrame = ({
         </Dialog>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        {(!showsRail || header) && (
+        {(!showsRail || header || onOpenPreferences) && (
           <div className="flex h-12 shrink-0 items-center gap-1 bg-surface px-2 dark:bg-bg sm:px-3">
             {!showsRail && (
               <>
@@ -123,6 +126,13 @@ export const HomeChatFrame = ({
               </>
             )}
             {header}
+            {onOpenPreferences && (
+              <div className="ml-auto">
+                <ChatIconButton label="Chat preferences" onClick={onOpenPreferences}>
+                  <SlidersHorizontalIcon />
+                </ChatIconButton>
+              </div>
+            )}
           </div>
         )}
         <div className="min-h-0 flex-1">

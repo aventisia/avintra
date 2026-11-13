@@ -18,6 +18,7 @@ import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
 import { HomeChatFrame } from "./HomeChatFrame";
+import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
 import { HomeChatThread } from "./HomeChatThread";
 
 const conversationHref = (id: string) => `${HOME_CHAT_CONVERSATION_ROUTE}/${id}`;
@@ -58,6 +59,7 @@ export const HomeChatLayout = () => {
   const navigate = useNavigate();
   const appRoot = useHref("/").replace(/\/$/, "");
   const [showArchived, setShowArchived] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const history = useHomeChatHistory(showArchived);
   const { renameChat, togglePin, setArchived, deleteChat } = useHomeChatHistoryActions();
   const { showCustomAlertDialog } = useShowAlertHandler();
@@ -81,6 +83,7 @@ export const HomeChatLayout = () => {
       <h1 className="sr-only">Home</h1>
       <HomeChatFrame
         onNewChat={() => navigate("/")}
+        onOpenPreferences={() => setIsPreferencesOpen(true)}
         header={
           // shortcut: the title comes from the loaded history pages, so a chat outside them (or filtered out by search) shows no title; add a get-conversation endpoint if that matters.
           activeChat && (
@@ -134,6 +137,7 @@ export const HomeChatLayout = () => {
       >
         <HomeChatThread key={sessionKey} {...session} />
       </HomeChatFrame>
+      <HomeChatPreferencesDialog open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen} />
     </>
   );
 };

@@ -34,6 +34,7 @@ public interface IUnitOfWork
     IConversationRepo ConversationRepo { get; }
     IConversationMessageRepo ConversationMessageRepo { get; }
     IChatArtifactRepo ChatArtifactRepo { get; }
+    IUserChatProfileRepo UserChatProfileRepo { get; }
     IVectorStoreRepo VectorStoreRepo { get; }
     IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }

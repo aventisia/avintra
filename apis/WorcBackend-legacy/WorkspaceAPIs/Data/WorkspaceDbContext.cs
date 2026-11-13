@@ -70,6 +70,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<UserChatProfile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<UserChatProfile>().HasIndex(i => new { i.TenantId, i.UserId }).IsUnique();
         modelBuilder.Entity<ChatArtifact>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         // API keys are tenant-global credentials (not scoped by space): authorization is
         // permission-based, and key-authenticated callers (RunnerApp, webhooks) send no space context.
@@ -400,6 +402,8 @@ public class WorkspaceDbContext : DbContext
     public DbSet<NotificationUser> NotificationUsers { get; set; }
     public DbSet<Flow> Flows { get; set; }
     public DbSet<Folder> Folders { get; set; }
+
+    public DbSet<UserChatProfile> UserChatProfiles { get; set; }
     public DbSet<Machine> Machines { get; set; }
     public DbSet<ProjectTemplate> ProjectTemplates { get; set; }
     public DbSet<TemplateResource> TemplateResources { get; set; }
