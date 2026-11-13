@@ -9,11 +9,12 @@ from app.core.config import settings
 from app.core.database import get_db_session_context
 from app.dependencies.authorize import authorize
 from app.features.auth.authenticated_user import User
+from app.features.custom_tools.url_guard import UnsafeUrlError
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.langgraph.services.chat_service import chat_service
 from app.features.langgraph.services.transcript_webhook_service import (
-    is_absolute_http_url,
     send_transcript_webhook,
+    validate_webhook_url,
 )
 from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
 from app.core.logger import logger
@@ -291,10 +292,12 @@ async def deliver_transcript_webhook_route(
     is rejected with a 4xx.
     """
 
-    if not is_absolute_http_url(request.webhook_url):
+    try:
+        webhook_url = await validate_webhook_url(request.webhook_url)
+    except UnsafeUrlError:
         raise HTTPException(
             status_code=400,
-            detail="Webhook URL must be an absolute http or https URL.",
+            detail="Webhook URL must be an absolute http or https URL that resolves to a public address.",
         )
 
     async with get_db_session_context(
@@ -303,7 +306,7 @@ async def deliver_transcript_webhook_route(
         delivered = await send_transcript_webhook(
             session,
             conversation_id,
-            request.webhook_url,
+            webhook_url,
         )
 
     return {"delivered": delivered}
