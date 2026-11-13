@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { CircleOffIcon, Plus, X } from "lucide-react";
+import { Check, CircleOffIcon, Pencil, Plus, X } from "lucide-react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -116,7 +116,21 @@ export function buildPronunciationOnDelete(
   return next;
 }
 
-/** Edits the Voice Agent Pronunciation list with add, list, and delete rows. */
+/** Returns the Pronunciation array with the entry at the original index replaced, preserving every other entry. */
+export function buildPronunciationOnUpdate(
+  currentValue: unknown,
+  originalIndex: number,
+  term: string,
+  pronunciation: string,
+): Array<unknown> {
+  const next = [...resolvePronunciationSource(currentValue)];
+  if (originalIndex < 0 || originalIndex >= next.length) return next;
+
+  next[originalIndex] = { term, pronunciation };
+  return next;
+}
+
+/** Edits the Voice Agent Pronunciation list with add, edit, list, and delete rows. */
 export const VoicePronunciationField = ({
   name = VOICE_PRONUNCIATION_NAME,
   disabled,
@@ -128,6 +142,9 @@ export const VoicePronunciationField = ({
 }: VoicePronunciationFieldProps) => {
   const [termDraft, setTermDraft] = useState("");
   const [pronunciationDraft, setPronunciationDraft] = useState("");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editTermDraft, setEditTermDraft] = useState("");
+  const [editPronunciationDraft, setEditPronunciationDraft] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const termInputRef = useRef<HTMLInputElement>(null);
 
@@ -138,6 +155,10 @@ export const VoicePronunciationField = ({
   const trimmedTerm = termDraft.trim();
   const trimmedPronunciation = pronunciationDraft.trim();
   const addDisabled = Boolean(disabled) || trimmedTerm === "" || trimmedPronunciation === "";
+  const trimmedEditTerm = editTermDraft.trim();
+  const trimmedEditPronunciation = editPronunciationDraft.trim();
+  const saveEditDisabled =
+    Boolean(disabled) || trimmedEditTerm === "" || trimmedEditPronunciation === "";
 
   function updateTermDraft(next: string) {
     setTermDraft(next);
@@ -149,9 +170,21 @@ export const VoicePronunciationField = ({
     setNotice(null);
   }
 
-  function hasDuplicateTerm(term: string): boolean {
+  function updateEditTermDraft(next: string) {
+    setEditTermDraft(next);
+    setNotice(null);
+  }
+
+  function updateEditPronunciationDraft(next: string) {
+    setEditPronunciationDraft(next);
+    setNotice(null);
+  }
+
+  function hasDuplicateTerm(term: string, excludeIndex?: number): boolean {
     const entries = source ?? [];
-    return entries.some((entry) => {
+    return entries.some((entry, index) => {
+      if (index === excludeIndex) return false;
+
       const record = asRecord(entry);
       if (!record) return false;
 
@@ -179,7 +212,39 @@ export const VoicePronunciationField = ({
     termInputRef.current?.focus();
   }
 
+  function startEdit(row: PronunciationRow) {
+    setEditingIndex(row.index);
+    setEditTermDraft(row.term);
+    setEditPronunciationDraft(row.pronunciation);
+    setNotice(null);
+  }
+
+  function cancelEdit() {
+    setEditingIndex(null);
+    setEditTermDraft("");
+    setEditPronunciationDraft("");
+    setNotice(null);
+  }
+
+  function trySaveEdit() {
+    if (editingIndex === null || saveEditDisabled) return;
+
+    if (hasDuplicateTerm(trimmedEditTerm.toLowerCase(), editingIndex)) {
+      setNotice(DUPLICATE_MESSAGE);
+      toast.warning(DUPLICATE_MESSAGE);
+      return;
+    }
+
+    setValue(
+      name,
+      buildPronunciationOnUpdate(value, editingIndex, trimmedEditTerm, trimmedEditPronunciation),
+      { shouldValidate: true, shouldDirty: true },
+    );
+    cancelEdit();
+  }
+
   function removeRow(originalIndex: number) {
+    if (editingIndex !== null) cancelEdit();
     setValue(name, buildPronunciationOnDelete(value, originalIndex), {
       shouldValidate: true,
       shouldDirty: true,
@@ -190,6 +255,16 @@ export const VoicePronunciationField = ({
     if (event.key === "Enter") {
       event.preventDefault();
       tryAdd();
+    }
+  }
+
+  function handleEditKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      trySaveEdit();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      cancelEdit();
     }
   }
 
@@ -260,19 +335,71 @@ export const VoicePronunciationField = ({
               <span className="text-xs text-muted-foreground w-4 tabular-nums shrink-0">
                 {displayIndex + 1}
               </span>
-              <span className="flex-1 text-sm text-wrap">
-                <span className="font-medium">{row.term}</span>
-                <span className="text-muted-foreground"> = {row.pronunciation}</span>
-              </span>
-              <Button
-                type="button"
-                onClick={() => removeRow(row.index)}
-                variant={"caution"}
-                size={"icon5"}
-                disabled={disabled}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
+              {editingIndex === row.index ? (
+                <>
+                  <Input
+                    value={editTermDraft}
+                    onChange={(event) => updateEditTermDraft(event.target.value)}
+                    onKeyDown={handleEditKeyDown}
+                    disabled={disabled}
+                    aria-label="Edit term"
+                    fieldSize={size}
+                  />
+                  <Input
+                    value={editPronunciationDraft}
+                    onChange={(event) => updateEditPronunciationDraft(event.target.value)}
+                    onKeyDown={handleEditKeyDown}
+                    disabled={disabled}
+                    aria-label="Edit pronunciation"
+                    fieldSize={size}
+                  />
+                  <Button
+                    type="button"
+                    onClick={trySaveEdit}
+                    size={"icon5"}
+                    disabled={saveEditDisabled}
+                    aria-label="Save pronunciation"
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={cancelEdit}
+                    variant={"ghost"}
+                    size={"icon5"}
+                    aria-label="Cancel edit"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <span className="flex-1 text-sm text-wrap">
+                    <span className="font-medium">{row.term}</span>
+                    <span className="text-muted-foreground"> = {row.pronunciation}</span>
+                  </span>
+                  <Button
+                    type="button"
+                    onClick={() => startEdit(row)}
+                    variant={"ghost"}
+                    size={"icon5"}
+                    disabled={disabled}
+                    aria-label={`Edit ${row.term}`}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => removeRow(row.index)}
+                    variant={"caution"}
+                    size={"icon5"}
+                    disabled={disabled}
+                    aria-label={`Delete ${row.term}`}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </>
+              )}
             </div>
           ))
         )}

@@ -80,6 +80,7 @@ export const VoicePronunciationTab = () => {
 
   const pronunciationEnabled = watch(PRONUNCIATION_TOGGLE_NAME) === true;
   const pronunciationValue = watch(PRONUNCIATION_FIELD_NAME);
+  const engineMode = watch("__EngineMode__Voice");
   const ttsProvider = watch("__ModelConfig__TextToSpeech.provider");
 
   const pronunciationToggle = fieldByName.get(PRONUNCIATION_TOGGLE_NAME);
@@ -88,7 +89,7 @@ export const VoicePronunciationTab = () => {
     <div className="space-y-3">
       <VoiceFeatureCard
         title="Pronunciation"
-        description="Speak names, terms, and acronyms the way you want during speech synthesis."
+        description="Speak names, terms, and acronyms the way you want when the agent speaks."
         toggleName={PRONUNCIATION_TOGGLE_NAME}
         toggleLabel={pronunciationToggle?.label}
         toggleDescription={pronunciationToggle?.description}
@@ -102,7 +103,11 @@ export const VoicePronunciationTab = () => {
           description={fieldByName.get(PRONUNCIATION_FIELD_NAME)?.description}
           size="sm"
         />
-        {ttsProvider && !isTtsPreviewSupported(ttsProvider as string) ? (
+        {engineMode === "realtime" ? (
+          <p className="text-2xs text-muted-foreground">
+            Realtime agents apply these terms through their spoken instructions.
+          </p>
+        ) : ttsProvider && !isTtsPreviewSupported(ttsProvider as string) ? (
           <p className="text-2xs text-muted-foreground">
             Voice preview is not supported for this provider. Pronunciation aliases still apply
             where speech synthesis is supported.

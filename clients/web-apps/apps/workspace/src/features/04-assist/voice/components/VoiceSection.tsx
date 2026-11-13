@@ -1,10 +1,9 @@
-import { VoiceCallView, type VoiceCaptionTurn, useLiveVoiceCall } from "@avplatform/assistant-chat";
+import { VoiceCallView, useLiveVoiceCall } from "@avplatform/assistant-chat";
 import { EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { ArrowLeft, AudioLines, Bot, LoaderCircle, UserRound } from "lucide-react";
-import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { useFetchChatAgents } from "@/features/04-assist/my-chats/hooks/useFetchChatAgents";
@@ -13,7 +12,6 @@ import type { AssistChatDto } from "../../my-chats/dtos/assist-chat.dto";
 import { createVoiceSession } from "../apis/voice-session.apis";
 
 const VOICE_HOME = "/assist/voice";
-const INTRODUCTION_TURN_ID = "introduction";
 
 /** Voice route section: published VoiceAgent picker, or the call screen for the selected agent. */
 export const VoiceSection = () => {
@@ -36,20 +34,9 @@ export const VoiceSection = () => {
 };
 
 const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
-  const introduction = agent.voiceIntroduction?.trim();
-
-  const initialTurns = useMemo<VoiceCaptionTurn[]>(
-    () =>
-      agent.firstSpeaker === "ai" && introduction
-        ? [{ id: INTRODUCTION_TURN_ID, speaker: "agent", text: introduction }]
-        : [],
-    [agent.firstSpeaker, introduction],
-  );
-
   const call = useLiveVoiceCall({
     flowVersionId: agent.id,
     mode: "live",
-    initialTurns,
     createSession: async (request) => {
       const response = await createVoiceSession({ ...request, mode: "live" });
       if (!response.data)

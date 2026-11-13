@@ -5,8 +5,11 @@ from app.core.config import settings
 from app.core.database import get_db_session_context
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
-from app.features.langgraph.graphs.graph_factory import _build_skill_prompt, _resolve_skill_configs
-from app.features.langgraph.skills.skill_loader import load_custom_skills
+from app.features.langgraph.skills.skill_loader import (
+    build_skill_prompt,
+    load_custom_skills,
+    resolve_skill_configs,
+)
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.llm_providers.llm_kb_retrieval import _inject_context_into_input
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
@@ -65,8 +68,8 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
                 space_id=user.space_id,
             )
 
-            skill_configs = _resolve_skill_configs(
-                skill_registry=registry,
+            skill_configs = resolve_skill_configs(
+                registry=registry,
                 skill_names=normalized,
                 tenant_id=tenant_id,
             )
@@ -79,7 +82,7 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
             )
             return
 
-        skill_prompt = _build_skill_prompt(skill_configs)
+        skill_prompt = build_skill_prompt(skill_configs)
         if not skill_prompt:
             return
 

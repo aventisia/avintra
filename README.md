@@ -127,8 +127,9 @@ WorkspaceAPIs reaches it through the existing `LLMPIPELINE_API_BASE_URL`. Start 
 server separately; it is not part of `dekit up`:
 
 ```sh
-dekit start livekit         # LiveKit dev server (autostart is off in dekit.yaml)
-dekit start voice_agent     # llmpipeline worker (autostart is off; joins only dispatched rooms)
+dekit start voice_agent     # starts livekit as a dependency; the worker joins only dispatched rooms
+dekit stop voice_agent      # stop the worker; livekit keeps running
+dekit stop livekit          # stop the LiveKit dev server
 curl http://localhost:7880  # health check: OK
 ```
 

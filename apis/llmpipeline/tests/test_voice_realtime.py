@@ -19,7 +19,8 @@ import pytest
 from livekit.agents import llm
 
 import voice_agent.realtime_adapters as realtime_adapters
-from voice_agent import session_runtime
+from app.features.langgraph.schemas.skill_schema import SkillConfig
+from voice_agent import chat_bridge, session_runtime
 from voice_agent.contracts import (
     ERROR_CODE_CREDENTIALS_UNAVAILABLE,
     ERROR_CODE_INVALID_CONFIG,
@@ -621,6 +622,44 @@ def test_realtime_session_without_an_introduction_stays_silent(
     assert session.calls == ["start", "aclose"]
 
 
+def test_pronunciation_instruction_orders_and_filters_entries():
+    assert chat_bridge.pronunciation_instruction([]) is None
+    assert chat_bridge.pronunciation_instruction([{"term": "API"}]) is None
+
+    instruction = chat_bridge.pronunciation_instruction(
+        [
+            {"term": "API", "pronunciation": "A P I"},
+            {"term": "API gateway", "pronunciation": "A P I gateway"},
+        ]
+    )
+
+    assert instruction.index('"API gateway"') < instruction.index('"API"')
+
+
+def test_realtime_pronunciations_are_added_to_instructions(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+    _realtime_model(monkeypatch)
+
+    asyncio.run(
+        run_session(
+            ctx,
+            _claims(),
+            _realtime_settings(
+                pronunciations=[{"term": "API", "pronunciation": "A P I"}]
+            ),
+        )
+    )
+
+    [session] = fake_session.instances
+    instructions = session.started["agent"].instructions
+    assert 'Say "API" as "A P I".' in instructions
+    [reply] = session.replies
+    assert "Apply your pronunciation guide" in reply
+
+
 def test_realtime_knowledge_search_adds_tools_and_prompt_line(
     monkeypatch, voice_persistence
 ):
@@ -649,6 +688,110 @@ def test_realtime_knowledge_search_adds_tools_and_prompt_line(
     [session] = fake_session.instances
     assert session.started["agent"].tools == ["search-tool"]
     assert KNOWLEDGE_SYSTEM_INSTRUCTION in session.started["agent"].instructions
+
+
+class _NullSessionContext:
+    async def __aenter__(self):
+        return object()
+
+    async def __aexit__(self, *_args) -> None:
+        return None
+
+
+def _skill_loader(monkeypatch, *, fail: bool = False) -> list[dict]:
+    calls: list[dict] = []
+
+    def register_platform(registry):
+        registry.register(
+            SkillConfig(name="demo-skill", description="Demo skill.")
+        )
+        return []
+
+    async def load_custom(*, registry, db_session, tenant_id, env_type, space_id):
+        calls.append(
+            {
+                "tenant_id": tenant_id,
+                "env_type": env_type,
+                "space_id": space_id,
+            }
+        )
+        if fail:
+            raise RuntimeError("skills db unavailable")
+
+    monkeypatch.setattr(chat_bridge, "load_platform_skills", register_platform)
+    monkeypatch.setattr(chat_bridge, "load_custom_skills", load_custom)
+    monkeypatch.setattr(
+        chat_bridge,
+        "get_db_session_context",
+        lambda _name: _NullSessionContext(),
+    )
+    return calls
+
+
+@pytest.mark.parametrize("mode", ["test", "live"])
+def test_realtime_skill_prompt_resolves_configured_skills(monkeypatch, mode):
+    calls = _skill_loader(monkeypatch)
+
+    prompt = asyncio.run(
+        chat_bridge.load_realtime_skill_prompt(
+            _claims(mode=mode),
+            _realtime_settings(skills=["demo-skill"]),
+        )
+    )
+
+    assert "You have access to the following skills" in prompt
+    assert "demo-skill: Demo skill." in prompt
+    assert calls == [
+        {
+            "tenant_id": str(TENANT_ID),
+            "env_type": "dev",
+            "space_id": "space-1",
+        }
+    ]
+
+
+def test_realtime_skill_prompt_survives_a_custom_skill_load_failure(monkeypatch):
+    _skill_loader(monkeypatch, fail=True)
+
+    prompt = asyncio.run(
+        chat_bridge.load_realtime_skill_prompt(
+            _claims(),
+            _realtime_settings(skills=["demo-skill"]),
+        )
+    )
+
+    assert "demo-skill: Demo skill." in prompt
+
+
+def test_realtime_skills_add_their_prompt_to_instructions(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+    _realtime_model(monkeypatch)
+
+    async def load_skill_prompt(_claims, _settings):
+        return "You have access to the following skills:\n\n- demo-skill: Demo skill."
+
+    monkeypatch.setattr(
+        session_runtime, "load_realtime_skill_prompt", load_skill_prompt
+    )
+
+    asyncio.run(
+        run_session(
+            ctx,
+            _claims(),
+            _realtime_settings(skills=["demo-skill"]),
+        )
+    )
+
+    [session] = fake_session.instances
+    instructions = session.started["agent"].instructions
+    assert "Goal:\nHelp the caller." in instructions
+    assert "demo-skill: Demo skill." in instructions
+
+    [skill] = _of_type(_payloads(ctx), "skill.call")
+    assert skill["skill"] == "demo-skill"
 
 
 def test_realtime_transcripts_come_from_provider_events(

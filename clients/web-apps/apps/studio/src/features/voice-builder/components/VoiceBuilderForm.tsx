@@ -106,7 +106,6 @@ export const VoiceBuilderForm = () => {
   const { form, watch, flushNow, nodeConfig, isFormReady, isLoading } = useDefineDCPForm();
   const values = watch();
   const readiness = getVoiceReadiness(values);
-  const isRealtime = values[VOICE_FIELDS.engineMode] === "realtime";
 
   const fieldsByName = useMemo(
     () => new Map(nodeConfig.fields.map((field) => [field.name, field])),
@@ -162,7 +161,7 @@ export const VoiceBuilderForm = () => {
             title="Pronunciation & variables"
             description="Say names and terms correctly, and fill {{name}} placeholders for each call."
           >
-            {!isRealtime && <VoicePronunciationTab />}
+            <VoicePronunciationTab />
             <VoiceFeatureCard
               title="Dynamic variables"
               description="Fill {{name}} placeholders for each call."

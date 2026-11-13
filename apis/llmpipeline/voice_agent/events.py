@@ -211,13 +211,13 @@ class VoiceSessionEvents:
             self._turn.has_reference = True
         self._emit("transcript.final", role="user", text=text)
 
-    def assistant_transcript(self, text: str) -> None:
-        """Publish a finalized assistant transcript from a realtime model."""
+    def assistant_transcript(self, text: str, *, turn_id: int | None = None) -> None:
+        """Publish a finalized assistant transcript."""
 
         text = text.strip()
         if not text:
             return
-        self._emit("transcript.final", role="assistant", text=text)
+        self._emit("transcript.final", role="assistant", text=text, turnId=turn_id)
 
     def realtime_response_timing(self, timing: dict[str, int]) -> dict[str, int | None]:
         """Publish a realtime response's provider latency in the turn format."""
@@ -306,6 +306,12 @@ class VoiceSessionEvents:
 
     def tool_call(self, payload: Any, *, turn_id: int | None = None) -> None:
         self._emit("tool.call", tool=payload, turnId=turn_id)
+
+    def skill_call(self, name: str, *, turn_id: int | None = None) -> None:
+        name = name.strip()
+        if not name:
+            return
+        self._emit("skill.call", skill=name, turnId=turn_id)
 
     def error(
         self,
