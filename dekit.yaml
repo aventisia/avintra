@@ -39,6 +39,10 @@ tasks:
     cmd: node --run dev
     cwd: clients/web-apps/apps/studio
     tags: [frontend]
+  azurite:
+    # Azure Storage emulator behind UseDevelopmentStorage=true; one instance on port 10000 serves every checkout.
+    cmd: [node, scripts/azurite.mjs]
+    tags: [backend]
   accounts_apis:
     cmd: dotnet run
     cwd: apis/WorcBackend-legacy/AccountsAPIs
