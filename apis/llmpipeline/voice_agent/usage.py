@@ -70,11 +70,11 @@ class RealtimeUsageRecorder:
         # session-billed providers, so it accumulates like the usage collector.
         self._pending.session_seconds += max(collected.session_duration, 0.0)
 
-        if collected.ttft >= 0 and collected.duration > 0:
-            self._response_timing = {
-                "ttft_ms": milliseconds(collected.ttft),
-                "duration_ms": milliseconds(collected.duration),
-            }
+        if collected.duration > 0:
+            self._response_timing = {"duration_ms": milliseconds(collected.duration)}
+            # IMPORTANT NOTE: Gemini reports ttft as -1; it has no response-start event.
+            if collected.ttft >= 0:
+                self._response_timing["ttft_ms"] = milliseconds(collected.ttft)
 
     def take_response_timing(self) -> dict[str, int] | None:
         """Return the latency of the response that just finished, once."""

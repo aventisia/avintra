@@ -8,16 +8,16 @@ import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
 import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
-// Import your static voice mappings here
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
-import { voiceProviderData } from "../../constants/voice-providers";
+import type { VoiceCatalogCapability } from "../../dtos/voice-catalog.dto";
+import { useVoiceCatalog } from "../../hooks/useVoiceCatalog.hook";
 import { useVoicePreview } from "../../hooks/useVoicePreview.hook";
 import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 
 const LEGACY_TTS_NODE_NAME = "CreateTTSAIAgent";
 
-export interface VoiceConfigFieldProps {
+export type VoiceConfigFieldProps = {
   /** The base name of the form field */
   name: string;
   /** Form path of the provider this field watches. */
@@ -28,7 +28,9 @@ export interface VoiceConfigFieldProps {
   credentialPath?: string;
   /** Form path of the BYOK toggle this field watches. */
   isByokPath?: string;
-}
+  /** Voice capability of the selected model. */
+  capability?: VoiceCatalogCapability;
+};
 
 const VoiceConfigField = ({
   name,
@@ -36,28 +38,26 @@ const VoiceConfigField = ({
   modelPath,
   credentialPath,
   isByokPath,
+  capability = "tts",
 }: VoiceConfigFieldProps) => {
   const { control, setValue, watch } = useFormContext();
   const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
   const isVoiceNode = nodeName === VOICE_AGENT_NODE_NAME || nodeName === LEGACY_TTS_NODE_NAME;
 
-  // 1. Memoize Field Names
   const fieldNames = useMemo(
     () =>
       ({
-        provider: providerPath, // Watch the provider selected in ModelConfigField
+        provider: providerPath,
         model: modelPath ?? "__ModelConfig__TextToSpeech.model",
         credential: credentialPath,
         isByok: isByokPath,
         language: `${name}.language`,
         voice: `${name}.voice`,
         speed: `${name}.speed`,
-        // pitch: `${name}.pitch`,
       }) as const,
     [name, providerPath, modelPath, credentialPath, isByokPath],
   );
 
-  // Watch the provider value dynamically
   const providerValue = watch(fieldNames.provider);
   const modelValue = watch(fieldNames.model);
   const credentialValue = fieldNames.credential ? watch(fieldNames.credential) : undefined;
@@ -67,7 +67,6 @@ const VoiceConfigField = ({
   const pronunciationValue = watch("__Pronunciation__Voice");
   const pronunciationEnabled = watch("__PronunciationEnabled__Voice");
 
-  // 2. Controllers for Voice fields
   const { field: languageField } = useController({
     name: fieldNames.language,
     control,
@@ -76,35 +75,27 @@ const VoiceConfigField = ({
     name: fieldNames.speed,
     control,
   });
-  // const { field: pitchField } = useController({
-  //   name: fieldNames.pitch,
-  //   control,
-  // });
 
   const languageValue = languageField.value;
   const prevLanguage = useRef(languageValue);
   const prevProvider = useRef(providerValue);
 
-  // 3. Get Data based on the selected Provider
-  const providerVoiceData = useMemo(() => {
-    if (!providerValue || !voiceProviderData[providerValue]) {
-      return { languages: [], voices: [] };
-    }
-    return voiceProviderData[providerValue];
-  }, [providerValue]);
+  const { providerData, isLoading } = useVoiceCatalog({
+    provider: providerValue,
+    model: modelValue,
+    capability,
+    credentialName: isByokValue ? credentialValue : undefined,
+    enabled: isVoiceNode,
+  });
 
-  // 4. Filter voices dynamically based on selected language
-  const filteredVoices = useMemo(() => {
-    const allProviderVoices = providerVoiceData.voices;
-    if (!languageValue) return allProviderVoices;
-
-    return allProviderVoices.filter((v) => v.languageId === languageValue || !v.languageId);
-  }, [providerVoiceData, languageValue]);
+  const voices = providerData.voices;
+  const sample = voices.find((voice) => voice.value === voiceValue)?.sample ?? null;
 
   const voicePreview = useVoicePreview({
     provider: providerValue,
     model: modelValue,
     voice: voiceValue,
+    sample,
     language: languageValue,
     speed: speedValue,
     credentialName: credentialValue,
@@ -117,9 +108,7 @@ const VoiceConfigField = ({
           : [],
   });
 
-  // 5. Handle Field Resets (Reset state when provider or language changes)
   useEffect(() => {
-    // If provider changes, reset both language and voice
     if (prevProvider.current !== providerValue) {
       prevProvider.current = providerValue;
       setValue(fieldNames.language, "", { shouldDirty: true });
@@ -127,7 +116,6 @@ const VoiceConfigField = ({
       return;
     }
 
-    // If only language changes, reset the voice
     if (prevLanguage.current !== languageValue) {
       prevLanguage.current = languageValue;
       setValue(fieldNames.voice, "", { shouldDirty: true });
@@ -138,7 +126,11 @@ const VoiceConfigField = ({
     return null;
   }
 
-  if (providerVoiceData.languages.length === 0 && providerVoiceData.voices.length === 0) {
+  if (isLoading) {
+    return <p className="text-xs text-muted-foreground">Loading voices…</p>;
+  }
+
+  if (providerData.languages.length === 0 && providerData.voices.length === 0) {
     return null;
   }
 
@@ -147,9 +139,9 @@ const VoiceConfigField = ({
       <SelectField
         size="sm"
         name={fieldNames.language}
-        selectOptions={providerVoiceData.languages}
+        selectOptions={providerData.languages}
         label="Language"
-        disabled={providerVoiceData.languages.length === 0}
+        disabled={providerData.languages.length === 0}
       />
 
       <div className="flex items-end gap-1">
@@ -157,10 +149,10 @@ const VoiceConfigField = ({
           <SearchableSelectField
             size="sm"
             name={fieldNames.voice}
-            selectOptions={filteredVoices}
+            selectOptions={voices}
             label="Voice"
             primaryText="Voices"
-            disabled={filteredVoices.length === 0}
+            disabled={voices.length === 0}
           />
         </div>
 
@@ -176,19 +168,6 @@ const VoiceConfigField = ({
                 <SliderField label="Speed" name={field.name} min={0.7} max={1.2} step={0.1} />
               )}
             />
-
-            {/* <Controller
-              {...pitchField}
-              render={({ field }) => (
-                <SliderField
-                  label="Pitch"
-                  name={field.name}
-                  min={0.5}
-                  max={2.0}
-                  step={0.1}
-                />
-              )}
-            /> */}
           </PopoverContent>
         </Popover>
 

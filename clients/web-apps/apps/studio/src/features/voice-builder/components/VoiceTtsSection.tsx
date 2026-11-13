@@ -27,6 +27,7 @@ export const VoiceTtsSection = () => {
       <VoiceOutputFields
         provider={watch(PROVIDER) as string | undefined}
         model={watch(MODEL) as string | undefined}
+        capability="tts"
         credentialName={watch(CREDENTIAL) as string | undefined}
         isByokEnabled={watch(IS_BYOK) as boolean | undefined}
         emptyMessage="Pick a text-to-speech provider above to see its voices."

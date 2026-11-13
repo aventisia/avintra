@@ -1,23 +1,21 @@
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { Check, Play, Square } from "lucide-react";
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
 import {
+  type VoiceCatalogCapability,
   type VoiceOption,
-  type VoiceProviderData,
+  useVoiceCatalog,
   useVoicePreview,
-  voiceProviderData,
 } from "@/features/dynamic-config-panel";
 
 import { VOICE_OUTPUT_FIELDS } from "../constants/voice-builder.constant";
 import { useVoiceOutputReset } from "../hooks/useVoiceOutputReset.hook";
 
-const EMPTY_PROVIDER_DATA: VoiceProviderData = { languages: [], voices: [] };
-
-type PreviewRequest = Omit<Parameters<typeof useVoicePreview>[0], "voice">;
+type PreviewRequest = Omit<Parameters<typeof useVoicePreview>[0], "voice" | "sample">;
 
 const splitVoiceLabel = (label: string) => {
   const match = /^(.*?)\s*\((.*)\)$/.exec(label);
@@ -80,7 +78,7 @@ const PreviewVoiceCard = ({
   preview: PreviewRequest;
 }) => {
   const { name } = splitVoiceLabel(voice.label);
-  const player = useVoicePreview({ ...preview, voice: voice.value });
+  const player = useVoicePreview({ ...preview, voice: voice.value, sample: voice.sample });
 
   return (
     <VoiceCardRow
@@ -130,16 +128,17 @@ const VoiceCard = ({
 type VoiceOutputFieldsProps = {
   provider?: string;
   model?: string;
+  capability: VoiceCatalogCapability;
   credentialName?: string;
   isByokEnabled?: boolean;
   showPreview?: boolean;
   emptyMessage: string;
 };
 
-/** Language, voice, and speed shared by the pipeline TTS and realtime engines. */
 export const VoiceOutputFields = ({
   provider,
   model,
+  capability,
   credentialName,
   isByokEnabled,
   showPreview = true,
@@ -149,13 +148,13 @@ export const VoiceOutputFields = ({
   const language = watch(VOICE_OUTPUT_FIELDS.language) as string | undefined;
   const selectedVoice = watch(VOICE_OUTPUT_FIELDS.voice) as string | undefined;
   const pronunciations = watch("__Pronunciation__Voice") as unknown;
-  const providerData = useMemo(
-    () => (provider && voiceProviderData[provider]) || EMPTY_PROVIDER_DATA,
-    [provider],
-  );
-  const voices = providerData.voices.filter(
-    (voice) => !language || !voice.languageId || voice.languageId === language,
-  );
+  const { providerData, isLoading, isReady } = useVoiceCatalog({
+    provider,
+    model,
+    capability,
+    credentialName: isByokEnabled ? credentialName : undefined,
+  });
+  const voices = providerData.voices;
 
   const preview: PreviewRequest = {
     provider,
@@ -170,7 +169,15 @@ export const VoiceOutputFields = ({
         : [],
   };
 
-  useVoiceOutputReset(provider, language, selectedVoice, providerData);
+  useVoiceOutputReset(provider, language, selectedVoice, providerData, isReady);
+
+  if (isLoading) {
+    return (
+      <p className="rounded-lg bg-sunken px-3 py-2 text-hint text-muted-foreground">
+        Loading voices…
+      </p>
+    );
+  }
 
   if (!providerData.voices.length) {
     return (
@@ -188,17 +195,22 @@ export const VoiceOutputFields = ({
         selectOptions={providerData.languages}
         label="Language"
       />
-      <div role="radiogroup" aria-label="Voice" className="grid gap-2 sm:grid-cols-2">
-        {voices.map((voice) => (
-          <VoiceCard
-            key={voice.value}
-            voice={voice}
-            isSelected={selectedVoice === voice.value}
-            onSelect={() => setValue(VOICE_OUTPUT_FIELDS.voice, voice.value, { shouldDirty: true })}
-            preview={preview}
-            showPreview={showPreview}
-          />
-        ))}
+      <div className="space-y-1.5">
+        <span className="ml-1 block text-hint font-semibold text-ink">Voice</span>
+        <div role="radiogroup" aria-label="Voice" className="grid gap-2 sm:grid-cols-2">
+          {voices.map((voice) => (
+            <VoiceCard
+              key={voice.value}
+              voice={voice}
+              isSelected={selectedVoice === voice.value}
+              onSelect={() =>
+                setValue(VOICE_OUTPUT_FIELDS.voice, voice.value, { shouldDirty: true })
+              }
+              preview={preview}
+              showPreview={showPreview}
+            />
+          ))}
+        </div>
       </div>
       <SliderField name={VOICE_OUTPUT_FIELDS.speed} label="Speed" min={0.7} max={1.2} step={0.1} />
     </>

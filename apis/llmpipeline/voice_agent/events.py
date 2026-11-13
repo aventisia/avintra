@@ -219,16 +219,18 @@ class VoiceSessionEvents:
             return
         self._emit("transcript.final", role="assistant", text=text, turnId=turn_id)
 
-    def realtime_response_timing(self, timing: dict[str, int]) -> dict[str, int | None]:
+    def realtime_response_timing(
+        self, timing: dict[str, int], first_audio_ms: int | None = None
+    ) -> dict[str, int | None]:
         """Publish a realtime response's provider latency in the turn format."""
 
         voice_timing: dict[str, int | None] = {
             "stt_ms": None,
             "llm_first_token_ms": None,
-            "tts_first_audio_ms": None,
+            "tts_first_audio_ms": first_audio_ms,
             "turn_total_ms": None,
             "endpointing_ms": None,
-            "caller_to_speaking_ms": None,
+            "caller_to_speaking_ms": first_audio_ms,
             "ttft_ms": timing.get("ttft_ms"),
             "duration_ms": timing.get("duration_ms"),
         }

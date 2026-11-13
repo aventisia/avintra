@@ -7,7 +7,7 @@ import { useFormContext } from "react-hook-form";
 
 type VoiceFeatureCardProps = {
   title: string;
-  description: string;
+  description?: string;
   badge?: ReactNode;
   toggleName?: string;
   toggleLabel?: string;
@@ -40,7 +40,7 @@ export const VoiceFeatureCard = ({
           {badge}
           {hasError ? <Badge variant="destructive">Needs attention</Badge> : null}
         </div>
-        <CardDescription className="text-xs">{description}</CardDescription>
+        {description ? <CardDescription className="text-xs">{description}</CardDescription> : null}
       </div>
     </div>
   );

@@ -43,8 +43,8 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
 1. The caller opens `POST /api/assist/voice/sessions` with
    `{ "flowVersionId": "<uuid>", "mode": "test" | "live" }` and a normal platform
    bearer token.
-2. `test` resolves the current draft and is treated as a temporary chat; `live`
-   requires a published, non-archived version.
+2. `test` resolves the current draft; `live` requires a published, non-archived
+   version. Both persist their conversation and messages.
 3. WorkspaceAPIs creates the conversation row and calls llmpipeline
    `POST /api/v2/voice/sessions` with the same bearer token and the caller's
    `X-Env-Type` / `X-Space-Id`.
@@ -93,13 +93,13 @@ events, and clean shutdown.
   publishes a `timing` turn event with the provider's `ttft_ms` / `duration_ms`.
 - Realtime uses the provider's own turn detection and interruption handling; the
   worker does not configure VAD for it.
-- Live realtime calls persist finalized caller and assistant items, seed the
-  model with the conversation history (capped by `memory.maxShortTermTurns`), and
-  post BYOK usage from `RealtimeModelMetrics`. Test calls persist no messages
-  but still publish timing and meter usage. Realtime tools run only actions
-  configured for automatic approval, and knowledge search is on demand; memory
-  summarization lands in a later phase. The conversation status is written on
-  close.
+- Realtime calls persist finalized caller and assistant items, seed the model
+  with the conversation history (capped by `memory.maxShortTermTurns`) on live
+  calls, and post BYOK usage from `RealtimeModelMetrics`. Test calls persist
+  messages and timing too, but start without prior history. Realtime tools run
+  only actions configured for automatic approval, and knowledge search is on
+  demand; memory summarization lands in a later phase. The conversation status
+  is written on close.
 - Noise cancellation resolves to `none` or `auto`. Enhanced modes are rejected
   at publish; see [Noise cancellation](#noise-cancellation).
 
@@ -249,12 +249,11 @@ events because the worker never joins.
 
 - WorkspaceAPIs creates `run_Conversations` before dispatch with
   `Channel = Voice`, `FlowVersionId`, `UserId`, and `Status = Active`.
-- Live sessions persist messages: the chat engine writes pipeline turns, and the
-  realtime worker writes finalized caller and assistant items. Pipeline turn
-  timing is merged into the latest assistant UI transcript row's metadata as
+- Sessions persist messages: the chat engine writes pipeline turns, and the
+  realtime worker writes finalized caller, assistant, and tool items. Pipeline
+  turn timing is merged into the latest assistant UI transcript row's metadata as
   `voice_turn_timing`; realtime timing stays in the assistant message metadata.
-  `test` sessions are temporary chats: they create and close the conversation
-  row but do not persist messages or turn timing.
+  `test` and `live` sessions share this path.
 - On normal disconnect or job shutdown the worker closes the agent session,
   flushes queued events, deletes the LiveKit room, and writes `Completed`.
   Configuration errors, join failures, and runtime errors write `Failed`.
@@ -275,8 +274,7 @@ events because the worker never joins.
   audio seconds. The batch LiteLLM STT path posts its own usage inside the
   provider, so the two paths never double-count.
 - Pipeline LLM and TTS usage stays on the existing chat and LiteLLM paths.
-- `test` calls meter the same way as `live` calls; only message persistence
-  differs.
+- `test` calls meter the same way as `live` calls.
 
 ## Testing
 
@@ -309,7 +307,7 @@ For a manual acceptance run, use the Bruno requests in
 `tests/bruno/WorkspaceAPIs/voice-sessions/` to log in, read the settings, and
 create a session. Join the returned room with the LiveKit console/CLI, then
 verify the row in `run_Conversations`, its `Voice` channel and `FlowVersionId`,
-and (for live mode) the final messages and `voice_turn_timing` metadata.
+and the final messages and `voice_turn_timing` metadata.
 
 ## Latency measurement
 
@@ -323,18 +321,18 @@ these fields per stage:
 | STT | `stt_ms` — final speech-to-text call duration |
 | First token | `llm_first_token_ms` (realtime: `ttft_ms`) |
 | First audio | `tts_first_audio_ms` |
-| End-to-end | `caller_to_speaking_ms` (realtime: `ttft_ms`) |
+| End-to-end | `caller_to_speaking_ms` (realtime: finalized caller transcript to agent `speaking`) |
 
 Target: p95 end-to-end ≤ 800 ms over at least ten representative turns per
 configuration. Split the result by stage before optimizing: provider and network
 latency is outside the worker's turn loop, and a slow STT or endpointing wait
 alone can exceed the target.
 
-`tts_first_audio_ms` is recorded when TTS uses its streaming sentence path.
-When LiveKit selects the chunked synthesis path the field is `null`; measure the
-first audible agent frame in the client for those turns instead. Never report a
-latency number from `turn_total_ms` alone: it measures the completed turn, not
-the wait the caller hears.
+In the pipeline, `tts_first_audio_ms` is recorded when TTS uses its streaming
+sentence path. When LiveKit selects the chunked synthesis path the field is
+`null`; measure the first audible agent frame in the client for those turns
+instead. Never report a latency number from `turn_total_ms` alone: it measures
+the completed turn, not the wait the caller hears.
 
 ### Benchmark
 
@@ -346,10 +344,11 @@ realtime) with at least ten turns each, then from `apis/llmpipeline`:
   batch=<conversationId,...> streaming=<conversationId,...> realtime=<conversationId,...>
 ```
 
-Conversation ids come from `run_Conversations` (`Channel = Voice`); only `live`
-calls persist timing. The script prints the table below. Realtime reports
-provider `ttft_ms` as both first token and end-to-end, because it has no
-caller-speech-end reference.
+Conversation ids come from `run_Conversations` (`Channel = Voice`); both `test`
+and `live` calls persist timing. The script prints the table below. Realtime
+records first audio from the finalized caller transcript to the agent's first
+`speaking` state; it also reports provider `ttft_ms` as end-to-end because it has
+no caller-speech-end reference.
 
 | Configuration | Turns | STT p50 / p95 (ms) | Endpointing p50 / p95 (ms) | First token p50 / p95 (ms) | First audio p50 / p95 (ms) | End-to-end p50 / p95 (ms) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -368,7 +367,7 @@ before quoting a latency number.
    Supported modes: auto, none.`
 3. Run a Studio `test` call and a Workspace `live` call against a realtime agent
    with a BYOK OpenAI or Gemini key; confirm audio, captions, `Completed`
-   status, persisted live messages, and one BYOK usage row per call.
+   status, persisted messages, and one BYOK usage row per call.
 4. Run the same calls for a pipeline agent and confirm the pipeline path,
    interim captions, and `voice_turn_timing` are unchanged.
 5. Run at least ten turns per configuration and fill the benchmark table. Until
@@ -389,8 +388,6 @@ before quoting a latency number.
   follows the agent setting, which defaults on for new agents.
 - Turn timing is best-effort metadata. A missing assistant transcript row or a
   failed TTS call leaves timing fields unset.
-- `test` sessions deliberately do not persist messages or turn timing, so a
-  full persistence check needs a published `live` version.
 - Events are live data packets, not a replay log; a UI that joins late misses
   earlier events and must load persisted messages separately.
 - A dispatch that never reaches a worker leaves the conversation `Active`; there

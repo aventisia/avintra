@@ -1,17 +1,9 @@
-import type { VoiceCaptionTurn } from "@avplatform/assistant-chat";
+export type VoiceConversationOutcome = "completed" | "active" | "error";
 
-export type VoiceConversationChannel = "test" | "workspace";
-
-export type VoiceConversationOutcome = "completed" | "caller-hung-up" | "error";
-
-export type VoiceConversation = {
+export type VoiceConversationSummary = {
   id: string;
+  title: string;
   startedAt: string;
-  callerName: string;
-  channel: VoiceConversationChannel;
-  versionNumber: number;
   durationMs: number;
   outcome: VoiceConversationOutcome;
-  errorMessage?: string;
-  turns: VoiceCaptionTurn[];
 };

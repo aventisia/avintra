@@ -128,14 +128,20 @@ public sealed class VoiceAgentSettingsResolver : IVoiceAgentSettingsResolver
                 "Voice agent flow version was not found.");
         }
 
-        if ((mode == VoiceAgentSettingsMode.Live && (!flowVersion.IsPublished || flowVersion.IsArchived)) ||
-            (mode == VoiceAgentSettingsMode.Test && flowVersion.IsArchived))
+        if (mode == VoiceAgentSettingsMode.Live && (!flowVersion.IsPublished || flowVersion.IsArchived))
         {
             return VoiceAgentSettingsResolution.Failed(
                 VoiceAgentSettingsResolutionStatus.Unavailable,
-                mode == VoiceAgentSettingsMode.Live
-                    ? "Voice agent is not published or is archived."
-                    : "Voice agent draft is archived.");
+                "Voice agent is not published or is archived.");
+        }
+
+        if (mode == VoiceAgentSettingsMode.Test && (flowVersion.IsPublished || flowVersion.IsArchived))
+        {
+            return VoiceAgentSettingsResolution.Failed(
+                VoiceAgentSettingsResolutionStatus.Unavailable,
+                flowVersion.IsArchived
+                    ? "Voice agent draft is archived."
+                    : "Published voice agents cannot be tested. Open a draft version.");
         }
 
         var (hasAccess, _) = await _resourceUserAccessService.GetResourceAccessAsync(

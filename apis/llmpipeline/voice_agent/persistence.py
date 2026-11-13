@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, ToolMessage
 
 from app.core.config import settings
 from app.core.database import get_db_session_context
@@ -56,9 +56,6 @@ class VoiceTurnTimingRecorder:
         self._claims = claims
 
     async def __call__(self, turn_id: int, timing: dict[str, Any]) -> None:
-        if self._claims.mode == "test":
-            return
-
         try:
             async with get_db_session_context(
                 settings.POSTGRESQL_WORKSPACE_DB_NAME
@@ -120,7 +117,7 @@ class VoiceRealtimeTranscriptWriter:
         self._agent_settings = agent_settings
         self._user = build_user(claims)
         self._queue: asyncio.Queue[
-            tuple[str, str, str | None, dict | None] | None
+            tuple[BaseMessage, dict | None] | None
         ] = asyncio.Queue()
         self._persisted_ids: set[str] = set()
         self._task: asyncio.Task[None] | None = None
@@ -143,7 +140,33 @@ class VoiceRealtimeTranscriptWriter:
             if message_id in self._persisted_ids:
                 return
             self._persisted_ids.add(message_id)
-        self._queue.put_nowait((role, text, message_id, timing))
+
+        message: BaseMessage = (
+            HumanMessage(content=text) if role == "user" else AIMessage(content=text)
+        )
+        if message_id:
+            message.id = message_id
+        metadata = {"voice_turn_timing": timing} if timing else None
+        self._queue.put_nowait((message, metadata))
+
+    def add_tool_call(self, tool_call: dict) -> None:
+        if self._task is None:
+            return
+        tool_call_id = str(tool_call.get("tool_call_id") or "")
+        if not tool_call_id or tool_call_id in self._persisted_ids:
+            return
+        self._persisted_ids.add(tool_call_id)
+
+        message = ToolMessage(
+            content=str(tool_call.get("content") or ""),
+            tool_call_id=tool_call_id,
+            name=str(tool_call.get("name") or ""),
+        )
+        metadata = {
+            "status": tool_call.get("status"),
+            "duration_ms": tool_call.get("duration_ms"),
+        }
+        self._queue.put_nowait((message, metadata))
 
     async def aclose(self) -> None:
         if self._task is None:
@@ -169,19 +192,10 @@ class VoiceRealtimeTranscriptWriter:
 
     async def _save(
         self,
-        role: str,
-        text: str,
-        message_id: str | None,
-        timing: dict | None,
+        message: BaseMessage,
+        metadata: dict | None,
     ) -> None:
-        message: BaseMessage = (
-            HumanMessage(content=text) if role == "user" else AIMessage(content=text)
-        )
-        if message_id:
-            message.id = message_id
-
         request = _voice_message_request(self._claims, self._agent_settings)
-        metadata = {"voice_turn_timing": timing} if timing else None
 
         async with get_db_session_context(
             settings.POSTGRESQL_WORKSPACE_DB_NAME

@@ -482,6 +482,7 @@ const ModelConfigField = ({
           modelPath={fieldNames.model}
           credentialPath={fieldNames.credential_name}
           isByokPath={fieldNames.is_byok_enabled}
+          capability={isRealtime ? "realtime" : "tts"}
         />
       )}
     </div>
