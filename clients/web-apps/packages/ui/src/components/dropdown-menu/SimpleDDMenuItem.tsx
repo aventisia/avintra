@@ -1,7 +1,7 @@
 import React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
-import { DropdownMenuItem } from "@/ui/components/dropdown-menu";
+import { DropdownMenuItem, MenuShortcut } from "@/ui/components/dropdown-menu";
 import { cn } from "@/ui/lib";
 import { type IconProps } from "@/ui/types";
 
@@ -11,8 +11,10 @@ export const SimpleDDMenuItem = React.forwardRef<
     content?: string;
     Icon?: React.ComponentType<IconProps>;
     size?: "sm" | "md";
+    /** Display text for the shortcut that runs this item, shown at the end of the row. */
+    shortcut?: string;
   }
->(({ className, content, children, Icon, size = "md", ...props }, ref) => (
+>(({ className, content, children, Icon, size = "md", shortcut, ...props }, ref) => (
   <DropdownMenuItem
     ref={ref}
     className={cn(
@@ -35,5 +37,6 @@ export const SimpleDDMenuItem = React.forwardRef<
     ) : null}
     {content}
     {children}
+    {shortcut ? <MenuShortcut>{shortcut}</MenuShortcut> : null}
   </DropdownMenuItem>
 ));

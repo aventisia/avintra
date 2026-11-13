@@ -1,9 +1,36 @@
-import type { ShortcutGroup } from "../types/shortcut.type";
+import type { Shortcut, ShortcutGroup } from "../types/shortcut.type";
+
+export const FIND_NODE_SHORTCUT: Shortcut = {
+  label: "Find a node",
+  modifiers: ["ctrl"],
+  key: "k",
+};
+
+export const IMPORT_SHORTCUT: Shortcut = {
+  label: "Import an agent",
+  modifiers: ["mod"],
+  key: "o",
+};
+
+export const EXPORT_SHORTCUT: Shortcut = {
+  label: "Export the agent",
+  modifiers: ["mod"],
+  key: "e",
+};
+
+export const KEYBOARD_SHORTCUTS_SHORTCUT: Shortcut = {
+  label: "Show keyboard shortcuts",
+  modifiers: ["mod"],
+  key: "slash",
+};
 
 const GENERAL: ShortcutGroup = {
   title: "General",
   shortcuts: [
-    { label: "Find a node", modifiers: ["ctrl"], key: "k" },
+    FIND_NODE_SHORTCUT,
+    IMPORT_SHORTCUT,
+    EXPORT_SHORTCUT,
+    KEYBOARD_SHORTCUTS_SHORTCUT,
     { label: "Save changes", modifiers: ["mod"], key: "s" },
     { label: "Close a dialog or panel", modifiers: [], key: "escape" },
   ],

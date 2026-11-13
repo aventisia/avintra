@@ -9,7 +9,9 @@ const MODIFIER_KEY_NAMES = new Set(["Meta", "Control", "Alt", "AltGraph", "Shift
 
 export const isModifierKey = (key: string) => MODIFIER_KEY_NAMES.has(key);
 
-export const normalizeKey = (key: string) => (key === " " ? "space" : key.toLowerCase());
+const KEY_ALIASES: Record<string, string> = { " ": "space", "/": "slash" };
+
+export const normalizeKey = (key: string) => KEY_ALIASES[key] ?? key.toLowerCase();
 
 export const isArrowKey = (key: string | null) => !!key?.startsWith("arrow");
 

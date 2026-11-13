@@ -1,7 +1,19 @@
 export type Modifier = "mod" | "ctrl" | "alt" | "shift";
 
 export type ShortcutKey =
-  "k" | "s" | "escape" | "c" | "x" | "v" | "d" | "delete" | "space" | "arrows";
+  | "k"
+  | "s"
+  | "o"
+  | "e"
+  | "slash"
+  | "escape"
+  | "c"
+  | "x"
+  | "v"
+  | "d"
+  | "delete"
+  | "space"
+  | "arrows";
 
 export type Gesture = "click" | "drag" | "scroll";
 
