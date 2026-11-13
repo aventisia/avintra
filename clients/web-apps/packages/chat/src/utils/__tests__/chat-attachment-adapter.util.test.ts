@@ -82,6 +82,25 @@ describe("createChatAttachmentAdapter", () => {
     expect(pending.type).toBe("image");
   });
 
+  it("blocks a fourth file when the tray already holds the limit", async () => {
+    const adapter = createChatAttachmentAdapter();
+    const addFile = async (name: string) => {
+      const pending = await adapter.add({ file: new File(["x"], name, { type: "text/plain" }) });
+      if (Symbol.asyncIterator in pending) throw new Error("expected a single attachment");
+      return pending;
+    };
+    const first = await addFile("a.txt");
+    await addFile("b.txt");
+    await addFile("c.txt");
+
+    expect(() => adapter.add({ file: new File(["x"], "d.txt", { type: "text/plain" }) })).toThrow(
+      "Attach up to 3 files per message.",
+    );
+
+    await adapter.remove(first);
+    await expect(addFile("d.txt")).resolves.toMatchObject({ name: "d.txt" });
+  });
+
   it("rejects files over 10 MB", () => {
     const file = new File([new Uint8Array(10 * 1024 * 1024 + 1)], "huge.png", {
       type: "image/png",

@@ -71,6 +71,8 @@ export const createChatAttachmentAdapter = () => {
     new ChatTextAdapter(),
     new ChatOfficeAdapter(),
   ]);
+  const trayIds = new Set<string>();
+  let addsInFlight = 0;
 
   return {
     accept: adapter.accept,
@@ -78,9 +80,26 @@ export const createChatAttachmentAdapter = () => {
       if (state.file.size > MAX_FILE_BYTES) {
         throw new Error(`${state.file.name} is larger than 10 MB.`);
       }
-      return adapter.add(state);
+      if (trayIds.size + addsInFlight >= CHAT_ATTACHMENT_LIMIT) {
+        throw new Error(`Attach up to ${CHAT_ATTACHMENT_LIMIT} files per message.`);
+      }
+      addsInFlight += 1;
+      return (adapter.add(state) as Promise<PendingAttachment>)
+        .then((attachment) => {
+          trayIds.add(attachment.id);
+          return attachment;
+        })
+        .finally(() => {
+          addsInFlight -= 1;
+        });
     },
-    send: (...args) => adapter.send(...args),
-    remove: (attachment) => adapter.remove(attachment),
+    send: (attachment, options?: { signal?: AbortSignal }) => {
+      trayIds.delete(attachment.id);
+      return adapter.send(attachment, options);
+    },
+    remove: (attachment) => {
+      trayIds.delete(attachment.id);
+      return adapter.remove(attachment);
+    },
   } satisfies AttachmentAdapter;
 };

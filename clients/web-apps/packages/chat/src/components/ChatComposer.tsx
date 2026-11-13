@@ -52,8 +52,8 @@ export const ChatComposer = ({
   const attachmentCount = useAuiState((s) => s.composer.attachments.length);
   const isOverLimit = attachmentCount > CHAT_ATTACHMENT_LIMIT;
   const [attachmentError, setAttachmentError] = useState<string>();
+  // IMPORTANT NOTE: files picked together finish after a rejected one, so this must not clear its error.
   useAuiEvent("composer.attachmentAdd", () => {
-    setAttachmentError(undefined);
     inputRef.current?.focus();
   });
   useAuiEvent("composer.attachmentAddError", ({ reason, message }) =>
