@@ -189,7 +189,7 @@ export const HeaderActionMenu = () => {
             onClick={() => setExportDialog(true)}
             size="md"
             Icon={ArrowsLeftRightIcon}
-            content="Add input/output"
+            content="Input/output"
           />
         ) : null}
 
