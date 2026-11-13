@@ -1,8 +1,11 @@
+import { useArchiveAgentAction } from "@avplatform/agents";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { ArchiveIcon, TrayArrowUpIcon } from "@phosphor-icons/react";
 
-import { useArchiveFlowVersionsMutation } from "../../hooks/useArchiveFlowVersions.hook";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
+
+import { FLOWS_QUERY_KEY, FOLDERS_QUERY_KEY } from "../../constants";
 
 type FlowRowArchiveActionProps = {
   rowId: string;
@@ -21,53 +24,25 @@ export const FlowRowArchiveAction = ({
   isArchived,
   isPublished,
 }: FlowRowArchiveActionProps) => {
-  const { showCustomAlertDialog } = useShowAlertHandler();
-  const { mutate: archiveFlowVersions } = useArchiveFlowVersionsMutation();
+  const { requestArchive, requestUnarchive } = useArchiveAgentAction({
+    client: axiosInstance,
+    getSpaceHeaders,
+    refreshQueryKeys: [FLOWS_QUERY_KEY, FOLDERS_QUERY_KEY],
+  });
+
+  const agent = { id: rowId, name, isPublished };
 
   if (isArchived) {
     return (
       <SimpleDDMenuItem
         Icon={TrayArrowUpIcon}
         content="Unarchive"
-        onClick={() =>
-          showCustomAlertDialog({
-            title: `Unarchive ${name}?`,
-            description:
-              "This puts the agent back in the active list. Queues, triggers, machines, jobs and shared resources detached when it was archived are not reattached.",
-            cancelBtnText: "Cancel",
-            confirmBtnText: "Yes, unarchive",
-            confirmActionFn: () => archiveFlowVersions({ flowId: rowId, archive: false }),
-          })
-        }
+        onClick={() => requestUnarchive(agent)}
       />
     );
   }
 
   return (
-    <SimpleDDMenuItem
-      Icon={ArchiveIcon}
-      content="Archive"
-      onClick={() =>
-        // IMPORTANT NOTE: the list only carries the latest version's published state, so an
-        // older published version is caught by the server guard instead.
-        isPublished
-          ? showCustomAlertDialog({
-              title: "Cannot archive this agent",
-              description:
-                "This agent has published versions that are not archived. Archive those published versions first.",
-              cancelBtnText: "",
-              confirmBtnText: "Close",
-              confirmActionFn: () => undefined,
-            })
-          : showCustomAlertDialog({
-              title: `Archive ${name}?`,
-              description:
-                "This moves the agent to the archived view and detaches its queues, triggers, machines and shared resources. Those links are not restored when you unarchive it.",
-              cancelBtnText: "Cancel",
-              confirmBtnText: "Yes, archive",
-              confirmActionFn: () => archiveFlowVersions({ flowId: rowId, archive: true }),
-            })
-      }
-    />
+    <SimpleDDMenuItem Icon={ArchiveIcon} content="Archive" onClick={() => requestArchive(agent)} />
   );
 };

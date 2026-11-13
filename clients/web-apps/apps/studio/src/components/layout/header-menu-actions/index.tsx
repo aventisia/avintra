@@ -2,7 +2,7 @@ import { IS_TAURI } from "@avplatform/ui/constants";
 import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
 import {
-  AppWindowIcon,
+  ArchiveIcon,
   ArrowSquareInIcon,
   ArrowSquareOutIcon,
   ArrowsLeftRightIcon,
@@ -10,6 +10,7 @@ import {
   KeyboardIcon,
   MagnifyingGlassIcon,
   SlidersHorizontalIcon,
+  TrayArrowUpIcon,
   UploadSimpleIcon,
 } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
@@ -18,6 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
+import { useArchiveAgentAction } from "@/features/archive-agent/hooks/useArchiveAgentAction.hook";
 import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/useDirtyNodeConfigGuard";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import {
@@ -69,6 +71,8 @@ export const HeaderActionMenu = () => {
   );
 
   const { exportFlow } = useExportFlow();
+
+  const archiveAgent = useArchiveAgentAction();
 
   // Flush a dirty node-config form before export/template actions read the canvas.
   const guardDirtyNodeConfig = useDirtyNodeConfigGuard();
@@ -201,8 +205,22 @@ export const HeaderActionMenu = () => {
           />
         ) : null}
 
-        {import.meta.env.MODE !== "production" ? (
-          <SimpleDDMenuItem size="md" Icon={AppWindowIcon} content="Archive" />
+        {import.meta.env.MODE !== "production" && !archiveAgent.isArchived ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={ArchiveIcon}
+            content="Archive"
+            onClick={archiveAgent.requestArchive}
+          />
+        ) : null}
+
+        {import.meta.env.MODE !== "production" && archiveAgent.isArchived ? (
+          <SimpleDDMenuItem
+            size="md"
+            Icon={TrayArrowUpIcon}
+            content="Unarchive"
+            onClick={archiveAgent.requestUnarchive}
+          />
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
