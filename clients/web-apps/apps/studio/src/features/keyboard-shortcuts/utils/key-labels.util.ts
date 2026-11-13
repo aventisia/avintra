@@ -24,6 +24,7 @@ const APPLE_LABELS: Record<string, string> = {
   backspace: "⌫",
   enter: "↩",
   space: "space",
+  slash: "/",
 };
 
 const OTHER_LABELS: Record<string, string> = {
@@ -37,6 +38,7 @@ const OTHER_LABELS: Record<string, string> = {
   backspace: "Backspace",
   enter: "Enter",
   space: "Space",
+  slash: "/",
 };
 
 const KEY_NAMES: Record<string, string> = {
@@ -47,6 +49,7 @@ const KEY_NAMES: Record<string, string> = {
   escape: "Escape",
   delete: "Delete",
   space: "Space",
+  slash: "Slash",
   arrowup: "Up arrow",
   arrowdown: "Down arrow",
   arrowleft: "Left arrow",
