@@ -198,7 +198,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                                 is_final=False,
                                 ref_id=stt_request.ref_id,
                                 ref_type=stt_request.ref_type,
-                                agent_name=stt_request.agent_name,
                                 action=stt_request.action
                             ).model_dump_json() + "\n"
 
@@ -220,7 +219,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                                 is_final=True,
                                 ref_id=stt_request.ref_id,
                                 ref_type=stt_request.ref_type,
-                                agent_name=stt_request.agent_name,
                                 action=stt_request.action
                             ).model_dump_json() + "\n"
 
@@ -336,7 +334,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
-            agent_name=req.agent_name,
+            ref_name=req.ref_name,
             action=req.action,
             error=None
         )
@@ -387,7 +385,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                     "SpaceId": space_id,
                 }
 
@@ -439,7 +437,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                     "SpaceId": space_id,
                 }
 

@@ -19,7 +19,6 @@ class STTProviderRequest(BaseModel):
     ref_id: str # Identifier to link back to Agent/Workflow
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
     action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
-    agent_name: Optional[str] = None
 
 
 # standard response schema for STT providers (non-streaming)
@@ -42,7 +41,7 @@ class STTProviderResponse(BaseModel):
     created_on: datetime = Field(default_factory=datetime.utcnow)
     ref_id: Optional[str] = Field(None)
     ref_type: Optional[str] = Field(None)
-    agent_name: Optional[str] = Field(None)
+    ref_name: Optional[str] = Field(None)
     action: Optional[str] = Field(None)
 
 # Streaming chunk schema for STT providers

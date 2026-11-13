@@ -298,7 +298,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                         cc=args.get("cc"),
                         bcc=args.get("bcc"),
                         agent_id=getattr(current_request, "ref_id", None),
-                        agent_name=getattr(current_request, "ref_name", None) or getattr(current_request, "agent_name", None),
+                        agent_name=getattr(current_request, "ref_name", None),
                     )
 
                     # The WorkspaceAPIs cloud connector wraps failures inside a

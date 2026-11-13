@@ -46,7 +46,6 @@ class LLMRequest(BaseModel):
     ref_id: str = "" # Identifier to link back to Agent/Workflow
     ref_name: str = "" # Name of the reference (e.g., name of the Agent/Workflow)
     action: str = "" # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
-    agent_name: Optional[str] = None  # Knowledge base retrieval (optional)
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
     source_threshold: Optional[float] = Field(default=None, ge=0.0, le=1.0)  # Minimum similarity score for KB chunks; None uses the default (0.1)

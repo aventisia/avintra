@@ -106,7 +106,6 @@ public class ProcessLLMRequestNode : BaseNode
                 ref_id = flowMetadata.Id,
                 ref_name = flowMetadata.Name,
                 action = "AgentExecution",
-                agent_name = flowMetadata.Name,
                 kb_names = hasKbNames ? kbNames : null,
                 top_k = topK,
                 skill_names = hasSkillNames ? skillNames : null,

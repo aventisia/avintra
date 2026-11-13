@@ -85,11 +85,6 @@ public class LLMRequest
     /// Gets or sets the action being performed (e.g., "AgentExecution", "WorkflowExecution").
     /// </summary>
     public string? Action { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the agent (optional).
-    /// </summary>
-    public string? AgentName { get; set; }
 }
 
 /// <summary>

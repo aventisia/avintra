@@ -633,7 +633,7 @@ class GeminiProvider(BaseLLMProvider):
                 "RefId": llm_request.ref_id,
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.agent_name,
+                "TriggeredByAgent": llm_request.ref_name,
                 "SpaceId": space_id,
             }
 
@@ -722,7 +722,7 @@ class GeminiProvider(BaseLLMProvider):
                 "RefId": llm_request.ref_id,
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.agent_name,
+                "TriggeredByAgent": llm_request.ref_name,
                 "SpaceId": space_id,
             }
 

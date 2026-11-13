@@ -38,7 +38,6 @@ export function useTTSExecute(formData: Record<string, unknown>) {
       ref_name: currentFlow.name,
       ref_type: "Agent",
       action: "AgentExecution",
-      agent_name: currentFlow.name ?? null,
     };
   }
 

@@ -93,7 +93,7 @@ class OllamaProvider(BaseLLMProvider):
                     output = response_data.get("message", {}).get("content", "")
                     
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, response_data)
                 
         except Exception as e:
             log_exception(logger, e, "Ollama llm transactional request error: ", response_data.get('error', '')) # TODO: response_data may not have 'error' key. Not clearly documented in Ollama API docs.
@@ -186,7 +186,7 @@ class OllamaProvider(BaseLLMProvider):
                             # Break if done and yield the final llm response
                             if is_done:
                                 output = extract_json_from_llm_response(buffer_output) if llm_request.is_json_output else ""
-                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, chunk)
+                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, chunk)
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
                             
@@ -303,7 +303,7 @@ class OllamaProvider(BaseLLMProvider):
         )
      
     # Helper: Create final llm_response object with actual values
-    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, response_data) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -326,43 +326,7 @@ class OllamaProvider(BaseLLMProvider):
         llm_response.input_cached_tokens = 0 # Ollama does not provide cached tokens info
         llm_response.output_tokens = response_data.get("eval_count", 0)
         llm_response.output_reasoning_tokens = 0 # Ollama does not provide reasoning tokens info
-        
-        # TODO: Uncomment the code and update the ServiceType to reflect the correct services (e.g., "CustomInputService" and "CustomOutputService")
-        # # If not BYOK and credential name is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_name:
-        #     # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomOutputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
 
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
-
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="ollama", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
-        
         # Return the final llm_response
         return llm_response
 
