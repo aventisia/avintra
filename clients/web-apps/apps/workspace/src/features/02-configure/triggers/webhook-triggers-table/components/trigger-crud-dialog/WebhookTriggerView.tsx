@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import {
@@ -22,8 +23,6 @@ import {
   UserGearIcon,
   WebhooksLogoIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { TriggerAgentsSection } from "../../../components/TriggerAgentsSection";
 import { useFetchTriggerAgents } from "../../hooks/useFetchTriggerAgents";

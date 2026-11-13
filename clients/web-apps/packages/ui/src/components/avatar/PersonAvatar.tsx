@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { cn } from "@/ui/lib";
 
 // Hues skip yellow-green, which loses contrast on light surfaces.
 const AVATAR_HUES = [250, 285, 320, 350, 15, 160, 190, 215];

@@ -21,9 +21,9 @@ export const StudioViewSwitch = () => {
   const isExecutionLog = useIsExecutionLogsRoute();
 
   const views = [
-    { label: "Canvas", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
+    { label: "Build", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
     { label: "Runs", path: "/execution-log", isActive: isExecutionLog },
-    { label: "Versions", path: "/agent-history", isActive: isAgentHistory },
+    { label: "History", path: "/agent-history", isActive: isAgentHistory },
   ];
 
   const openView = (path: string) => {

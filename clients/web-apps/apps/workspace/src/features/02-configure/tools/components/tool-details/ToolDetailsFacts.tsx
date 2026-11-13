@@ -1,11 +1,10 @@
 import { CopyableText } from "@avplatform/ui";
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import { RecordIdentifiers, recordLabelClass } from "@avplatform/ui/record-sheet";
 import { formatDate } from "@avplatform/ui/utils";
 import type { ReactNode } from "react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "../../constants/tools-display-names.constant";
 import type { ToolDto } from "../../dtos/index";

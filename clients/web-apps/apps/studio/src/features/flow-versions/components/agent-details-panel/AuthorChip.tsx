@@ -1,16 +1,21 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
+
 import { FlowVersionDto } from "../../dtos/flow-version-dto";
 
 /**
- * Initials bubble and name of the user who created a version.
+ * Tinted initials avatar and name of the user who created a version, matching the workspace's
+ * avatars. Shows the email address as the hover title.
  */
-export const AuthorChip = ({ version }: { version: FlowVersionDto }) => (
-  <span className="flex min-w-0 items-center gap-1.5">
+export const AuthorChip = ({ version }: { version: FlowVersionDto }) => {
+  const knownName = version.createdBy?.trim() || version.createdByUsername;
+
+  return (
     <span
-      aria-hidden="true"
-      className="grid size-[18px] shrink-0 place-items-center rounded-full bg-fill font-mono text-[8.5px] font-semibold uppercase text-ink-2 ring-1 ring-line"
+      className="flex min-w-0 items-center gap-1.5"
+      title={version.createdByUsername ?? knownName}
     >
-      {version.createdByUserInitials || "?"}
+      {knownName ? <PersonAvatar name={knownName} size="sm" /> : null}
+      <span className="truncate">{knownName || "Unknown user"}</span>
     </span>
-    <span className="truncate">{version.createdByUsername || "Unknown user"}</span>
-  </span>
-);
+  );
+};

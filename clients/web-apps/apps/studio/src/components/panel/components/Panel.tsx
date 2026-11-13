@@ -125,11 +125,11 @@ const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
               : cn(
                   "fixed border-l border-r border-line",
                   appBanner
-                    ? "top-[calc(var(--header-height)+var(--header-padding)+var(--banner-height)+0.5rem)]"
-                    : "top-[calc(var(--header-height)+var(--header-padding)+0.5rem)]",
+                    ? "top-[calc(var(--header-height)+var(--banner-height)+0.5rem)]"
+                    : "top-[calc(var(--header-height)+0.5rem)]",
                   appBanner
-                    ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height)-1rem)]"
-                    : "h-[calc(100vh-var(--header-height)-var(--header-padding)-1rem)]",
+                    ? "h-[calc(100vh-var(--header-height)-var(--banner-height)-1rem)]"
+                    : "h-[calc(100vh-var(--header-height)-1rem)]",
                   sideClasses[panelSide],
                   width,
                 ),
