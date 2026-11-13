@@ -41,6 +41,11 @@ export const ChatStarters = ({ groups, onPick }: ChatStartersProps) => {
           </button>
         ))}
       </div>
+      {!active && (
+        <p className="text-center text-xs text-muted-foreground">
+          Pick an action to see example prompts you can send.
+        </p>
+      )}
       {active && (
         <ul
           key={active.label}

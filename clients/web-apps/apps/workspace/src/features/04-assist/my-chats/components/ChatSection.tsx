@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { isHomeChatEnabled } from "@/features/home-chat";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 
@@ -113,7 +114,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
               variant="ghost"
               size="icon7"
               className="mr-1"
-              onClick={() => navigate("/external/chats")}
+              onClick={() => navigate(isHomeChatEnabled ? "/" : "/external/chats")}
             >
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>

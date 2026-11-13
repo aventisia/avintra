@@ -1,8 +1,6 @@
 import { CHAT_FILE_ICONS } from "@avplatform/chat";
 import { Checkbox } from "@avplatform/ui";
-import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatDate } from "@avplatform/ui/utils";
 import {
   ChatCircleIcon,
@@ -19,8 +17,6 @@ import {
 } from "@phosphor-icons/react";
 import type { FC, MouseEvent } from "react";
 import { Link } from "react-router-dom";
-
-import { TooltipIconButton } from "@/react-toolkit/features/av-platform-assistant-ui/components/tooltip-icon-button";
 
 type WorkspaceChatFileCardProps = {
   artifactId: string;
@@ -75,6 +71,9 @@ const formatWorkspaceChatFileSize = (sizeBytes: number) => {
   return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const actionClassName =
+  "inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus";
+
 /** Card for a file the assistant generated; opens the stored artifact in the preview panel. */
 export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   artifactId,
@@ -101,6 +100,8 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
     conversationTitle?.trim() || null,
   ].filter(Boolean);
 
+  const hasActions = Boolean(chatHref || onCopyShareLink || onStopSharing || onDelete);
+
   const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onDelete?.(artifactId);
@@ -114,78 +115,89 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   return (
     <div
       className={cn(
-        "aui-workspace-chat-file-card group flex w-full max-w-sm items-center gap-1 rounded-xl border border-line bg-sunken/40 py-2.5 pl-3 pr-1.5 text-left transition-colors hover:bg-hover/60",
+        "aui-workspace-chat-file-card group flex w-full max-w-sm flex-col gap-2 rounded-xl border border-line bg-sunken/40 p-3 text-left transition-colors hover:bg-hover/60",
         selected && "border-indicator bg-hover/60",
       )}
     >
-      {onSelectedChange && (
-        <Checkbox
-          checked={selected}
-          onCheckedChange={(checked) => onSelectedChange(artifactId, checked === true)}
-          aria-label={`Select ${label}`}
-          className="mr-2"
-        />
-      )}
-      <button
-        type="button"
-        onClick={() => onPreview?.(artifactId)}
-        aria-label={`Preview ${label}`}
-        className="flex min-w-0 flex-1 items-center gap-3 text-left"
-      >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground ring-1 ring-line/60 group-hover:text-primary">
-          <Icon className="size-5" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-ink">{label}</span>
-          <span className="block truncate text-xs text-muted-foreground">
-            {details.length ? details.join(" · ") : "Stored artifact"}
+      <div className="flex items-start gap-2">
+        {onSelectedChange && (
+          <Checkbox
+            checked={selected}
+            onCheckedChange={(checked) => onSelectedChange(artifactId, checked === true)}
+            aria-label={`Select ${label}`}
+            className="mt-2.5"
+          />
+        )}
+        <button
+          type="button"
+          onClick={() => onPreview?.(artifactId)}
+          aria-label={`Preview ${label}`}
+          className="flex min-w-0 flex-1 items-start gap-3 text-left"
+        >
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground ring-1 ring-line/60 group-hover:text-primary">
+            <Icon className="size-5" />
           </span>
-        </span>
-        <EyeIcon className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
-      </button>
-      {chatHref && (
-        <Tooltip
-          content={conversationTitle ? `Open “${conversationTitle}”` : "Open chat"}
-          side="bottom"
-        >
-          <Link
-            to={chatHref}
-            aria-label={`Open the chat that made ${label}`}
-            className={buttonVariants({ variant: "ghost", size: "icon6", className: "p-1" })}
-          >
-            <ChatCircleIcon className="size-4" />
-          </Link>
-        </Tooltip>
-      )}
-      {onCopyShareLink && (
-        <TooltipIconButton
-          tooltip="Copy read-only link"
-          aria-label={`Copy read-only link for ${label}`}
-          onClick={(event) => handleShare(event, onCopyShareLink)}
-          className="shrink-0"
-        >
-          <LinkSimpleIcon className="size-4" />
-        </TooltipIconButton>
-      )}
-      {onStopSharing && (
-        <TooltipIconButton
-          tooltip="Stop sharing"
-          aria-label={`Stop sharing ${label}`}
-          onClick={(event) => handleShare(event, onStopSharing)}
-          className="shrink-0"
-        >
-          <LinkBreakIcon className="size-4" />
-        </TooltipIconButton>
-      )}
-      {onDelete && (
-        <TooltipIconButton
-          tooltip="Delete artifact"
-          aria-label={`Delete ${label}`}
-          onClick={handleDelete}
-          className="shrink-0"
-        >
-          <TrashIcon className="size-4" />
-        </TooltipIconButton>
+          <span className="min-w-0 flex-1">
+            <span className="line-clamp-2 break-words text-sm font-medium leading-5 text-ink">
+              {label}
+            </span>
+            <span className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground">
+              {details.length ? details.join(" · ") : "Stored artifact"}
+            </span>
+          </span>
+          <EyeIcon className="mt-1 size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+        </button>
+      </div>
+      {hasActions && (
+        <div className="flex flex-wrap items-center gap-1 border-t border-line/60 pt-2">
+          {chatHref && (
+            <Link
+              to={chatHref}
+              title={conversationTitle ? `Open “${conversationTitle}”` : "Open chat"}
+              aria-label={`Open the chat that made ${label}`}
+              className={actionClassName}
+            >
+              <ChatCircleIcon className="size-4" />
+              Open chat
+            </Link>
+          )}
+          {onCopyShareLink && (
+            <button
+              type="button"
+              title="Copy read-only link"
+              aria-label={`Copy read-only link for ${label}`}
+              onClick={(event) => handleShare(event, onCopyShareLink)}
+              className={actionClassName}
+            >
+              <LinkSimpleIcon className="size-4" />
+              Share link
+            </button>
+          )}
+          {onStopSharing && (
+            <button
+              type="button"
+              title="Stop sharing"
+              aria-label={`Stop sharing ${label}`}
+              onClick={(event) => handleShare(event, onStopSharing)}
+              className={actionClassName}
+            >
+              <LinkBreakIcon className="size-4" />
+              Stop sharing
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              title="Delete artifact"
+              aria-label={`Delete ${label}`}
+              onClick={handleDelete}
+              className={cn(actionClassName, "ml-auto hover:text-bad")}
+            >
+              <TrashIcon className="size-4" />
+              Delete
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

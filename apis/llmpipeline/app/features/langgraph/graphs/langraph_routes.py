@@ -162,6 +162,20 @@ async def generate_langgraph_response_route(
         )
 
 
+GENERIC_STREAM_ERROR_MESSAGE = "The assistant couldn't finish this reply. Please try again."
+CREDENTIAL_STREAM_ERROR_MESSAGE = (
+    "The AI model isn't configured for this workspace yet. Ask an admin to check its API key."
+)
+
+
+def _stream_error_message(exc: Exception) -> str:
+    if isinstance(exc, HTTPException):
+        return CREDENTIAL_STREAM_ERROR_MESSAGE
+    if isinstance(exc, ValueError) and str(exc):
+        return str(exc)
+    return GENERIC_STREAM_ERROR_MESSAGE
+
+
 @router.post("/chat/completions/normalized")
 async def generate_langgraph_response_normalized_route(
     request: LLMRequest,
@@ -200,7 +214,7 @@ async def generate_langgraph_response_normalized_route(
             # IMPORTANT NOTE: a stream that dies without a frame looks like an empty reply to
             # the client, so the failure is sent as an error frame before the body closes.
             logger.exception("Normalized chat stream failed. conversation_id=%s", request.conversation_id)
-            message = str(exc) if isinstance(exc, ValueError) and str(exc) else "The assistant couldn't finish this reply. Please try again."
+            message = _stream_error_message(exc)
             yield _serialize_chunk(
                 LLMChunkResponse(
                     provider=request.provider,

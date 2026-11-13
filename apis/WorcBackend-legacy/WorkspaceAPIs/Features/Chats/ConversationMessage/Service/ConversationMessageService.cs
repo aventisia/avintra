@@ -207,6 +207,18 @@ public class ConversationMessageService : IConversationMessageService
 
         try
         {
+            // An unknown or foreign conversation must fail, not look like an empty chat.
+            var conversationExists = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            if (conversationExists == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
             // Fetch messages belonging to the conversation and user
             var messages = await _unitOfWork.ConversationMessageRepo
                 .GetByConditionAsync(w =>

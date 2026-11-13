@@ -1,16 +1,8 @@
 import { ChatFilePreview, type ChatPreviewFile, type ChatPreviewVersion } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
-import {
-  type KeyboardEvent,
-  type PointerEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type KeyboardEvent, type PointerEvent, useEffect, useRef, useState } from "react";
 
-import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
 import { useMediaQuery } from "../hooks/useMediaQuery.hook";
 
 type HomeChatPreviewProps = {
@@ -49,12 +41,6 @@ export const HomeChatPreview = ({
 }: HomeChatPreviewProps) => {
   useReturnFocusOnClose();
   const isWide = useMediaQuery("(min-width: 1024px)");
-  const yieldRail = useContext(HomeChatRailYieldContext);
-  useEffect(() => {
-    if (!isWide) return;
-    yieldRail(true);
-    return () => yieldRail(false);
-  }, [isWide, yieldRail]);
   const asideRef = useRef<HTMLElement>(null);
   const [panelWidth, setPanelWidth] = useState<number | null>(null);
   const dragStart = useRef<{ x: number; width: number } | null>(null);

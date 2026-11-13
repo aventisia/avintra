@@ -60,9 +60,10 @@ export const ChatComposer = ({
     setAttachmentError(reason === "adapter-error" ? message : UNSUPPORTED_FILE),
   );
   useAuiEvent("composer.send", () => setAttachmentError(undefined));
-  const notice = isOverLimit
+  const limitNotice = isOverLimit
     ? `Attach up to ${CHAT_ATTACHMENT_LIMIT} files per message. Remove ${attachmentCount - CHAT_ATTACHMENT_LIMIT} to send.`
-    : attachmentError;
+    : undefined;
+  const notice = [attachmentError, limitNotice].filter(Boolean).join(" ") || undefined;
 
   const blockSendOverLimit = (event: FormEvent) => {
     if (isOverLimit) event.preventDefault();

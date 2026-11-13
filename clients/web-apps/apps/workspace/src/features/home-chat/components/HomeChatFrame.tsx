@@ -1,39 +1,14 @@
 import { ChatIconButton } from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
-import { NotePencilIcon, SidebarSimpleIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
+import { ChatsCircleIcon, NotePencilIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-import { HomeChatRailYieldContext } from "../constants/home-chat-rail.constant";
-import { HOME_CHAT_HISTORY_OPEN_STORAGE_KEY } from "../constants/home-chat.constant";
 import { useMediaQuery } from "../hooks/useMediaQuery.hook";
 
-const readStoredRailOpen = () => {
-  const isLargeScreen = () => window.matchMedia("(min-width: 1280px)").matches;
-  try {
-    const stored = localStorage.getItem(HOME_CHAT_HISTORY_OPEN_STORAGE_KEY);
-    return stored === null ? isLargeScreen() : stored === "true";
-  } catch {
-    return isLargeScreen();
-  }
-};
-
-const storeRailOpen = (isOpen: boolean) => {
-  try {
-    localStorage.setItem(HOME_CHAT_HISTORY_OPEN_STORAGE_KEY, String(isOpen));
-  } catch {
-    // Without storage the rail opens by viewport width next time.
-  }
-};
-
-export type HomeChatHistoryControls = {
-  /** Hides the history: collapses the rail, or closes the sheet. */
-  close: () => void;
-  /** Closes the sheet after opening a chat; the rail stays put. */
-  dismissSheet: () => void;
-};
-
 type HomeChatFrameProps = {
-  renderHistory: (controls: HomeChatHistoryControls) => ReactNode;
+  /** The chat history for the phone-width sheet; wider screens list chats in the app sidebar. */
+  renderHistory: (close: () => void) => ReactNode;
   onNewChat: () => void;
   /** Shown in the bar above the thread, such as the open chat's title. */
   header?: ReactNode;
@@ -43,9 +18,9 @@ type HomeChatFrameProps = {
 };
 
 /**
- * Home's frame: the history rail beside the thread from 1024px (open by
- * default from 1280px, then as the user left it), a sheet over it below, and
- * ⌘⇧O / Ctrl+Shift+O for a new chat. An open file preview hides the rail until it closes.
+ * Home's frame: a bar with the open chat's title above the thread, and
+ * ⌘⇧O / Ctrl+Shift+O for a new chat. Below 768px, where the app sidebar is a
+ * menu sheet, the bar also opens the chat history as its own sheet, which closes on navigation.
  */
 export const HomeChatFrame = ({
   renderHistory,
@@ -54,16 +29,12 @@ export const HomeChatFrame = ({
   onOpenPreferences,
   children,
 }: HomeChatFrameProps) => {
-  const isWide = useMediaQuery("(min-width: 1024px)");
-  const [isRailOpen, setIsRailOpen] = useState(readStoredRailOpen);
+  const hasAppSidebar = useMediaQuery("(min-width: 768px)");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isRailYielding, setIsRailYielding] = useState(false);
+  const { key: locationKey } = useLocation();
 
-  const toggleRail = (isOpen: boolean) => {
-    setIsRailYielding(false);
-    setIsRailOpen(isOpen);
-    storeRailOpen(isOpen);
-  };
+  useEffect(() => setIsSheetOpen(false), [locationKey]);
+
   const startNewChat = () => {
     setIsSheetOpen(false);
     onNewChat();
@@ -82,17 +53,9 @@ export const HomeChatFrame = ({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const showsRail = isWide && isRailOpen && !isRailYielding;
-  const dismissSheet = () => setIsSheetOpen(false);
-
   return (
     <div className="flex h-full min-h-0">
-      {showsRail && (
-        <aside className="w-[17rem] shrink-0 border-r border-line bg-sunken/60 dark:bg-surface">
-          {renderHistory({ close: () => toggleRail(false), dismissSheet })}
-        </aside>
-      )}
-      {!isWide && (
+      {!hasAppSidebar && (
         <Dialog open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <DialogContent
             side="left"
@@ -102,44 +65,35 @@ export const HomeChatFrame = ({
               event.preventDefault();
               (event.currentTarget as HTMLElement).focus();
             }}
-            className="w-[19rem] max-w-[85vw] p-0 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] max-md:w-full max-md:max-w-none max-md:rounded-none"
+            className="w-full max-w-none rounded-none p-0 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]"
           >
             <DialogTitle className="sr-only">Chat history</DialogTitle>
-            {renderHistory({ close: dismissSheet, dismissSheet })}
+            {renderHistory(() => setIsSheetOpen(false))}
           </DialogContent>
         </Dialog>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        {(!showsRail || header || onOpenPreferences) && (
-          <div className="flex h-12 shrink-0 items-center gap-1 bg-surface px-2 dark:bg-bg sm:px-3">
-            {!showsRail && (
-              <>
-                <ChatIconButton
-                  label="Open chat history"
-                  onClick={() => (isWide ? toggleRail(true) : setIsSheetOpen(true))}
-                >
-                  <SidebarSimpleIcon />
-                </ChatIconButton>
-                <ChatIconButton label="New chat" onClick={startNewChat}>
-                  <NotePencilIcon />
-                </ChatIconButton>
-              </>
-            )}
-            {header}
-            {onOpenPreferences && (
-              <div className="ml-auto">
-                <ChatIconButton label="Chat preferences" onClick={onOpenPreferences}>
-                  <SlidersHorizontalIcon />
-                </ChatIconButton>
-              </div>
-            )}
-          </div>
-        )}
-        <div className="min-h-0 flex-1">
-          <HomeChatRailYieldContext.Provider value={setIsRailYielding}>
-            {children}
-          </HomeChatRailYieldContext.Provider>
+        <div className="flex h-12 shrink-0 items-center gap-1 bg-surface px-2 dark:bg-bg sm:px-3">
+          {!hasAppSidebar && (
+            <>
+              <ChatIconButton label="Open chat history" onClick={() => setIsSheetOpen(true)}>
+                <ChatsCircleIcon />
+              </ChatIconButton>
+              <ChatIconButton label="New chat" onClick={startNewChat}>
+                <NotePencilIcon />
+              </ChatIconButton>
+            </>
+          )}
+          {header}
+          {onOpenPreferences && (
+            <div className="ml-auto">
+              <ChatIconButton label="Chat preferences" onClick={onOpenPreferences}>
+                <SlidersHorizontalIcon />
+              </ChatIconButton>
+            </div>
+          )}
         </div>
+        <div className="min-h-0 flex-1">{children}</div>
       </div>
     </div>
   );

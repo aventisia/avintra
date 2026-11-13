@@ -1,5 +1,7 @@
 export { ChatHistory } from "./components/ChatHistory";
 export type { ChatHistoryProps } from "./components/ChatHistory";
+export { ChatSidebarHistory } from "./components/ChatSidebarHistory";
+export type { ChatSidebarHistoryProps } from "./components/ChatSidebarHistory";
 export { ChatTitle } from "./components/ChatTitle";
 export { ChatIconButton } from "./components/ChatIconButton";
 export { ChatModelPicker } from "./components/ChatModelPicker";

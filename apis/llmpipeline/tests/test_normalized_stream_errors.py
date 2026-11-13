@@ -5,6 +5,8 @@ import json
 from contextlib import asynccontextmanager
 from unittest.mock import MagicMock, patch
 
+from fastapi import HTTPException
+
 from app.features.langgraph.graphs import langraph_routes as routes
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse
 
@@ -49,6 +51,14 @@ def test_value_error_is_sent_as_error_frame_after_partial_text():
     assert frames[0]["type"] == "delta"
     assert frames[-1]["type"] == "error"
     assert frames[-1]["output"] == "Missing API key for openai."
+
+
+def test_credential_failure_is_sent_as_configuration_message():
+    frames = _frames(HTTPException(status_code=400, detail="av_anthropic_api_key unavailable"))
+
+    assert frames[-1]["type"] == "error"
+    assert frames[-1]["output"] == routes.CREDENTIAL_STREAM_ERROR_MESSAGE
+    assert "av_anthropic_api_key" not in frames[-1]["output"]
 
 
 def test_unexpected_error_is_sent_with_generic_message():

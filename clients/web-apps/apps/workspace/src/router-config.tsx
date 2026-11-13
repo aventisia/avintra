@@ -283,6 +283,7 @@ const routerConfig: RouteObject[] = [
             path: "chats",
             element: <MyChatsPage />,
             children: [
+              ...(isHomeChatEnabled ? [{ index: true, element: <Navigate to="/" replace /> }] : []),
               {
                 path: ":flowVersionId",
                 element: <Chat />,

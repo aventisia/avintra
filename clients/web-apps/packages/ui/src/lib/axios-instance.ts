@@ -159,6 +159,11 @@ axiosInstance.interceptors.response.use(
         : "Something went wrong. Please try again later";
     }
 
+    // IMPORTANT NOTE: an empty body (or a non-JSON one) would otherwise show a red toast with no text.
+    if (!errorMessage) {
+      errorMessage = "Something went wrong. Please try again later";
+    }
+
     // Return toast notification basis Http Status code
     switch (error.response.status) {
       case 400:

@@ -65,7 +65,9 @@ export const ChatCommandMenu = ({ commands, inputRef }: ChatCommandMenuProps) =>
       <ComposerPrimitive.TriggerPopoverItems>
         {(items) =>
           items.length === 0 ? (
-            <p className="px-3 py-2 text-sm text-muted-foreground">No matching commands</p>
+            <p className="px-3 py-2 text-sm text-muted-foreground">
+              No matching commands. To mention a chat file, type @ in the message.
+            </p>
           ) : (
             items.map((item, index) => {
               const CommandIcon = commands.find((command) => command.id === item.id)?.icon;

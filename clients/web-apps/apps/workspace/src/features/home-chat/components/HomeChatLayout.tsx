@@ -5,24 +5,21 @@ import {
   printChat,
   toChatMarkdown,
 } from "@avplatform/chat";
-import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { downloadBlob } from "@avplatform/ui/utils";
 import { useState } from "react";
-import { useHref, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { getMessages } from "../apis/conversation-message.apis";
 import { shareConversation, unshareConversation } from "../apis/conversation.apis";
-import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
-import { useChatProjects } from "../hooks/useChatProjects.hook";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
+import { useHomeChatHistoryPanel } from "../hooks/useHomeChatHistoryPanel.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
 import { HomeChatThread } from "./HomeChatThread";
-
-const conversationHref = (id: string) => `${HOME_CHAT_CONVERSATION_ROUTE}/${id}`;
 
 const copyShareLink = async (id: string) => {
   try {
@@ -53,34 +50,16 @@ const exportChat = async ({ id, title }: ChatHistoryItem) => {
   }
 };
 
-/** Lays out Home, the chat-first landing page: chat history beside the open thread. */
+/** Lays out Home, the chat-first landing page: the open thread under a bar with its title. */
 export const HomeChatLayout = () => {
   useDocumentTitle("Home");
   const { sessionKey, ...session } = useHomeChatSession();
   const navigate = useNavigate();
-  const appRoot = useHref("/").replace(/\/$/, "");
-  const [showArchived, setShowArchived] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-  const [projectId, setProjectId] = useState<string | null>(null);
-  const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
-  const { renameChat, togglePin, setArchived, deleteChat, moveToProject } =
-    useHomeChatHistoryActions();
-  const chatProjects = useChatProjects();
-  const { showCustomAlertDialog } = useShowAlertHandler();
-  const activeChat = history.items.find((item) => item.id === session.conversationId);
-
-  const confirmDelete = (item: ChatHistoryItem) =>
-    showCustomAlertDialog({
-      isDestructive: true,
-      title: "Delete chat?",
-      description: `“${item.title}” and its messages will be deleted. This can't be undone.`,
-      confirmBtnText: "Delete",
-      showLoadingOnConfirm: true,
-      confirmActionFn: async () => {
-        await deleteChat(item.id);
-        if (item.id === session.conversationId) navigate("/", { replace: true });
-      },
-    });
+  const titles = useHomeChatHistory(false);
+  const { renameChat } = useHomeChatHistoryActions();
+  const { props: historyProps, confirmDelete } = useHomeChatHistoryPanel();
+  const activeChat = titles.items.find((item) => item.id === session.conversationId);
 
   return (
     <>
@@ -89,7 +68,7 @@ export const HomeChatLayout = () => {
         onNewChat={() => navigate("/")}
         onOpenPreferences={() => setIsPreferencesOpen(true)}
         header={
-          // shortcut: the title comes from the loaded history pages, so a chat outside them (or filtered out by search) shows no title; add a get-conversation endpoint if that matters.
+          // shortcut: the title comes from the loaded history pages, so a chat outside them shows no title; add a get-conversation endpoint if that matters.
           activeChat && (
             <ChatTitle
               key={activeChat.id}
@@ -105,43 +84,8 @@ export const HomeChatLayout = () => {
             />
           )
         }
-        renderHistory={({ close, dismissSheet }) => (
-          <ChatHistory
-            items={history.items}
-            activeId={session.conversationId}
-            getHref={(id) => appRoot + conversationHref(id)}
-            onOpen={(id) => {
-              dismissSheet();
-              navigate(conversationHref(id));
-            }}
-            onNewChat={() => {
-              dismissSheet();
-              navigate("/");
-            }}
-            onRename={renameChat}
-            onTogglePin={togglePin}
-            showArchived={showArchived}
-            onShowArchivedChange={setShowArchived}
-            onToggleArchive={({ id }) => {
-              setArchived(id, !showArchived);
-              if (!showArchived && id === session.conversationId) navigate("/", { replace: true });
-            }}
-            onDelete={confirmDelete}
-            projects={chatProjects.projects}
-            activeProjectId={showArchived ? null : projectId}
-            onProjectFilterChange={setProjectId}
-            onCreateProject={(name) => chatProjects.createProject(name, setProjectId)}
-            onMoveToProject={(item, nextProjectId) => moveToProject(item.id, nextProjectId)}
-            onCollapse={close}
-            search={history.search}
-            onSearchChange={history.setSearch}
-            isLoading={history.isLoading}
-            isError={history.isError}
-            onRetry={history.retry}
-            hasMore={history.hasMore}
-            isLoadingMore={history.isLoadingMore}
-            onLoadMore={history.loadMore}
-          />
+        renderHistory={(close) => (
+          <ChatHistory {...historyProps} onNewChat={() => navigate("/")} onCollapse={close} />
         )}
       >
         <HomeChatThread key={sessionKey} {...session} />

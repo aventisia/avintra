@@ -207,7 +207,7 @@ export const ChatHistory = ({
                         }}
                       />
                     ) : (
-                      <HistoryLink
+                      <ChatHistoryRow
                         item={item}
                         isActive={item.id === activeId}
                         href={getHref(item.id)}
@@ -250,8 +250,10 @@ export const ChatHistory = ({
 const isPlainClick = (event: MouseEvent) =>
   event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
 
-type HistoryLinkProps = {
+export type ChatHistoryRowProps = {
   item: ChatHistoryItem;
+  /** `sidebar` matches the app sidebar's menu rows and marks pinned chats with an icon. */
+  variant?: "panel" | "sidebar";
   isActive: boolean;
   href: string;
   onOpen: (id: string) => void;
@@ -264,8 +266,9 @@ type HistoryLinkProps = {
   onMove?: (projectId: string | null) => void;
 };
 
-const HistoryLink = ({
+export const ChatHistoryRow = ({
   item,
+  variant = "panel",
   isActive,
   href,
   onOpen,
@@ -276,16 +279,21 @@ const HistoryLink = ({
   onToggleArchive,
   projects,
   onMove,
-}: HistoryLinkProps) => {
+}: ChatHistoryRowProps) => {
   const isRenamingRef = useRef(false);
+  const isSidebar = variant === "sidebar";
 
   return (
     <div
       className={cn(
-        "group/item relative flex h-9 items-center rounded-lg transition-colors hover:bg-hover has-[[data-state=open]]:bg-hover",
-        isActive && "bg-hover",
+        "group/item relative flex items-center transition-colors hover:bg-hover has-[[data-state=open]]:bg-hover",
+        isSidebar ? "h-8 rounded-sm" : "h-9 rounded-lg",
+        isActive && (isSidebar ? "bg-fill" : "bg-hover"),
       )}
     >
+      {isSidebar && isActive && (
+        <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full bg-indicator" />
+      )}
       <a
         href={href}
         aria-current={isActive ? "page" : undefined}
@@ -296,16 +304,26 @@ const HistoryLink = ({
           onOpen(item.id);
         }}
         className={cn(
-          "flex h-full min-w-0 flex-1 items-center rounded-lg pl-2 pr-9 text-sm text-ink-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
-          isActive && "font-medium text-ink",
+          "flex h-full min-w-0 flex-1 items-center gap-2 pl-2 pr-9 text-ink-2 focus-visible:outline-none",
+          isSidebar
+            ? "rounded-sm text-body-sm hover:text-ink focus-visible:shadow-focus"
+            : "rounded-lg text-sm focus-visible:ring-2 focus-visible:ring-focus",
+          isActive && (isSidebar ? "font-semibold text-ink" : "font-medium text-ink"),
         )}
       >
         <span className="truncate">{item.title}</span>
       </a>
+      {isSidebar && item.isPinned && (
+        <PushPinIcon
+          aria-label="Pinned"
+          weight="fill"
+          className="pointer-events-none absolute right-2.5 size-3 text-muted-foreground transition-opacity group-hover/item:opacity-0 group-has-[[data-state=open]]/item:opacity-0"
+        />
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Options for ${item.title}`}
-          className="absolute right-1 top-1 inline-flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:text-ink focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus group-hover/item:opacity-100 data-[state=open]:opacity-100 [@media(hover:none)]:opacity-100"
+          className="absolute right-1 top-1/2 inline-flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:text-ink focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus group-hover/item:opacity-100 data-[state=open]:opacity-100 [@media(hover:none)]:opacity-100"
         >
           <DotsThreeIcon weight="bold" className="size-4" />
         </DropdownMenuTrigger>
@@ -463,7 +481,14 @@ const FilterPill = ({
   </button>
 );
 
-const LoadMoreSentinel = ({ onVisible }: { onVisible: () => void }) => {
+/** Loads the next page when it scrolls into view; `scrollsWithPage` watches the viewport instead of its own scroll box. */
+export const LoadMoreSentinel = ({
+  onVisible,
+  scrollsWithPage = false,
+}: {
+  onVisible: () => void;
+  scrollsWithPage?: boolean;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const onVisibleRef = useRef(onVisible);
   onVisibleRef.current = onVisible;
@@ -473,11 +498,11 @@ const LoadMoreSentinel = ({ onVisible }: { onVisible: () => void }) => {
     if (!node) return;
     const observer = new IntersectionObserver(
       ([entry]) => entry?.isIntersecting && onVisibleRef.current(),
-      { root: node.parentElement, rootMargin: "200px" },
+      { root: scrollsWithPage ? null : node.parentElement, rootMargin: "200px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [scrollsWithPage]);
 
   return <div ref={ref} aria-hidden className="h-px" />;
 };
