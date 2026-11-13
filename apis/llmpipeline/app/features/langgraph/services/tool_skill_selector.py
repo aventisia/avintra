@@ -99,7 +99,6 @@ async def select_tools_and_skills(
         ref_id=request.ref_id,
         ref_name=request.ref_name,
         action="ToolSkillSelection",
-        agent_name=request.agent_name,
         is_json_output=True,
         json_schema=ToolSkillSelectionResponse.model_json_schema(),
         is_byok_enabled=request.is_byok_enabled,

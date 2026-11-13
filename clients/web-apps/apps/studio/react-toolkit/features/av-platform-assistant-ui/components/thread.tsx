@@ -390,7 +390,6 @@ const ComposerAction: FC = () => {
     sttConfig: voice?.sttConfig ?? null,
     refId: voice?.refId ?? "",
     refName: voice?.refName ?? "",
-    agentName: voice?.agentName ?? null,
     language: voice?.language ?? null,
     onTranscript: handleTranscript,
   });
