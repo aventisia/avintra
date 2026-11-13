@@ -1,9 +1,12 @@
 # Voice agent worker
 
 `voice_agent` is the LiveKit Agents worker that serves one dispatched voice
-call. `agent.py` validates the job binding and fetches the resolved settings;
-`session_runtime.py` joins the room, runs the configured engine, publishes the
-stable event contract, and cleans up once.
+call. The llmpipeline API starts it automatically in its event loop when
+`LIVEKIT_WS_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` are configured,
+and stops it with the API. Run `python -m voice_agent.agent dev` only to debug
+the worker on its own. `agent.py` validates the job binding and fetches the
+resolved settings; `session_runtime.py` joins the room, runs the configured
+engine, publishes the stable event contract, and cleans up once.
 
 ## Engines
 
