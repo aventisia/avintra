@@ -23,12 +23,27 @@ from app.features.custom_tools.routes import router as custom_tools_router
 from app.features.voice_sessions.router import router as voice_sessions_router
 from app.core.logger import logger
 
-# The lifespan function is used to perform any necessary cleanup when the application shuts down.
-# In this case, it ensures that all database engines are properly disposed of to free up resources.
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    yield
-    await dispose_all_db_engines()
+    voice_worker = None
+    stop_voice_worker = None
+
+    try:
+        from voice_agent.agent import start_voice_worker, stop_voice_worker
+
+        voice_worker = await start_voice_worker()
+    except Exception:
+        logger.exception("[voice-agent] failed to start; chat remains available.")
+
+    try:
+        yield
+    finally:
+        if voice_worker is not None and stop_voice_worker is not None:
+            try:
+                await stop_voice_worker(voice_worker)
+            except Exception:
+                logger.exception("[voice-agent] failed to stop cleanly.")
+        await dispose_all_db_engines()
 
 
 # Initialize the FastAPI application

@@ -30,7 +30,8 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
 - **llmpipeline** is the only service that holds LiveKit API credentials. It
   creates the room and agent dispatch, mints the caller token, and serves the
   worker's settings requests through WorkspaceAPIs.
-- **voice_agent** is a LiveKit Agents worker. It validates its job binding,
+- **voice_agent** is a LiveKit Agents worker hosted by llmpipeline. It starts in
+  the API event loop when LiveKit is configured, validates its job binding,
   fetches the resolved settings, and runs the caller-bound session. It never
   receives the browser token or a provider secret.
 - The chat engine remains the single owner of conversation history, tool
@@ -160,16 +161,16 @@ provider matrix lives in `apis/llmpipeline/voice_agent/README.md`.
 From the checkout or worktree root:
 
 ```sh
-scripts/setup.sh                 # setup.ps1 on Windows: env files and dependencies
-dekit up                         # WorkspaceAPIs, llmpipeline, database-backed services
-dekit start livekit              # not autostarted
-dekit start voice_agent          # not autostarted; start it after LiveKit
+scripts/setup.sh                                      # setup.ps1 on Windows: env files and dependencies
+docker compose -f deploy/livekit/docker-compose.yml up -d
+dekit up                                              # WorkspaceAPIs, llmpipeline, database-backed services
 ```
 
-LiveKit's dev server is `dekit start livekit` (ports 7880/tcp for HTTP and
-WebSocket signaling, 7881/tcp and 7882/udp for WebRTC). `dekit start voice_agent`
-must run after LiveKit has registered; if you restart the worker, wait until its
-log says `registered worker` before creating a session.
+LiveKit runs independently in Docker (ports 7880/tcp for HTTP and WebSocket
+signaling, 7881/tcp and 7882/udp for WebRTC). `llmpipeline_apis` starts the
+voice worker automatically once `LIVEKIT_WS_URL`, `LIVEKIT_API_KEY`, and
+`LIVEKIT_API_SECRET` are set, and stops it with the API. No separate worker
+service is needed.
 
 In `apis/llmpipeline/.env.local` set the dev key pair that matches the LiveKit
 server, and point the worker at the local WorkspaceAPIs when the local stack is
@@ -190,7 +191,7 @@ Only llmpipeline and the worker need the `LIVEKIT_*` values. WorkspaceAPIs
 reaches llmpipeline through its existing `LLMPIPELINE_API_BASE_URL`; it never
 holds a LiveKit credential.
 
-Restart `llmpipeline_apis` and `voice_agent` after changing `.env.local`.
+Restart `llmpipeline_apis` after changing `.env.local`.
 
 ## Environment variables
 
