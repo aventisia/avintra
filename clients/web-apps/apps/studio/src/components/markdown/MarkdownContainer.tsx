@@ -1,7 +1,16 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 
 import MarkdownEditorInput from "./MarkdownEditorInput";
 import MarkdownViewer from "./MarkdownViewer";
+
+const PANEL_CLASS = "mt-2 min-h-[6rem] w-full rounded-md p-2 ring-1";
 
 const MarkdownContainer = ({
   textValue,
@@ -14,23 +23,24 @@ const MarkdownContainer = ({
 }) => {
   return (
     <Tabs defaultValue="write" className="w-full">
-      <div className="flex justify-between">
-        <TabsList>
-          <TabsTrigger value="write">Write instructions</TabsTrigger>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
+      <div className="flex items-center justify-between gap-3">
+        <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
+          <TabsTrigger value="write" className={SEGMENTED_TABS_TRIGGER_CLASS}>
+            Write
+          </TabsTrigger>
+          <TabsTrigger value="preview" className={SEGMENTED_TABS_TRIGGER_CLASS}>
+            Preview
+          </TabsTrigger>
         </TabsList>
         {children}
       </div>
       <TabsContent
-        className="min-h-[5rem] w-[56.5vw] rounded-lg border border-input bg-background p-2"
+        className={`${PANEL_CLASS} bg-sunken ring-border transition-shadow focus-within:ring-focus`}
         value="write"
       >
         <MarkdownEditorInput value={textValue} setValue={setTextValue} />
       </TabsContent>
-      <TabsContent
-        className="min-h-[5rem] w-[56.5vw] rounded-lg border border-input bg-sunken p-2"
-        value="preview"
-      >
+      <TabsContent className={`${PANEL_CLASS} bg-sunken/60 ring-line`} value="preview">
         <MarkdownViewer textValue={textValue} />
       </TabsContent>
     </Tabs>

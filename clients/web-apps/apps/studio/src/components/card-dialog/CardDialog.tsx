@@ -14,6 +14,8 @@ type CardDialogProps = {
   footer: ReactNode;
   /** Ignores Escape, outside clicks and the close button, for example while saving. */
   isDismissLocked?: boolean;
+  /** Ignores outside clicks only, for example while a form has unsaved input. */
+  isOutsideClickLocked?: boolean;
   /** Overrides the card width; defaults to 30rem, capped at the viewport. */
   widthClassName?: string;
 };
@@ -32,6 +34,7 @@ export const CardDialog = ({
   children,
   footer,
   isDismissLocked = false,
+  isOutsideClickLocked = false,
   widthClassName = "w-[min(30rem,calc(100vw-2rem))]",
 }: CardDialogProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -55,7 +58,7 @@ export const CardDialog = ({
             autofocusTarget.focus();
           }}
           onPointerDown={(event) => {
-            if (event.target === event.currentTarget) requestClose();
+            if (event.target === event.currentTarget && !isOutsideClickLocked) requestClose();
           }}
           className="fixed inset-0 z-50 flex items-start justify-center px-4 pb-4 pt-[max(4.5rem,12vh)] outline-none data-[state=closed]:duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
         >
