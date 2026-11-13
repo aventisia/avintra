@@ -1,7 +1,7 @@
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { toast } from "@avplatform/ui/sonner";
-import { AlertTriangle, Braces, Sparkles } from "lucide-react";
+import { BracketsCurlyIcon, SparkleIcon, WarningIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -53,7 +53,7 @@ export const VoicePersonaSection = ({ renderField }: VoicePersonaSectionProps) =
       {isPersonaEmpty(values) && (
         <div className="rounded-lg bg-sunken p-3">
           <p className="mb-2 flex items-center gap-1.5 text-body-sm font-semibold text-ink">
-            <Sparkles aria-hidden="true" className="size-3.5 text-primary-text" />
+            <SparkleIcon aria-hidden="true" className="size-3.5 text-primary-text" />
             Start from a template
           </p>
           <div className="grid gap-2 sm:grid-cols-3">
@@ -80,7 +80,7 @@ export const VoicePersonaSection = ({ renderField }: VoicePersonaSectionProps) =
 
       <div className="flex flex-wrap items-center gap-1.5">
         <span className="flex items-center gap-1 text-label uppercase text-muted-foreground">
-          <Braces aria-hidden="true" className="size-3.5" />
+          <BracketsCurlyIcon aria-hidden="true" className="size-3.5" />
           Variables
         </span>
         {definedVariables.length ? (
@@ -105,7 +105,7 @@ export const VoicePersonaSection = ({ renderField }: VoicePersonaSectionProps) =
 
       {undefinedVariables.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-warn/40 bg-warn/5 px-3 py-2 text-body-sm text-ink">
-          <AlertTriangle aria-hidden="true" className="size-4 shrink-0 text-warn" />
+          <WarningIcon aria-hidden="true" className="size-4 shrink-0 text-warn" />
           Not defined yet:
           {undefinedVariables.map((name) => (
             <Badge key={name} variant="outline" className="font-mono">

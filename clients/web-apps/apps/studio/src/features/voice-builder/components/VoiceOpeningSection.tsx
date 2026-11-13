@@ -1,4 +1,4 @@
-import { Bot, UserRound } from "lucide-react";
+import { RobotIcon, UserIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -11,13 +11,13 @@ const SPEAKER_OPTIONS: VoiceOptionCard[] = [
     value: "human",
     label: "Caller speaks first",
     description: "The agent waits for the caller to say something.",
-    Icon: UserRound,
+    Icon: UserIcon,
   },
   {
     value: "ai",
     label: "Agent speaks first",
     description: "The agent greets the caller with the introduction below.",
-    Icon: Bot,
+    Icon: RobotIcon,
   },
 ];
 

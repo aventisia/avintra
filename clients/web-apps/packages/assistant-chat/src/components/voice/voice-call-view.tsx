@@ -1,7 +1,13 @@
 import { Switch } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Mic, MicOff, Phone, PhoneOff, Volume2 } from "lucide-react";
+import {
+  MicrophoneIcon,
+  MicrophoneSlashIcon,
+  PhoneDisconnectIcon,
+  PhoneIcon,
+  SpeakerHighIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { VOICE_CALL_STATE_LABELS } from "../../lib/voice-call-labels";
@@ -181,7 +187,7 @@ export const VoiceCallView = ({
         >
           {call.needsAudioResume && (
             <Button variant="secondary" size={isFull ? "lg" : "default"} onClick={call.resumeAudio}>
-              <Volume2 aria-hidden="true" className="mr-1.5 size-4" />
+              <SpeakerHighIcon aria-hidden="true" className="mr-1.5 size-4" />
               Resume audio
             </Button>
           )}
@@ -194,14 +200,14 @@ export const VoiceCallView = ({
                 onClick={call.toggleMute}
               >
                 {call.isMuted ? (
-                  <MicOff aria-hidden="true" className="mr-1.5 size-4" />
+                  <MicrophoneSlashIcon aria-hidden="true" className="mr-1.5 size-4" />
                 ) : (
-                  <Mic aria-hidden="true" className="mr-1.5 size-4" />
+                  <MicrophoneIcon aria-hidden="true" className="mr-1.5 size-4" />
                 )}
                 {call.isMuted ? "Unmute" : "Mute"}
               </Button>
               <Button variant="destructive" size={isFull ? "lg" : "default"} onClick={call.end}>
-                <PhoneOff aria-hidden="true" className="mr-1.5 size-4" />
+                <PhoneDisconnectIcon aria-hidden="true" className="mr-1.5 size-4" />
                 End call
               </Button>
               <span className="ml-2 hidden text-hint text-muted-foreground sm:inline">
@@ -213,7 +219,7 @@ export const VoiceCallView = ({
             </>
           ) : (
             <Button size={isFull ? "lg" : "default"} disabled={startDisabled} onClick={call.start}>
-              <Phone aria-hidden="true" className="mr-1.5 size-4" />
+              <PhoneIcon aria-hidden="true" className="mr-1.5 size-4" />
               {call.state === "ended" ? "Start voice call" : "Start call"}
             </Button>
           )}

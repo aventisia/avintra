@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Input, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { CircleOffIcon, Plus, X } from "lucide-react";
+import { PlusIcon, ProhibitIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -208,7 +208,7 @@ export const VoiceVariablesField = ({
                 fieldSize={size}
               />
               <Button type="button" size="icon7" onClick={tryAdd} disabled={addDisabled}>
-                <Plus className="h-3.5 w-3.5" />
+                <PlusIcon className="h-3.5 w-3.5" />
               </Button>
             </div>
 
@@ -224,10 +224,10 @@ export const VoiceVariablesField = ({
 
       <div className="flex flex-col gap-1.5 mb-4">
         {rows.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No variables added"
             secondaryMessage="Add a name and value pair to fill placeholders."
-            Icon={CircleOffIcon}
+            Icon={ProhibitIcon}
             className="mx-1"
           />
         ) : (
@@ -254,7 +254,7 @@ export const VoiceVariablesField = ({
                 size={"icon5"}
                 disabled={disabled}
               >
-                <X className="h-3.5 w-3.5" />
+                <XIcon className="h-3.5 w-3.5" />
               </Button>
             </div>
           ))

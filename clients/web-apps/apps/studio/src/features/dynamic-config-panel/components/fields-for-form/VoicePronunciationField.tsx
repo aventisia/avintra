@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Input, NoContentMessage } from "@avplatform/ui";
+import { EmptyState, Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { Check, CircleOffIcon, Pencil, Plus, X } from "lucide-react";
+import { CheckIcon, PencilIcon, PlusIcon, ProhibitIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -300,7 +300,7 @@ export const VoicePronunciationField = ({
                 fieldSize={size}
               />
               <Button type="button" size="icon7" onClick={tryAdd} disabled={addDisabled}>
-                <Plus className="h-3.5 w-3.5" />
+                <PlusIcon className="h-3.5 w-3.5" />
               </Button>
             </div>
 
@@ -316,10 +316,10 @@ export const VoicePronunciationField = ({
 
       <div className="flex flex-col gap-1.5 mb-4">
         {rows.length === 0 ? (
-          <NoContentMessage
+          <EmptyState
             primaryMessage="No terms added"
             secondaryMessage="Add a term and how it should be spoken."
-            Icon={CircleOffIcon}
+            Icon={ProhibitIcon}
             className="mx-1"
           />
         ) : (
@@ -360,7 +360,7 @@ export const VoicePronunciationField = ({
                     disabled={saveEditDisabled}
                     aria-label="Save pronunciation"
                   >
-                    <Check className="h-3.5 w-3.5" />
+                    <CheckIcon className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     type="button"
@@ -369,7 +369,7 @@ export const VoicePronunciationField = ({
                     size={"icon5"}
                     aria-label="Cancel edit"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <XIcon className="h-3.5 w-3.5" />
                   </Button>
                 </>
               ) : (
@@ -386,7 +386,7 @@ export const VoicePronunciationField = ({
                     disabled={disabled}
                     aria-label={`Edit ${row.term}`}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <PencilIcon className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     type="button"
@@ -396,7 +396,7 @@ export const VoicePronunciationField = ({
                     disabled={disabled}
                     aria-label={`Delete ${row.term}`}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <XIcon className="h-3.5 w-3.5" />
                   </Button>
                 </>
               )}

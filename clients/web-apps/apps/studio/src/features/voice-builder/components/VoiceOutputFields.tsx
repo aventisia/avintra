@@ -1,6 +1,6 @@
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { Check, Play, Square } from "lucide-react";
+import { CheckIcon, PlayIcon, SquareIcon } from "@phosphor-icons/react";
 import { type ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -59,7 +59,9 @@ const VoiceCardRow = ({
           )}
           {error && <span className="block text-hint text-bad">{error}</span>}
         </span>
-        {isSelected && <Check aria-hidden="true" className="size-4 shrink-0 text-primary-text" />}
+        {isSelected && (
+          <CheckIcon aria-hidden="true" className="size-4 shrink-0 text-primary-text" />
+        )}
       </button>
       {action}
     </div>
@@ -96,9 +98,9 @@ const PreviewVoiceCard = ({
           className="grid size-7 shrink-0 place-items-center rounded-full border border-line text-ink-2 hover:bg-fill focus-visible:shadow-focus focus-visible:outline-none disabled:opacity-40"
         >
           {player.isPreviewing ? (
-            <Square aria-hidden="true" className="size-3" />
+            <SquareIcon aria-hidden="true" className="size-3" />
           ) : (
-            <Play aria-hidden="true" className="size-3" />
+            <PlayIcon aria-hidden="true" className="size-3" />
           )}
         </button>
       }

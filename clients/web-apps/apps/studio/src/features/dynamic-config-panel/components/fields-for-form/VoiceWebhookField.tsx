@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@avplatform/ui/form";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { Eye, EyeOff } from "lucide-react";
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -99,7 +99,11 @@ export const VoiceWebhookField = ({
                 aria-label={showSecret ? "Hide signing secret" : "Show signing secret"}
                 aria-pressed={showSecret}
               >
-                {showSecret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {showSecret ? (
+                  <EyeSlashIcon className="h-3.5 w-3.5" />
+                ) : (
+                  <EyeIcon className="h-3.5 w-3.5" />
+                )}
               </Button>
             </div>
             <FormMessage size={size} />

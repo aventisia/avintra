@@ -1,4 +1,4 @@
-import { Workflow, Zap } from "lucide-react";
+import { LightningIcon, TreeStructureIcon } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -15,13 +15,13 @@ const ENGINE_OPTIONS: VoiceOptionCard[] = [
     value: "pipeline",
     label: "Pipeline",
     description: "Separate speech-to-text, language model, and text-to-speech steps.",
-    Icon: Workflow,
+    Icon: TreeStructureIcon,
   },
   {
     value: "realtime",
     label: "Realtime",
     description: "One realtime model listens and speaks with lower delay.",
-    Icon: Zap,
+    Icon: LightningIcon,
   },
 ];
 

@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Form } from "@avplatform/ui/form";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircleIcon, CircleIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
 import { RenderField, useDefineDCPForm } from "@/features/dynamic-config-panel";
@@ -39,9 +39,9 @@ const SectionRail = ({ readiness }: { readiness: VoiceReadinessCheck[] }) => (
               onClick={() => scrollToSection(section.id)}
               className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-body-sm text-ink-2 hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none"
             >
-              {check?.isReady && <CheckCircle2 aria-label="Done" className="size-3.5 text-ok" />}
+              {check?.isReady && <CheckCircleIcon aria-label="Done" className="size-3.5 text-ok" />}
               {check && !check.isReady && (
-                <Circle aria-label="To do" className="size-3.5 text-warn" />
+                <CircleIcon aria-label="To do" className="size-3.5 text-warn" />
               )}
               {!check && <span aria-hidden="true" className="size-3.5" />}
               {section.label}
@@ -83,9 +83,9 @@ const ReadinessCard = ({ readiness }: { readiness: VoiceReadinessCheck[] }) => {
               className="flex w-full items-start gap-2 rounded-lg bg-sunken px-3 py-2 text-left hover:bg-hover focus-visible:shadow-focus focus-visible:outline-none"
             >
               {check.isReady ? (
-                <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ok" />
+                <CheckCircleIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ok" />
               ) : (
-                <Circle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warn" />
+                <CircleIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warn" />
               )}
               <span>
                 <span className="block text-body-sm font-semibold text-ink">{check.label}</span>

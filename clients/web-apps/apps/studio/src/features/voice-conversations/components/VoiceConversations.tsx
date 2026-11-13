@@ -4,7 +4,7 @@ import { EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PhoneCall } from "lucide-react";
+import { PhoneCallIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { useFetchFlowToLoad } from "@/features/react-flow/hooks/useFetchFlowToLoad";
@@ -200,7 +200,7 @@ export const VoiceConversations = () => {
             ))
           ) : (
             <EmptyState
-              Icon={PhoneCall}
+              Icon={PhoneCallIcon}
               primaryMessage="No conversations yet"
               secondaryMessage="Start a test call to record the first one."
             />
@@ -219,7 +219,7 @@ export const VoiceConversations = () => {
           />
         ) : (
           <EmptyState
-            Icon={PhoneCall}
+            Icon={PhoneCallIcon}
             primaryMessage="Select a conversation"
             secondaryMessage="Its transcript, timing, and tool calls appear here."
           />

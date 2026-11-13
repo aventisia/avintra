@@ -1,11 +1,11 @@
 import { cn } from "@avplatform/ui/lib";
-import type { LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
 
 export type VoiceOptionCard = {
   value: string;
   label: string;
   description: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 };
 
 type VoiceOptionCardsProps = {

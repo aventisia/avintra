@@ -3,7 +3,13 @@ import { EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { ArrowLeft, AudioLines, Bot, LoaderCircle, UserRound } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  CircleNotchIcon,
+  RobotIcon,
+  UserIcon,
+  WaveformIcon,
+} from "@phosphor-icons/react";
 import { Link, useParams } from "react-router-dom";
 
 import { useFetchChatAgents } from "@/features/04-assist/my-chats/hooks/useFetchChatAgents";
@@ -63,7 +69,7 @@ const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
             aria-label="All voice agents"
             className="grid size-8 shrink-0 place-items-center rounded-md text-ink-2 hover:bg-hover focus-visible:shadow-focus focus-visible:outline-none"
           >
-            <ArrowLeft aria-hidden="true" className="size-4" />
+            <ArrowLeftIcon aria-hidden="true" className="size-4" />
           </Link>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -83,7 +89,7 @@ const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
 };
 
 const VoiceAgentCard = ({ agent }: { agent: AssistChatDto }) => {
-  const SpeakerIcon = agent.firstSpeaker === "ai" ? Bot : UserRound;
+  const SpeakerIcon = agent.firstSpeaker === "ai" ? RobotIcon : UserIcon;
 
   return (
     <Link
@@ -92,7 +98,7 @@ const VoiceAgentCard = ({ agent }: { agent: AssistChatDto }) => {
     >
       <div className="flex items-center gap-2">
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary-text">
-          <AudioLines aria-hidden="true" className="size-4" />
+          <WaveformIcon aria-hidden="true" className="size-4" />
         </span>
         <span className="min-w-0 flex-1 truncate text-body font-semibold text-ink">
           {agent.name}
@@ -131,7 +137,7 @@ const VoiceAgentPicker = ({ agents }: { agents: AssistChatDto[] }) => (
         </div>
       ) : (
         <EmptyState
-          Icon={AudioLines}
+          Icon={WaveformIcon}
           primaryMessage="No voice agents available"
           secondaryMessage="Ask your admin to publish a voice agent and assign it to you."
           className="h-full"
@@ -143,7 +149,10 @@ const VoiceAgentPicker = ({ agents }: { agents: AssistChatDto[] }) => (
 
 const VoiceLoading = () => (
   <div className="flex h-full w-full items-center justify-center gap-2 text-body-sm text-muted-foreground">
-    <LoaderCircle aria-hidden="true" className="size-4 animate-spin motion-reduce:animate-none" />
+    <CircleNotchIcon
+      aria-hidden="true"
+      className="size-4 animate-spin motion-reduce:animate-none"
+    />
     Loading voice agents…
   </div>
 );
