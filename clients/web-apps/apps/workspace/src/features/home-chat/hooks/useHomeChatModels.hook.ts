@@ -1,4 +1,4 @@
-import { modelDisplayName } from "@avplatform/chat";
+import { modelDisplayName, modelSupportsEffort } from "@avplatform/chat";
 import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
@@ -36,6 +36,7 @@ export type HomeChatModel = {
   providerLabel: string;
   modelId: string;
   label: string;
+  supportsEffort: boolean;
   /** Vault credential configured for the provider, or null when it runs on platform credits. */
   credentialName: string | null;
   isByokEnabled: boolean;
@@ -86,6 +87,7 @@ const createModel = (
     providerLabel: PROVIDER_LABELS[provider],
     modelId,
     label: modelDisplayName(modelId),
+    supportsEffort: modelSupportsEffort(provider, modelId),
     credentialName,
     isByokEnabled: Boolean(credentialName),
   };

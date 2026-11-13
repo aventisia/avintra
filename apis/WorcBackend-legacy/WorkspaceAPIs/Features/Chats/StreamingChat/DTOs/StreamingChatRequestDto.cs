@@ -58,6 +58,12 @@ public class StreamingChatRequestDto
     public bool? IsByokEnabled { get; set; }
 
     /// <summary>
+    /// Landing chat only: how long a reasoning model thinks (low, medium or high).
+    /// Null or any other value keeps the model's default.
+    /// </summary>
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>
     /// Workspace pages the user can open, offered to the landing chat's navigate tool.
     /// Advisory only: the client re-checks every route before showing it.
     /// </summary>

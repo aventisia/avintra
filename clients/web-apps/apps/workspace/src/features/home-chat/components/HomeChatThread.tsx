@@ -1,6 +1,12 @@
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { type ChatModelSelection } from "@avplatform/assistant-chat";
-import { ChatModelPicker, ChatThread, toDataUrl } from "@avplatform/chat";
+import {
+  type ChatEffort,
+  ChatEffortPicker,
+  ChatModelPicker,
+  ChatThread,
+  toDataUrl,
+} from "@avplatform/chat";
 import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
@@ -38,16 +44,20 @@ type HomeChatThreadProps = {
 export const HomeChatThread = (props: HomeChatThreadProps) => {
   const { models, groups, speechModel } = useHomeChatModels();
   const [modelKey, setModelKey] = useState<string | null>(null);
+  const [effort, setEffort] = useState<ChatEffort | null>(null);
   const modelSelectionRef = useRef<ChatModelSelection | null>(null);
-  const selectModel = (key: string | null) => {
+  const selectedModel = models.find((option) => option.key === modelKey);
+  const updateSelection = (key: string | null, nextEffort: ChatEffort | null) => {
     const model = models.find((option) => option.key === key);
     setModelKey(model ? key : null);
+    setEffort(nextEffort);
     modelSelectionRef.current = model
       ? {
           provider: model.provider,
           model: model.modelId,
           credentialName: model.credentialName ?? undefined,
           isByokEnabled: model.isByokEnabled,
+          reasoningEffort: (model.supportsEffort && nextEffort) || undefined,
         }
       : null;
   };
@@ -167,7 +177,19 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
               groups.length > 0 && (
-                <ChatModelPicker groups={groups} value={modelKey} onChange={selectModel} />
+                <div className="flex min-w-0 items-center gap-0.5">
+                  <ChatModelPicker
+                    groups={groups}
+                    value={modelKey}
+                    onChange={(key) => updateSelection(key, effort)}
+                  />
+                  {selectedModel?.supportsEffort && (
+                    <ChatEffortPicker
+                      value={effort}
+                      onChange={(nextEffort) => updateSelection(modelKey, nextEffort)}
+                    />
+                  )}
+                </div>
               )
             }
           />

@@ -23,6 +23,8 @@ export interface StreamingChatRequestDto {
   modelId?: string;
   credentialName?: string;
   isByokEnabled?: boolean;
+  /** Landing chat only: how long a reasoning model thinks; omitted keeps the model's default. */
+  reasoningEffort?: "low" | "medium" | "high";
   /** Pages the landing chat may send the user to; ignored by agent chats. */
   destinations?: readonly ChatDestination[];
   /** Regenerate or edit: the stored turns after this many user turns are replaced. */

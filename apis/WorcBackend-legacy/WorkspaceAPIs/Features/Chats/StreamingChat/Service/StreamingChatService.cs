@@ -752,6 +752,7 @@ public class StreamingChatService : IStreamingChatService
             keep_user_turns = request.KeepUserTurns,
             temperature = 1.0,
             top_p = 1.0,
+            reasoning_effort = NormalizeReasoningEffort(request.ReasoningEffort),
             is_byok_enabled = selection.IsByokEnabled,
             credential_name = selection.CredentialName,
             skill_names = LandingSkillNames,
@@ -762,6 +763,9 @@ public class StreamingChatService : IStreamingChatService
             action = "LandingChat",
         };
     }
+
+    private static string? NormalizeReasoningEffort(string? effort) =>
+        effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" ? effort.Trim().ToLowerInvariant() : null;
 
     /// <summary>
     /// Resolves the model picked for this turn from the tenant's providers and

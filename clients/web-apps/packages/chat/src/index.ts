@@ -4,8 +4,14 @@ export { ChatSidebarHistory } from "./components/ChatSidebarHistory";
 export type { ChatSidebarHistoryProps } from "./components/ChatSidebarHistory";
 export { ChatTitle } from "./components/ChatTitle";
 export { ChatIconButton } from "./components/ChatIconButton";
+export { ChatEffortPicker } from "./components/ChatEffortPicker";
+export type { ChatEffortPickerProps } from "./components/ChatEffortPicker";
 export { ChatModelPicker } from "./components/ChatModelPicker";
-export type { ChatModelGroup, ChatModelPickerProps } from "./components/ChatModelPicker";
+export type {
+  ChatModelGroup,
+  ChatModelOption,
+  ChatModelPickerProps,
+} from "./components/ChatModelPicker";
 export type { ChatStarterGroup } from "./components/ChatStarters";
 export { ChatThread } from "./components/ChatThread";
 export type { ChatCommand } from "./components/ChatCommandMenu";
@@ -38,3 +44,5 @@ export {
 } from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
 export { modelDisplayName } from "./utils/model-name.util";
+export { modelSupportsEffort } from "./utils/model-effort.util";
+export type { ChatEffort } from "./utils/model-effort.util";
