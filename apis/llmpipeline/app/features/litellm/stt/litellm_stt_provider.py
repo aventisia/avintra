@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import io
 import time
+import wave
 
 from fastapi import HTTPException
 from pydub import AudioSegment
@@ -28,7 +29,13 @@ from ..core.credit_utils import (
 )
 from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
-from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
+from ..core.provider_registry import (
+    get_credit_service_type,
+    normalize_provider,
+    should_post_usage,
+    validate_model,
+    validate_provider,
+)
 from ..core.schemas import STTRequest, STTResponse
 from .stt_base import BaseSpeechToTextProvider
 
@@ -45,11 +52,16 @@ def _audio_bytes_from_data_uri(data_uri: str) -> bytes:
 
 
 def _audio_duration_seconds(data_uri: str) -> float:
-    """Return audio duration in seconds via pydub/ffmpeg."""
+    """Return audio duration in seconds; WAV is read directly, anything else via pydub."""
     try:
         _, b64 = data_uri.split(",", 1)
-        audio = AudioSegment.from_file(io.BytesIO(base64.b64decode(b64)))
-        return len(audio) / 1000.0
+        raw = base64.b64decode(b64)
+        try:
+            with wave.open(io.BytesIO(raw)) as wav:
+                return wav.getnframes() / wav.getframerate()
+        except Exception:
+            audio = AudioSegment.from_file(io.BytesIO(raw))
+            return len(audio) / 1000.0
     except Exception as e:
         raise ValueError(f"Failed to process audio: {e}")
 
@@ -66,6 +78,9 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         """
         start_time = time.perf_counter()
 
+        # IMPORTANT NOTE: Studio voice settings store the provider as
+        # "googlegemini"; LiteLLM only accepts "gemini".
+        stt_request.provider = normalize_provider(stt_request.provider)
         # Validate the provider/model with the request's credential mode.
         validate_provider(stt_request.provider, stt_request.is_byok_enabled, stt_request.credential_name)
         validate_model(stt_request.provider, stt_request.model, stt_request.is_byok_enabled, stt_request.credential_name)

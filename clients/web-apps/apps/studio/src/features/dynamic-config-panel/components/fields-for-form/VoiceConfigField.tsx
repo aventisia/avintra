@@ -2,46 +2,71 @@ import { buttonVariants } from "@avplatform/ui/buttons";
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
-import { SlidersHorizontalIcon } from "@phosphor-icons/react";
+import { PlayIcon, SlidersHorizontalIcon, StopIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
-// Import your static voice mappings here
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
-import { voiceProviderData } from "../../constants/voice-providers";
+import type { VoiceCatalogCapability } from "../../dtos/voice-catalog.dto";
+import { useVoiceCatalog } from "../../hooks/useVoiceCatalog.hook";
+import { useVoicePreview } from "../../hooks/useVoicePreview.hook";
+import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 
-export interface VoiceConfigFieldProps {
+const LEGACY_TTS_NODE_NAME = "CreateTTSAIAgent";
+
+export type VoiceConfigFieldProps = {
   /** The base name of the form field */
   name: string;
   /** Form path of the provider this field watches. */
   providerPath?: string;
-}
+  /** Form path of the model this field watches. */
+  modelPath?: string;
+  /** Form path of the BYOK credential name this field watches. */
+  credentialPath?: string;
+  /** Form path of the BYOK toggle this field watches. */
+  isByokPath?: string;
+  /** Voice capability of the selected model. */
+  capability?: VoiceCatalogCapability;
+};
 
 const VoiceConfigField = ({
   name,
   providerPath = "__ModelConfig__TextToSpeech.provider",
+  modelPath,
+  credentialPath,
+  isByokPath,
+  capability = "tts",
 }: VoiceConfigFieldProps) => {
   const { control, setValue, watch } = useFormContext();
+  const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
+  const isVoiceNode = nodeName === VOICE_AGENT_NODE_NAME || nodeName === LEGACY_TTS_NODE_NAME;
 
-  // 1. Memoize Field Names
   const fieldNames = useMemo(
     () =>
       ({
-        provider: providerPath, // Watch the provider selected in ModelConfigField
+        provider: providerPath,
+        model: modelPath ?? "__ModelConfig__TextToSpeech.model",
+        credential: credentialPath,
+        isByok: isByokPath,
         language: `${name}.language`,
         voice: `${name}.voice`,
         speed: `${name}.speed`,
-        // pitch: `${name}.pitch`,
       }) as const,
-    [name, providerPath],
+    [name, providerPath, modelPath, credentialPath, isByokPath],
   );
 
-  // Watch the provider value dynamically
   const providerValue = watch(fieldNames.provider);
+  const modelValue = watch(fieldNames.model);
+  const credentialValue = fieldNames.credential ? watch(fieldNames.credential) : undefined;
+  const isByokValue = fieldNames.isByok ? watch(fieldNames.isByok) : undefined;
+  const voiceValue = watch(fieldNames.voice);
+  const speedValue = watch(fieldNames.speed);
+  const pronunciationValue = watch("__Pronunciation__Voice");
+  const pronunciationEnabled = watch("__PronunciationEnabled__Voice");
 
-  // 2. Controllers for Voice fields
   const { field: languageField } = useController({
     name: fieldNames.language,
     control,
@@ -50,34 +75,40 @@ const VoiceConfigField = ({
     name: fieldNames.speed,
     control,
   });
-  // const { field: pitchField } = useController({
-  //   name: fieldNames.pitch,
-  //   control,
-  // });
 
   const languageValue = languageField.value;
   const prevLanguage = useRef(languageValue);
   const prevProvider = useRef(providerValue);
 
-  // 3. Get Data based on the selected Provider
-  const providerVoiceData = useMemo(() => {
-    if (!providerValue || !voiceProviderData[providerValue]) {
-      return { languages: [], voices: [] };
-    }
-    return voiceProviderData[providerValue];
-  }, [providerValue]);
+  const { providerData, isLoading } = useVoiceCatalog({
+    provider: providerValue,
+    model: modelValue,
+    capability,
+    credentialName: isByokValue ? credentialValue : undefined,
+    enabled: isVoiceNode,
+  });
 
-  // 4. Filter voices dynamically based on selected language
-  const filteredVoices = useMemo(() => {
-    const allProviderVoices = providerVoiceData.voices;
-    if (!languageValue) return allProviderVoices;
+  const voices = providerData.voices;
+  const sample = voices.find((voice) => voice.value === voiceValue)?.sample ?? null;
 
-    return allProviderVoices.filter((v) => v.languageId === languageValue || !v.languageId);
-  }, [providerVoiceData, languageValue]);
+  const voicePreview = useVoicePreview({
+    provider: providerValue,
+    model: modelValue,
+    voice: voiceValue,
+    sample,
+    language: languageValue,
+    speed: speedValue,
+    credentialName: credentialValue,
+    isByokEnabled: isByokValue,
+    pronunciations:
+      pronunciationEnabled === false
+        ? []
+        : Array.isArray(pronunciationValue)
+          ? (pronunciationValue as Array<{ term: string; pronunciation: string }>)
+          : [],
+  });
 
-  // 5. Handle Field Resets (Reset state when provider or language changes)
   useEffect(() => {
-    // If provider changes, reset both language and voice
     if (prevProvider.current !== providerValue) {
       prevProvider.current = providerValue;
       setValue(fieldNames.language, "", { shouldDirty: true });
@@ -85,16 +116,21 @@ const VoiceConfigField = ({
       return;
     }
 
-    // If only language changes, reset the voice
     if (prevLanguage.current !== languageValue) {
       prevLanguage.current = languageValue;
       setValue(fieldNames.voice, "", { shouldDirty: true });
     }
   }, [providerValue, languageValue, setValue, fieldNames]);
 
-  // If no provider data is found (e.g. Inferencing node), render nothing or a disabled state.
-  // Returning null completely hides this component if the provider doesn't support voices.
-  if (providerVoiceData.languages.length === 0 && providerVoiceData.voices.length === 0) {
+  if (!isVoiceNode) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <p className="text-xs text-muted-foreground">Loading voices…</p>;
+  }
+
+  if (providerData.languages.length === 0 && providerData.voices.length === 0) {
     return null;
   }
 
@@ -103,9 +139,9 @@ const VoiceConfigField = ({
       <SelectField
         size="sm"
         name={fieldNames.language}
-        selectOptions={providerVoiceData.languages}
+        selectOptions={providerData.languages}
         label="Language"
-        disabled={providerVoiceData.languages.length === 0}
+        disabled={providerData.languages.length === 0}
       />
 
       <div className="flex items-end gap-1">
@@ -113,10 +149,10 @@ const VoiceConfigField = ({
           <SearchableSelectField
             size="sm"
             name={fieldNames.voice}
-            selectOptions={filteredVoices}
+            selectOptions={voices}
             label="Voice"
             primaryText="Voices"
-            disabled={filteredVoices.length === 0}
+            disabled={voices.length === 0}
           />
         </div>
 
@@ -132,22 +168,31 @@ const VoiceConfigField = ({
                 <SliderField label="Speed" name={field.name} min={0.7} max={1.2} step={0.1} />
               )}
             />
-
-            {/* <Controller
-              {...pitchField}
-              render={({ field }) => (
-                <SliderField
-                  label="Pitch"
-                  name={field.name}
-                  min={0.5}
-                  max={2.0}
-                  step={0.1}
-                />
-              )}
-            /> */}
           </PopoverContent>
         </Popover>
+
+        <button
+          type="button"
+          aria-label="Preview voice"
+          disabled={!voicePreview.canPreview && !voicePreview.isPreviewing}
+          onClick={() =>
+            voicePreview.isPreviewing ? voicePreview.stopPreview() : voicePreview.playPreview()
+          }
+          className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}
+        >
+          {voicePreview.isPreviewing ? (
+            <StopIcon className="h-3 w-3" weight="fill" />
+          ) : (
+            <PlayIcon className="h-3 w-3" />
+          )}
+        </button>
       </div>
+
+      {!voicePreview.isSupported ? (
+        <p className="text-xs text-muted-foreground">Preview not supported for this provider.</p>
+      ) : null}
+
+      {voicePreview.error ? <p className="text-xs text-destructive">{voicePreview.error}</p> : null}
     </div>
   );
 };

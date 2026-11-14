@@ -1,0 +1,46 @@
+meta {
+  name: Create realtime draft session
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/sessions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+      "flowVersionId": "{{VOICE_REALTIME_DRAFT_FLOW_VERSION_ID}}",
+      "mode": "test"
+  }
+}
+
+script:post-response {
+  test("realtime test session returns join details and persists nothing", function() {
+    expect(res.getStatus()).to.equal(200);
+    const data = res.getBody()?.data;
+    expect(data.roomName).to.be.a("string").and.not.equal("");
+    expect(data.serverUrl).to.be.a("string").and.not.equal("");
+    expect(data.clientToken).to.be.a("string").and.not.equal("");
+    expect(data.mode).to.equal("test");
+    expect(["none", "auto"]).to.include(data.noiseCancellation);
+
+    bru.setGlobalEnvVar("VOICE_REALTIME_DRAFT_ROOM_NAME", data.roomName);
+    bru.setGlobalEnvVar("VOICE_REALTIME_DRAFT_SERVER_URL", data.serverUrl);
+    bru.setGlobalEnvVar("VOICE_REALTIME_DRAFT_CLIENT_TOKEN", data.clientToken);
+    bru.setGlobalEnvVar("VOICE_REALTIME_DRAFT_CONVERSATION_ID", data.conversationId);
+  });
+}
+
+docs {
+  > Starts one realtime `test` session. Join the room with the LiveKit console
+  > using `VOICE_REALTIME_DRAFT_SERVER_URL` and `VOICE_REALTIME_DRAFT_CLIENT_TOKEN`
+  > to hear audio and captions. Test sessions create and close the
+  > `run_Conversations` row but persist no messages or turn timing.
+}

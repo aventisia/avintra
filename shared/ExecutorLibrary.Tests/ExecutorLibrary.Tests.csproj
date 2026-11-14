@@ -10,4 +10,19 @@
     <ItemGroup>
         <ProjectReference Include="..\ExecutorLibrary\ExecutorLibrary.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\..\apis\WorcBackend-legacy\WorkspaceAPIs\Helpers\VoiceAgentGraphHelpers.cs" />
+        <Compile Include="..\..\apis\WorcBackend-legacy\WorkspaceAPIs\Features\VoiceSessions\DTOs\VoiceAgentSettingsDto.cs" />
+        <Compile Include="..\..\apis\WorcBackend-legacy\WorkspaceAPIs\Features\VoiceSessions\Service\VoiceAgentSettingsFactory.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System.Globalization" />
+        <Using Include="System.Text.Json" />
+        <Using Include="System.Text.Json.Nodes" />
+        <Using Include="System.Text.Json.Serialization" />
+        <Using Include="System.Text.RegularExpressions" />
+        <Using Include="WorkspaceAPIs.Helpers" />
+    </ItemGroup>
 </Project>

@@ -419,11 +419,9 @@ export const openAiModelList: Model[] = [
   },
 ];
 
-// Official Google Gemini Live / TTS Voices (2025)
+// IMPORTANT NOTE: Gemini Live voices differ by model, so this list is the
+// intersection that every Live model we ship accepts.
 const googleVoices = [
-  { label: "Journey", value: "journey" },
-  { label: "Horizon", value: "horizon" },
-  { label: "Lyra", value: "lyra" },
   { label: "Charon", value: "charon" },
   { label: "Kore", value: "kore" },
   { label: "Puck", value: "puck" },

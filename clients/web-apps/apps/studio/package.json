@@ -21,6 +21,7 @@
     "@avplatform/layout": "*",
     "@avplatform/tauri-utils": "*",
     "@avplatform/ui": "*",
+    "@avplatform/voice-client": "*",
     "@babel/runtime": "^7.24.0",
     "@dagrejs/dagre": "^1.1.3",
     "@hookform/resolvers": "^3.9.0",

@@ -3,7 +3,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
-import { AssistChatDto } from "../dtos/assist-chat-dto";
+import { AssistChatDto } from "../dtos/assist-chat.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist-chat`;
 

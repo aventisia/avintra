@@ -32,21 +32,22 @@ public class AdminConversationService : IAdminConversationService
                 conversationFilterDto.EndDate = DateTimeOffset.UtcNow;
             }
 
-            // Resolve conversation status based on archive flag
-            var status = conversationFilterDto.IsArchived
-                ? ConversationStatusEnum.Archived
-                : ConversationStatusEnum.Active;
+            // Resolve archive scope; non-archived includes every terminal status
+            var isArchived = conversationFilterDto.IsArchived;
 
             // Fetch conversations with related entities within the date range
             var conversations = await _unitOfWork.ConversationRepo
                 .GetByConditionAsync(w =>
-                    w.Status == status &&
+                    (isArchived
+                        ? w.Status == ConversationStatusEnum.Archived
+                        : w.Status != ConversationStatusEnum.Archived) &&
                     w.CreatedOn.Date >= conversationFilterDto.StartDate.Value.Date &&
                     w.CreatedOn.Date <= conversationFilterDto.EndDate.Value.Date &&
 
-                    // User and FlowVersion filter (optional)
+                    // User, FlowVersion, and Channel filter (optional)
                     (conversationFilterDto.UserIds == null || !conversationFilterDto.UserIds.Any() || conversationFilterDto.UserIds.Contains(w.UserId)) &&
-                    (conversationFilterDto.FlowVersionIds == null || !conversationFilterDto.FlowVersionIds.Any() || conversationFilterDto.FlowVersionIds.Contains(w.FlowVersionId))
+                    (conversationFilterDto.FlowVersionIds == null || !conversationFilterDto.FlowVersionIds.Any() || conversationFilterDto.FlowVersionIds.Contains(w.FlowVersionId)) &&
+                    (conversationFilterDto.Channel == null || w.Channel == conversationFilterDto.Channel)
                 )
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.Messages)

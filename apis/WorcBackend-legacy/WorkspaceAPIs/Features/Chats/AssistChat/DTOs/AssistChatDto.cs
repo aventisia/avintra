@@ -28,9 +28,24 @@ public class AssistChatDto
     public int VersionNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the type of the parent flow.
+    /// </summary>
+    public FlowTypesEnum FlowType { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of default actions available for the chat agent.
     /// </summary>
     public List<string> DefaultActions { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets who speaks first in a VoiceAgent conversation (<c>human</c> or <c>ai</c>).
+    /// </summary>
+    public string FirstSpeaker { get; set; } = "human";
+
+    /// <summary>
+    /// Gets or sets the VoiceAgent introduction played once per conversation.
+    /// </summary>
+    public string VoiceIntroduction { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the timestamp of the conversation (e.g., last activity time).

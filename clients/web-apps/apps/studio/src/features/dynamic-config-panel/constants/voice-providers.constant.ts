@@ -1,14 +1,13 @@
-export interface VoiceOption {
-  label: string;
-  value: string;
-  languageId?: string;
-}
+import type { VoiceProviderData } from "../types/voice-provider.type";
+import { googleVoices, openAIVoices } from "./model-providers";
 
-export interface VoiceProviderData {
-  languages: { label: string; value: string }[];
-  voices: VoiceOption[];
-}
-//TODO: generated form llm need to test
+/**
+ * Offline fallback for providers the voice catalog cannot serve.
+ *
+ * IMPORTANT NOTE: the llmpipeline voice catalog
+ * (`app/features/litellm/voice_catalog/catalog.py`) is the source of truth;
+ * keep these lists in sync with it.
+ */
 export const voiceProviderData: Record<string, VoiceProviderData> = {
   elevenlabs: {
     languages: [
@@ -96,7 +95,6 @@ export const voiceProviderData: Record<string, VoiceProviderData> = {
       },
       { label: "Matthew (Calm, British Male)", value: "Yko7PKHZNXotIFUBG7I9" },
       { label: "James (Calm, Australian Male)", value: "ZQe5CZNOzWyzPSCn5a3c" },
-      { label: "Joseph (News, British Male)", value: "ZpFCEjqBiaekQjwkZpE" },
       {
         label: "Jeremy (Excited, American-Irish Male)",
         value: "bVMeCyTHy58xNoL34h3p",
@@ -142,16 +140,33 @@ export const voiceProviderData: Record<string, VoiceProviderData> = {
     ],
   },
 
-  // Future providers can be added easily here following the same structure
-  //   openai: {
-  //     languages: [{ label: "English", value: "en" }],
-  //     voices: [
-  //       { label: "Alloy", value: "alloy", languageId: "en" },
-  //       { label: "Echo", value: "echo", languageId: "en" },
-  //       { label: "Fable", value: "fable", languageId: "en" },
-  //       { label: "Onyx", value: "onyx", languageId: "en" },
-  //       { label: "Nova", value: "nova", languageId: "en" },
-  //       { label: "Shimmer", value: "shimmer", languageId: "en" },
-  //     ],
-  //   },
+  openai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices,
+  },
+
+  googlegemini: {
+    languages: [{ label: "English", value: "en" }],
+    voices: googleVoices,
+  },
+
+  azure: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices,
+  },
+
+  xai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: openAIVoices,
+  },
+
+  vertex_ai: {
+    languages: [{ label: "English", value: "en" }],
+    voices: googleVoices,
+  },
+
+  bedrock: {
+    languages: [{ label: "English", value: "en" }],
+    voices: [],
+  },
 };

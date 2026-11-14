@@ -44,12 +44,12 @@ public class AssistChatService : IAssistChatService
                 ResourceAccessTypeEnum.View);
 
             // Fetch flow versions based on the following criteria:
-            // - Flow type must be ChatAgent
+            // - Flow type must be ChatAgent or VoiceAgent
             // - Only published and non-archived flow versions are included
             // - Flow version must be owned by or shared with the current user
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished &&
                     !w.IsArchived &&
                     (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id))
@@ -62,8 +62,19 @@ public class AssistChatService : IAssistChatService
                     Name = s.Flow != null ? s.Flow.Name : string.Empty,
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
+                    FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.ChatAgent,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    FirstSpeaker = VoiceAgentGraphHelpers.GetFirstSpeaker(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    VoiceIntroduction = VoiceAgentGraphHelpers.GetIntroduction(
                         s.FlowVersionHistories
                             .OrderByDescending(h => h.CreatedOn)
                             .Select(h => h.ReactFlowObject)
@@ -81,7 +92,7 @@ public class AssistChatService : IAssistChatService
                     LastModifiedOn = s.LastModifiedOn,
 
                     Timestamp = s.Conversations.Any() ? s.Conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId && w1.Messages.Any())
                         .Select(s1 => s1.Messages
                             .OrderByDescending(o => o.CreatedOn)
                             .Select(s2 => (DateTimeOffset?)s2.CreatedOn)
@@ -93,7 +104,7 @@ public class AssistChatService : IAssistChatService
                     // Project conversations with latest activity details
                     Conversations = s.Conversations
                         // Include only active (non-archived) conversations
-                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId)
+                        .Where(w1 => w1.Status != ConversationStatusEnum.Archived && w1.UserId == _userId && w1.Messages.Any())
                         .Select(s1 => new ConversationSummaryDto
                         {
                             Id = s1.Id,
@@ -161,7 +172,7 @@ public class AssistChatService : IAssistChatService
                 ResourceAccessTypeEnum.View);
 
             // Fetch flow versions based on the following criteria:
-            // - Flow must be of type ChatAgent
+            // - Flow must be of type ChatAgent or VoiceAgent
             // - Flow version must be published and not archived
             // - Flow version must be owned by or shared with the current user
             // - Must contain at least one non-archived conversation
@@ -169,7 +180,7 @@ public class AssistChatService : IAssistChatService
             // - Includes only non-archived conversations with their latest message details
             var flowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished &&
                     !w.IsArchived &&
                     (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id)) &&
@@ -184,8 +195,19 @@ public class AssistChatService : IAssistChatService
                     Name = s.Flow != null ? s.Flow.Name : string.Empty,
                     Description = s.Flow != null ? s.Flow.Description : null,
                     VersionNumber = s.VersionNumber,
+                    FlowType = s.Flow != null ? s.Flow.Type : FlowTypesEnum.ChatAgent,
                     IsArchived = s.IsArchived,
                     DefaultActions = FlowDefinitionUtil.GetDefaultActions(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    FirstSpeaker = VoiceAgentGraphHelpers.GetFirstSpeaker(
+                        s.FlowVersionHistories
+                            .OrderByDescending(h => h.CreatedOn)
+                            .Select(h => h.ReactFlowObject)
+                            .FirstOrDefault() ?? string.Empty),
+                    VoiceIntroduction = VoiceAgentGraphHelpers.GetIntroduction(
                         s.FlowVersionHistories
                             .OrderByDescending(h => h.CreatedOn)
                             .Select(h => h.ReactFlowObject)

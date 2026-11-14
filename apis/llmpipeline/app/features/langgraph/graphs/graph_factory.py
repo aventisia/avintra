@@ -14,7 +14,6 @@ from app.features.langgraph.checkpoint.memory import graph_memory
 from app.features.langgraph.nodes.model_node import create_model_node
 from app.features.langgraph.nodes.tool_node import create_tool_node
 from app.features.langgraph.schemas.graph_state import ChatState
-from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_approval import (
@@ -24,9 +23,13 @@ from app.features.langgraph.services.tool_approval import (
 from app.features.langgraph.services.tool_skill_selector import (
     select_tools_and_skills,
 )
+from app.features.langgraph.skills.skill_loader import (
+    build_skill_prompt,
+    resolve_skill_configs,
+)
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
-from app.features.llm_providers.services.corsair_sidecar_service import is_corsair_tool
+from app.features.langgraph.tools.tool_resolver import resolve_tools
 from app.features.llm_providers.chat_agent_response_schema import (
     CHAT_AGENT_RESPONSE_SCHEMA,
 )
@@ -157,10 +160,10 @@ def _create_agent_selector_node(
         current_request = restore_request(metadata, request)
 
         # Explicitly configured tools (via "Configure Tools") are the only tools
-        # the agent may call. They are NOT force-bound: the ReAct planner decides
-        # per-message which configured actions are relevant (Path B), so a pure
-        # text/drafting request binds and executes nothing. Explicitly attached
-        # skills follow the same per-message routing.
+        # the agent may call. Chat turns are NOT force-bound: the ReAct planner
+        # decides per-message which configured actions are relevant (Path B), so
+        # a pure text/drafting request binds and executes nothing. Explicitly
+        # attached skills follow the same per-message routing.
         configured_tool_names = list(explicit_tool_names or [])
         configured_tool_set = set(configured_tool_names)
 
@@ -169,6 +172,21 @@ def _create_agent_selector_node(
                 "Attached skills available for planner routing: %s",
                 explicit_skill_names,
             )
+
+        # IMPORTANT NOTE: a voice call has no per-message plan step; bind every
+        # configured capability for the turn, matching the realtime bridge.
+        if current_request.is_voice_agent:
+            return {
+                "metadata": {
+                    **metadata,
+                    "selected_tool_names": configured_tool_names or None,
+                    "selected_skills": resolve_skill_configs(
+                        skill_registry,
+                        list(explicit_skill_names or []),
+                        tenant_id=tenant_id,
+                    ),
+                }
+            }
 
         # Let the ReAct planner decide which tools and skills are relevant for
         # this specific user message.
@@ -190,7 +208,7 @@ def _create_agent_selector_node(
         ]
 
         selected_skill_names = selection.skill_names
-        selected_skills = _resolve_skill_configs(
+        selected_skills = resolve_skill_configs(
             skill_registry,
             selected_skill_names,
             tenant_id=tenant_id,
@@ -236,7 +254,7 @@ def _create_dynamic_model_node(
         node_model = model
 
         # Load only tools selected by agent selector
-        tools = await _resolve_tools(
+        tools = await resolve_tools(
             tool_registry,
             selected_tool_names,
             current_request,
@@ -252,7 +270,7 @@ def _create_dynamic_model_node(
             node_model = node_model.bind_tools(tools)
 
         # Inject selected skill instructions into system prompt
-        skill_prompt = _build_skill_prompt(selected_skills)
+        skill_prompt = build_skill_prompt(selected_skills)
 
         # When a knowledge base is configured, add a directive that tells the
         # model to ground its answer in the injected "[Knowledge Base Context]"
@@ -323,7 +341,7 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         current_request = restore_request(metadata, request)
 
         # Resolve selected tool names into executable tools
-        tools = await _resolve_tools(
+        tools = await resolve_tools(
             tool_registry,
             selected_tool_names or [],
             current_request,
@@ -332,175 +350,6 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         return await create_tool_node(tools, current_request)(state)
 
     return tool_node_factory
-
-async def _resolve_tools(
-    tool_registry: ToolRegistry,
-    selected_tool_names: list[str] | None,
-    llm_request: LLMRequest | None = None,
-) -> list[BaseTool]:
-    """Resolve selected tool names to concrete tool instances."""
-
-    if not selected_tool_names:
-        return []
-
-    legacy_names = [name for name in selected_tool_names if not is_corsair_tool(name)]
-    corsair_names = [name for name in selected_tool_names if is_corsair_tool(name)]
-
-    tools = []
-    if legacy_names:
-        resolved_legacy = tool_registry.get_by_names(legacy_names)
-        if resolved_legacy:
-            tools.extend(resolved_legacy)
-
-    if corsair_names and llm_request is not None:
-        corsair_tools = await _build_corsair_tools_for_names(corsair_names, llm_request)
-        tools.extend(corsair_tools)
-
-    return tools
-
-
-async def _build_corsair_tools_for_names(
-    tool_names: list[str],
-    llm_request: LLMRequest,
-) -> list[BaseTool]:
-    """Fetch sidecar schemas and build bindable Corsair tools.
-
-    Only actions that are explicitly allowed by ``llm_request.tool_config``
-    are fetched so the model cannot call unconfigured Corsair actions.
-    """
-    from app.features.langgraph.tools.corsair.corsair_tool_factory import (
-        build_corsair_tools_from_schemas,
-    )
-    from app.features.llm_providers.services.corsair_sidecar_service import (
-        fetch_corsair_schemas,
-        parse_corsair_tool_name,
-        to_corsair_action,
-    )
-
-    configs = llm_request.tool_config or []
-    allowed: dict[str, set[str]] = {}
-    for config in configs:
-        if isinstance(config, dict):
-            tool = config.get("tool", "")
-            actions = {a.get("action", "") for a in config.get("actions", [])}
-        else:
-            tool = config.tool
-            actions = {a.action for a in config.actions}
-        plugin = (tool or "").strip().lower()
-        allowed.setdefault(plugin, set()).update(
-            to_corsair_action(plugin, action) for action in actions if action
-        )
-
-    fetch_configs = []
-    wanted: set[str] = set()
-    for name in tool_names:
-        plugin, action = parse_corsair_tool_name(name)
-        plugin = plugin.strip().lower()
-        action = to_corsair_action(plugin, action)
-        wanted.add(f"{plugin}.{action}")
-
-        if action in allowed.get(plugin, set()):
-            fetch_configs.append({"tool": plugin, "actions": [{"action": action}]})
-        else:
-            logger.warning(
-                "Skipping unconfigured Corsair tool %s (plugin=%s action=%s)",
-                name,
-                plugin,
-                action,
-            )
-
-    if not fetch_configs:
-        return []
-
-    try:
-        schemas = await fetch_corsair_schemas(fetch_configs)
-    except Exception:
-        logger.exception("Failed to fetch Corsair schemas for tool binding")
-        return []
-
-    # Filter schemas to only the requested names so the returned list is tight.
-    schemas = [s for s in schemas if s.get("name") in wanted]
-
-    return build_corsair_tools_from_schemas(schemas)
-
-
-def _resolve_skill_configs(
-    skill_registry: SkillRegistry,
-    skill_names: list[str],
-    tenant_id: str | None = None,
-) -> list[SkillConfig]:
-    """Resolve a list of skill names to their registered configs."""
-
-    configs: list[SkillConfig] = []
-
-    for name in skill_names:
-        skill = skill_registry.get_for_tenant(name, tenant_id)
-        if skill is not None and skill.is_active:
-            configs.append(skill)
-        else:
-            logger.warning(
-                "Selected skill %s is not available in the registry.",
-                name,
-            )
-
-    return configs
-
-
-def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
-    """Build a system prompt fragment describing selected skills.
-
-    Skills are stored in graph state and survive checkpoint round-trips as
-    plain dicts, so each entry is normalized back to ``SkillConfig`` before
-    use (approval resumes re-enter the model node without the selector node).
-    """
-
-    if not skills:
-        return None
-
-    normalized: list[SkillConfig] = []
-    for raw in skills:
-        if isinstance(raw, SkillConfig):
-            normalized.append(raw)
-            continue
-        if isinstance(raw, dict):
-            try:
-                normalized.append(SkillConfig(**raw))
-            except Exception:
-                logger.warning(
-                    "Skipping unreadable skill from graph state: %s",
-                    raw.get("name"),
-                )
-    if not normalized:
-        return None
-
-    lines = [
-        "You have access to the following skills for this request:",
-        "",
-    ]
-
-    for skill in normalized:
-        lines.append(f"- {skill.name}: {skill.description}")
-
-        # If the skill was loaded from the DB, inject the full file contents
-        # (SKILL.md instructions + supporting scripts) into the prompt.
-        skill_files = skill.metadata.get("files")
-        if skill_files:
-            lines.append("")
-            lines.append(f"  Files for {skill.name}:")
-            for file_info in skill_files:
-                content = file_info.get("content")
-                if content:
-                    lines.append("")
-                    lines.append(f"  --- {file_info.get('file_name')} ---")
-                    lines.append(content)
-
-    lines.append("")
-    lines.append(
-        "Use these skills when they are relevant to the user's request. "
-        "Only reference skills from the list above."
-    )
-
-    return "\n".join(lines)
 
 
 def _build_kb_directive(llm_request: LLMRequest) -> str | None:

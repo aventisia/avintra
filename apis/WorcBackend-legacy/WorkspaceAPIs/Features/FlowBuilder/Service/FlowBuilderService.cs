@@ -15,6 +15,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly ICollaborationStore _collaborationStore;
     private readonly IVaultCredentialService _vaultCredentialService;
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
+    private readonly ITenantModelProviderService _tenantModelProviderService;
     private readonly Guid _userId;
     private readonly string _userHolderId;
 
@@ -29,7 +30,8 @@ public class FlowBuilderService : IFlowBuilderService
         ICurrentTenantService currentTenantService,
         ICollaborationStore collaborationStore,
         IVaultCredentialService vaultCredentialService,
-        IResourceFlowAccessService resourceFlowAccessService)
+        IResourceFlowAccessService resourceFlowAccessService,
+        ITenantModelProviderService tenantModelProviderService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -49,6 +51,7 @@ public class FlowBuilderService : IFlowBuilderService
         _collaborationStore = collaborationStore;
         _vaultCredentialService = vaultCredentialService;
         _resourceFlowAccessService = resourceFlowAccessService;
+        _tenantModelProviderService = tenantModelProviderService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -251,7 +254,7 @@ public class FlowBuilderService : IFlowBuilderService
         return serviceResponse;
     }
 
-    // Publishes a flow version based on the specified type (Agent, Block, Template).
+    // Publishes a flow version based on the specified type (Agent, Block, VoiceAgent, Template).
     public async Task<ServiceResponse<bool>> PublishFlowVersionAsync(PublishFlowVersionDto publishFlowVersionDto)
     {
         var serviceResponse = new ServiceResponse<bool>
@@ -330,14 +333,49 @@ public class FlowBuilderService : IFlowBuilderService
             // repair pass that re-collects references and re-creates any missing Production clones.
             var wasAlreadyPublished = flowVersion.IsPublished == true;
 
-            // Validate: ChatAgent versions must satisfy the single-node shape so invalid
-            // client payloads (e.g. trigger/end/plus nodes, missing Chat AI node) cannot be published
+            // Validate: ChatAgent and VoiceAgent versions must satisfy the single-node shape so invalid
+            // client payloads (e.g. trigger/end/plus nodes, missing AI node) cannot be published
             if (flowVersion.Flow.Type == FlowTypesEnum.ChatAgent)
             {
                 var parsedChatFlow = ChatAgentGraphHelpers.TryParseFlow(flowVersion.ReactFlowObject);
 
                 if (ChatAgentGraphHelpers.ValidateChatAgentGraph(parsedChatFlow) is string chatValidationError)
                     return serviceResponse.Update(chatValidationError, 400);
+            }
+
+            // VoiceAgent versions must satisfy the single-node shape and carry an
+            // introduction whenever the AI speaks first.
+            if (flowVersion.Flow.Type == FlowTypesEnum.VoiceAgent)
+            {
+                var parsedVoiceFlow = VoiceAgentGraphHelpers.TryParseFlow(flowVersion.ReactFlowObject);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentGraph(parsedVoiceFlow) is string voiceValidationError)
+                    return serviceResponse.Update(voiceValidationError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentConversation(parsedVoiceFlow) is string voiceConversationError)
+                    return serviceResponse.Update(voiceConversationError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentEngine(parsedVoiceFlow) is string voiceEngineError)
+                    return serviceResponse.Update(voiceEngineError, 400);
+
+                var tenantEnabledModels = await _tenantModelProviderService.GetEnabledModelsAsync(null, null);
+                if (tenantEnabledModels.Data is null)
+                    return serviceResponse.Update(
+                        "Voice agent model configuration could not be verified. Please try again.", 500);
+
+                var enabledModelOptions = tenantEnabledModels.Data
+                    .Select(model => (
+                        Provider: model.ProviderType.ToString(),
+                        Model: model.ModelId,
+                        Capability: model.Capability?.ToString()));
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentModelsEnabled(parsedVoiceFlow, enabledModelOptions) is string voiceModelError)
+                    return serviceResponse.Update(voiceModelError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentEscalation(parsedVoiceFlow) is string voiceEscalationError)
+                    return serviceResponse.Update(voiceEscalationError, 400);
+
+                if (VoiceAgentGraphHelpers.ValidateVoiceAgentTranscriptWebhook(parsedVoiceFlow) is string voiceWebhookError)
+                    return serviceResponse.Update(voiceWebhookError, 400);
             }
 
             // TODO: Bug When there is a call block or call agent node exists then parsed flow is empty
@@ -370,6 +408,7 @@ public class FlowBuilderService : IFlowBuilderService
                 case PublishTypesEnum.Agent:
                 case PublishTypesEnum.ChatAgent:
                 case PublishTypesEnum.Block:
+                case PublishTypesEnum.VoiceAgent:
                     // Determine the publish type for logging and message purposes
                     var publishType = publishFlowVersionDto.Type.ToString();
 
@@ -404,7 +443,11 @@ public class FlowBuilderService : IFlowBuilderService
 
                     // Notify the Orchestrator Manager(s) of the tenant that an agent is ready for use
                     if (!wasAlreadyPublished &&
-                        (publishFlowVersionDto.Type == PublishTypesEnum.Agent || publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent))
+                        (
+                            publishFlowVersionDto.Type == PublishTypesEnum.Agent ||
+                            publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent ||
+                            publishFlowVersionDto.Type == PublishTypesEnum.VoiceAgent)
+                        )
                     {
                         await _notificationEventService.NotifyAgentPublishedAsync(
                             flowVersion.Flow.TenantId,

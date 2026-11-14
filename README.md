@@ -90,3 +90,41 @@ Please don't open public issues for vulnerabilities. See [SECURITY.md](SECURITY.
 ## Telemetry
 
 The Community edition sends nothing to Aventisia. Registered Enterprise and Commercial deployments check their license at startup and daily, and report usage counts (platform version, jobs run, execution time, users, published agents). No workflow content, data or credentials are sent.
+
+## Voice agent (LiveKit)
+
+Voice sessions use [LiveKit](https://livekit.io) for WebRTC. On the backend, only `llmpipeline`
+talks to LiveKit (tokens, rooms, and the agent worker) through the official `livekit-api` SDK;
+WorkspaceAPIs reaches it through the existing `LLMPIPELINE_API_BASE_URL`. LiveKit runs
+independently in Docker and is not a dekit service:
+
+```sh
+docker compose -f deploy/livekit/docker-compose.yml up -d
+docker compose -f deploy/livekit/docker-compose.yml down
+curl http://localhost:7880  # health check: OK
+```
+
+`llmpipeline_apis` starts the voice worker automatically when `LIVEKIT_WS_URL`,
+`LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET` are set in `apis/llmpipeline/.env.local`
+(see `.env.example`); no separate worker command is needed. The worker shares the
+llmpipeline venv, settings, chat engine, and process lifecycle, and joins only
+dispatched rooms.
+
+The dev server uses LiveKit's documented `devkey` / `secret` pair. Local ports are
+7880/tcp (HTTP and WebSocket signaling), 7881/tcp and 7882/udp (WebRTC media). When
+the APIs are reached directly rather than through nginx, set
+`WORKSPACE_API_URL=https://localhost:4001/api` in the same file so the worker can fetch
+the resolved agent settings. The full session contract, event/error codes, cleanup
+rules, and latency/test commands are in
+`apis/llmpipeline/app/features/voice_sessions/README.md`.
+
+Production uses LiveKit Cloud. Set `LIVEKIT_WS_URL=wss://<project>.livekit.cloud` and
+`LIVEKIT_HTTP_URL=https://<project>.livekit.cloud` (either one is enough; the other is
+derived) plus that project's API key pair in the process environment, and keep
+`SSL_VERIFY=true`. Clients connect to the cloud `wss://` URL directly, so nginx needs no
+WebSocket proxy for voice sessions.
+
+Allow outbound `*.livekit.cloud` TCP 443, `*.turn.livekit.cloud` TCP 443,
+`*.host.livekit.cloud` UDP 3478, and (recommended) all hosts UDP 50000-60000. Without the
+TURN/UDP rows the room joins but media never establishes, and the call ends. The
+self-hosted compose file above is local-only and must not run in production.

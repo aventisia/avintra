@@ -255,6 +255,13 @@ class STTResponse(BaseModel):
     action: Optional[str] = None
 
 
+class PronunciationEntry(BaseModel):
+    """A term and the way it should be spoken by text-to-speech."""
+
+    term: str
+    pronunciation: str
+
+
 class TTSRequest(BaseModel):
     """Self-contained Text-to-Speech request for the LiteLLM feature.
 
@@ -269,6 +276,7 @@ class TTSRequest(BaseModel):
     language: Optional[str] = None
     speed: float = 1.0
     stream: bool = False
+    pronunciations: Optional[list[PronunciationEntry]] = None
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     ref_type: str = ""

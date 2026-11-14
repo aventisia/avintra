@@ -41,6 +41,13 @@ class LLMRequest(BaseModel):
     reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
+    is_voice_agent: Optional[bool] = False   # Whether the request originates from a voice agent
+    first_speaker: Optional[str] = None   # Voice agent turn order: "human" or "ai"
+    introduction_text: Optional[str] = None   # Voice agent introduction already delivered to the caller (context only)
+    voice_system_prompt: Optional[str] = None   # Voice agent persona (goal/role/instructions) composed by the workspace API
+    manager_agent: Optional[dict] = None   # Voice agent delegation contract: {"target": str, "context": dict}
+    pronunciations: Optional[List[dict]] = None  # Voice agent term/pronunciation alias list passed to the TTS layer
+    sfx: Optional[dict] = None  # Voice agent sound-effect passthrough: {"enabled": bool, "tool_call_cue_url": str, "ambience_url": str}
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.
     ref_type: str = "" # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str = "" # Identifier to link back to Agent/Workflow
@@ -52,6 +59,8 @@ class LLMRequest(BaseModel):
     source_threshold: Optional[float] = Field(default=None, ge=0.0, le=1.0)  # Minimum similarity score for KB chunks; None uses the default (0.1)
     skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
     conversation_id: Optional[str] = None   # Unique identifier for the conversation thread used to preserve context across requests.
+    flow_version_id: Optional[str] = None   # Workspace flow version identity for persisted conversations.
+    channel: Literal['chat', 'voice'] = 'chat'  # Conversation channel for persisted rows.
     is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
     max_short_term_turns: Optional[int] = Field(default=None, ge=0)  # Number of most recent conversation turns sent to the model; None or 0 means no limit
 
@@ -69,6 +78,7 @@ class LLMChunkResponse(BaseModel):
     output: Union[str, dict, list, ChatAgentResponse]  # Text, JSON, or structured chat-agent response
     conversation_id: Optional[str] = None # Unique identifier for the conversation/thread. Use this to maintain conversation context across multiple requests.
     type: Optional[str] = None
+    metadata: Optional[dict] = None  # Voice agent client hints (pronunciations, sfx) echoed to the caller
     
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):

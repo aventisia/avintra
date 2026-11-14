@@ -748,6 +748,7 @@ namespace WorkspaceAPIs.Services
                     case ProjectTemplateTypesEnum.Block:
                     case ProjectTemplateTypesEnum.Agent:
                     case ProjectTemplateTypesEnum.ChatAgent:
+                    case ProjectTemplateTypesEnum.VoiceAgent:
                         {
                             // Fetch the flow version using RefId
                             var flowVersion = await _unitOfWork.FlowVersionRepo
@@ -999,8 +1000,8 @@ namespace WorkspaceAPIs.Services
                 // Trim string properties in DTO to clean up any extra whitespace
                 trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
 
-                // Handle only Agent, Block, or ChatAgent template types (for flow creation)
-                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block || projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent)
+                // Handle only Agent, Block, ChatAgent, or VoiceAgent template types (for flow creation)
+                if (projectTemplate.Type == ProjectTemplateTypesEnum.Agent || projectTemplate.Type == ProjectTemplateTypesEnum.Block || projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent || projectTemplate.Type == ProjectTemplateTypesEnum.VoiceAgent)
                 {
                     // Map project template to new Flow entity
                     var flowEntity = new Flow
@@ -1022,13 +1023,19 @@ namespace WorkspaceAPIs.Services
                     }
 
                     // Template schemas bypass normal initial graph creation, so normalize
-                    // ChatAgent schemas to the single-node shape before persisting
+                    // ChatAgent and VoiceAgent schemas to the single-node shape before persisting
                     var templateSchema = projectTemplate.Schema;
                     if (projectTemplate.Type == ProjectTemplateTypesEnum.ChatAgent)
                     {
                         templateSchema = ChatAgentGraphHelpers.NormalizeChatAgentSchema(
                             templateSchema,
                             WorkspaceAPIs.Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges(FlowTypesEnum.ChatAgent));
+                    }
+                    else if (projectTemplate.Type == ProjectTemplateTypesEnum.VoiceAgent)
+                    {
+                        templateSchema = VoiceAgentGraphHelpers.NormalizeVoiceAgentSchema(
+                            templateSchema,
+                            WorkspaceAPIs.Features.FlowVersion.Utils.InitialNodesAndEdgesUtil.GetInitialNodesAndEdges(FlowTypesEnum.VoiceAgent));
                     }
 
                     // Create corresponding FlowVersion
@@ -1078,7 +1085,7 @@ namespace WorkspaceAPIs.Services
         }
 
         // Generates a new project template using an LLM (Large Language Model) based on the provided template data.
-        public async Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(GenereateProjectInstructionRequestDto genereateProjectInstructionRequestDto)
+        public async Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(GenereateProjectInstructionRequestDto generateProjectInstructionRequestDto)
         {
             // Initialize a default failure response
             var serviceResponse = new ServiceResponse<string>
@@ -1097,13 +1104,17 @@ namespace WorkspaceAPIs.Services
 
             // Determine the prompt file name from the requested target, falling back to the
             // RefType-based template prompts.
-            var promptFileName = genereateProjectInstructionRequestDto.PromptTarget switch
+            var promptFileName = generateProjectInstructionRequestDto.PromptTarget switch
             {
                 PromptGenerationTargetsEnum.ChatAgentSystemPrompt =>
-                    string.IsNullOrWhiteSpace(genereateProjectInstructionRequestDto.Payload)
+                    string.IsNullOrWhiteSpace(generateProjectInstructionRequestDto.Payload)
                         ? "GenerateChatAgentPromptInstructions.txt"
                         : "ImproveChatAgentPromptInstructions.txt",
-                _ => genereateProjectInstructionRequestDto.RefType switch
+                PromptGenerationTargetsEnum.VoiceAgentSystemPrompt =>
+                    string.IsNullOrWhiteSpace(generateProjectInstructionRequestDto.Payload)
+                        ? "GenerateVoiceAgentPromptInstructions.txt"
+                        : "ImproveVoiceAgentPromptInstructions.txt",
+                _ => generateProjectInstructionRequestDto.RefType switch
                 {
                     UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
                     UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
@@ -1133,12 +1144,12 @@ namespace WorkspaceAPIs.Services
 
             var prompt = promptTemplate.Replace(
                 "{{PAYLOAD_CONTENT}}",
-                genereateProjectInstructionRequestDto.Payload ?? string.Empty);
+                generateProjectInstructionRequestDto.Payload ?? string.Empty);
             var model = "gpt-4o-mini";
             var provider = "openai";
-            // ChatAgent prompt work is more deterministic so intent and formatting hold.
-            var temperature = genereateProjectInstructionRequestDto.PromptTarget
-                == PromptGenerationTargetsEnum.ChatAgentSystemPrompt
+            // ChatAgent and VoiceAgent prompt work is more deterministic so intent and formatting hold.
+            var temperature = generateProjectInstructionRequestDto.PromptTarget is
+                (PromptGenerationTargetsEnum.ChatAgentSystemPrompt or PromptGenerationTargetsEnum.VoiceAgentSystemPrompt)
                 ? 0.4
                 : 1;
 
@@ -1149,9 +1160,9 @@ namespace WorkspaceAPIs.Services
                 //     prompt: prompt,
                 //     llmModel: model,
                 //     modelTemperature: temperature,
-                //     genereateProjectInstructionRequestDto.RefType,
-                //     genereateProjectInstructionRequestDto.RefId,
-                //     genereateProjectInstructionRequestDto.RefName,
+                //     generateProjectInstructionRequestDto.RefType,
+                //     generateProjectInstructionRequestDto.RefId,
+                //     generateProjectInstructionRequestDto.RefName,
                 //     ActionTypesEnum.TemplateDescriptionGeneration,
                 //     null, // This will never be triggered by an agent
                 //     null, // No ollama output schema needed
@@ -1166,9 +1177,9 @@ namespace WorkspaceAPIs.Services
                     Provider = provider,
                     Temperature = temperature,
                     Stream = false,
-                    RefType = genereateProjectInstructionRequestDto.RefType.ToString(),
-                    RefId = genereateProjectInstructionRequestDto.RefId.ToString(),
-                    RefName = genereateProjectInstructionRequestDto.RefName,
+                    RefType = generateProjectInstructionRequestDto.RefType.ToString(),
+                    RefId = generateProjectInstructionRequestDto.RefId.ToString(),
+                    RefName = generateProjectInstructionRequestDto.RefName,
                     Action = ActionTypesEnum.TemplateDescriptionGeneration.ToString(),
                 };
 

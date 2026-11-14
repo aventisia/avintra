@@ -1,7 +1,6 @@
 import { getMySession } from "@avplatform/ui/apis";
 import { Button } from "@avplatform/ui/buttons";
 import { IS_TAURI } from "@avplatform/ui/constants";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
@@ -15,6 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
+import { isSingleNodeAgentFlow } from "@/features/react-flow/utils/single-node-agent-flow.util";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -119,7 +119,7 @@ const ExecuteFlow = () => {
   // Connect to SignalR hub for real-time job notifications
   useJobNotifications(
     (notification) => {
-      if (notification.status === "Completed" && flowType !== FlowTypesEnum.ChatAgent) {
+      if (notification.status === "Completed" && !isSingleNodeAgentFlow(flowType)) {
         toast.success(notification.message || "Flow execution completed successfully!");
         setExecutionState("stopped");
         setShowRunResults(true);
@@ -311,7 +311,7 @@ const ExecuteFlow = () => {
     }
   };
 
-  if (isFlowLoading || flowType === FlowTypesEnum.ChatAgent) {
+  if (isFlowLoading || isSingleNodeAgentFlow(flowType)) {
     return null;
   }
 
