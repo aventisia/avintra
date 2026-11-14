@@ -1,8 +1,9 @@
 """LiveKit worker entrypoint for the VoiceAgent pipeline.
 
-The llmpipeline API starts this worker automatically when ``LIVEKIT_WS_URL``,
-``LIVEKIT_API_KEY``, and ``LIVEKIT_API_SECRET`` are set; no separate service is
-needed. To debug the worker alone, run it from ``apis/llmpipeline``:
+The llmpipeline API starts this worker automatically when a LiveKit URL
+(``LIVEKIT_WS_URL`` or ``LIVEKIT_HTTP_URL``), ``LIVEKIT_API_KEY``, and
+``LIVEKIT_API_SECRET`` are set; no separate service is needed. To debug the
+worker alone, run it from ``apis/llmpipeline``:
 
     python -m voice_agent.agent dev
 
@@ -17,6 +18,7 @@ import asyncio
 import logging
 from typing import NamedTuple
 
+from livekit import rtc
 from livekit.agents import (
     AgentServer,
     JobContext,
@@ -28,7 +30,7 @@ from livekit.agents import (
 from livekit.agents.worker import ServerEnvOption
 from livekit.plugins import silero
 
-from app.core.config import env, settings
+from app.core.config import env, livekit_ws_url, settings
 from app.core.logger import logger
 
 from .metadata import VoiceSessionRejected, parse_job_metadata, validate_job
@@ -61,11 +63,26 @@ async def entrypoint(ctx: JobContext) -> None:
     await run_session(ctx, claims, agent_settings)
 
 
+def _warm_audio_resampler() -> None:
+    # IMPORTANT NOTE: livekit-ffi's bundled soxr creates its process-global FFT
+    # cache lazily without a lock. Two job audio paths taking that first step at
+    # once abort the process on Windows (`LSX_FFT_BR == NULL`), so prewarm runs
+    # one resample alone before any session can race for it.
+    frame = rtc.AudioFrame.create(48000, 1, 4800)
+    resampler = rtc.AudioResampler(48000, 16000, num_channels=1)
+    resampler.push(frame)
+    resampler.flush()
+
+
 def prewarm(proc: JobProcess) -> None:
     # IMPORTANT NOTE: LiveKit's dev CLI raises the root logger to DEBUG, so LiteLLM
     # dumps each request body (whole audio files included) to stdout and the worker
     # stalls on the pipe. Warnings and errors still come through.
     logging.getLogger("LiteLLM").setLevel(logging.WARNING)
+    try:
+        _warm_audio_resampler()
+    except Exception:
+        logger.warning("[voice-agent] audio resampler warm-up failed", exc_info=True)
     proc.userdata["vad"] = silero.VAD.load()
 
 
@@ -73,7 +90,7 @@ def voice_worker_configured() -> bool:
     return all(
         (value or "").strip()
         for value in (
-            settings.LIVEKIT_WS_URL,
+            livekit_ws_url(),
             settings.LIVEKIT_API_KEY,
             settings.LIVEKIT_API_SECRET,
         )
@@ -85,15 +102,17 @@ def worker_options() -> WorkerOptions:
 
     if not voice_worker_configured():
         raise RuntimeError(
-            "LIVEKIT_WS_URL, LIVEKIT_API_KEY, and LIVEKIT_API_SECRET are required to run the voice worker."
+            "A LiveKit URL (LIVEKIT_WS_URL or LIVEKIT_HTTP_URL), LIVEKIT_API_KEY, and "
+            "LIVEKIT_API_SECRET are required to run the voice worker."
         )
-    logger.info("[voice-agent] starting worker '%s' for %s", settings.LIVEKIT_AGENT_NAME, settings.LIVEKIT_WS_URL)
+    ws_url = livekit_ws_url()
+    logger.info("[voice-agent] starting worker '%s' for %s", settings.LIVEKIT_AGENT_NAME, ws_url)
 
     return WorkerOptions(
         entrypoint_fnc=entrypoint,
         prewarm_fnc=prewarm,
         agent_name=settings.LIVEKIT_AGENT_NAME,
-        ws_url=settings.LIVEKIT_WS_URL,
+        ws_url=ws_url,
         api_key=settings.LIVEKIT_API_KEY,
         api_secret=settings.LIVEKIT_API_SECRET,
         # IMPORTANT NOTE: Windows defaults to thread-isolated jobs, so a process-global

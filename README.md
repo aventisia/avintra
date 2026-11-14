@@ -146,10 +146,16 @@ the resolved agent settings. The full session contract, event/error codes, clean
 rules, and latency/test commands are in
 `apis/llmpipeline/app/features/voice_sessions/README.md`.
 
-Production points `LIVEKIT_WS_URL` at `wss://livekit.<domain>` and `LIVEKIT_HTTP_URL` at
-`https://livekit.<domain>`, terminates TLS at the reverse proxy, and replaces the dev
-key pair. Keep 7881/tcp and 7882/udp reachable from clients, or run LiveKit TURN on 443
-for restrictive networks.
+Production uses LiveKit Cloud. Set `LIVEKIT_WS_URL=wss://<project>.livekit.cloud` and
+`LIVEKIT_HTTP_URL=https://<project>.livekit.cloud` (either one is enough; the other is
+derived) plus that project's API key pair in the process environment, and keep
+`SSL_VERIFY=true`. Clients connect to the cloud `wss://` URL directly, so nginx needs no
+WebSocket proxy for voice sessions.
+
+Allow outbound `*.livekit.cloud` TCP 443, `*.turn.livekit.cloud` TCP 443,
+`*.host.livekit.cloud` UDP 3478, and (recommended) all hosts UDP 50000-60000. Without the
+TURN/UDP rows the room joins but media never establishes, and the call ends. The
+self-hosted compose file above is local-only and must not run in production.
 
 ## Docker Build & Push
 

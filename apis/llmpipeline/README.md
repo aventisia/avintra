@@ -98,10 +98,15 @@ docker compose -f deploy/livekit/docker-compose.yml up -d
 
 Set `LIVEKIT_HTTP_URL`, `LIVEKIT_WS_URL`, `LIVEKIT_API_KEY`,
 `LIVEKIT_API_SECRET`, and `LIVEKIT_AGENT_NAME` in `.env.local` (see
-`.env.example`). For direct local APIs, set
+`.env.example`). Setting one URL is enough: the other is derived (`ws://` ↔
+`http://`, `wss://` ↔ `https://`), so the same code serves local Docker and LiveKit
+Cloud. For direct local APIs, set
 `WORKSPACE_API_URL=https://localhost:4001/api` so the worker can fetch settings
 without going through nginx. Only llmpipeline and the worker hold LiveKit
 credentials; WorkspaceAPIs calls llmpipeline through its existing base URL.
+
+For production, point the LiveKit URL(s) and key pair at the LiveKit Cloud project;
+the root `README.md` lists the outbound rules voice media needs.
 
 Run the voice tests with:
 
