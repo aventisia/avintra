@@ -11,7 +11,7 @@ from uuid import UUID
 import jwt
 import pytest
 
-from app.core.config import settings
+from app.core.config import livekit_http_url, livekit_ws_url, settings
 from app.features.auth.authenticated_user import User
 from app.features.voice_sessions import service as session_service
 from app.features.voice_sessions.schemas import VoiceSessionRequest
@@ -164,9 +164,36 @@ def test_job_metadata_rejects_unknown_mode():
 
 def test_missing_livekit_config_fails_closed(monkeypatch):
     monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "")
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "")
 
     with pytest.raises(session_service.VoiceSessionError):
         asyncio.run(session_service.create_session(_request(), _user()))
+
+
+@pytest.mark.parametrize(
+    ("http_url", "ws_url", "expected_http", "expected_ws"),
+    [
+        (
+            "https://test.livekit.cloud",
+            "wss://test.livekit.cloud",
+            "https://test.livekit.cloud",
+            "wss://test.livekit.cloud",
+        ),
+        ("http://localhost:7880", "", "http://localhost:7880", "ws://localhost:7880"),
+        ("", "wss://test.livekit.cloud", "https://test.livekit.cloud", "wss://test.livekit.cloud"),
+        ("wss://test.livekit.cloud", "ws://localhost:7880", "https://test.livekit.cloud", "ws://localhost:7880"),
+        ("https://test.livekit.cloud/", "", "https://test.livekit.cloud", "wss://test.livekit.cloud"),
+        ("localhost:7880", "", "", ""),
+    ],
+)
+def test_livekit_urls_accept_local_and_cloud_credentials(
+    monkeypatch, http_url, ws_url, expected_http, expected_ws
+):
+    monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", http_url)
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", ws_url)
+
+    assert livekit_http_url() == expected_http
+    assert livekit_ws_url() == expected_ws
 
 
 def test_missing_worker_token_config_fails_closed(monkeypatch):

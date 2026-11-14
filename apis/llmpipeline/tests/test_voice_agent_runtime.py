@@ -22,6 +22,7 @@ from voice_agent import agent
 
 def _configure(monkeypatch):
     monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
+    monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "http://localhost:7880")
     monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
     monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
     monkeypatch.setattr(settings, "LIVEKIT_AGENT_NAME", "avintra-voice-agent")
@@ -53,13 +54,25 @@ class _FakeAgentServer:
 
 @pytest.mark.parametrize(
     "field",
-    ["LIVEKIT_WS_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"],
+    ["LIVEKIT_WS_URL", "LIVEKIT_HTTP_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"],
 )
 def test_voice_worker_requires_livekit_configuration(monkeypatch, field):
     _configure(monkeypatch)
-    monkeypatch.setattr(settings, field, "")
+    if field.endswith("_URL"):
+        monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "")
+        monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "")
+    else:
+        monkeypatch.setattr(settings, field, "")
 
     assert asyncio.run(agent.start_voice_worker()) is None
+
+
+def test_voice_worker_accepts_the_cloud_http_url_alone(monkeypatch):
+    _configure(monkeypatch)
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "")
+    monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "https://test.livekit.cloud")
+
+    assert agent.worker_options().ws_url == "wss://test.livekit.cloud"
 
 
 def test_voice_worker_rejects_blank_livekit_configuration(monkeypatch):
@@ -173,3 +186,66 @@ def test_chat_api_starts_when_the_voice_worker_fails(monkeypatch):
 
     with TestClient(api_app) as client:
         assert client.get("/health-check").status_code == 200
+
+
+class _FakeJobProcess:
+    def __init__(self):
+        self.userdata = {}
+
+
+def test_audio_warmup_resamples_once_for_the_soxr_fft_cache(monkeypatch):
+    calls = []
+
+    class _FakeFrame:
+        @classmethod
+        def create(cls, sample_rate, num_channels, samples_per_channel):
+            calls.append(("frame", sample_rate, num_channels, samples_per_channel))
+            return cls()
+
+    class _FakeResampler:
+        def __init__(self, input_rate, output_rate, *, num_channels):
+            calls.append(("resampler", input_rate, output_rate, num_channels))
+
+        def push(self, frame):
+            calls.append(("push", frame))
+
+        def flush(self):
+            calls.append(("flush",))
+
+    monkeypatch.setattr(agent.rtc, "AudioFrame", _FakeFrame)
+    monkeypatch.setattr(agent.rtc, "AudioResampler", _FakeResampler)
+
+    agent._warm_audio_resampler()
+
+    assert calls[:2] == [
+        ("frame", 48000, 1, 4800),
+        ("resampler", 48000, 16000, 1),
+    ]
+    assert calls[2][0] == "push" and isinstance(calls[2][1], _FakeFrame)
+    assert calls[3] == ("flush",)
+
+
+def test_prewarm_warms_the_audio_resampler_before_loading_the_vad(monkeypatch):
+    calls = []
+
+    monkeypatch.setattr(agent, "_warm_audio_resampler", lambda: calls.append("resampler"))
+    monkeypatch.setattr(agent.silero.VAD, "load", lambda: calls.append("vad") or object())
+
+    proc = _FakeJobProcess()
+    agent.prewarm(proc)
+
+    assert calls == ["resampler", "vad"]
+    assert "vad" in proc.userdata
+
+
+def test_prewarm_still_loads_the_vad_when_the_audio_warmup_fails(monkeypatch):
+    def _fail():
+        raise RuntimeError("soxr is unavailable")
+
+    monkeypatch.setattr(agent, "_warm_audio_resampler", _fail)
+    monkeypatch.setattr(agent.silero.VAD, "load", lambda: object())
+
+    proc = _FakeJobProcess()
+    agent.prewarm(proc)
+
+    assert "vad" in proc.userdata

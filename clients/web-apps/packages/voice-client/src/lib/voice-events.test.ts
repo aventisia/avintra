@@ -257,7 +257,7 @@ describe("applyVoiceEvent", () => {
     });
 
     expect(second.turns).toEqual([
-      { id: "caller-interim", speaker: "caller", text: "book a call", isInterim: true },
+      { id: "caller-interim-1", speaker: "caller", text: "book a call", isInterim: true },
     ]);
 
     const final = applyVoiceEvent(second, {
@@ -286,8 +286,73 @@ describe("applyVoiceEvent", () => {
 
     expect(next.turns).toEqual([
       { id: "caller-1", speaker: "caller", text: "hello" },
-      { id: "caller-interim", speaker: "caller", text: "and", isInterim: true },
+      { id: "caller-interim-2", speaker: "caller", text: "and", isInterim: true },
     ]);
+  });
+
+  it("keeps one live interim caption when a tool placeholder splits an utterance", () => {
+    const interim = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book",
+    });
+    const withTool = applyVoiceEvent(interim, {
+      type: "tool.call",
+      conversationId: CONVERSATION_ID,
+      tool: { name: "create_ticket" },
+      turnId: 1,
+    });
+    const nextInterim = applyVoiceEvent(withTool, {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book a call",
+    });
+
+    const ids = nextInterim.turns.map((turn) => turn.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(nextInterim.turns).toEqual([
+      { id: "caller-interim-1", speaker: "caller", text: "book a call", isInterim: true },
+      {
+        id: "turn-1",
+        speaker: "agent",
+        text: "",
+        toolCalls: [{ name: "create_ticket", isRunning: true }],
+      },
+    ]);
+
+    const final = applyVoiceEvent(nextInterim, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "book a call",
+    });
+
+    expect(final.turns).toEqual([
+      { id: "caller-3", speaker: "caller", text: "book a call" },
+      {
+        id: "turn-1",
+        speaker: "agent",
+        text: "",
+        toolCalls: [{ name: "create_ticket", isRunning: true }],
+      },
+    ]);
+
+    const followUpInterim = applyVoiceEvent(final, {
+      type: "transcript.interim",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "today",
+    });
+    const followUpFinal = applyVoiceEvent(followUpInterim, {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "user",
+      text: "today",
+    });
+
+    expect(followUpFinal.turns.map((turn) => turn.id)).toEqual(["caller-3", "caller-4", "turn-1"]);
   });
 
   it("keys assistant turns by turnId and updates the existing turn", () => {
@@ -416,6 +481,23 @@ describe("applyVoiceEvent", () => {
         toolCalls: [{ name: "create_ticket", isRunning: false }],
       },
     ]);
+  });
+
+  it("gives a fallback annotation a free id when turn ids skip", () => {
+    const withReply = applyVoiceEvent(activeSnapshot(), {
+      type: "transcript.final",
+      conversationId: CONVERSATION_ID,
+      role: "assistant",
+      text: "First answer.",
+      turnId: 2,
+    });
+    const withTool = applyVoiceEvent(withReply, {
+      type: "tool.call",
+      conversationId: CONVERSATION_ID,
+      tool: { name: "create_ticket" },
+    });
+
+    expect(withTool.turns.map((turn) => turn.id)).toEqual(["turn-2", "turn-3"]);
   });
 
   it("shows configured skills on the first reply turn", () => {

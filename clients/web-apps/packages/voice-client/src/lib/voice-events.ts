@@ -140,9 +140,23 @@ const mapSessionState = (state: string): VoiceCallState | null => {
 
 const agentTurnId = (turnId: number) => `${AGENT_TURN_PREFIX}-${turnId}`;
 
+const nextTurnId = (turns: VoiceCaptionTurn[], prefix: string): string => {
+  let suffix = turns.length + 1;
+  while (turns.some((turn) => turn.id === `${prefix}-${suffix}`)) suffix += 1;
+  return `${prefix}-${suffix}`;
+};
+
 const lastAgentTurnIndex = (turns: VoiceCaptionTurn[]): number => {
   for (let index = turns.length - 1; index >= 0; index -= 1) {
     if (turns[index].speaker === "agent") return index;
+  }
+  return -1;
+};
+
+const lastInterimIndex = (turns: VoiceCaptionTurn[]): number => {
+  for (let index = turns.length - 1; index >= 0; index -= 1) {
+    const turn = turns[index];
+    if (turn.speaker === "caller" && turn.isInterim) return index;
   }
   return -1;
 };
@@ -200,7 +214,8 @@ const appendToolCall = (
 
   if (index === -1) {
     const placeholder: VoiceCaptionTurn = {
-      id: turnId !== undefined ? agentTurnId(turnId) : agentTurnId(snapshot.turns.length + 1),
+      id:
+        turnId !== undefined ? agentTurnId(turnId) : nextTurnId(snapshot.turns, AGENT_TURN_PREFIX),
       speaker: "agent",
       text: "",
       toolCalls: [{ name, isRunning: true }],
@@ -228,7 +243,8 @@ const appendSkillCall = (
 
   if (index === -1) {
     const placeholder: VoiceCaptionTurn = {
-      id: turnId !== undefined ? agentTurnId(turnId) : agentTurnId(snapshot.turns.length + 1),
+      id:
+        turnId !== undefined ? agentTurnId(turnId) : nextTurnId(snapshot.turns, AGENT_TURN_PREFIX),
       speaker: "agent",
       text: "",
       skillCalls: [name],
@@ -257,6 +273,28 @@ const appendCallerTurn = (
   return pendingReply ? [...turns.slice(0, -1), turn, last] : [...turns, turn];
 };
 
+const finalizeCallerTurn = (
+  turns: VoiceCaptionTurn[],
+  callerTurn: VoiceCaptionTurn,
+): VoiceCaptionTurn[] => {
+  const finalized: VoiceCaptionTurn[] = [];
+  let replaced = false;
+
+  // IMPORTANT NOTE: only the newest interim is the live caption; older ones are
+  // abandoned revisions that must not outlive the final transcript.
+  for (let index = turns.length - 1; index >= 0; index -= 1) {
+    const turn = turns[index];
+    if (!turn.isInterim) {
+      finalized.unshift(turn);
+    } else if (!replaced) {
+      finalized.unshift(callerTurn);
+      replaced = true;
+    }
+  }
+
+  return replaced ? finalized : appendCallerTurn(turns, callerTurn);
+};
+
 const appendCallerInterim = (
   snapshot: VoiceCallSnapshot,
   event: VoiceServerEvent,
@@ -266,18 +304,21 @@ const appendCallerInterim = (
   const text = event.text.trim();
   if (!text) return snapshot;
 
-  const last = snapshot.turns[snapshot.turns.length - 1];
-  if (last?.speaker === "caller" && last.isInterim) {
+  const interimIndex = lastInterimIndex(snapshot.turns);
+  if (interimIndex !== -1) {
     return {
       ...snapshot,
-      turns: [...snapshot.turns.slice(0, -1), { ...last, text }],
+      turns: replaceTurn(snapshot.turns, interimIndex, {
+        ...snapshot.turns[interimIndex],
+        text,
+      }),
     };
   }
 
   return {
     ...snapshot,
     turns: appendCallerTurn(snapshot.turns, {
-      id: `${CALLER_TURN_PREFIX}-interim`,
+      id: nextTurnId(snapshot.turns, `${CALLER_TURN_PREFIX}-interim`),
       speaker: "caller",
       text,
       isInterim: true,
@@ -292,16 +333,14 @@ const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) 
   if (!text) return snapshot;
 
   if (event.role === "user") {
-    const callerTurn: VoiceCaptionTurn = {
-      id: `${CALLER_TURN_PREFIX}-${snapshot.turns.length + 1}`,
-      speaker: "caller",
-      text,
+    return {
+      ...snapshot,
+      turns: finalizeCallerTurn(snapshot.turns, {
+        id: nextTurnId(snapshot.turns, CALLER_TURN_PREFIX),
+        speaker: "caller",
+        text,
+      }),
     };
-    const interimIndex = snapshot.turns.findIndex((turn) => turn.isInterim);
-    if (interimIndex !== -1) {
-      return { ...snapshot, turns: replaceTurn(snapshot.turns, interimIndex, callerTurn) };
-    }
-    return { ...snapshot, turns: appendCallerTurn(snapshot.turns, callerTurn) };
   }
 
   const id = event.turnId !== undefined ? agentTurnId(event.turnId) : null;
@@ -313,7 +352,7 @@ const appendTranscript = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent) 
 
   if (index === -1) {
     const agentTurn: VoiceCaptionTurn = {
-      id: id ?? agentTurnId(snapshot.turns.length + 1),
+      id: id ?? nextTurnId(snapshot.turns, AGENT_TURN_PREFIX),
       speaker: "agent",
       text,
     };
@@ -346,7 +385,7 @@ const appendLatency = (snapshot: VoiceCallSnapshot, event: VoiceServerEvent): Vo
 
   if (index === -1) {
     const agentTurn: VoiceCaptionTurn = {
-      id: id ?? agentTurnId(snapshot.turns.length + 1),
+      id: id ?? nextTurnId(snapshot.turns, AGENT_TURN_PREFIX),
       speaker: "agent",
       text: "",
       latency,

@@ -106,8 +106,8 @@ events, and clean shutdown.
 
 ## Noise cancellation
 
-Production LiveKit is self-hosted, so LiveKit Cloud's built-in BVC noise
-cancellation is not available. Phase 5 ships only the browser-side split:
+Voice sessions use only the `none` and `auto` modes, so LiveKit Cloud's built-in
+BVC noise cancellation is not wired in. Phase 5 ships only the browser-side split:
 
 | Mode | Behaviour |
 | --- | --- |
@@ -119,9 +119,10 @@ cancellation is not available. Phase 5 ships only the browser-side split:
 resolved mode still reaches the browser so `none` and `auto` change capture
 behaviour. The server-side follow-up is decision-recorded but not implemented:
 
-> **Evaluate server-side noise cancellation for self-hosted LiveKit**
+> **Evaluate server-side noise cancellation**
 >
-> - Production LiveKit runs self-hosted, so BVC is unavailable.
+> - BVC is available on LiveKit Cloud but is not wired into the session; a
+>   self-hosted deployment needs a plugin.
 > - Evaluate the Krisp and ai-coustics LiveKit plugins for `standard` and
 >   `telephony`, including latency and CPU cost per concurrent call.
 > - Wire the chosen plugin in `voice_agent`, keep the browser capture
@@ -193,12 +194,28 @@ holds a LiveKit credential.
 
 Restart `llmpipeline_apis` after changing `.env.local`.
 
+### LiveKit Cloud
+
+The same worker runs against LiveKit Cloud; only the URL pair and key pair change.
+Setting one URL derives the other, so the cloud project's WebSocket URL is enough:
+
+```sh
+LIVEKIT_WS_URL=wss://<project>.livekit.cloud
+LIVEKIT_API_KEY=<cloud key>
+LIVEKIT_API_SECRET=<cloud secret>
+```
+
+Production sets these in the process environment, not `.env.local`, which loads only
+when `ENV=local`; the root `README.md` lists the outbound rules voice media needs.
+Clients join `wss://<project>.livekit.cloud` directly; do not run `deploy/livekit`
+in production.
+
 ## Environment variables
 
 | Variable | Used by | Purpose |
 | --- | --- | --- |
-| `LIVEKIT_HTTP_URL` | llmpipeline | LiveKit HTTP API URL (room and dispatch). |
-| `LIVEKIT_WS_URL` | llmpipeline, worker | WebSocket URL returned to the caller and used by the worker. |
+| `LIVEKIT_HTTP_URL` | llmpipeline | LiveKit HTTP API URL (room and dispatch); derived from `LIVEKIT_WS_URL` when unset. |
+| `LIVEKIT_WS_URL` | llmpipeline, worker | WebSocket URL returned to the caller and used by the worker; derived from `LIVEKIT_HTTP_URL` when unset. |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | llmpipeline, worker | LiveKit API credentials. Never expose these to the browser. |
 | `LIVEKIT_AGENT_NAME` | llmpipeline, worker | Dispatch/registration name; defaults to `avintra-voice-agent`. |
 | `WORKSPACE_API_URL` | worker | WorkspaceAPIs base including `/api`; defaults to `https://<APP_BASE_URL>/api`. |
