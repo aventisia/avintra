@@ -101,3 +101,31 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+
+
+def livekit_http_url() -> str:
+    """The LiveKit HTTP API URL, derived from ``LIVEKIT_WS_URL`` when only that is set."""
+
+    return _livekit_url(
+        settings.LIVEKIT_HTTP_URL,
+        settings.LIVEKIT_WS_URL,
+        {"ws": "http", "wss": "https"},
+    )
+
+
+def livekit_ws_url() -> str:
+    """The LiveKit WebSocket URL, derived from ``LIVEKIT_HTTP_URL`` when only that is set."""
+
+    return _livekit_url(
+        settings.LIVEKIT_WS_URL,
+        settings.LIVEKIT_HTTP_URL,
+        {"http": "ws", "https": "wss"},
+    )
+
+
+def _livekit_url(url: str, fallback: str, scheme_map: dict[str, str]) -> str:
+    source = (url or fallback).strip().rstrip("/")
+    scheme, separator, rest = source.partition("://")
+    if not separator or not rest:
+        return ""
+    return f"{scheme_map.get(scheme.lower(), scheme)}://{rest}"

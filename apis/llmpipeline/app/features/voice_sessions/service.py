@@ -15,7 +15,7 @@ from livekit.api import (
     VideoGrants,
 )
 
-from app.core.config import settings
+from app.core.config import livekit_http_url, livekit_ws_url, settings
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 
@@ -35,8 +35,8 @@ ROOM_DEPARTURE_TIMEOUT_SECONDS = 20
 def livekit_config() -> tuple[str, str, str, str]:
     """Returns the server API URL, client WebSocket URL, and API credentials."""
 
-    http_url = settings.LIVEKIT_HTTP_URL.strip()
-    ws_url = settings.LIVEKIT_WS_URL.strip()
+    http_url = livekit_http_url()
+    ws_url = livekit_ws_url()
     api_key = settings.LIVEKIT_API_KEY.strip()
     api_secret = settings.LIVEKIT_API_SECRET.strip()
     if not http_url or not ws_url or not api_key or not api_secret:
