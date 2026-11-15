@@ -7,13 +7,12 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { AGENT_DETAILS_PANEL_ID } from "../constants";
+import { AGENT_NAME_CLASS, AGENT_TITLE_CLASS, AGENT_VERSION_CLASS } from "../constants";
 import { useUpdateCurrentAgent } from "../hooks/useUpdateCurrentAgent.hook";
 import { useFlowsVersionsStore } from "../stores/flow-versions-store";
 import { AgentNameField } from "./AgentNameField";
 import { SaveStatusIndicator } from "./SaveStatusIndicator";
 
-const PILL_CLASS = "flex min-w-0 max-w-80 items-center gap-1 rounded-md pl-0.5 pr-1";
-const NAME_CLASS = "text-[17px] font-semibold leading-5 tracking-[-0.01em] text-ink";
 const TOGGLE_CLASS =
   "flex size-5 shrink-0 items-center justify-center rounded transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-focus/[0.28] disabled:cursor-wait";
 
@@ -39,15 +38,14 @@ export const AgentDetailsTrigger = () => {
   };
 
   const versionChip =
-    versionNumber != null ? (
-      <span className="shrink-0 font-mono text-[11px] leading-5 text-muted-foreground">
-        v{versionNumber}
-      </span>
-    ) : null;
+    versionNumber != null ? <span className={AGENT_VERSION_CLASS}>v{versionNumber}</span> : null;
 
   return (
-    <div className={PILL_CLASS}>
-      <AgentNameField className={NAME_CLASS} onRename={(newName) => save({ name: newName })} />
+    <div className={AGENT_TITLE_CLASS}>
+      <AgentNameField
+        className={AGENT_NAME_CLASS}
+        onRename={(newName) => save({ name: newName })}
+      />
       {versionChip}
       <Tooltip content={isOpen ? "Close details" : "Agent details and versions"}>
         <button

@@ -17,7 +17,6 @@ import { FlowVersions } from "@/features/flow-versions/components";
 import { FLOW_TYPE_LABELS } from "@/features/flow-versions/constants";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
-import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
@@ -25,7 +24,6 @@ import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
 import { StudioViewSwitch } from "./StudioViewSwitch";
 import { TenantSwitchBadge } from "./TenantSwitchBadge";
-import ViewOnlyVersionSelector from "./ViewOnlyVersionSelector";
 import { HeaderActionMenu } from "./header-menu-actions";
 
 const AppHeader: React.FC = () => {
@@ -76,21 +74,14 @@ const AppHeader: React.FC = () => {
 
           <AppLogo markOnly className="h-[22px]" />
 
-          <div className="flex min-w-0 items-center gap-0.5">
-            <div className="flex min-w-0 flex-col">
-              <div className="flex min-w-0 items-center gap-1.5 pl-[7px]">
-                <span className="mb-px truncate text-[11px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
-                  {FLOW_TYPE_LABELS[flowType]}
-                </span>
-                {isCanvas ? <SaveFlow /> : null}
-              </div>
-              {isCanvas ? (
-                <FlowVersions />
-              ) : (
-                <AgentName className={isViewTenant ? "max-w-56" : ""} />
-              )}
+          <div className="flex min-w-0 flex-col">
+            <div className="flex min-w-0 items-center gap-1.5 pl-[7px]">
+              <span className="mb-px truncate text-[10px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
+                {FLOW_TYPE_LABELS[flowType]}
+              </span>
+              {isCanvas ? <SaveFlow /> : null}
             </div>
-            {isCanvas ? null : <ViewOnlyVersionSelector />}
+            {isCanvas ? <FlowVersions /> : <AgentName className={isViewTenant ? "max-w-56" : ""} />}
           </div>
 
           {isCanvas && isPublished ? (
@@ -117,15 +108,11 @@ const AppHeader: React.FC = () => {
                 <HeaderActionMenu />
               </div>
             </>
-          ) : (
-            <>
-              {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}
-              <Badge variant="outline" className="shrink-0">
-                View only
-              </Badge>
-              {isAgentHistory && <VersionHistoryCloseButton />}
-            </>
-          )}
+          ) : userSession?.deploymentType == "Commercial" ? (
+            <div className="md:pr-2">
+              <AvailableCredits />
+            </div>
+          ) : null}
         </div>
       </Header>
     </HeaderContainer>

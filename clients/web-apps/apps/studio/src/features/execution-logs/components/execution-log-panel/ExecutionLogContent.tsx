@@ -1,13 +1,14 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
+import { CheckCircleIcon, ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
+
+import { DayTimelineSkeleton } from "@/components/day-timeline";
 
 import { useFetchExecutionLogsList } from "../../hooks/useFetchExecutionLogsList.hook";
 import { useJobExecutionQueryParams } from "../../hooks/useJobExecutionQueryParams";
 import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
 import { isErrorStatus } from "../../utils/job-log-level";
-import AccordionSkeleton from "./AccordionSkeleton";
 import ExecutionLogAccordion from "./ExecutionLogAccordion";
 
 interface Props {
@@ -42,7 +43,7 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
     }
   }, [groupedLogs, jobId, isFetching, setJobId]);
 
-  if (isFetching) return <AccordionSkeleton />;
+  if (isFetching) return <DayTimelineSkeleton label="Loading runs" />;
 
   if (isError && !groupedLogs.length) {
     return (
@@ -70,7 +71,7 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
   }
 
   return (
-    <div className="py-1.5">
+    <div className="pb-2">
       {visibleLogs.length > 0 ? (
         <ExecutionLogAccordion
           data={visibleLogs}
@@ -78,7 +79,11 @@ export default function ExecutionLogContent({ errorsOnly }: Props) {
           onSelect={(id) => setJobId(id)}
         />
       ) : (
-        <p className="px-4 py-6 text-center text-body-sm text-muted-foreground">No failed runs.</p>
+        <RunLogEmptyState
+          Icon={CheckCircleIcon}
+          title="No failed runs"
+          description="Every run of this version finished without errors."
+        />
       )}
     </div>
   );

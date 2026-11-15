@@ -2,6 +2,12 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { useState } from "react";
 
 import { Panel, PanelContent, PanelHeader, PanelTitle } from "@/components/panel/components/Panel";
+import {
+  LEFT_DOCK_PANEL_CLASS,
+  LEFT_DOCK_PANEL_WIDTH,
+  LEFT_DOCK_SCROLL_CLASS,
+  LEFT_DOCK_TITLE_CLASS,
+} from "@/components/panel/left-dock-panel.constant";
 
 import { PANEL_ID } from "../../constants";
 import ExecutionLogContent from "./ExecutionLogContent";
@@ -19,16 +25,16 @@ export const ExecutionLogPanel = ({ isSubFlowView = false }: Props) => {
     <Panel
       id={PANEL_ID}
       side="left"
-      width="w-[21rem]"
-      className="left-0 top-[var(--header-height)] h-[calc(100vh-var(--header-height))] rounded-none duration-200 animate-in fade-in-0 slide-in-from-top-1 motion-reduce:animate-none"
+      width={LEFT_DOCK_PANEL_WIDTH}
+      className={LEFT_DOCK_PANEL_CLASS}
       closeOnEscape={false}
     >
       <PanelHeader>
-        <PanelTitle>Run log</PanelTitle>
+        <PanelTitle className={LEFT_DOCK_TITLE_CLASS}>Run log</PanelTitle>
         {!isSubFlowView && <ExecutionLogFilter errorsOnly={errorsOnly} onChange={setErrorsOnly} />}
       </PanelHeader>
       <PanelContent>
-        <ScrollArea className="h-[calc(100vh-7.5rem)]">
+        <ScrollArea className={LEFT_DOCK_SCROLL_CLASS}>
           {/*
             The list stays MOUNTED and is only hidden while inside a sub-flow. Unmounting it
             would remount on the way back, and `useFetchExecutionLogsList` uses

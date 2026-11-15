@@ -1,8 +1,12 @@
-import { Accordion } from "@avplatform/ui/accordion";
-import { useEffect, useState } from "react";
+import {
+  DayTimeline,
+  DayTimelineCount,
+  DayTimelineItem,
+  DayTimelineSection,
+} from "@/components/day-timeline";
 
 import { DaySection } from "../../types/agent-history-type";
-import VHAccordionSection from "./VHAccordionSection";
+import VersionHistoryEntry from "./VersionHistoryEntry";
 
 interface Props {
   data: DaySection[];
@@ -11,33 +15,31 @@ interface Props {
 }
 
 export default function VersionHistoryAccordion({ data, selectedEntry, onSelect }: Props) {
-  const [openItems, setOpenItems] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!selectedEntry) return;
-
-    const section = data.find((day) => day.entries.some((entry) => entry.id === selectedEntry));
-
-    if (section) {
-      setOpenItems([section.date]); // open that section
-    }
-  }, [selectedEntry, data]);
+  const latestId = data[0]?.entries[0]?.id;
 
   return (
-    <Accordion
-      type="multiple"
-      className="relative space-y-1"
-      value={openItems}
-      onValueChange={setOpenItems}
-    >
-      {data.map((section) => (
-        <VHAccordionSection
+    <DayTimeline days={data} selectedId={selectedEntry}>
+      {data.map((section, index) => (
+        <DayTimelineSection
           key={section.date}
-          section={section}
-          selectedEntry={selectedEntry}
-          onSelect={onSelect}
-        />
+          day={section.date}
+          startedAt={section.startedAt}
+          isFirst={index === 0}
+          isLast={index === data.length - 1}
+          meta={<DayTimelineCount count={section.entries.length} noun="change" />}
+        >
+          {section.entries.map((entry) => (
+            <DayTimelineItem key={entry.id}>
+              <VersionHistoryEntry
+                entry={entry}
+                isLatest={entry.id === latestId}
+                isSelected={entry.id === selectedEntry}
+                onSelect={onSelect}
+              />
+            </DayTimelineItem>
+          ))}
+        </DayTimelineSection>
       ))}
-    </Accordion>
+    </DayTimeline>
   );
 }
