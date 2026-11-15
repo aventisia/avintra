@@ -10,6 +10,7 @@ import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
+import { normalizeVoiceAgentGraph } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -173,7 +174,9 @@ export const useFetchFlowToLoad = () => {
       const graph =
         flowData.type === FlowTypesEnum.ChatAgent
           ? normalizeChatAgentGraph(flow.nodes, flow.edges)
-          : { nodes: flow.nodes, edges: flow.edges, flowVariablesObject: flowVarObjs };
+          : flowData.type === FlowTypesEnum.VoiceAgent
+            ? normalizeVoiceAgentGraph(flow.nodes, flow.edges)
+            : { nodes: flow.nodes, edges: flow.edges, flowVariablesObject: flowVarObjs };
 
       graph.flowVariablesObject = applyFlowInputsToVariables(
         graph.flowVariablesObject,

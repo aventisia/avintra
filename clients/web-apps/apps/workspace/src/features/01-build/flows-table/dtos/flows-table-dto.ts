@@ -25,7 +25,7 @@ export interface FlowsTableDto {
   /**
    * Gets or sets the type of the flow.
    */
-  type: FlowTypesEnum; // TODO: Update enum values
+  type: FlowTypesEnum;
 
   /**
    * Gets or sets the name of the flow. Max-255

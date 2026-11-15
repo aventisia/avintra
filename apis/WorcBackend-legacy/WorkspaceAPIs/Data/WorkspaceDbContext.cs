@@ -163,6 +163,7 @@ public class WorkspaceDbContext : DbContext
                     c => (c ?? Enumerable.Empty<EnabledModel>()).Aggregate(0, (acc, m) => HashCode.Combine(acc, m.ModelId, m.Capability)),
                     c => (c ?? new List<EnabledModel>()).Select(m => new EnabledModel { ModelId = m.ModelId, Capability = m.Capability }).ToList()));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
+        modelBuilder.Entity<Conversation>().Property(e => e.Channel).HasConversion(new EnumToStringConverter<ConversationChannelEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);

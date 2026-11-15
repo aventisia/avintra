@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { isChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
+import { isVoiceAgentGraph } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { REQUIRED_JSON_KEYS } from "../constants";
@@ -45,9 +46,10 @@ export const useFileUpload = () => {
   );
 
   // Flow type of the canvas receiving the import
-  const { isChatAgent } = useCurrentFlowStore(
+  const { isChatAgent, isVoiceAgent } = useCurrentFlowStore(
     useShallow((state) => ({
       isChatAgent: state.isChatAgent,
+      isVoiceAgent: state.isVoiceAgent,
     })),
   );
 
@@ -124,11 +126,23 @@ export const useFileUpload = () => {
           importedNodes as Node[],
           importedEdges as Edge[],
         );
+        const importedIsVoiceAgent = isVoiceAgentGraph(
+          importedNodes as Node[],
+          importedEdges as Edge[],
+        );
 
-        if (importedIsChatAgent !== isChatAgent) {
-          toast.error(
-            isChatAgent ? "Only Chat Agent flows allowed" : "Chat Agent flow not allowed here",
-          );
+        if (isChatAgent && !importedIsChatAgent) {
+          toast.error("Only Chat Agent flows allowed");
+          return;
+        }
+
+        if (isVoiceAgent && !importedIsVoiceAgent) {
+          toast.error("Only Voice Agent flows allowed");
+          return;
+        }
+
+        if (!isChatAgent && !isVoiceAgent && (importedIsChatAgent || importedIsVoiceAgent)) {
+          toast.error("Chat Agent or Voice Agent flow not allowed here");
           return;
         }
 

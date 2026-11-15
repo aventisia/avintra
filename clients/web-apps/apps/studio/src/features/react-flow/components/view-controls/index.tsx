@@ -1,5 +1,4 @@
 import { Separator } from "@avplatform/ui";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { MinusIcon, PlusIcon, ScanIcon } from "@phosphor-icons/react";
 import { Panel } from "@xyflow/react";
 import { memo } from "react";
@@ -8,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
+import { isSingleNodeAgentFlow } from "../../utils/single-node-agent-flow.util";
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
 import { VCBToggleCursor } from "./VCBToggleCursor";
@@ -23,13 +23,13 @@ export const ViewControls = memo(() => {
     })),
   );
   const flowType = useReactFlowExtStore((state) => state.flowType);
-  const isChatAgent = flowType === FlowTypesEnum.ChatAgent;
+  const isSingleNodeAgent = isSingleNodeAgentFlow(flowType);
 
   return (
     <Panel position="bottom-left">
       <div className="flex items-center gap-2">
         {/* Undo and Redo Controls */}
-        {!isChatAgent && <VCBUndoRedo />}
+        {!isSingleNodeAgent && <VCBUndoRedo />}
 
         {zoomControls && (
           <VCBContainer>
@@ -54,7 +54,7 @@ export const ViewControls = memo(() => {
           </VCBContainer>
         )}
 
-        {!isChatAgent && cursorToggle && (
+        {!isSingleNodeAgent && cursorToggle && (
           <VCBContainer>
             <VCBToggleCursor />
           </VCBContainer>

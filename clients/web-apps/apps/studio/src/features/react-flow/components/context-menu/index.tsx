@@ -63,8 +63,8 @@ export const ReactFlowContextMenu = memo(() => {
     setSelectedEdge(null);
   }, [setMenu, setSelectedEdge, setSelectedNode]);
   if (!menu) return null;
-  // ChatAgent has no canvas actions — never show custom menu.
-  if (flowType === FlowTypesEnum.ChatAgent) return null;
+  // ChatAgent and VoiceAgent have no canvas actions — never show custom menu.
+  if (flowType === FlowTypesEnum.ChatAgent || flowType === FlowTypesEnum.VoiceAgent) return null;
 
   const isPaneMode = !selectedNode && !selectedEdge;
   const restrictedTypes = [

@@ -4,6 +4,7 @@ export const columnVisibilityState = {
   title: true,
   totalExchange: true,
   status: false,
+  channel: true,
   timestamp: true,
   lastModifiedBy: true,
   lastModifiedOn: false,

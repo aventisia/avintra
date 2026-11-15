@@ -7,6 +7,7 @@ import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { getColumnName } from "../constants/column-display-names";
 import { ArchivedFlowsTableDto } from "../dtos/archived-flows-table-dto";
+import { ArchiveTypeEnum } from "../enums/archive-type.enum";
 import { ArchivedFlowRowActions } from "./ArchivedFlowRowActions";
 
 const renderHeader =
@@ -39,7 +40,11 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     accessorKey: "type",
     meta: { label: getColumnName("type") },
     header: renderHeader("type"),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
+    cell: ({ row }) => {
+      const typeValue = String(row.getValue("type"));
+      const typeLabel = ArchiveTypeEnum[typeValue as keyof typeof ArchiveTypeEnum] ?? typeValue;
+      return <div className="w-auto truncate font-medium">{typeLabel}</div>;
+    },
   },
   {
     accessorKey: "lastModifiedBy",

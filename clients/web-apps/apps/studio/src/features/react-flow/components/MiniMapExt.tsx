@@ -15,8 +15,8 @@ export const MiniMapExt = memo(() => {
   );
   const flowType = useReactFlowExtStore((state) => state.flowType);
 
-  // ChatAgent has a fixed single node — minimap adds no value.
-  if (flowType === FlowTypesEnum.ChatAgent) return null;
+  // ChatAgent and VoiceAgent have a fixed single node — minimap adds no value.
+  if (flowType === FlowTypesEnum.ChatAgent || flowType === FlowTypesEnum.VoiceAgent) return null;
 
   return (
     <>

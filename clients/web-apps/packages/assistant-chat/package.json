@@ -15,6 +15,9 @@
     "typecheck": "tsc -b",
     "pregit": "prettier --write . && eslint --fix . && tsc -b"
   },
+  "dependencies": {
+    "@avplatform/voice-client": "*"
+  },
   "peerDependencies": {
     "@assistant-ui/react": "^0.15.25",
     "@avplatform/ui": "*",

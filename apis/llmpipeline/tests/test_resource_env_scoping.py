@@ -272,7 +272,7 @@ class TestChatLoadCustomTools:
         service = self._service()
         session = _FakeSession()
         with patch(
-            "app.features.langgraph.services.chat_service.load_custom_tools",
+            "app.features.langgraph.tools.tool_resolver.load_custom_tools",
             new=AsyncMock(),
         ) as loader:
             asyncio.run(service._load_custom_tools(_request(), _user(), session))
@@ -292,7 +292,7 @@ class TestChatLoadCustomTools:
         fake_tools = [SimpleNamespace(name="outlook_send_email")]
         session = _FakeSession()
         with patch(
-            "app.features.langgraph.services.chat_service.load_custom_tools",
+            "app.features.langgraph.tools.tool_resolver.load_custom_tools",
             new=AsyncMock(return_value=fake_tools),
         ) as loader:
             asyncio.run(

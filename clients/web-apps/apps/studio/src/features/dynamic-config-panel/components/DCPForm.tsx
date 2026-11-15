@@ -6,6 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
+import { VOICE_AGENT_PERSONA_FIELD_NAMES } from "@/features/dynamic-config-panel/utils/voice-agent-prompt-sections.util";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -17,6 +19,7 @@ import { DCPTabsListWrapper } from "./dcp-tabs/DCPTabsListWrapper";
 import { DCPTabsTrigger } from "./dcp-tabs/DCPTabsTrigger";
 import { DCPTabsWrapper } from "./dcp-tabs/DCPTabsWrapper";
 import TestTabContent from "./dcp-tabs/node-test-tab/TestTabContent";
+import { VoiceAgentPromptAction } from "./fields-for-form/prompt-field/VoiceAgentPromptAction";
 
 export const DCPForm = () => {
   const [showOuputFields, setShowOutputFields] = useState(false);
@@ -77,6 +80,20 @@ export const DCPForm = () => {
       ),
     [nodeConfig?.fields, selectedTab, watchedValues],
   );
+
+  // The VoiceAgent persona tab hosts the Generate/Improve action for the
+  // Goal/Role/Instructions fields.
+  const voicePersonaTab = useMemo(() => {
+    if (nodeUniqueName !== VOICE_AGENT_NODE_NAME) return null;
+
+    const personaField = nodeConfig?.fields?.find((field) =>
+      VOICE_AGENT_PERSONA_FIELD_NAMES.includes(field.name),
+    );
+
+    return personaField ? (personaField.category ?? "Inputs") : null;
+  }, [nodeUniqueName, nodeConfig?.fields]);
+
+  const isVoicePersonaTab = voicePersonaTab !== null && selectedTab === voicePersonaTab;
 
   // Return the form
   return (
@@ -223,24 +240,27 @@ export const DCPForm = () => {
             ))}
 
             {/* Prompt helpers / history notice. Changes auto-commit at panel boundaries. */}
-            {selectedTab !== "Test" && (isAgentHistory || (promptField && !isChatAgent)) && (
-              <DCPTabsFooterWrapper className={cn("justify-between")}>
-                {promptField && !isAgentHistory && !isChatAgent && (
-                  <ImproveWithAIButton
-                    disabled={isAgentHistory}
-                    name={promptField.name}
-                    form={form}
-                  />
-                )}
+            {selectedTab !== "Test" &&
+              (isAgentHistory || isVoicePersonaTab || (promptField && !isChatAgent)) && (
+                <DCPTabsFooterWrapper className={cn("justify-between")}>
+                  {isVoicePersonaTab && !isAgentHistory && <VoiceAgentPromptAction />}
 
-                {isAgentHistory ? (
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <InfoIcon className="h-3.5 w-3.5" />
-                    <span className="mt-0.5 text-xs">Changes will not be saved</span>
-                  </div>
-                ) : null}
-              </DCPTabsFooterWrapper>
-            )}
+                  {promptField && !isAgentHistory && !isChatAgent && (
+                    <ImproveWithAIButton
+                      disabled={isAgentHistory}
+                      name={promptField.name}
+                      form={form}
+                    />
+                  )}
+
+                  {isAgentHistory ? (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <InfoIcon className="h-3.5 w-3.5" />
+                      <span className="mt-0.5 text-xs">Changes will not be saved</span>
+                    </div>
+                  ) : null}
+                </DCPTabsFooterWrapper>
+              )}
           </Form>
           <TestTabContent
             type={nodeConfig?.testScreenType ?? "standard"}

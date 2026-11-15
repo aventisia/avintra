@@ -10,6 +10,7 @@ import {
   getDefaultValuesForForm,
   getNodeConfig,
   useDynamicConfigPanelStore,
+  withVoiceAgentEngineRefinement,
 } from "..";
 import { onErrorFieldsJson } from "../constants/OnErrorFields";
 import { NodeConfigSchemaType } from "../types/node-config-schema-type";
@@ -49,6 +50,9 @@ export const useDefineDCPForm = () => {
   const [nodeConfigZodSchema, setNodeConfigZodSchema] = useState<
     z.ZodObject<Record<string, ZodTypeAny>>
   >(() => z.object({}));
+  const [nodeConfigResolverSchema, setNodeConfigResolverSchema] = useState<ZodTypeAny>(() =>
+    z.object({}),
+  );
 
   // Fetch config on mount or when nodeData changes
   useEffect(() => {
@@ -73,7 +77,11 @@ export const useDefineDCPForm = () => {
           };
 
           setNodeConfig(updatedConfig);
-          setNodeConfigZodSchema(generateZodSchema(updatedConfig.fields));
+          const baseSchema = generateZodSchema(updatedConfig.fields);
+          setNodeConfigZodSchema(baseSchema);
+          setNodeConfigResolverSchema(
+            withVoiceAgentEngineRefinement(baseSchema, updatedConfig.fields),
+          );
         }
       })
       .finally(() => {
@@ -92,7 +100,7 @@ export const useDefineDCPForm = () => {
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof nodeConfigZodSchema>>({
-    resolver: zodResolver(nodeConfigZodSchema),
+    resolver: zodResolver(nodeConfigResolverSchema),
   });
 
   // Reset form values when nodeConfig or inputs/outputs change

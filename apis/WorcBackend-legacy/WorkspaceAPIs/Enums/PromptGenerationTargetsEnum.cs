@@ -13,5 +13,10 @@ public enum PromptGenerationTargetsEnum
     /// <summary>
     /// Generates or refines a ChatAgent system prompt.
     /// </summary>
-    ChatAgentSystemPrompt
+    ChatAgentSystemPrompt,
+
+    /// <summary>
+    /// Generates or refines the Goal/Role/Instructions block of a VoiceAgent.
+    /// </summary>
+    VoiceAgentSystemPrompt
 }

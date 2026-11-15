@@ -6,6 +6,7 @@ import { memo, useEffect } from "react";
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { CHAT_AGENT_NODE_NAME } from "@/features/react-flow/utils/chat-agent-graph.util";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
@@ -48,11 +49,12 @@ export const AINode = memo(
       return value?.model ? [value.model] : [];
     }
 
-    // ChatAgent flows have a fixed single node — the Chat AI node needs no
-    // output handle since no downstream node can ever be connected.
+    // ChatAgent and VoiceAgent flows have a fixed single node — the AI node needs
+    // no output handle since no downstream node can ever be connected.
     const flowType = useReactFlowExtStore((state) => state.flowType);
-    const isChatAgentNode =
-      flowType === FlowTypesEnum.ChatAgent && data.name === CHAT_AGENT_NODE_NAME;
+    const isSingleNodeAgentAiNode =
+      (flowType === FlowTypesEnum.ChatAgent || flowType === FlowTypesEnum.VoiceAgent) &&
+      (data.name === CHAT_AGENT_NODE_NAME || data.name === VOICE_AGENT_NODE_NAME);
 
     //Get llm for the selected model
     const llm = data.name.includes("AIAgent")
@@ -69,7 +71,7 @@ export const AINode = memo(
         kind={llm?.length ? `AI · ${llm.join(", ")}` : undefined}
       >
         <InputHandle position={targetPosition} id="main-in" />
-        {!isChatAgentNode && <OutputHandle position={sourcePosition} id="main-out" />}
+        {!isSingleNodeAgentAiNode && <OutputHandle position={sourcePosition} id="main-out" />}
         <ModelInputHandle isConnectable={!!llm?.length} />
       </BaseNode>
     );

@@ -336,6 +336,7 @@ const RuntimeWrapper = ({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <AssistantVoiceContext.Provider value={voiceContextValue}>
+
         <SuggestionsProvider defaultActions={defaultActions}>
           <Thread
             title={title}
