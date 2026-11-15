@@ -1,4 +1,4 @@
-import { Info } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 
 import { WarningLine } from "../../../resource-access-shared/components/AccessPanelParts";
 import { LinkedShareCandidateDto } from "../../dtos/resource-user-access.dto";
@@ -109,7 +109,7 @@ export const LinkedItemsSection = ({ draft }: LinkedItemsSectionProps) => {
         <div className="border-t border-slate-100">
           <GroupHeading label="Credentials" />
           <p className="flex gap-1.5 px-3.5 pt-1 text-[12px] leading-5 text-muted-foreground">
-            <Info className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
+            <InfoIcon className="mt-0.5 size-3.5 shrink-0 text-slate-400" />
             Can view on a credential lets people open it and see its values (secrets).
           </p>
           <LinkedItemList candidates={linked.credentials} shareItems={linked.shareItems} />
