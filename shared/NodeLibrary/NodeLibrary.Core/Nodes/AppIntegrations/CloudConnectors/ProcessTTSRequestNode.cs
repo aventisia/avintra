@@ -61,8 +61,7 @@ public class ProcessTTSRequestNode : BaseNode
                 ref_type = "Agent",
                 ref_id = flowMetadata.Id,
                 ref_name = flowMetadata.Name,
-                action = "AgentExecution",
-                agent_name = flowMetadata.Name
+                action = "AgentExecution"
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);

@@ -29,7 +29,6 @@ export interface STTRequestDto {
   ref_id: string;
   ref_name: string;
   action: string; // "AgentExecution" | "WorkflowExecution"
-  agent_name?: string | null;
 }
 
 /**
@@ -50,7 +49,7 @@ export interface STTResponseDto {
   created_on: string; // ISO datetime from BE
   ref_id?: string | null;
   ref_type?: string | null;
-  agent_name?: string | null;
+  ref_name?: string | null;
   action?: string | null;
 }
 

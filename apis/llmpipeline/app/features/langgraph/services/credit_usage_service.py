@@ -198,7 +198,7 @@ def _build_credit_usage_entries(
                 "RefId": request.ref_id,
                 "RefName": request.ref_name,
                 "Action": request.action,
-                "TriggeredByAgent": request.agent_name,
+                "TriggeredByAgent": request.ref_name,
                 "SpaceId": space_id,
             }
         )
