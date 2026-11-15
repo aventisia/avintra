@@ -25,7 +25,6 @@ class IngestDocRequest(BaseModel):
     ref_id: str # Identifier to link back to Agent/Workflow. TODO: Yet to confirm the better implemenation of this.
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow). TODO: Yet to confirm the better implemenation of this.
     action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
-    agent_name: Optional[str] = None # TODO: Yet to confirm the better implemenation of this.
 
 # Response schema for document ingestion endpoint
 class IngestDocResponse(BaseModel):
@@ -60,7 +59,6 @@ class QueryDocRequest(BaseModel):
     ref_id: str # Identifier to link back to Agent/Workflow. TODO: Yet to confirm the better implemenation of this.
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow). TODO: Yet to confirm the better implemenation of this.
     action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution"). TODO: Yet to confirm the better implemenation of this.
-    agent_name: Optional[str] = None # TODO: Yet to confirm the better implemenation of this.
 
 
 # Schema for individual retrieved chunk in query response

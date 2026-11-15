@@ -62,7 +62,7 @@ public class ConversationMessageService : IConversationMessageService
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationMessageDto.FlowVersionId &&
-                    w.Flow.Type == FlowTypesEnum.ChatAgent &&
+                    (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished
                 )
                 .SingleOrDefaultAsync();

@@ -24,6 +24,11 @@ public class AdminConversationDto
     public ConversationStatusEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the channel that created the conversation.
+    /// </summary>
+    public ConversationChannelEnum Channel { get; set; }
+
+    /// <summary>
     /// Gets or sets the total number of exchange.
     /// </summary>
     public int TotalExchange { get; set; }

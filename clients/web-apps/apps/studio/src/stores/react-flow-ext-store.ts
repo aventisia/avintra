@@ -18,8 +18,12 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
-import { notifyChatAgentActionNotAllowed } from "@/features/react-flow/utils/chat-agent-action.util";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
+import {
+  isSingleNodeAgentFlow,
+  notifySingleNodeAgentActionNotAllowed,
+} from "@/features/react-flow/utils/single-node-agent-flow.util";
+import { normalizeVoiceAgentGraph } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import { HistoryState } from "@/utils/history-equality-checker";
 
@@ -252,8 +256,8 @@ export const useReactFlowExtStore = create<State & Actions>()(
 
     //onConnect triggers only when two nodes are connected manually
     onConnect: (connection: Connection) => {
-      if (get().flowType === FlowTypesEnum.ChatAgent) {
-        notifyChatAgentActionNotAllowed();
+      if (isSingleNodeAgentFlow(get().flowType)) {
+        notifySingleNodeAgentActionNotAllowed(get().flowType);
         return;
       }
 
@@ -339,7 +343,9 @@ export const useReactFlowExtStore = create<State & Actions>()(
       const graph =
         get().flowType === FlowTypesEnum.ChatAgent
           ? normalizeChatAgentGraph(nodes, edges)
-          : { nodes, edges, flowVariablesObject: variables };
+          : get().flowType === FlowTypesEnum.VoiceAgent
+            ? normalizeVoiceAgentGraph(nodes, edges)
+            : { nodes, edges, flowVariablesObject: variables };
       const baseline: HistoryState = {
         nodes: graph.nodes,
         edges: graph.edges,

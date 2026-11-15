@@ -12,6 +12,7 @@ export interface TTSRequestDto {
   language?: string | null;
   speed?: number;
   pitch?: number;
+  pronunciations?: Array<{ term: string; pronunciation: string }> | null;
   stream: boolean;
 
   credential_name?: string | null;
@@ -21,7 +22,6 @@ export interface TTSRequestDto {
   ref_id: string;
   ref_name: string;
   action: string;
-  agent_name?: string | null;
 }
 
 /**
@@ -41,7 +41,7 @@ export interface TTSResponseDto {
 
   ref_id?: string | null;
   ref_type?: string | null;
-  agent_name?: string | null;
+  ref_name?: string | null;
   action?: string | null;
 
   token_count?: number | null;

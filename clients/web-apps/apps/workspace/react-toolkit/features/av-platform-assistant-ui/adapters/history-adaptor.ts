@@ -3,6 +3,7 @@ import {
   ExportedMessageRepositoryItem,
   ThreadHistoryAdapter,
   ThreadMessage,
+  ThreadMessageLike,
 } from "@assistant-ui/react";
 import { groupConversationMessages } from "@avplatform/assistant-chat";
 
@@ -16,23 +17,30 @@ import { getConversationMessages } from "../apis/assist-conversations-apis";
  * transcript, so a reloaded thread matches the streamed one.
  *
  * @param getConversationId Lazy dynamic getter to fetch or create the DB identifier.
+ * @param seedMessages Messages shown while a conversation has no persisted history
+ * (used for the VoiceAgent introduction, which is never written to the database).
  */
 export const createHistoryAdapter = (
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>,
+  seedMessages: readonly ThreadMessageLike[] = [],
 ): ThreadHistoryAdapter => {
+  /** Seeded messages are imported so the empty-history load does not clear them. */
+  const seedRepository = (): ExportedMessageRepository =>
+    ExportedMessageRepository.fromArray(seedMessages as ThreadMessageLike[]);
+
   return {
     async load(): Promise<ExportedMessageRepository> {
       try {
         // Only LOAD historical data. Do NOT trigger a lazy allocation.
         // If there's no ID yet, the thread is inherently empty.
         const threadId = await getConversationId(false);
-        if (!threadId) return { messages: [] };
+        if (!threadId) return seedRepository();
 
         const res = await getConversationMessages(threadId);
         const data = res?.data ?? [];
 
         if (data.length === 0) {
-          return { messages: [] };
+          return seedRepository();
         }
 
         const threadMessages = groupConversationMessages(data) as unknown as ThreadMessage[];
@@ -45,7 +53,7 @@ export const createHistoryAdapter = (
         return { messages };
       } catch (err) {
         console.error("Failed to load historical conversation records:", err);
-        return { messages: [] };
+        return seedRepository();
       }
     },
 

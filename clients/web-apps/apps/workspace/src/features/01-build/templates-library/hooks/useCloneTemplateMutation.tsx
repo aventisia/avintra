@@ -35,12 +35,15 @@ export const useCloneTemplateMutation = () => {
       if (
         data?.data?.type == FlowTypesEnum.Agent ||
         data?.data?.type == FlowTypesEnum.ChatAgent ||
-        data?.data?.type == FlowTypesEnum.Block
+        data?.data?.type == FlowTypesEnum.Block ||
+        data?.data?.type == FlowTypesEnum.VoiceAgent
       ) {
         window.open(
           `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`,
           "_blank",
         );
+      } else {
+        toast.info("This template type cannot be cloned yet.");
       }
     },
   });

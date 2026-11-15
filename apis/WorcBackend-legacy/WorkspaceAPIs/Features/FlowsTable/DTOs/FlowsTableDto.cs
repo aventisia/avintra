@@ -24,7 +24,7 @@ public class FlowsTableDto
     /// <summary>
     /// Gets or sets the type of the flow.
     /// </summary>
-    public required FlowTypesEnum Type { get; set; } // TODO: Update enum values
+    public required FlowTypesEnum Type { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the flow.

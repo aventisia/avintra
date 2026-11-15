@@ -15,6 +15,10 @@ import { HistoryState, isHistoryEqual } from "@/utils/history-equality-checker";
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
 import { doesFlowContainAnyDesktopOnlyNode } from "../utils/has-desktop-nodes";
+import {
+  getVoiceAgentFirstSpeaker,
+  getVoiceAgentIntroduction,
+} from "../utils/voice-agent-graph.util";
 
 const TARGET_NODE_NAME = "CreateConversationAIAgent";
 const INPUT_KEY = "__RecommendedActionsConfig__Conversation";
@@ -158,6 +162,15 @@ export const useSaveFlow = () => {
         )?.inputs?.find((input) => input.key === INPUT_KEY)?.value as RecommendActions | undefined
       )?.defaultActions ?? [];
 
+    /** VoiceAgent behaviour is carried at the top level so Assist can read it without parsing nodes. */
+    const voiceAgentCarry =
+      flowType === FlowTypesEnum.VoiceAgent
+        ? {
+            firstSpeaker: getVoiceAgentFirstSpeaker(nodes),
+            voiceIntroduction: getVoiceAgentIntroduction(nodes),
+          }
+        : {};
+
     // Create react flow object
     const reactFlowObject = {
       nodes,
@@ -166,6 +179,7 @@ export const useSaveFlow = () => {
       ...(flowType === FlowTypesEnum.ChatAgent && {
         defaultActions,
       }),
+      ...voiceAgentCarry,
     };
 
     const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(nodes as Node<NodeDataType>[]);

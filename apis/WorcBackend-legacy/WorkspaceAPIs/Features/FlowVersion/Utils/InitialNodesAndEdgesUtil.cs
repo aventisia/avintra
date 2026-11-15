@@ -11,9 +11,12 @@ public static class InitialNodesAndEdgesUtil
     {
         try
         {
-            return flowType == FlowTypesEnum.ChatAgent
-                ? GetInitialChatAgentNodesAndEdges()
-                : GetInitialAgentNodesAndEdges();
+            return flowType switch
+            {
+                FlowTypesEnum.ChatAgent => GetInitialChatAgentNodesAndEdges(),
+                FlowTypesEnum.VoiceAgent => GetInitialVoiceAgentNodesAndEdges(),
+                _ => GetInitialAgentNodesAndEdges(),
+            };
         }
         catch
         {
@@ -200,6 +203,206 @@ public static class InitialNodesAndEdgesUtil
                 Id = Guid.NewGuid(),
                 Source = modelNodeId,
                 Target = chatNodeId,
+                Deletable = false,
+                Selectable = false,
+                Style = new
+                {
+                    StrokeDasharray = "5,5",
+                    StrokeWidth = 1
+                },
+                TargetHandle = "model-node"
+            }
+        };
+
+        return SerializeReactFlowObject(initialNodesList, initialEdgesList);
+    }
+
+    private static string GetInitialVoiceAgentNodesAndEdges()
+    {
+        var voiceNodeId = Guid.NewGuid();
+        var modelNodeId = Guid.NewGuid();
+
+        var voiceInputs = new[]
+        {
+            new { Key = "__FirstSpeaker__Voice", Value = (object?)"human" },
+            new { Key = "__Introduction__Voice", Value = (object?)"" },
+            new { Key = "__Goal__Voice", Value = (object?)"" },
+            new { Key = "__Role__Voice", Value = (object?)"" },
+            new { Key = "__Instructions__Voice", Value = (object?)"" },
+            new { Key = "__ManagerAgent__Voice", Value = (object?)"" },
+            new
+            {
+                Key = "__ModelConfig__Voice",
+                Value = (object?)new
+                {
+                    is_byok_enabled = true,
+                    provider = "",
+                    credential_name = "",
+                    model = "",
+                    temperature = 1,
+                    top_p = 1,
+                    max_output_tokens = (int?)null,
+                    reasoning_effort = "medium"
+                }
+            },
+            new
+            {
+                Key = "__ModelConfig__SpeechToText",
+                Value = (object?)new
+                {
+                    is_byok_enabled = true,
+                    provider = "",
+                    credential_name = "",
+                    model = "",
+                    temperature = 1,
+                    top_p = 1,
+                    max_output_tokens = (int?)null
+                }
+            },
+            new
+            {
+                Key = "__ModelConfig__TextToSpeech",
+                Value = (object?)new
+                {
+                    is_byok_enabled = true,
+                    provider = "",
+                    credential_name = "",
+                    model = "",
+                    temperature = 1,
+                    top_p = 1,
+                    max_output_tokens = (int?)null
+                }
+            },
+            new
+            {
+                Key = "__VoiceConfig__TextToSpeech",
+                Value = (object?)new
+                {
+                    language = "en",
+                    voice = "",
+                    speed = 1
+                }
+            },
+            new { Key = "__EngineMode__Voice", Value = (object?)"pipeline" },
+            new
+            {
+                Key = "__ModelConfig__RealtimeVoice",
+                Value = (object?)new
+                {
+                    is_byok_enabled = true,
+                    provider = "",
+                    credential_name = "",
+                    model = "",
+                    temperature = 1,
+                    top_p = 1,
+                    max_output_tokens = (int?)null,
+                    reasoning_effort = "medium"
+                }
+            },
+            new { Key = "__CallRecording__Voice", Value = (object?)false },
+            new { Key = "__PreemptiveGeneration__Voice", Value = (object?)true },
+            new { Key = "__NoiseCancellation__Voice", Value = (object?)"none" },
+            new
+            {
+                Key = "__KbConfig__Voice",
+                Value = (object?)new
+                {
+                    knowledgeBase = Array.Empty<object>(),
+                    sourceThreshold = 0.1,
+                    numberOfChunks = 5
+                }
+            },
+            new
+            {
+                Key = "__SkillsConfig__Voice",
+                Value = (object?)new { skills = Array.Empty<object>() }
+            },
+            new
+            {
+                Key = "__MemoryConfig__Voice",
+                Value = (object?)new
+                {
+                    memoryProvider = "Memory Provider 1",
+                    maxDataStored = 20
+                }
+            },
+            new { Key = "__ToolsConfig__Voice", Value = (object?)Array.Empty<object>() },
+            new { Key = "__VariablesEnabled__Voice", Value = (object?)false },
+            new { Key = "__Variables__Voice", Value = (object?)new { } },
+            new { Key = "__PronunciationEnabled__Voice", Value = (object?)false },
+            new { Key = "__Pronunciation__Voice", Value = (object?)Array.Empty<object>() },
+            new { Key = "__EscalationEnabled__Voice", Value = (object?)false },
+            new { Key = "__EscalationDestination__Voice", Value = (object?)"" },
+            new { Key = "__EscalationCondition__Voice", Value = (object?)"" },
+            new { Key = "__EscalationFallback__Voice", Value = (object?)"reprompt" },
+            new { Key = "__TranscriptWebhookEnabled__Voice", Value = (object?)false },
+            new { Key = "__TranscriptWebhookUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxToolCallCueEnabled__Voice", Value = (object?)false },
+            new { Key = "__SfxToolCallCueUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxAmbienceEnabled__Voice", Value = (object?)false },
+            new { Key = "__SfxAmbienceUrl__Voice", Value = (object?)"" },
+            new { Key = "__SfxEnabled__Voice", Value = (object?)false },
+            new { Key = "__VirtualAvatar__Voice", Value = (object?)false },
+            new { Key = "__ScreenShare__Voice", Value = (object?)false },
+            new { Key = "__CameraFeed__Voice", Value = (object?)false }
+        };
+
+        var initialNodesList = new object[]
+        {
+            new
+            {
+                Id = voiceNodeId,
+                Type = "aiNode",
+                DragHandle = ".custom-drag-handle",
+                Data = new
+                {
+                    Type = "aiNode",
+                    Name = "CreateVoiceAIAgent",
+                    Label = "Voice AI",
+                    Description = "Handles voice conversations with human-like turn taking, an optional introduction, and agent-level persona.",
+                    DocsLink = (string?)null,
+                    Icon = "",
+                    Img = "/assets/ConversationModel.svg",
+                    SupportedPlatforms = new[] { "cloud", "windows" },
+                    Inputs = voiceInputs,
+                    Outputs = new[]
+                    {
+                        new
+                        {
+                            Key = "Result",
+                            Value = new { Value = "Result", Enabled = true }
+                        }
+                    }
+                },
+                Position = new { X = 0, Y = 0 },
+                Deletable = false,
+                Draggable = true,
+                Selectable = true,
+                TargetPosition = "left",
+                SourcePosition = "right"
+            },
+            new
+            {
+                Id = modelNodeId,
+                Type = "modelNode",
+                Position = new { X = 64, Y = 112 },
+                Deletable = false,
+                Draggable = true,
+                ClassName = "nodrag",
+                Selectable = false,
+                ParentId = voiceNodeId,
+                Hidden = false,
+                Data = new { Label = "" }
+            }
+        };
+
+        var initialEdgesList = new object[]
+        {
+            new
+            {
+                Id = Guid.NewGuid(),
+                Source = modelNodeId,
+                Target = voiceNodeId,
                 Deletable = false,
                 Selectable = false,
                 Style = new

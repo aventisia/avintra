@@ -10,6 +10,7 @@ const AGENT_DETAILS_PANEL_ID = "agent-details";
 const FLOW_TYPE_LABELS: Record<FlowTypesEnum, string> = {
   [FlowTypesEnum.Agent]: "Automation agent",
   [FlowTypesEnum.ChatAgent]: "Chat agent",
+  [FlowTypesEnum.VoiceAgent]: "Voice agent",
   [FlowTypesEnum.Block]: "Block",
 };
 

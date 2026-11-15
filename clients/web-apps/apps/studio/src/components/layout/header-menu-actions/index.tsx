@@ -77,9 +77,10 @@ export const HeaderActionMenu = () => {
   // Flush a dirty node-config form before export/template actions read the canvas.
   const guardDirtyNodeConfig = useDirtyNodeConfigGuard();
 
-  const { isChatAgent } = useCurrentFlowStore(
+  const { isChatAgent, isVoiceAgent } = useCurrentFlowStore(
     useShallow((state) => ({
       isChatAgent: state.isChatAgent,
+      isVoiceAgent: state.isVoiceAgent,
     })),
   );
 
@@ -129,7 +130,7 @@ export const HeaderActionMenu = () => {
 
       {/* Header actions menu content */}
       <DropdownMenuContent align="end" className="mt-0 flex w-fit min-w-[12rem] flex-col mlg:mt-4">
-        {!isChatAgent ? (
+        {!isChatAgent && !isVoiceAgent ? (
           <SimpleDDMenuItem
             size="md"
             Icon={MagnifyingGlassIcon}

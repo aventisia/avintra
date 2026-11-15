@@ -1,3 +1,5 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+
 import { ConversationSummaryDto } from "./conversation-summary-dto";
 
 export interface AssistChatDto {
@@ -16,7 +18,16 @@ export interface AssistChatDto {
   /** Version number of the flow version */
   versionNumber: number;
 
+  /** Type of the parent flow */
+  flowType: FlowTypesEnum;
+
   defaultActions?: string[];
+
+  /** Who speaks first in a VoiceAgent conversation: "human" or "ai". */
+  firstSpeaker?: string;
+
+  /** VoiceAgent introduction played once per conversation. */
+  voiceIntroduction?: string;
 
   /** List of conversations (ordered by most recent first) */
   conversations: ConversationSummaryDto[];

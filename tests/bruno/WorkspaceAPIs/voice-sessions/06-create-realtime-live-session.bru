@@ -1,0 +1,47 @@
+meta {
+  name: Create realtime live session
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/sessions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+      "flowVersionId": "{{VOICE_REALTIME_LIVE_FLOW_VERSION_ID}}",
+      "mode": "live"
+  }
+}
+
+script:post-response {
+  test("realtime live session returns join details and a supported noise mode", function() {
+    expect(res.getStatus()).to.equal(200);
+    const data = res.getBody()?.data;
+    expect(data.roomName).to.be.a("string").and.not.equal("");
+    expect(data.serverUrl).to.be.a("string").and.not.equal("");
+    expect(data.clientToken).to.be.a("string").and.not.equal("");
+    expect(data.mode).to.equal("live");
+    expect(["none", "auto"]).to.include(data.noiseCancellation);
+
+    bru.setGlobalEnvVar("VOICE_REALTIME_LIVE_ROOM_NAME", data.roomName);
+    bru.setGlobalEnvVar("VOICE_REALTIME_LIVE_SERVER_URL", data.serverUrl);
+    bru.setGlobalEnvVar("VOICE_REALTIME_LIVE_CLIENT_TOKEN", data.clientToken);
+    bru.setGlobalEnvVar("VOICE_REALTIME_LIVE_CONVERSATION_ID", data.conversationId);
+  });
+}
+
+docs {
+  > Starts one realtime `live` session against the published version. Join the
+  > room with the LiveKit console using `VOICE_REALTIME_LIVE_SERVER_URL` and
+  > `VOICE_REALTIME_LIVE_CLIENT_TOKEN`, then verify the conversation row,
+  > persisted messages, and the BYOK usage row. The caller token is short-lived;
+  > do not commit it.
+}

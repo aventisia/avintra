@@ -14,6 +14,11 @@ import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsEx
 import { getAgentsHistory } from "@/features/version-history/apis/agents-history-apis";
 import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import {
+  VOICE_CONVERSATIONS_PATH,
+  useIsVoiceConversationsRoute,
+} from "@/features/voice-conversations";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /** Fetches fresh data for a view and reports whether it has any entries, so the tab can stay put when empty. */
 export const StudioViewSwitch = () => {
@@ -23,12 +28,24 @@ export const StudioViewSwitch = () => {
   const [searchParams] = useSearchParams();
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+  const isVoiceConversations = useIsVoiceConversationsRoute();
+  const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
 
-  const views = [
-    { label: "Build", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
-    { label: "Runs", path: "/execution-log", isActive: isExecutionLog },
-    { label: "History", path: "/agent-history", isActive: isAgentHistory },
-  ];
+  const views = isVoiceAgent
+    ? [
+        { label: "Build", path: "/agent", isActive: !isAgentHistory && !isVoiceConversations },
+        {
+          label: "Conversations",
+          path: VOICE_CONVERSATIONS_PATH,
+          isActive: isVoiceConversations,
+        },
+        { label: "History", path: "/agent-history", isActive: isAgentHistory },
+      ]
+    : [
+        { label: "Build", path: "/agent", isActive: !isAgentHistory && !isExecutionLog },
+        { label: "Runs", path: "/execution-log", isActive: isExecutionLog },
+        { label: "History", path: "/agent-history", isActive: isAgentHistory },
+      ];
 
   const hasEntries = async (path: string) => {
     const versionId = searchParams.get("v") || "";

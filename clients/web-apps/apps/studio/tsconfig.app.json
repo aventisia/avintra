@@ -19,6 +19,7 @@
     "../../packages/assistant-chat/src/**/*",
     "../../packages/ui/src/**/*",
     "../../packages/layout/src/**/*",
-    "../../packages/tauri-utils/src/**/*"
+    "../../packages/tauri-utils/src/**/*",
+    "../../packages/voice-client/src/**/*"
   ]
 }
