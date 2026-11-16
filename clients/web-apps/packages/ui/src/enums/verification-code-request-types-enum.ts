@@ -38,4 +38,9 @@ export enum VerificationCodeRequestTypesEnum {
    * Request type to create verification code on new email for update email an account.
    */
   UpdateEmail = "UpdateEmail",
+
+  /**
+   * Request type to create the one-time confirmation code that links a social provider account to an existing account.
+   */
+  LinkSocialLogin = "LinkSocialLogin",
 }

@@ -1,0 +1,26 @@
+meta {
+  name: Social login URL rejects an unsupported provider
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/login-url?provider=Facebook
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the unsupported provider as the reason", function() {
+    expect(res.getBody()).to.contain("Unsupported authentication provider.");
+  });
+}
+
+docs {
+  > Only Google and GitHub are social providers. Facebook, Twitter and Azure are refused before any
+  > state, cookie or provider URL is produced.
+}

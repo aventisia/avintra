@@ -46,10 +46,21 @@ const checkVerificationCode = (postObj: CheckVerificationCodeDto) => {
     .then((res) => res.data);
 };
 
+/** Gets the Google or GitHub authorization URL that starts a social sign-in */
+const getSocialLoginUrl = (provider: string, redirect: string | null, hasPlanIntent: boolean) => {
+  const params = new URLSearchParams({ provider, hasPlanIntent: String(hasPlanIntent) });
+  if (redirect) params.set("redirect", redirect);
+
+  return axiosInstance
+    .get<IHttpResponse<string>>(`${baseAPIURL}/social/login-url?${params.toString()}`)
+    .then((res) => res.data);
+};
+
 export {
   checkVerificationCode,
   createVerificationCode,
   discoverTenant,
+  getSocialLoginUrl,
   getTenantInfo,
   isEmailAvailable,
 };

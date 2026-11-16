@@ -1,21 +1,19 @@
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { completeSsoAdminConsent } from "./sso-redirect-apis";
 
 export const useCompleteSsoAdminConsentMutation = () => {
-  // Define mutation
-  const {
-    mutate: completeSsoAdminConsentMutation,
-    error,
-    isError,
-  } = useMutation({
+  const [consentError, setConsentError] = useState<unknown>(null);
+
+  const { mutate: completeSsoAdminConsentMutation } = useMutation({
     mutationFn: ({ grantedTenantId, state }: { grantedTenantId: string; state: string }) =>
       completeSsoAdminConsent(grantedTenantId, state),
     onSuccess: () => {
       window.location.assign(import.meta.env.VITE_WORKSPACE_PATH + "tenant/preferences");
     },
+    onError: (error) => setConsentError(error),
   });
 
-  // Return mutation
-  return { completeSsoAdminConsentMutation, consentError: isError ? error : null };
+  return { completeSsoAdminConsentMutation, consentError };
 };

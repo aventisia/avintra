@@ -151,76 +151,11 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
-            var tenantId = Guid.Empty;
-            var userRoles = new List<string>();
+            var provisioned = await AccountProvisioningHelpers.ProvisionNewAccountAsync(
+                _userManager, _unitOfWork, _environmentConfig, _accountsDbContext, _logger, newUser);
 
-            if (_environmentConfig.OnPremTenantType == OnPremTenantTypesEnum.Enterprise.ToString())
+            if (!provisioned)
             {
-                userRoles = new List<string> { CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
-                tenantId = Guid.Parse(_environmentConfig.OnPremTenantId);
-            }
-            else
-            {
-                // Create a new tenant entity for the newly created user
-                var userTenant = new Tenant()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = newUser.Email,
-                    ContainerName = TenantContainerUtil.GenerateName(newUser.Email),
-                    Domain = string.Empty,
-                    Type = TenantTypesEnum.Organization,
-                    ResourceType = TenantResourceTypesEnum.Shared,
-                    Currency = CurrencyTypesEnum.USD,
-                    ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it,
-                    Role = string.Empty,
-                    CreatedByUserId = newUser.Id,
-                    LastModifiedByUserId = newUser.Id
-                };
-
-                // Insert the new tenant into the repository
-                await _unitOfWork.TenantRepo.InsertAsync(userTenant);
-
-                // Save changes and check if the tenant creation was successful
-                if (!await _unitOfWork.SaveAsync())
-                {
-                    _logger.LogWarning("Failed to save new tenant '{TenantName}' (ID: {TenantId}).", userTenant.Name, userTenant.Id);
-                    return serviceResponse;
-                }
-
-                await DefaultSpaceHelpers.EnsureDefaultSpaceAsync(
-                    _accountsDbContext, userTenant.Id, userTenant.CreatedByUserId, userTenant.LastModifiedByUserId, _logger);
-
-                await CreateDefaultTenantSubscriptionAsync(userTenant.Id, newUser.Id);
-
-                tenantId = userTenant.Id;
-                userRoles = new List<string> { CustomRolesEnum.TA.ToString(), CustomRolesEnum.OM.ToString(), CustomRolesEnum.TD.ToString(), CustomRolesEnum.TU.ToString() };
-            }
-
-            // Link the new tenant to the user
-            newUser.TenantId = tenantId;
-
-            // Update the user with the new tenant details
-            _unitOfWork.AccountUserRepo.Update(newUser);
-
-            // Save changes to link the user and tenant in the database
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Failed to update user with tenant details. User ID: {UserId}, Tenant ID: {TenantId}.", newUser.Id, tenantId);
-                return serviceResponse;
-            }
-
-            // Assign roles to user
-            var addToRolesResult = await _userManager.AddToRolesAsync(newUser, userRoles);
-
-            // Log errors if role assignment fails
-            if (!addToRolesResult.Succeeded)
-            {
-                foreach (var error in addToRolesResult.Errors)
-                {
-                    _logger.LogError("Role assignment failed for user ID {UserId}. Error Code: {Code}, Description: {Description}",
-                        user.Id, error.Code, error.Description);
-                }
-
                 serviceResponse.Message = "Failed to assign roles to user. Please try again later.";
                 return serviceResponse;
             }
@@ -231,15 +166,8 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
-            // Create placeholder values for email template
-            var placeholderValues = new Dictionary<string, string>() { { "{{userFirstName}}", GetGreetingNameUtil.GetGreetingName(newUser.FirstName, newUser.Email) } };
-
-            // Failed to send AccountCreated email
-            if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
-                bccEmailAddresses: _environmentConfig.SalesEmails))
-            {
-                /*Still moving forward as account is already saved in the database*/
-            }
+            // Still moving forward as the account is already saved in the database
+            await AccountProvisioningHelpers.SendAccountCreatedEmailAsync(_emailService, _environmentConfig, _logger, newUser);
 
 
             // Fetch the newly created user with their tenant details
@@ -400,65 +328,5 @@ public class UserRegistrationService : IUserRegistrationService
         }
 
         return serviceResponse;
-    }
-
-    private async Task CreateDefaultTenantSubscriptionAsync(Guid tenantId, Guid userId)
-    {
-        var signupPlanUniqueName = EditionSubscriptionPlanHelpers.GetSignupPlan(_environmentConfig, userId).UniqueName;
-
-        var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
-            .GetByConditionAsync(w => w.UniqueName == signupPlanUniqueName && w.IsDefault)
-            .SingleOrDefaultAsync();
-
-        if (subscriptionPlan == null)
-        {
-            _logger.LogError("Signup subscription plan not found while creating the subscription for TenantId: {TenantId}.", tenantId);
-            return;
-        }
-
-        var isStarterPlan = subscriptionPlan.Type == SubscriptionPlanTypeEnum.Starter;
-
-        var tenantSubscription = new TenantSubscription
-        {
-            TenantId = tenantId,
-            PlanId = subscriptionPlan.Id,
-            Frequency = subscriptionPlan.Frequency,
-            IsActive = true,
-            Status = SubscriptionStatusTypesEnum.Active,
-            NextBillingDate = isStarterPlan
-                ? DateTime.UtcNow.Date.AddMonths(1)
-                : new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
-            MaxCredits = subscriptionPlan.MaxCredits,
-            MaxPublishedItems = subscriptionPlan.MaxPublishedItems,
-            MaxSpaces = subscriptionPlan.MaxSpaces,
-            MaxUsers = subscriptionPlan.MaxUsers,
-            StorageLimitMB = subscriptionPlan.StorageLimitMB,
-            HistoryRetentionDays = subscriptionPlan.HistoryRetentionDays,
-            CreatedByUserId = userId,
-            LastModifiedByUserId = userId
-        };
-
-        await _unitOfWork.TenantSubscriptionRepo.InsertAsync(tenantSubscription);
-
-        // IMPORTANT NOTE: TenantCreditAllocationJob only refills Starter credits once NextBillingDate is due, so the first month is granted here.
-        if (isStarterPlan)
-        {
-            await _unitOfWork.TenantCreditRepo.InsertAsync(new TenantCredit
-            {
-                TenantId = tenantId,
-                TenantSubscription = tenantSubscription,
-                AvailableCredits = tenantSubscription.MaxCredits,
-                CreditedOn = DateTimeOffset.UtcNow,
-                ExpiredOn = tenantSubscription.NextBillingDate,
-                Type = CreditTypesEnum.Subscription,
-                CreatedByUserId = userId,
-                LastModifiedByUserId = userId
-            });
-        }
-
-        if (!await _unitOfWork.SaveAsync())
-        {
-            _logger.LogWarning("Failed to save the default tenant subscription for TenantId: {TenantId}.", tenantId);
-        }
     }
 }
