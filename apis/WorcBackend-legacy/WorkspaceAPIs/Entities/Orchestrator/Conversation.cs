@@ -23,6 +23,11 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public ConversationStatusEnum Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the channel that created the conversation.
+    /// </summary>
+    public ConversationChannelEnum Channel { get; set; } = ConversationChannelEnum.Chat;
+
+    /// <summary>
     /// Gets or sets the history title of a landing conversation, taken from its first message. Max-200.
     /// Null until the first landing turn is sent.
     /// </summary>

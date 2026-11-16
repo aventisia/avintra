@@ -83,6 +83,19 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   );
 
   /**
+   * Seed the VoiceAgent introduction as the first assistant message when the AI
+   * speaks first. The history adapter keeps it visible only while the
+   * conversation has no persisted messages, so it plays once per conversation.
+   */
+  const initialMessages = useMemo(() => {
+    const introduction = flowData?.voiceIntroduction?.trim();
+
+    if (flowData?.firstSpeaker !== "ai" || !introduction) return [];
+
+    return [{ role: "assistant" as const, content: introduction }];
+  }, [flowData?.firstSpeaker, flowData?.voiceIntroduction]);
+
+  /**
    * Navigate to a fresh conversation thread.
    * Removing the conversation ID must also reset the assistant runtime.
    */
@@ -174,6 +187,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
           flowVersionId={flowVersionId || ""}
           conversationId={conversationId}
           defaultActions={flowData?.defaultActions ?? []}
+          initialMessages={initialMessages}
           mode="production"
           onConversationAllocated={handleAllocation}
         />

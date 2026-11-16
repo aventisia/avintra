@@ -20,6 +20,12 @@ export type CreateAssistantUIModelAdapterParams = {
   onTextDelta?: (delta: string) => void;
   /** Called once with the turn's full assistant text when a fresh run finishes streaming. */
   onTextComplete?: (text: string) => void;
+  /** Called once when a run starts (VoiceAgent session start). */
+  onRunStart?: () => void;
+  /** Called for every streamed tool-call frame (VoiceAgent cue trigger). */
+  onToolCallFrame?: () => void;
+  /** Called when a voice frame carries `metadata.sfx` (deployed config source). */
+  onSfxConfig?: (sfx: Record<string, unknown>) => void;
   /** Called once per run when streaming settles (success, error, or abort). */
   onRunFinished?: () => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
@@ -163,6 +169,9 @@ export const createAssistantUIModelAdapter = ({
   onSuggestionsUpdate,
   onTextDelta,
   onTextComplete,
+  onRunStart,
+  onToolCallFrame,
+  onSfxConfig,
   onRunFinished,
   isTempChat = false,
   getExtraHeaders,
@@ -184,6 +193,7 @@ export const createAssistantUIModelAdapter = ({
 
   return {
     async *run(options) {
+      onRunStart?.();
       // Persisted chats own their history server-side (checkpoint + DB); only
       // temporary chats rely on the client sending the prior turns.
       const allMessagesExceptLast = options.messages.slice(0, -1);
@@ -285,6 +295,16 @@ export const createAssistantUIModelAdapter = ({
 
           if (frame?.type === "delta" && typeof frame.output === "string" && frame.output) {
             onTextDelta?.(frame.output);
+          }
+
+          if (frame?.type === "tool_call") {
+            onToolCallFrame?.();
+          }
+
+          const sfxMetadata = (frame as { metadata?: { sfx?: unknown } } | undefined)?.metadata
+            ?.sfx;
+          if (sfxMetadata && typeof sfxMetadata === "object") {
+            onSfxConfig?.(sfxMetadata as Record<string, unknown>);
           }
 
           builder.apply(frame);

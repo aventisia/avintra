@@ -11,11 +11,14 @@ export * from "./components/DCPForm";
 export * from "./components/fields-for-form/ConfigPanelAutosizeInput";
 export * from "./components/fields-for-form/ConfigPanelAutosizeTextarea";
 export * from "./components/fields-for-form/ConfigPanelAutosizeTextareaField";
+export * from "./components/fields-for-form/GroupedFieldsWrapper";
+export * from "./components/fields-for-form/ModelConfigField";
 export * from "./components/fields-for-form/ConfigPanelOuputField";
 export * from "./components/RenderField";
 
 // constants
 export * from "./constants/default-condition-obj";
+export * from "./constants/voice-providers.constant";
 
 // hooks
 export * from "./hooks/useDCPNavigationGuard";
@@ -24,14 +27,18 @@ export * from "./hooks/useFlushNodeConfig";
 export * from "./hooks/usePreloadNodeConfigs.hook";
 export * from "./hooks/useRegisterFormFlush";
 export * from "./hooks/useUpdateNodeDataIO";
+export * from "./hooks/useVoiceCatalog.hook";
+export * from "./hooks/useVoicePreview.hook";
 
 // stores
 export * from "./stores/dcp-store";
 
 // types
+export * from "./dtos/voice-catalog.dto";
 export * from "./types/dcp-field-literal-type";
 export * from "./types/dcp-field-schema-type";
 export * from "./types/render-if-type";
+export * from "./types/voice-provider.type";
 
 // utils
 export * from "./utils/generate-zod-schema";

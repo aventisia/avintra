@@ -32,7 +32,8 @@ export type Provider = {
 // Mark available for the models that are provided on the platform
 //open ai , deep infra, gemini
 
-const openAIVoices = [
+/** Curated OpenAI text-to-speech voice options. */
+export const openAIVoices = [
   { label: "Alloy", value: "alloy" },
   { label: "Echo", value: "echo" },
   { label: "Fable", value: "fable" },
@@ -419,11 +420,10 @@ export const openAiModelList: Model[] = [
   },
 ];
 
-// Official Google Gemini Live / TTS Voices (2025)
-const googleVoices = [
-  { label: "Journey", value: "journey" },
-  { label: "Horizon", value: "horizon" },
-  { label: "Lyra", value: "lyra" },
+// IMPORTANT NOTE: Gemini Live voices differ by model, so this list is the
+// intersection that every Live model we ship accepts.
+/** Curated Google Gemini text-to-speech voice options. */
+export const googleVoices = [
   { label: "Charon", value: "charon" },
   { label: "Kore", value: "kore" },
   { label: "Puck", value: "puck" },
@@ -583,6 +583,75 @@ export const googleModelList: Model[] = [
   },
 ];
 
+/**
+ * Realtime voice providers executable by the voice runtime.
+ *
+ * IMPORTANT NOTE: this allowlist mirrors the publish check in
+ * `VoiceAgentGraphHelpers.AllowedRealtimeProviders`. A provider that a tenant has
+ * enabled for realtime but that is absent here must be surfaced as explicitly
+ * unsupported, never offered as executable.
+ */
+export const EXECUTABLE_REALTIME_PROVIDERS = ["openai", "azure", "googlegemini"] as const;
+
+export type ExecutableRealtimeProvider = (typeof EXECUTABLE_REALTIME_PROVIDERS)[number];
+
+/** Reports whether a studio provider value has an executable realtime transport. */
+export const isExecutableRealtimeProvider = (providerValue: string): boolean =>
+  (EXECUTABLE_REALTIME_PROVIDERS as readonly string[]).includes(providerValue);
+
+export const azureModelList: Model[] = [
+  {
+    label: "gpt-realtime",
+    value: "gpt-realtime",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+    voices: openAIVoices,
+  },
+  {
+    label: "gpt-4o-realtime-preview",
+    value: "gpt-4o-realtime-preview",
+    available: false,
+    specialty: ["realtime"],
+    voices: openAIVoices,
+  },
+];
+
+export const xaiModelList: Model[] = [
+  {
+    label: "grok-voice-latest",
+    value: "grok-voice-latest",
+    available: false,
+    specialty: ["realtime"],
+    voices: openAIVoices,
+  },
+  {
+    label: "grok-voice-2.0",
+    value: "grok-voice-2.0",
+    available: false,
+    specialty: ["realtime"],
+    voices: openAIVoices,
+  },
+];
+
+export const vertexAiModelList: Model[] = [
+  {
+    label: "Gemini Live 2.5 Flash (Audio)",
+    value: "gemini-live-2.5-flash-native-audio",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+    voices: googleVoices,
+  },
+];
+
+export const bedrockModelList: Model[] = [
+  {
+    label: "Amazon Nova Sonic",
+    value: "amazon.nova-2-sonic-v1:0",
+    available: false,
+    specialty: ["realtime", "tts", "stt"],
+  },
+];
+
 export const openRouterModelList: Model[] = [
   // --- Trending Reasoning & Frontier Models ---
   {
@@ -722,6 +791,30 @@ export const modelProviders: Provider[] = [
     label: "OpenRouter",
     isEnabled: false,
     models: openRouterModelList,
+  },
+  {
+    value: "azure",
+    label: "Azure OpenAI",
+    isEnabled: false,
+    models: azureModelList,
+  },
+  {
+    value: "vertex_ai",
+    label: "Google Vertex AI",
+    isEnabled: false,
+    models: vertexAiModelList,
+  },
+  {
+    value: "xai",
+    label: "xAI",
+    isEnabled: false,
+    models: xaiModelList,
+  },
+  {
+    value: "bedrock",
+    label: "Amazon Bedrock",
+    isEnabled: false,
+    models: bedrockModelList,
   },
   {
     value: "ollama",

@@ -95,7 +95,7 @@ class DeepInfraProvider(BaseLLMProvider):
                     output = content
                     
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, response_data)
                 
         except Exception as e:
             error_context = ""
@@ -243,7 +243,6 @@ class DeepInfraProvider(BaseLLMProvider):
                                     default_llm_response_obj,
                                     start_time,
                                     output,
-                                    user.access_token,
                                     chunk
                                 )
 
@@ -370,7 +369,7 @@ class DeepInfraProvider(BaseLLMProvider):
         )
      
     # Helper: Create final llm_response object with actual values
-    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, response_data) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -392,42 +391,6 @@ class DeepInfraProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = 0 # DeepInfra does not provide reasoning tokens info
 
-        # TODO: Uncomment the code and update the ServiceType to reflect the correct services (e.g., "CustomInputService" and "CustomOutputService")
-        # # If not BYOK and credential name is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_name:
-        #    # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomOutputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
-
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
-
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="deepinfra", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
-        
         # Return the final llm_response
         return llm_response
 

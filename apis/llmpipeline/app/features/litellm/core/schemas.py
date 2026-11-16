@@ -85,7 +85,6 @@ class LLMGenerationRequest(BaseModel):
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
     # Conversation tracking
     conversation_id: Optional[str] = None
     is_temp_chat: bool = False
@@ -234,7 +233,6 @@ class STTRequest(BaseModel):
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
 
 
 class STTResponse(BaseModel):
@@ -253,8 +251,14 @@ class STTResponse(BaseModel):
     ref_id: Optional[str] = None
     ref_type: Optional[str] = None
     ref_name: Optional[str] = None
-    agent_name: Optional[str] = None
     action: Optional[str] = None
+
+
+class PronunciationEntry(BaseModel):
+    """A term and the way it should be spoken by text-to-speech."""
+
+    term: str
+    pronunciation: str
 
 
 class TTSRequest(BaseModel):
@@ -271,13 +275,13 @@ class TTSRequest(BaseModel):
     language: Optional[str] = None
     speed: float = 1.0
     stream: bool = False
+    pronunciations: Optional[list[PronunciationEntry]] = None
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
 
 
 class TTSResponse(BaseModel):
@@ -295,5 +299,4 @@ class TTSResponse(BaseModel):
     ref_id: Optional[str] = None
     ref_type: Optional[str] = None
     ref_name: Optional[str] = None
-    agent_name: Optional[str] = None
     action: Optional[str] = None

@@ -9,6 +9,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "flowName", value: "Agent" },
   { key: "totalExchange", value: "Exchanges" },
   { key: "status", value: "Status" },
+  { key: "channel", value: "Channel" },
   { key: "username", value: "User" },
   { key: "timestamp", value: "Last activity" },
   { key: "lastModifiedBy", value: "User" },

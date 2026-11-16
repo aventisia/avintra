@@ -123,7 +123,9 @@ export const agentsTableColumns = ({
     header: renderHeader("machineCount"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-mono tabular-nums text-ink-2">
-        {row.original.type === FlowTypesEnum.Agent || row.original.type === FlowTypesEnum.ChatAgent
+        {row.original.type === FlowTypesEnum.Agent ||
+        row.original.type === FlowTypesEnum.ChatAgent ||
+        row.original.type === FlowTypesEnum.VoiceAgent
           ? row.getValue("machineCount")
           : "NA"}
       </div>
