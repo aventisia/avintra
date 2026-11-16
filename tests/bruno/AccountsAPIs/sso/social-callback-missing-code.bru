@@ -1,0 +1,27 @@
+meta {
+  name: Social callback needs an authorization code
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/callback?state=social.unknown
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the missing authorization code", function() {
+    expect(res.getBody()).to.contain("The code field is required.");
+  });
+}
+
+docs {
+  > The provider always returns a `code` on success, so an attempt without one is rejected by request
+  > binding before the controller runs and no state is consumed. The service-level message
+  > `Authorization code is missing.` is unreachable over HTTP, exactly as on the Entra callback.
+}

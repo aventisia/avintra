@@ -40,9 +40,10 @@ public class AuthController(IAuthService authService) : BaseApiController
     [HttpPost("create-code")]
     public async Task<ActionResult<ServiceResponse<CreatedVerificationCodeDto>>> CreateVerificationCode([FromBody] CreateVerificationCodeDto createVerificationCodeDto)
     {
-        // If request type is TwoFA or UpdatePwd
+        // If request type is TwoFA, UpdatePwd or the internal social link type
         if (createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.TwoFA ||
-            createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.UpdatePwd)
+            createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.UpdatePwd ||
+            createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.LinkSocialLogin)
             return PlainTextError(403, "Request type is not allowed");
 
         // Request type is not defined  in enum

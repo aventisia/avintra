@@ -1,0 +1,27 @@
+meta {
+  name: Social callback rejects an unknown state
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/callback?code=test-code&state=social.deadbeef
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("refuses the attempt", function() {
+    expect(res.getBody()).to.contain("Invalid or expired sign-in attempt.");
+  });
+}
+
+docs {
+  > State is single use, lives 10 minutes in the AccountsAPIs process's memory, and is read-and-deleted
+  > atomically, so an unknown, replayed, expired or tampered state never reaches the provider exchange.
+  > Replay of a real callback is covered by the same path: the second attempt finds no state.
+}

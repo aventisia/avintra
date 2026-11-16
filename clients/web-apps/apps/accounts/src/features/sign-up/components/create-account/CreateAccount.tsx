@@ -2,6 +2,7 @@ import { useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
+import { SocialSignInBlock } from "@/features/social-sign-in";
 
 import { CreateAccountForm } from "./CreateAccountForm";
 import { GoToLogin } from "./GoToLogin";
@@ -18,11 +19,8 @@ export const CreateAccount = () => {
         smallerHeading="Enter your details to get started"
       />
 
-      {/* Social sign up options */}
-      {/* <SocialButtons /> */}
-
-      {/* Separator */}
-      {/* <SeparatorWithText overlayText="or" /> */}
+      {/* Social sign up options (hidden on desktop) */}
+      <SocialSignInBlock />
 
       {/* Create account form */}
       <CreateAccountForm />

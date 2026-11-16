@@ -140,6 +140,11 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+            // A passwordless user can be told which social provider signs them in
+            var socialLoginProvider = user.PasswordHash == null
+                ? await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user)
+                : null;
+
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
 
@@ -171,7 +176,8 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
                     TenantId = user.Tenant.Id,
-                    SSOConfigJson = azureLoginUrl
+                    SSOConfigJson = azureLoginUrl,
+                    SocialLoginProvider = socialLoginProvider
                 };
             }
             else
@@ -181,7 +187,8 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = "NA",
                     TenantId = Guid.Empty,
-                    SSOConfigJson = null
+                    SSOConfigJson = null,
+                    SocialLoginProvider = socialLoginProvider
                 };
             }
 
@@ -667,8 +674,8 @@ public class AuthService : IAuthService
             // Create 6 secret code
             string secretCode = new Random().Next(100000, 999999).ToString();
 
-            // Delete VerificationCodes (all expired + active for current userName and userAgent)
-            await _authHelperService.DeleteVerificationCodes(userName, userAgent);
+            // Delete VerificationCodes (all expired + active of this type for current userName and userAgent)
+            await _authHelperService.DeleteVerificationCodes(userName, userAgent, requestType);
 
             // Create code's ExpiresOn
             var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(

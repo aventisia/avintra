@@ -153,18 +153,19 @@ public class AuthHelperService : IAuthHelperService
         }
     }
 
-    // Deletes all expired and active verification codes for the provided username and user agent.
-    public async Task<bool> DeleteVerificationCodes(string userName, string userAgent)
+    // Deletes all expired verification codes and the active codes of one request type for the provided username and user agent.
+    public async Task<bool> DeleteVerificationCodes(string userName, string userAgent, VerificationCodeRequestTypesEnum requestType)
     {
         try
         {
-            // Get codes (expired + active for current tenant and userName and userAgent)
+            // Get codes (expired, plus active codes of this type for the current tenant and userName and userAgent)
             var verificaitonCodeList = await _unitOfWork.VerificationCodeRepo
                                         .GetByConditionAsync(w =>
                                             (w.ExpiresOn <= DateTimeOffset.UtcNow) ||
                                             (
                                                 //  w.DeviceId == userAgent && // TODO: Uncomment to check for DeviceId mismatch when needed
-                                                w.Email == userName
+                                                // IMPORTANT NOTE: the delete is scoped to the request type so one challenge never invalidates another.
+                                                w.Email == userName && w.RequestType == requestType
                                             )
                                         )
                                         .ToListAsync();
