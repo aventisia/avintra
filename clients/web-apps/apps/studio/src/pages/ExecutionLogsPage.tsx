@@ -3,11 +3,10 @@ import { Suspense, lazy } from "react";
 
 import { AppRedirectPage } from "@/components/layout/AppRedirectPage";
 
-// Lazy load the ReactFlowViewOnly component.
+import { loadExecutionLogsView } from "./studio-view-loaders";
+
 const ReactFlowViewOnly = lazy(() =>
-  import("@/features/execution-logs/components/ReactFlowViewOnly").then((module) => ({
-    default: module.ReactFlowViewOnly,
-  })),
+  loadExecutionLogsView().then((module) => ({ default: module.ReactFlowViewOnly })),
 );
 
 /**

@@ -1,3 +1,5 @@
+import { LoadingSpinner } from "@avplatform/ui";
+import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import {
   SEGMENTED_TABS_LIST_CLASS,
@@ -7,6 +9,7 @@ import {
   TabsTrigger,
 } from "@avplatform/ui/tabs";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { getAgentsExecutionLogs } from "@/features/execution-logs/apis/job-execution-log-apis";
@@ -18,7 +21,13 @@ import {
   VOICE_CONVERSATIONS_PATH,
   useIsVoiceConversationsRoute,
 } from "@/features/voice-conversations";
+import { loadAgentHistoryView, loadExecutionLogsView } from "@/pages/studio-view-loaders";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+const VIEW_LOADERS: Record<string, (() => Promise<unknown>) | undefined> = {
+  "/execution-log": loadExecutionLogsView,
+  "/agent-history": loadAgentHistoryView,
+};
 
 /** Fetches fresh data for a view and reports whether it has any entries, so the tab can stay put when empty. */
 export const StudioViewSwitch = () => {
@@ -30,6 +39,7 @@ export const StudioViewSwitch = () => {
   const isExecutionLog = useIsExecutionLogsRoute();
   const isVoiceConversations = useIsVoiceConversationsRoute();
   const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   const views = isVoiceAgent
     ? [
@@ -47,42 +57,59 @@ export const StudioViewSwitch = () => {
         { label: "History", path: "/agent-history", isActive: isAgentHistory },
       ];
 
-  const hasEntries = async (path: string) => {
+  const fetchEntryCount = async (path: string): Promise<number | null> => {
     const versionId = searchParams.get("v") || "";
-    if (!versionId || path === VOICE_CONVERSATIONS_PATH) return true;
+    if (!versionId) return null;
 
     if (path === "/agent-history") {
       const response = await queryClient.fetchQuery({
         queryKey: ["AGENT_HISTORY", versionId],
         queryFn: () => getAgentsHistory(versionId),
       });
-      return (response.data?.length ?? 0) > 0;
+      return response.data?.length ?? 0;
     }
 
-    const runsVersionId = searchParams.get("rv") || versionId;
-    const response = await queryClient.fetchQuery({
-      queryKey: ["AGENT_JOB_EXECUTION", runsVersionId],
-      queryFn: () => getAgentsExecutionLogs(runsVersionId),
-    });
-    return (response.data?.length ?? 0) > 0;
+    if (path === "/execution-log") {
+      const runsVersionId = searchParams.get("rv") || versionId;
+      const response = await queryClient.fetchQuery({
+        queryKey: ["AGENT_JOB_EXECUTION", runsVersionId],
+        queryFn: () => getAgentsExecutionLogs(runsVersionId),
+      });
+      return response.data?.length ?? 0;
+    }
+
+    return null;
+  };
+
+  const hasEntries = async (path: string) => {
+    const count = await fetchEntryCount(path);
+    return count === null || count > 0;
+  };
+
+  const preloadView = (path: string) => {
+    if (pendingPath || views.find((view) => view.path === path)?.isActive) return;
+    void VIEW_LOADERS[path]?.().catch(() => undefined);
+    void fetchEntryCount(path).catch(() => undefined);
   };
 
   const openView = async (path: string) => {
-    let entriesExist: boolean;
+    if (pendingPath) return;
+
+    setPendingPath(path);
     try {
-      entriesExist = await hasEntries(path);
+      const [entriesExist] = await Promise.all([hasEntries(path), VIEW_LOADERS[path]?.()]);
+      if (!entriesExist) {
+        toast.info(
+          path === "/agent-history" ? "No change history present" : "No runs for this version yet",
+        );
+        return;
+      }
+      navigate(withQueryParams(path));
     } catch (error) {
       toast.error(String(error));
-      return;
+    } finally {
+      setPendingPath(null);
     }
-
-    if (!entriesExist) {
-      toast.info(
-        path === "/agent-history" ? "No change history present" : "No runs for this version yet",
-      );
-      return;
-    }
-    navigate(withQueryParams(path));
   };
 
   return (
@@ -91,12 +118,31 @@ export const StudioViewSwitch = () => {
       onValueChange={openView}
       className="hidden md:flex"
     >
-      <TabsList aria-label="Studio view" className={SEGMENTED_TABS_LIST_CLASS}>
-        {views.map((view) => (
-          <TabsTrigger key={view.path} value={view.path} className={SEGMENTED_TABS_TRIGGER_CLASS}>
-            {view.label}
-          </TabsTrigger>
-        ))}
+      <TabsList
+        aria-label="Studio view"
+        aria-busy={pendingPath !== null}
+        className={cn(SEGMENTED_TABS_LIST_CLASS, pendingPath && "cursor-progress")}
+      >
+        {views.map((view) => {
+          const isPending = pendingPath === view.path;
+          return (
+            <TabsTrigger
+              key={view.path}
+              value={view.path}
+              className={cn(SEGMENTED_TABS_TRIGGER_CLASS, isPending && "text-ink")}
+              aria-disabled={pendingPath !== null}
+              onPointerEnter={() => preloadView(view.path)}
+              onFocus={() => preloadView(view.path)}
+            >
+              <span className={isPending ? "invisible" : undefined}>{view.label}</span>
+              {isPending && (
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <LoadingSpinner className="h-3.5 w-3.5 text-primary" />
+                </span>
+              )}
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
     </Tabs>
   );
