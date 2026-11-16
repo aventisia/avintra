@@ -20,7 +20,7 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         _environmentConfig = environmentConfig;
     }
 
-    // Retrieves all flow version history records for a specific flow version, ordered by creation date in descending order (latest first).
+    // Retrieves all flow version history records for a specific flow version, ordered by last modified date in descending order (latest first).
     public async Task<ServiceResponse<IEnumerable<FlowVersionHistoryDto>>> GetAllAsync(Guid flowVersionId)
     {
         // Initialize the service response with default failure values
@@ -33,14 +33,16 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         try
         {
             // Fetch all history records for the given flow version ID
-            // Sort the results by CreatedOn in descending order to get the latest versions first
+            // Sort the results by LastModifiedOn in descending order to get the latest edited versions first
             var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var records = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.FlowVersionId == flowVersionId && w.CreatedOn >= earliestReadable)
+                .GetByConditionAsync(w => w.FlowVersionId == flowVersionId
+                    && (w.CreatedOn >= earliestReadable || w.LastModifiedOn >= earliestReadable))
                 .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
-                .OrderByDescending(o => o.CreatedOn)
+                .OrderByDescending(o => o.LastModifiedOn)
                 .ToListAsync();
 
             // Map the entity list to DTOs for returning to the client
@@ -73,8 +75,10 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
         {
             var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryId && w.CreatedOn >= earliestReadable)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryId
+                    && (w.CreatedOn >= earliestReadable || w.LastModifiedOn >= earliestReadable))
                 .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -452,7 +456,8 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             // Retrieve the flow version history record along with its associated flow and version data
             var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id && w.CreatedOn >= earliestReadable)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id
+                    && (w.CreatedOn >= earliestReadable || w.LastModifiedOn >= earliestReadable))
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
@@ -554,7 +559,8 @@ public class FlowVersionHistoryService : IFlowVersionHistoryService
             // Retrieve the flow version history record using the version ID from the DTO
             var earliestReadable = HistoryRetentionHelpers.GetEarliestReadableDate(_environmentConfig);
             var flowVersionHistory = await _unitOfWork.FlowVersionHistoryRepo
-                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id && w.CreatedOn >= earliestReadable)
+                .GetByConditionAsync(w => w.Id == flowVersionHistoryDto.Id
+                    && (w.CreatedOn >= earliestReadable || w.LastModifiedOn >= earliestReadable))
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
