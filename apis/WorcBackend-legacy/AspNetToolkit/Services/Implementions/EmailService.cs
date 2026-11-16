@@ -271,6 +271,24 @@ public class EmailService : IEmailService
                     LoadAndRenderEmailTemplate("SubscriptionExpiredEmailTemplate.html", placeholderValues),
                     ccEmailAddresses: ccEmailAddresses
                 );
+
+            case EmailTypesEnum.LinkSocialLogin:
+                return await SendEmail(
+                            toEmailAddress,
+                            "Confirm your social sign-in",
+                            LoadAndRenderEmailTemplate(
+                                "2FAEmailTemplate.html",
+                                placeholderValues)
+                            );
+
+            case EmailTypesEnum.SocialSignInConnected:
+                return await SendEmail(
+                            toEmailAddress,
+                            "A social sign-in was connected to your account",
+                            LoadAndRenderEmailTemplate(
+                                "SocialSignInConnectedEmailTemplate.html",
+                                placeholderValues)
+                            );
         }
 
         return false;

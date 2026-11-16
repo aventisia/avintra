@@ -13,6 +13,7 @@ import { useLoginStore } from "../stores/login-store";
 import { LoginHeader } from "./LoginHeader";
 import { GetTenantInfo } from "./get-tenant-info/GetTenantInfo";
 import { PwdLogin } from "./pwd-login/PwdLogin";
+import { SocialLink } from "./social-link/SocialLink";
 import { TwoFA } from "./two-fa/TwoFA";
 
 export const LoginMain = () => {
@@ -42,6 +43,8 @@ export const LoginMain = () => {
             {stepNo === 2 && <PwdLogin />}
             {/* Step 3 - 2FA step */}
             {stepNo === 3 && <TwoFA />}
+            {/* Step 4 - Social account link confirmation step */}
+            {stepNo === 4 && <SocialLink />}
             {/* App footer */}
             {IS_TAURI ? <TauriAppFooter /> : <MinimalFooter />}
           </LeftContainer>

@@ -83,6 +83,15 @@ public class LoginWithPwdService : ILoginWithPwdService
                     return serviceResponse;
                 }
 
+                // A social-only user needs to be told which button signs them in
+                var linkedProvider = await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user);
+                if (linkedProvider != null)
+                {
+                    serviceResponse.StatusCode = 409;
+                    serviceResponse.Message = $"This account uses {linkedProvider}";
+                    return serviceResponse;
+                }
+
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -194,14 +203,15 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Get user's deviceId
             var userAgent = _httpContext.Request.Headers["User-Agent"].ToString();
 
-            // Get VerificationCode 
+            // Get VerificationCode
             var verificationCode = await _unitOfWork.VerificationCodeRepo
                     .GetByConditionAsync(w =>
                         w.Id == checkVerificationCodeDto.VerificationCodeId &&
                         w.Email == checkVerificationCodeDto.Email &&
                         // TODO: Uncomment to check for DeviceId mismatch when needed
                         // w.DeviceId == userAgent &&
-                        w.RequestType == checkVerificationCodeDto.RequestType
+                        // IMPORTANT NOTE: this endpoint mints a session, so it only accepts two-step codes and never a link or reset code.
+                        w.RequestType == VerificationCodeRequestTypesEnum.TwoFA
                     )
                     .SingleOrDefaultAsync();
 

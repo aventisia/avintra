@@ -4,7 +4,12 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useLoginStore } from "../../stores/login-store";
 
-export const PwdLoginHeader = () => {
+interface PwdLoginHeaderProps {
+  /** Heading shown under the email; defaults to the password prompt */
+  heading?: string;
+}
+
+export const PwdLoginHeader = ({ heading = "Enter password" }: PwdLoginHeaderProps) => {
   // Get store state and actions
   const { loginData, setStepNo } = useLoginStore(
     useShallow((state) => ({
@@ -26,7 +31,7 @@ export const PwdLoginHeader = () => {
         </Button>
         <h2 className="ml-3 w-full truncate text-body text-ink-2">{loginData?.email}</h2>
       </div>
-      <h1 className="text-title text-ink">Enter password</h1>
+      <h1 className="text-title text-ink">{heading}</h1>
     </div>
   );
 };

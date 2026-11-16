@@ -33,4 +33,44 @@ public interface ILoginWithExternalAuthService
     /// <param name="state">The OAuth state returned by Azure Entra.</param>
     /// <returns>A service response containing the authenticated user account information.</returns>
     Task<ServiceResponse<AccountUser>> EntraTokenAsync(string code, string? state);
+
+    /// <summary>
+    /// Generates a Google or GitHub authorization URL and binds the attempt to the calling browser.
+    /// </summary>
+    /// <param name="provider">The social provider to sign in with.</param>
+    /// <param name="redirectUrl">The same-origin path to return to after sign-in.</param>
+    /// <param name="hasPlanIntent">Whether the person arrived with a paid plan chosen.</param>
+    /// <returns>The authorization URL or an error message.</returns>
+    ServiceResponse<string> GenerateSocialLoginUrl(ExternalAuthProviderEnum provider, string? redirectUrl, bool hasPlanIntent);
+
+    /// <summary>
+    /// Resolves the social provider identity of an authorization code into the next sign-in step.
+    /// </summary>
+    /// <param name="code">The authorization code received from the provider.</param>
+    /// <param name="state">The opaque state returned by the provider.</param>
+    /// <returns>A service response with the resolved outcome.</returns>
+    Task<ServiceResponse<SocialSignInResultDto>> SocialCallbackAsync(string code, string? state);
+
+    /// <summary>
+    /// Confirms the one-time code that links a social provider account to an existing account.
+    /// </summary>
+    /// <param name="socialLinkVerifyDto">The outstanding code and the code the person entered.</param>
+    /// <returns>A service response with the resolved outcome.</returns>
+    Task<ServiceResponse<SocialSignInResultDto>> VerifySocialLinkAsync(SocialLinkVerifyDto socialLinkVerifyDto);
+
+    /// <summary>
+    /// Prepares the resend of the outstanding two-step or account-link code of a social attempt.
+    /// </summary>
+    /// <param name="verificationCodeId">The outstanding code issued with the callback.</param>
+    /// <param name="email">The account email the code was sent to.</param>
+    /// <param name="provider">The provider name the attempt belongs to.</param>
+    /// <returns>A service response naming the code the caller must create next.</returns>
+    Task<ServiceResponse<SocialSignInResultDto>> PrepareSocialChallengeResendAsync(Guid verificationCodeId, string email, string provider);
+
+    /// <summary>
+    /// Holds the provider identity while the one-time link confirmation code is outstanding.
+    /// </summary>
+    /// <param name="verificationCodeId">The issued link code the identity belongs to.</param>
+    /// <param name="socialLinkChallengeDto">The provider identity to hold.</param>
+    Task StoreSocialLinkChallengeAsync(Guid verificationCodeId, SocialLinkChallengeDto socialLinkChallengeDto);
 }

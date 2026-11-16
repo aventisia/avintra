@@ -1,9 +1,10 @@
-# Login with external auth (Microsoft Entra ID)
+# Login with external auth (Microsoft Entra ID, Google, GitHub)
 
-Single sign-on for `Organization` tenants using Microsoft Entra ID. Google, Facebook and Twitter stay
+Two flows live here: single sign-on for `Organization` tenants using Microsoft Entra ID, and
+"Continue with Google" / "Continue with GitHub" for every other account. Facebook and Twitter stay
 unimplemented on purpose.
 
-## Flow
+## Entra flow
 
 1. A user types their email on the login screen.
 2. The app asks `POST /auth/discover`. When the email domain belongs to an `Organization` tenant that is
@@ -15,6 +16,72 @@ unimplemented on purpose.
 
 `POST /auth/tenant-info` is kept for existing clients. It returns an Entra URL only when the deployment
 allows single sign-on, the tenant switch is on and the connection is bound, and `null` otherwise.
+
+## Social flow (Google, GitHub)
+
+1. The login and sign-up screens always show both "Continue with Google" and
+   "Continue with GitHub" buttons.
+2. Clicking a button asks `GET /auth/social/login-url?provider=...&redirect=...&hasPlanIntent=...`. The
+   answer is the provider's authorize URL: PKCE, a single-use `state`, a nonce for Google and a
+   per-attempt browser-binding cookie. The browser then leaves for the provider.
+3. The provider sends the user back to `https://{AppBaseUrl}/accounts/sso-redirect` with `code` and
+   `state`; the `social.` state prefix is what tells the screen this is a social callback, so no extra
+   redirect URI is registered.
+4. The app calls `GET /auth/social/callback?code=...&state=...`. AccountsAPIs exchanges the code on the
+   server, resolves the person, and answers one of four outcomes: `SignedIn` (session cookies are set),
+   `TwoFARequired`, `LinkCodeRequired` or `SsoRequired` (the tenant's single sign-on URL).
+5. `POST /auth/social/link/verify` confirms the link code, and `POST /auth/social/challenge/resend`
+   reissues the two-step or link code. Both refuse with the password-login message when authentication
+   is off, and with a neutral message when this installation must not offer social sign-in.
+
+Outcomes are a resolution, not a session: the account is created or linked only when the exchange
+succeeded, and the session is issued in the controller after that.
+
+### Social invariants
+
+- **Both providers are always offered in the UI.** The buttons render unconditionally; a provider
+  with a blank `GOOGLE_OAUTH_*` or `GITHUB_OAUTH_*` pair answers
+  `400 Social sign-in is not configured.` from the login-url and callback endpoints.
+- **The provider is verified, never trusted.** Google's `id_token` is validated against its JWKS,
+  audience, lifetime, issuer and the stored nonce, and its `email_verified` flag must be true. GitHub's
+  access token is exchanged server-side and only a primary, verified address from `/user/emails` is
+  accepted; otherwise the answer is the "verify your email" message. No client-supplied identity is used.
+- **`state` is single use and bound to the browser.** The state entry carries the provider, nonce, PKCE
+  verifier, return path and paid-plan intent, lives 10 minutes in the same per-process store as Entra
+  state, and is read-and-deleted when the callback consumes it. Each attempt writes its own binding
+  cookie (named after its state), so a second tab starting a sign-in never breaks the first one, and the
+  binding cookie value plus the user agent must hash to the stored binding. The store is per-process, so
+  the same single-replica or sticky-session topology applies.
+- **The return path is judged before it is stored.** A `redirect` that is not a site-relative path is
+  refused with `400 The redirect URL is not allowed.` after being decoded once, so an absolute URL, a
+  protocol-relative path, a backslash form or a control character never reaches the state; this is the
+  same rule the accounts app applies after decoding.
+- **Single sign-on wins.** When the person's domain belongs to a tenant that is offered single sign-on,
+  the callback returns that tenant's Entra URL and nothing is created or linked. Community deployments
+  never take that branch.
+- **Existing account, provider identity unknown: link only by code.** Silent linking happens only when
+  the provider owns the mailbox: a `gmail.com`/`googlemail.com` address or a Google Workspace domain
+  (`hd`). Every GitHub address, and a Google account registered on an outside address, answers
+  `LinkCodeRequired` instead, and the pending identity is stored in the cache for
+  `OtpValidityInMinutes`, so a provider account can never quietly take over an existing mailbox. A
+  provider identity already in `AspNetUserLogins` signs straight in, even after either side changes its
+  email.
+- **New accounts reuse the email sign-up path.** Provisioning, roles and the account-created mail come
+  from `AccountProvisioningHelpers`, so a social sign-up produces the same account as an email sign-up.
+  A parallel sign-up for the same address loses the race and is linked instead of duplicated.
+- **Two-step verification and account blocks behave like email sign-in.** A tenant or user with 2FA gets
+  the normal code screen (existing `verify-2fa-code` completes it), and a disabled, deleted or
+  invalid-tenant account gets the same message a password login would get, with no session.
+- **The link code is internal and capped.** Only the social callback mints a `LinkSocialLogin` code, so
+  the public `POST /auth/create-code` refuses that request type with the same `403` it answers for
+  `TwoFA` and `UpdatePwd`. Five rejected entries burn the challenge, and the count is carried by the
+  cached challenge so a resend never grants fresh guesses. `POST /auth/verify-2fa-code` accepts only
+  two-step codes, so a link code cannot be redeemed there for a session without the link, the
+  "connected" mail and the audit entry. Issuing a code only replaces the outstanding codes of its own
+  request type, so a social challenge never invalidates an in-flight password-reset or two-step code.
+- **What is written.** A new link writes a `SOCIAL_SIGNIN_CONNECTED` audit entry, and linking an
+  existing account also mails `SocialSignInConnected`. A brand-new account gets the usual
+  `AccountCreated` mail instead of a second "connected" mail.
 
 ## Invariants
 
@@ -49,7 +116,8 @@ allows single sign-on, the tenant switch is on and the connection is bound, and 
   are ignored at startup and only a valid GlobalAdmin tenant/instance with `SsoAllowed` may offer
   single sign-on. Branding is served only when GlobalAdmin returns `BrandingAllowed=true`; an omitted flag
   denies it. `GOOGLE_SSO_CLIENT_ID` / `GOOGLE_SSO_CLIENT_SECRET` are loaded for future providers and are
-  not used yet. No tenant supplies or
+  not used yet; social sign-in uses its own `GOOGLE_OAUTH_*` / `GITHUB_OAUTH_*` pair (see Social
+  invariants). No tenant supplies or
   stores client credentials, there is no secret field in the stored document, and no response returns
   credential material. Super Admin tenant reads return `SSOConfigJson` as `null`; raw SSO JSON is editable
   nowhere in the UI. The old `tenant-sso` / `siw-*` sign-in stubs and the legacy Azure Entra settings are
@@ -76,5 +144,8 @@ allows single sign-on, the tenant switch is on and the connection is bound, and 
 
 ## Operator notes
 
+- OAuth app registration, scopes, publishing, and troubleshooting:
+  [Google](GOOGLE_OAUTH_APP_REGISTRATION.md) and
+  [GitHub](GITHUB_OAUTH_APP_REGISTRATION.md).
 - No tenant credential is stored, so there is no key material or tenant secret to persist, rotate or back up.
   The DataProtection key directory used only for tenant secrets was removed together with the BYO path.
