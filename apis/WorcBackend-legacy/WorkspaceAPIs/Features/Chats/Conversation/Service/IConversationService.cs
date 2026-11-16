@@ -24,6 +24,32 @@ public interface IConversationService
     Task<ServiceResponse<IEnumerable<ConversationDto>>> GetArchivedConversationsAsync(Guid flowVersionId);
 
     /// <summary>
+    /// Retrieves all active agent-less landing conversations for the current user.
+    /// </summary>
+    /// <returns>
+    /// A service response containing a collection of active landing conversations.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingActiveConversationsAsync();
+
+    /// <summary>
+    /// Retrieves all archived agent-less landing conversations for the current user.
+    /// </summary>
+    /// <returns>
+    /// A service response containing a collection of archived landing conversations.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync();
+
+    /// <summary>
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title and project; archived ones when asked.
+    /// </summary>
+    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take);
+
+    /// <summary>
+    /// Files one of the current user's landing conversations under a project, or ungroups it when the project is null.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationProjectAsync(UpdateConversationProjectDto updateConversationProjectDto);
+
+    /// <summary>
     /// Retrieves a specific conversation by its unique identifier.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>
@@ -51,6 +77,16 @@ public interface IConversationService
     Task<ServiceResponse<ConversationDto>> UpdateAsync(ConversationDto conversationDto);
 
     /// <summary>
+    /// Renames one of the current user's landing conversations.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationTitleAsync(UpdateConversationTitleDto updateConversationTitleDto);
+
+    /// <summary>
+    /// Pins or unpins one of the current user's landing conversations.
+    /// </summary>
+    Task<ServiceResponse<bool>> UpdateLandingConversationPinAsync(UpdateConversationPinDto updateConversationPinDto);
+
+    /// <summary>
     /// Archives a conversation, making it read-only and moving it to the archived list.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>
@@ -67,6 +103,33 @@ public interface IConversationService
     /// A service response indicating whether the operation was successful.
     /// </returns>
     Task<ServiceResponse<bool>> UnarchiveAsync(Guid conversationId);
+
+    /// <summary>
+    /// Shares one of the current user's conversations by issuing a read-only token (idempotent).
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <returns>
+    /// A service response containing the read-only share token.
+    /// </returns>
+    Task<ServiceResponse<string>> ShareAsync(Guid conversationId);
+
+    /// <summary>
+    /// Stops sharing one of the current user's conversations by clearing its read-only token.
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <returns>
+    /// A service response indicating whether the operation was successful.
+    /// </returns>
+    Task<ServiceResponse<bool>> UnshareAsync(Guid conversationId);
+
+    /// <summary>
+    /// Retrieves a shared conversation by its read-only token.
+    /// </summary>
+    /// <param name="shareToken">The read-only share token.</param>
+    /// <returns>
+    /// A service response containing the shared conversation details if found.
+    /// </returns>
+    Task<ServiceResponse<ConversationDto>> GetSharedAsync(string shareToken);
 
     /// <summary>
     /// Archives multiple conversations in a single operation.

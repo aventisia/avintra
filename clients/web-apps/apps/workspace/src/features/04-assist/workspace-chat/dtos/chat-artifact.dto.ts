@@ -1,0 +1,38 @@
+/** A file stored for a landing chat conversation, mirroring the backend ChatArtifactDto. */
+export interface ChatArtifactDto {
+  /** Unique identifier of the artifact. */
+  id: string;
+
+  /** Unique identifier of the conversation this artifact belongs to. */
+  conversationId: string;
+
+  /** File name shown to the user. */
+  name: string;
+
+  /** File media type. */
+  contentType: string;
+
+  /** File size in bytes. */
+  sizeBytes: number;
+
+  /** Blob storage path holding the file bytes. */
+  blobPath: string;
+
+  /** Pipeline source artifact for generated output, or null otherwise. */
+  sourceArtifact: string | null;
+
+  /** Artifact origin: Generated or Uploaded. */
+  origin: "Generated" | "Uploaded";
+
+  /** 1-based version within the conversation's artifacts sharing this name. */
+  versionNumber: number;
+
+  /** Previous version's artifact ID, or null for the first version. */
+  previousVersionId: string | null;
+
+  /** When the artifact was stored (ISO 8601). */
+  createdOn: string;
+
+  /** Title of the conversation that produced the artifact. */
+  conversationTitle: string | null;
+}

@@ -13,12 +13,28 @@
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chats/stream`;
 
 export interface StreamingChatRequestDto {
-  flowVersionId: string;
+  flowVersionId?: string;
   conversationId?: string | null;
   threadMessages?: { role: string; content: string }[];
   userInput?: string;
   files?: string[];
   isTempChat?: boolean;
+  modelProvider?: string;
+  modelId?: string;
+  credentialName?: string;
+  isByokEnabled?: boolean;
+  /** Landing chat only: how long a reasoning model thinks; omitted keeps the model's default. */
+  reasoningEffort?: "low" | "medium" | "high";
+  /** Pages the landing chat may send the user to; ignored by agent chats. */
+  destinations?: readonly ChatDestination[];
+  /** Regenerate or edit: the stored turns after this many user turns are replaced. */
+  keepUserTurns?: number;
+}
+
+/** A Workspace page the landing chat can send the user to. */
+export interface ChatDestination {
+  route: string;
+  label: string;
 }
 
 /** A single approve/deny decision for a pending tool call. */

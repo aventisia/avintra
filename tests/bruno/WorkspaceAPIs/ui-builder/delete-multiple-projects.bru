@@ -1,0 +1,26 @@
+meta {
+  name: Delete multiple UI builder projects
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    "{{UIBUILDER_PROJECT_ID}}"
+  ]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "UIBUILDER_PROJECT_ID",
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

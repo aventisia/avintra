@@ -55,6 +55,7 @@ public static class AppServicesExtension
         config.Apply(new AutoNotificationMappingProfile());
         config.Apply(new FlowsTableMappingProfile());
         config.Apply(new FoldersTableMappingProfile());
+        config.Apply(new UiBuilderMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new ProjectTemplateMappingProfile());
         config.Apply(new FlowVersionMappingProfile());
@@ -79,6 +80,7 @@ public static class AppServicesExtension
         config.Apply(new AssistChatMappingProfile());
         config.Apply(new ConversationMappingProfile());
         config.Apply(new ConversationMessageMappingProfile());
+        config.Apply(new ChatArtifactsMappingProfile());
         config.Apply(new AdminConversationMappingProfile());
         config.Apply(new SearchByQueryMappingProfile());
         config.Apply(new KnowledgeBaseMappingProfile());
@@ -122,6 +124,7 @@ public static class AppServicesExtension
         services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFoldersTableService, FoldersTableService>();
+        services.AddScoped<IUiBuilderService, UiBuilderService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
@@ -173,6 +176,9 @@ public static class AppServicesExtension
         services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IConversationMessageService, ConversationMessageService>();
+        services.AddScoped<IChatArtifactsService, ChatArtifactsService>();
+        services.AddScoped<IUserChatProfileService, UserChatProfileService>();
+        services.AddScoped<IChatProjectService, ChatProjectService>();
         services.AddScoped<IStreamingChatService, StreamingChatService>();
         services.AddScoped<IVoiceAgentSettingsResolver, VoiceAgentSettingsResolver>();
         services.AddScoped<IVoiceSessionService, VoiceSessionService>();

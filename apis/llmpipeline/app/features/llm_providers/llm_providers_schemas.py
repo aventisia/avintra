@@ -61,6 +61,7 @@ class LLMRequest(BaseModel):
     flow_version_id: Optional[str] = None   # Workspace flow version identity for persisted conversations.
     channel: Literal['chat', 'voice'] = 'chat'  # Conversation channel for persisted rows.
     is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
+    keep_user_turns: Optional[int] = Field(default=None, ge=0)  # Regenerate/edit: drop persisted turns after this many user turns before running
     max_short_term_turns: Optional[int] = Field(default=None, ge=0)  # Number of most recent conversation turns sent to the model; None or 0 means no limit
 
 # Chat agent response schema

@@ -15,5 +15,11 @@ public enum ActionTypesEnum
     /// Indicates an action where template description generation is performed.
     /// </summary>
     [Description("Template Description Generation")]
-    TemplateDescriptionGeneration
+    TemplateDescriptionGeneration,
+
+    /// <summary>
+    /// Indicates an action where a custom UI builder version is generated.
+    /// </summary>
+    [Description("UiBuilder Generation")]
+    UiBuilderGeneration
 }

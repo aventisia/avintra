@@ -1,0 +1,15 @@
+meta {
+  name: Is UI builder name available
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  "userInput": "{{$randomCompanyName}}"
+}

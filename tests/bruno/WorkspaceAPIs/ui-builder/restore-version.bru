@@ -1,0 +1,11 @@
+meta {
+  name: Restore UI builder version
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/restore/{{UIBUILDER_VERSION_NUMBER}}
+  body: none
+  auth: none
+}

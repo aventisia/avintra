@@ -15,4 +15,14 @@ public static class EnabledModelHelpers
 
         return Enum.TryParse<ModelCapabilityEnum>(capability.Trim(), true, out var parsed) ? parsed : null;
     }
+
+    /// <summary>
+    /// Determines whether a model capability satisfies the requested capability.
+    /// </summary>
+    public static bool IsCapabilityMatch(ModelCapabilityEnum? modelCapability, ModelCapabilityEnum requestedCapability)
+    {
+        // IMPORTANT NOTE: Legacy enabled models have no capability; they default to Text.
+        return modelCapability == requestedCapability
+            || (requestedCapability == ModelCapabilityEnum.Text && modelCapability == null);
+    }
 }

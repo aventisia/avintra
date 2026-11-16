@@ -63,5 +63,17 @@ public enum ResourceTypeEnum
     /// Represents a space resource used for scoping access to a logical container.
     /// </summary>
     [Description("Represents a space resource used for scoping access to a logical container.")]
-    Space
+    Space,
+
+    /// <summary>
+    /// Represents a custom UI builder project resource.
+    /// </summary>
+    [Description("Represents a custom UI builder project resource.")]
+    UiBuilder,
+
+    /// <summary>
+    /// Represents a published custom UI builder project shared with viewers.
+    /// </summary>
+    [Description("Represents a published custom UI builder project shared with viewers.")]
+    UiBuilderPublished
 }

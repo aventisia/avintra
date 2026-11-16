@@ -1,0 +1,23 @@
+meta {
+  name: Upload asset with unsupported type returns 400
+  type: http
+  seq: 33
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/assets
+  body: json
+  auth: none
+}
+
+body:json {
+  "name": "script",
+  "contentType": "text/html",
+  "dataBase64": "PHNjcmlwdD48L3NjcmlwdD4="
+}
+
+tests {
+  test("status code is 400", function() {
+    expect(res.status).to.equal(400);
+  });
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Update landing conversation title deleted not found
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/title
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{LANDING_CONVERSATION_ID}}",
+    "title": "Renamed"
+  }
+}
+
+script:post-response {
+  test("renaming a deleted conversation returns 404", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

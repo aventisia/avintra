@@ -12,4 +12,9 @@ export enum UsageSourceTypesEnum {
    * Indicates that the credits were consumed by the platform itself.
    */
   Platform,
+
+  /**
+   * Indicates that the credits were consumed by the custom UI builder.
+   */
+  UiBuilder,
 }

@@ -8,6 +8,7 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { AgentHistoryPage } from "./pages/AgentHistoryPage";
 import { ExecutionLogsPage } from "./pages/ExecutionLogsPage";
 import { FlowPage } from "./pages/FlowPage";
+import { UiBuilderPage } from "./pages/UiBuilderPage";
 import { VoiceConversationsPage } from "./pages/VoiceConversationsPage";
 
 const queryClient = new QueryClient({
@@ -40,6 +41,10 @@ const router = createBrowserRouter(
         {
           path: "/execution-log",
           element: <ExecutionLogsPage />,
+        },
+        {
+          path: "/ui-builder",
+          element: <UiBuilderPage />,
         },
         {
           path: "/agent-conversations",

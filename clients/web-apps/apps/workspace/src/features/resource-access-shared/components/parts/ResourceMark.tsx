@@ -1,8 +1,10 @@
 import { cn } from "@avplatform/ui/lib";
 import type { IconProps } from "@avplatform/ui/types";
 import {
+  AppWindowIcon,
   BookOpenTextIcon,
   FolderSimpleUserIcon,
+  BrowserIcon,
   LightningIcon,
   ListIcon,
   PackageIcon,
@@ -26,6 +28,8 @@ const RESOURCE_ICONS: Record<ResourceTypeEnum, React.ComponentType<IconProps>> =
   [ResourceTypeEnum.Flow]: NewAgentIcon,
   [ResourceTypeEnum.FlowVersion]: NewAgentIcon,
   [ResourceTypeEnum.Space]: FolderSimpleUserIcon,
+  [ResourceTypeEnum.UiBuilder]: BrowserIcon,
+  [ResourceTypeEnum.UiBuilderPublished]: AppWindowIcon,
 };
 
 type ResourceMarkProps = {

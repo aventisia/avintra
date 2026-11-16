@@ -1,0 +1,30 @@
+meta {
+  name: Insert landing conversation
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {}
+}
+
+script:post-response {
+  const body = res.getBody();
+  test("landing conversation is created without a flow version", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(body.data.flowVersionId).to.equal(null);
+  });
+  if (res.getStatus() == 200) {
+    bru.setVar("LANDING_CONVERSATION_ID", body.data.id);
+  }
+}

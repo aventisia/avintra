@@ -20,10 +20,14 @@ import {
   TABLE_KEY,
 } from "../constants";
 import { useFetchAgents } from "../hooks/useFetchAgents";
+import { useFetchPublishedUis } from "../hooks/useFetchPublishedUis.hook";
+import { mapPublishedUisToAgentRows } from "../utils/map-published-ui-to-agent-row.util";
 import { AgentStats } from "./AgentStats";
 import { agentsTableColumns } from "./AgentsTableColumns";
 import AgentConfigDialog from "./agent-config/AgentConfigDialog";
 import AssignMachinesDialog from "./assign-machines/AssignMachinesDialog";
+import UiBuilderDisableDialog from "./published-ui/UiBuilderDisableDialog";
+import UiBuilderPreviewDialog from "./published-ui/UiBuilderPreviewDialog";
 import { AgentsBulkActions } from "./table-actions/AgentsBulkActions";
 import DisableAgentDialog from "./table-actions/DisableAgentDialog";
 
@@ -48,6 +52,9 @@ export const AgentsTable = () => {
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({ currentSpace: state.currentSpace })),
   );
+  const { data: uis } = useFetchPublishedUis();
+
+  const rows = [...(data?.data ?? []), ...mapPublishedUisToAgentRows(uis?.data ?? [])];
 
   // Controlled search so the name cell can highlight matches, like the Agents page
   const [searchText, setSearchText] = useState("");
@@ -55,7 +62,7 @@ export const AgentsTable = () => {
 
   // Create a TableCN table; page, size, and sorting live in the URL
   const { table } = useTableCN({
-    data: data?.data ?? [],
+    data: rows,
     columns,
     getRowId: (row) => row.id,
     initialState: AGENTS_INITIAL_STATE,
@@ -101,6 +108,8 @@ export const AgentsTable = () => {
       <ResourceUserAccessDialog queryKey={[...DATA_QUERY_KEY, currentSpace?.id]} allowInProd />
       <DisableAgentDialog />
       <AgentConfigDialog />
+      <UiBuilderDisableDialog />
+      <UiBuilderPreviewDialog />
     </>
   );
 };

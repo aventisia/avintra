@@ -1,0 +1,17 @@
+meta {
+  name: View unassigned published UI returns 404
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/published/00000000-0000-0000-0000-000000000000/view
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

@@ -17,6 +17,7 @@ import { FlowVersions } from "@/features/flow-versions/components";
 import { FLOW_TYPE_LABELS } from "@/features/flow-versions/constants";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
+import { UiBuilderVersions, useIsUiBuilderRoute } from "@/features/ui-builder";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useIsVoiceConversationsRoute } from "@/features/voice-conversations";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -36,6 +37,7 @@ const AppHeader: React.FC = () => {
   );
 
   const isAgentHistory = useIsVersionHistoryRoute();
+  const isUiBuilder = useIsUiBuilderRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
   const isVoiceConversations = useIsVoiceConversationsRoute();
   const isCanvas = !isAgentHistory && !isExecutionLog && !isVoiceConversations;
@@ -83,7 +85,13 @@ const AppHeader: React.FC = () => {
               </span>
               {isCanvas ? <SaveFlow /> : null}
             </div>
-            {isCanvas ? <FlowVersions /> : <AgentName className={isViewTenant ? "max-w-56" : ""} />}
+            {isUiBuilder ? (
+              <UiBuilderVersions />
+            ) : isCanvas ? (
+              <FlowVersions />
+            ) : (
+              <AgentName className={isViewTenant ? "max-w-56" : ""} />
+            )}
           </div>
 
           {isCanvas && isPublished ? (

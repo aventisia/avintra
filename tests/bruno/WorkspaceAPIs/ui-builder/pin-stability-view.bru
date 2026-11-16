@@ -1,0 +1,29 @@
+meta {
+  name: View pinned UI stays stable after new version
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/published/{{UIBUILDER_PROJECT_ID}}/view
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("view still returns the pinned version after a new version is saved", function() {
+    expect(res.body.data.headVersion.versionNumber).to.equal(
+      Number(bru.getGlobalEnvVar("UIBUILDER_PUBLISHED_VERSION_NUMBER"))
+    );
+  });
+
+  test("view does not advance to the newly saved version", function() {
+    expect(res.body.data.headVersion.versionNumber).to.not.equal(
+      Number(bru.getGlobalEnvVar("UIBUILDER_NEW_VERSION_NUMBER"))
+    );
+  });
+}

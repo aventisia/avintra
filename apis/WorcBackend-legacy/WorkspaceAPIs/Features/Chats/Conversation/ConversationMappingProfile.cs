@@ -23,6 +23,7 @@ namespace WorkspaceAPIs.MappingProfiles
                     .Ignore(dest => dest.LastModifiedOn)
                     .Ignore(dest => dest.TenantId)
                     .Ignore(dest => dest.Channel)
+                    .Ignore(dest => dest.Title)
                     .IgnoreNullValues(true);
           }
 

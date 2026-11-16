@@ -3,16 +3,15 @@ using System.Text.Json.Serialization;
 namespace WorkspaceAPIs.Features.Chats.StreamingChat.DTOs;
 
 /// <summary>
-/// Incoming request for a streaming chat completion against a Chat Agent flow.
-/// The Chat AI node configuration (model/prompt/tools/skills) is resolved
-/// server-side from the flow version's ReactFlow object, so the client only
-/// needs to send the conversation context.
+/// Incoming request for a streaming chat completion against a Chat Agent flow or
+/// the agent-less workspace landing chat. The Chat AI node configuration
+/// (model/prompt/tools/skills) is resolved server-side from the flow version's
+/// ReactFlow object, so the client only needs to send the conversation context.
 /// </summary>
 public class StreamingChatRequestDto
 {
-    /// <summary>Flow version that owns the Chat AI node configuration.</summary>
-    [RequiredGuid]
-    public Guid FlowVersionId { get; set; }
+    /// <summary>Flow version that owns the Chat AI node configuration; null for the agent-less landing chat.</summary>
+    public Guid? FlowVersionId { get; set; }
 
     /// <summary>
     /// Existing conversation id, or null to allocate a new one.
@@ -39,6 +38,49 @@ public class StreamingChatRequestDto
     /// </summary>
     [JsonPropertyName("isTempChat")]
     public bool IsTempChat { get; set; }
+
+    /// <summary>LiteLLM provider selected for this turn; overrides the node configuration when the model is also set.</summary>
+    public string? ModelProvider { get; set; }
+
+    /// <summary>Model id selected for this turn; overrides the node configuration when the provider is also set.</summary>
+    public string? ModelId { get; set; }
+
+    /// <summary>
+    /// Credential name the picker showed for the selected model. Advisory only:
+    /// the credential is resolved server-side from the tenant vault.
+    /// </summary>
+    public string? CredentialName { get; set; }
+
+    /// <summary>
+    /// Whether the selected model uses a tenant BYOK credential. Advisory only:
+    /// the credential is resolved server-side from the tenant vault.
+    /// </summary>
+    public bool? IsByokEnabled { get; set; }
+
+    /// <summary>
+    /// Landing chat only: how long a reasoning model thinks (low, medium or high).
+    /// Null or any other value keeps the model's default.
+    /// </summary>
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>
+    /// Workspace pages the user can open, offered to the landing chat's navigate tool.
+    /// Advisory only: the client re-checks every route before showing it.
+    /// </summary>
+    public List<ChatDestinationItem>? Destinations { get; set; }
+
+    /// <summary>
+    /// Regenerate or edit: the stored turns after this many user turns are dropped
+    /// before the landing chat answers again. Null keeps the history.
+    /// </summary>
+    public int? KeepUserTurns { get; set; }
+}
+
+/// <summary>A Workspace page the landing chat can send the user to.</summary>
+public class ChatDestinationItem
+{
+    public string Route { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
 }
 
 /// <summary>A single role/content message in a conversation thread.</summary>

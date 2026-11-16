@@ -9,10 +9,18 @@ import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
+import { InterfaceDetailPane } from "./features/04-assist/my-interfaces/components/InterfaceDetailPane";
+import { InterfaceNoSelection } from "./features/04-assist/my-interfaces/components/InterfaceNoSelection";
 import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_SHARED_ROUTE,
+  isHomeChatEnabled,
+} from "./features/home-chat";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
+import { UiBuilderPage } from "./pages/01-build/UiBuilderPage";
 import { ConfigStorePage } from "./pages/02-configure/ConfigStorePage";
 import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultCredentialPage } from "./pages/02-configure/VaultCredentialPage";
@@ -38,7 +46,9 @@ import { ConversationDetailsPage } from "./pages/03-orchestrator/conversations/C
 import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
+import { UserInterfacesPage } from "./pages/04-assist/UserInterfacesPage";
 import { VoicePage } from "./pages/04-assist/VoicePage";
+import { WorkspaceChatArtifactsPage } from "./pages/04-assist/WorkspaceChatArtifactsPage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
@@ -60,7 +70,10 @@ import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansP
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { DesktopDownloadPage } from "./pages/DesktopDownloadPage";
+import { HomeChatPage } from "./pages/HomeChatPage";
 import { MyNotificationsPage } from "./pages/MyNotificationsPage";
+import { SharedArtifactPage } from "./pages/SharedArtifactPage";
+import { SharedChatPage } from "./pages/SharedChatPage";
 
 const routerConfig: RouteObject[] = [
   {
@@ -68,6 +81,26 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
+      ...(isHomeChatEnabled
+        ? [
+            { index: true, element: <HomeChatPage />, handle: { fullBleed: true } },
+            {
+              path: `${HOME_CHAT_CONVERSATION_ROUTE}/:conversationId`,
+              element: <HomeChatPage />,
+              handle: { fullBleed: true },
+            },
+            {
+              path: `${HOME_CHAT_SHARED_ROUTE}/:shareToken`,
+              element: <SharedChatPage />,
+              handle: { fullBleed: true },
+            },
+            {
+              path: `${HOME_CHAT_SHARED_ROUTE}/file/:shareToken`,
+              element: <SharedArtifactPage />,
+              handle: { fullBleed: true },
+            },
+          ]
+        : []),
       {
         path: DESKTOP_DOWNLOAD_ROUTE,
         element: <DesktopDownloadPage />,
@@ -88,6 +121,10 @@ const routerConfig: RouteObject[] = [
       {
         path: "/library",
         element: <LibraryPage />,
+      },
+      {
+        path: "/ui-builder",
+        element: <UiBuilderPage />,
       },
       // configure section
       {
@@ -247,6 +284,7 @@ const routerConfig: RouteObject[] = [
             path: "chats",
             element: <MyChatsPage />,
             children: [
+              ...(isHomeChatEnabled ? [{ index: true, element: <Navigate to="/" replace /> }] : []),
               {
                 path: ":flowVersionId",
                 element: <Chat />,
@@ -254,6 +292,24 @@ const routerConfig: RouteObject[] = [
               {
                 path: ":flowVersionId/:conversationId",
                 element: <Chat />,
+              },
+            ],
+          },
+          {
+            path: "artifacts",
+            element: <WorkspaceChatArtifactsPage />,
+          },
+          {
+            path: "user-interfaces",
+            element: <UserInterfacesPage />,
+            children: [
+              {
+                index: true,
+                element: <InterfaceNoSelection />,
+              },
+              {
+                path: ":id",
+                element: <InterfaceDetailPane />,
               },
             ],
           },
@@ -415,6 +471,14 @@ const routerConfig: RouteObject[] = [
       },
     ],
   },
+  ...(import.meta.env.DEV
+    ? [
+        {
+          path: "/dev/chat-lab",
+          lazy: async () => ({ Component: (await import("./pages/dev/ChatLabPage")).ChatLabPage }),
+        },
+      ]
+    : []),
 ];
 
 export const router = createBrowserRouter(routerConfig, {

@@ -102,6 +102,108 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
+    // Retrieves active agent-less landing conversations for the current user.
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingActiveConversationsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve active conversations. Please try again."
+        };
+
+        try
+        {
+            var conversations = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == null &&
+                    w.UserId == _userId &&
+                    w.Status != ConversationStatusEnum.Archived
+                )
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.Messages)
+                .ProjectToType<ConversationDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = conversations;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Active conversations retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetLandingActiveConversations] Failed for UserId {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves archived agent-less landing conversations for the current user.
+    public async Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve archived conversations. Please try again."
+        };
+
+        try
+        {
+            var conversations = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == null &&
+                    w.UserId == _userId &&
+                    w.Status == ConversationStatusEnum.Archived
+                )
+                .OrderByDescending(o => o.LastModifiedOn)
+                .Include(i => i.Messages)
+                .ProjectToType<ConversationDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = conversations;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Archived conversations retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetLandingArchivedConversations] Failed for UserId {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take)
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<LandingConversationDto>>.Create("Failed to retrieve conversations", 500);
+
+        var query = _unitOfWork.ConversationRepo.GetByConditionAsync(w =>
+            w.FlowVersionId == null &&
+            w.UserId == _userId &&
+            (w.Status == ConversationStatusEnum.Archived) == archived &&
+            w.Title != null);
+
+        var trimmedSearch = search?.Trim();
+        if (!string.IsNullOrEmpty(trimmedSearch))
+        {
+            var pattern = $"%{SearchByQueryHelpers.EscapeLikePattern(trimmedSearch)}%";
+            query = query.Where(w => EF.Functions.ILike(w.Title!, pattern, "\\"));
+        }
+
+        if (projectId.HasValue)
+        {
+            query = query.Where(w => w.ProjectId == projectId.Value);
+        }
+
+        var conversations = await query
+            .OrderByDescending(o => o.IsPinned)
+            .ThenByDescending(o => o.LastModifiedOn)
+            .ThenByDescending(o => o.Id)
+            .Skip(Math.Max(skip, 0))
+            .Take(Math.Clamp(take, 1, 100))
+            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned, ProjectId = s.ProjectId })
+            .ToListAsync();
+
+        return serviceResponse.Update(null, 200, conversations);
+    }
+
     // Retrieves a specific conversation by its unique identifier.
     public async Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId)
     {
@@ -160,13 +262,42 @@ public class ConversationService : IConversationService
 
         try
         {
+            if (conversationDto.FlowVersionId is null)
+            {
+                var landingConversation = new Conversation
+                {
+                    UserId = _userId,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                    Status = ConversationStatusEnum.Active,
+                };
+
+                await _unitOfWork.ConversationRepo.InsertAsync(landingConversation);
+
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError(
+                        "[CreateConversation] Failed to persist landing conversation. UserId: {UserId}",
+                        _userId);
+
+                    return serviceResponse;
+                }
+
+                serviceResponse.Data = landingConversation.Adapt<ConversationDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Conversation created successfully.";
+                return serviceResponse;
+            }
+
+            var flowVersionId = conversationDto.FlowVersionId.Value;
+
             // Validate FlowVersion exists and is accessible.
             // A flow version ID is globally unique within a tenant, so the lookup
             // is intentionally NOT scoped to the current space query filter. Access
             // is enforced separately below via IsPublished + ResourceUserAccess.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.Id == conversationDto.FlowVersionId &&
+                    w.Id == flowVersionId &&
                     (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
                     w.IsPublished)
                 .IgnoreQueryFilters()
@@ -304,6 +435,69 @@ public class ConversationService : IConversationService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationTitleAsync(UpdateConversationTitleDto updateConversationTitleDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to rename conversation", 500);
+
+        var title = updateConversationTitleDto.Title.Trim();
+        if (title.Length == 0)
+            return serviceResponse.Update("Title is required", 400);
+
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationTitleDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.Title, title));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationPinAsync(UpdateConversationPinDto updateConversationPinDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to pin conversation", 500);
+
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationPinDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.IsPinned, updateConversationPinDto.IsPinned));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
+    }
+
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationProjectAsync(UpdateConversationProjectDto updateConversationProjectDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to move conversation", 500);
+
+        if (updateConversationProjectDto.ProjectId.HasValue)
+        {
+            var projectExists = await _unitOfWork.ChatProjectRepo
+                .GetByConditionAsync(w => w.Id == updateConversationProjectDto.ProjectId.Value && w.UserId == _userId)
+                .AnyAsync();
+
+            if (!projectExists)
+                return serviceResponse.Update("Project not found", 404);
+        }
+
+        // ExecuteUpdateAsync leaves LastModifiedOn alone, so moving a chat doesn't reorder the history.
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationProjectDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.ProjectId, updateConversationProjectDto.ProjectId));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
     }
 
     // Archives a conversation.
@@ -508,6 +702,165 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
+    // Shares a conversation by issuing a read-only token (idempotent).
+    public async Task<ServiceResponse<string>> ShareAsync(Guid conversationId)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Failed to share conversation. Please try again."
+        };
+
+        try
+        {
+            // Fetch conversation and ensure ownership
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                return serviceResponse;
+            }
+
+            // Reuse the existing token so resharing keeps the same link
+            if (!string.IsNullOrEmpty(conversation.ShareToken))
+            {
+                serviceResponse.Data = conversation.ShareToken;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Conversation is already shared.";
+                return serviceResponse;
+            }
+
+            conversation.ShareToken = Guid.NewGuid().ToString("N");
+            conversation.LastModifiedByUserId = _userId;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.ConversationRepo.Update(conversation);
+
+            // Persist changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = conversation.ShareToken;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Conversation shared successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[ShareConversation] Unexpected error. ConversationId: {ConversationId}, UserId: {UserId}",
+                conversationId,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Stops sharing a conversation by clearing its read-only token.
+    public async Task<ServiceResponse<bool>> UnshareAsync(Guid conversationId)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to stop sharing conversation. Please try again."
+        };
+
+        try
+        {
+            // Fetch conversation and ensure ownership
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                return serviceResponse;
+            }
+
+            conversation.ShareToken = null;
+            conversation.LastModifiedByUserId = _userId;
+            conversation.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.ConversationRepo.Update(conversation);
+
+            // Persist changes
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Sharing stopped successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[UnshareConversation] Unexpected error. ConversationId: {ConversationId}, UserId: {UserId}",
+                conversationId,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Gets a shared conversation by its read-only token.
+    public async Task<ServiceResponse<ConversationDto>> GetSharedAsync(string shareToken)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<ConversationDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve shared conversation. Please try again."
+        };
+
+        try
+        {
+            // A blank token never matches
+            if (string.IsNullOrWhiteSpace(shareToken))
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            var conversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.ShareToken == shareToken)
+                .ProjectToType<ConversationDto>()
+                .SingleOrDefaultAsync();
+
+            // Validate existence
+            if (conversation == null)
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // Assign success response
+            serviceResponse.Data = conversation;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Shared conversation retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetSharedConversation] Failed for share token.");
+        }
+
+        return serviceResponse;
+    }
+
     // Archives multiple conversations.
     public async Task<ServiceResponse<bool>> ArchiveBulkAsync(IEnumerable<Guid> conversationIds)
     {
@@ -547,7 +900,7 @@ public class ConversationService : IConversationService
 
             // Filter only non-archived conversations (idempotency)
             var conversationsToArchive = conversations
-                .Where(w => w.Status == ConversationStatusEnum.Archived)
+                .Where(w => w.Status != ConversationStatusEnum.Archived)
                 .ToList();
 
             if (!conversationsToArchive.Any())

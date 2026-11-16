@@ -3,6 +3,22 @@ ol[data-sonner-toaster="true"] {
   justify-content: flex-end;
 }
 
+ol[data-sonner-toaster="true"][data-x-position="left"] {
+  justify-content: flex-start;
+}
+
+ol[data-sonner-toaster="true"][data-x-position="center"] {
+  justify-content: center;
+}
+
+@media (min-width: 601px) {
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+    width: fit-content;
+    min-width: 15rem;
+    max-width: var(--width);
+  }
+}
+
 .sonner-toaster {
   gap: 0.5rem;
   padding: 0.5rem 0.7rem;

@@ -28,6 +28,35 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public ConversationChannelEnum Channel { get; set; } = ConversationChannelEnum.Chat;
 
     /// <summary>
+    /// Gets or sets the history title of a landing conversation, taken from its first message. Max-200.
+    /// Null until the first landing turn is sent.
+    /// </summary>
+    [MaxLength(200)]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether a landing conversation is pinned above the rest of the history.
+    /// </summary>
+    public bool IsPinned { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the project this chat is filed under, or null when ungrouped.
+    /// </summary>
+    public Guid? ProjectId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the project this chat is filed under.
+    /// </summary>
+    [ForeignKey("ProjectId")]
+    public virtual ChatProject? Project { get; set; }
+
+    /// <summary>
+    /// Gets or sets the read-only share token. Null when the conversation is not shared. Max-64 characters.
+    /// </summary>
+    [MaxLength(64)]
+    public string? ShareToken { get; set; }
+
+    /// <summary>
     /// Gets or sets the Flow Version this conversation is associated with.
     /// </summary>
     [ForeignKey("FlowVersionId")]
@@ -35,8 +64,9 @@ public class Conversation : BaseEntity, IMustHaveTenant
 
     /// <summary>
     /// Gets or sets the ID of the Flow Version.
+    /// Null for agent-less landing conversations.
     /// </summary>
-    public required Guid FlowVersionId { get; set; }
+    public Guid? FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the workspace user associated with this conversation.

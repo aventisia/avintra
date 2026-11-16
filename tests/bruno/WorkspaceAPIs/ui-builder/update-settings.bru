@@ -1,0 +1,37 @@
+meta {
+  name: Update UI builder project settings
+  type: http
+  seq: 29
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/settings
+  body: json
+  auth: none
+}
+
+body:json {
+  "instructions": "Users are claims processors on desktop. Keep layouts dense.",
+  "theme": {
+    "primaryColor": "#0D9488",
+    "neutralColor": "stone",
+    "radius": "lg",
+    "fontFamily": "system",
+    "mode": "dark"
+  },
+  "isTemplate": true
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("settings are stored and normalized", function() {
+    const data = res.getBody().data;
+    expect(data.instructions).to.equal("Users are claims processors on desktop. Keep layouts dense.");
+    expect(data.theme.primaryColor).to.equal("#0d9488");
+    expect(data.theme.mode).to.equal("dark");
+    expect(data.isTemplate).to.equal(true);
+  });
+}

@@ -11,6 +11,7 @@ import { type CrudEntityKey } from "@avplatform/ui/types";
 import {
   BellIcon,
   BookOpenTextIcon,
+  BrowserIcon,
   ChatIcon,
   ClockIcon,
   CurrencyCircleDollarIcon,
@@ -35,6 +36,7 @@ import { toast } from "sonner";
 
 import { CrudCardDialog, type CrudCardDialogConfig } from "@/components/card-dialog/CrudCardDialog";
 import { ROLE_OM } from "@/constants/roles";
+import { getDialogHeadingDescription as getUiBuilderDialogHeadingDescription } from "@/features/01-build/ui-builder-table/constants";
 import { ConfigureProdEnvBanner } from "@/features/02-configure/components/ConfigureProdEnvBanner";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
@@ -78,6 +80,11 @@ const FlowFormDialog = lazy(() =>
 const FolderCrudDialog = lazy(() =>
   import("@/features/01-build/flows-table/components/folder-dialogs/FolderCrudDialog").then(
     (m) => ({ default: m.FolderCrudDialog }),
+  ),
+);
+const UiBuilderCrudDialogContent = lazy(() =>
+  import("@/features/01-build/ui-builder-table/components/ui-builder-crud-dialog/UiBuilderCrudDialogContent").then(
+    (m) => ({ default: m.UiBuilderCrudDialogContent }),
   ),
 );
 const QueueCrudDialogContent = lazy(() =>
@@ -208,6 +215,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
   folder: {
     Dialog: FolderCrudDialog,
   },
+  uiBuilder: cardDialog({
+    Icon: BrowserIcon,
+    getHeader: getUiBuilderDialogHeadingDescription,
+    Content: UiBuilderCrudDialogContent,
+  }),
   queue: cardDialog({
     Icon: ListIcon,
     getHeader: getQueueDialogHeadingDescription,

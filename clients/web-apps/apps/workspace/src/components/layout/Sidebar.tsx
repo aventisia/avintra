@@ -84,7 +84,11 @@ const Sidebar = ({ className }: SidebarProps) => {
         </Button>
       </Tooltip>
 
-      <ScrollArea className="flex-1 py-1">
+      <ScrollArea
+        className="flex-1 py-1"
+        // IMPORTANT NOTE: Radix wraps content in a `display: table` box that grows with long chat titles; block keeps rows truncating at the sidebar width.
+        viewportClassName="[&>div]:!block"
+      >
         <nav className="h-auto">
           <SidebarNav />
         </nav>

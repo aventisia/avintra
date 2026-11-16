@@ -28,10 +28,11 @@ const getAllResourceUserAccess = () => {
 /**
  * Retrieves ResourceUserAccess list by resource id.
  */
-const getResourceUserAccessById = (resourceId: string) => {
+const getResourceUserAccessById = (resourceId: string, resourceType?: ResourceTypeEnum) => {
   return axiosInstance
     .get<IHttpResponse<ResourceUserAccessDto[]>>(`${resourceUserAccessApiUrl}/${resourceId}/list`, {
       headers: getSpaceHeaders(),
+      params: { resourceType },
     })
     .then((res) => res.data);
 };
