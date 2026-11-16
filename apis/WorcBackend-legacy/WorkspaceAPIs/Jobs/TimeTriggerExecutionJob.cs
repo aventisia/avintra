@@ -33,7 +33,7 @@ public class TimeTriggerExecutionJob : IJob
             await _workspaceInternalDbContext.Database.ExecuteInTransactionAsync(async () =>
             {
                 // IMPORTANT NOTE: serializes ticks across API instances; a waiter re-reads the advanced NextTriggerTime and skips.
-                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync("time-trigger-execution");
+                await _workspaceInternalDbContext.Database.AcquireAdvisoryLockAsync(TimeTriggerMetadataHelpers.ExecutionLockKey);
                 createdJobIds = await CreateDueJobsAsync(currentUtcTime);
             });
 

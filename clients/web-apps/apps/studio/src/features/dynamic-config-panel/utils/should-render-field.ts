@@ -1,4 +1,4 @@
-import { DCPFieldSchemaType } from "..";
+import { DCPFieldSchemaType, RenderIfType } from "..";
 
 /**
  * Checks if a field should be rendered based on renderIf conditions and current form values.
@@ -24,9 +24,16 @@ export function shouldRenderField(
     return true; // No form values, always render
   }
 
-  // Get conditions and operator from renderIf
-  const { conditions, _operator } = renderIf;
+  return meetsRenderIfConditions(renderIf, formValues);
+}
 
+/**
+ * Evaluates `renderIf`-shaped conditions against form values, joined by `_operator` (OR by default).
+ */
+export function meetsRenderIfConditions(
+  { conditions, _operator }: RenderIfType,
+  formValues: Record<string, unknown>,
+): boolean {
   const results = conditions.map((cond) =>
     typeof cond == "object" && "equals" in cond
       ? formValues[cond.field] === cond.equals

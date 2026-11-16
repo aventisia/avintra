@@ -1,0 +1,31 @@
+meta {
+  name: PROD share negatives - stranger bulk
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_STRANGER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "users": [
+      { "accessLevel": "Owner", "userId": "{{NEG_MEMBER_ID}}" }
+    ]
+  }
+}
+
+script:post-response {
+  test("another tenant cannot bulk-grant access", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

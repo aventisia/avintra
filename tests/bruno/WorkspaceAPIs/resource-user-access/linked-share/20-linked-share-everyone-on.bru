@@ -1,0 +1,34 @@
+meta {
+  name: The agent goes to Everyone (AC7)
+  type: http
+  seq: 20
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/tenant-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Flow",
+    "resourceId": "{{LINK_FLOW_ID}}",
+    "isTenantWideAccess": true
+  }
+}
+
+script:post-response {
+  test("the agent's tenant-wide flag is switched on", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > AC7 setup: the dialog's Everyone save sends exactly this call, for the agent
+  > only. `21-` proves no linked item changed with it.
+}

@@ -6,7 +6,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/re
 import { getResourceAccessActions } from "@/features/resource-user-access/utils/resource-access-actions";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
-/** Caps PROD edit actions while retaining base permissions for visible, disabled share/delete actions. */
+/** Caps PROD edit actions while retaining the base share permission and keeping delete unavailable. */
 export const useConfigureResourceAccessActions = (accessLevel: ResourceAccessTypeEnum) => {
   const env = useEnvironmentStore((state) => state.env);
   const { userSession } = useUserSessionStore(
@@ -21,12 +21,7 @@ export const useConfigureResourceAccessActions = (accessLevel: ResourceAccessTyp
   const resourceActions = getResourceAccessActions(accessLevel);
 
   const actions = isProd
-    ? {
-        read: true,
-        update: isOM,
-        delete: false,
-        share: false,
-      }
+    ? { ...resourceActions, read: true, update: isOM, delete: false }
     : resourceActions;
 
   return { actions, isProd, resourceActions };

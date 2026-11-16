@@ -1,0 +1,40 @@
+meta {
+  name: A linked item the sharer does not own is skipped (AC5)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_SHARER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "VaultCredential",
+    "resourceId": "{{LINK_NON_OWNED_CREDENTIAL_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{LINK_RECIPIENT_ID}}"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  test("the general share route refuses an item the sharer may not share", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}
+
+docs {
+  > AC5: the dialog skips every candidate whose `canShare` is false, and this is
+  > the server-side rule that would answer 403 if it did not. The agent share
+  > from `14-` is unaffected, so the agent is still shared.
+}

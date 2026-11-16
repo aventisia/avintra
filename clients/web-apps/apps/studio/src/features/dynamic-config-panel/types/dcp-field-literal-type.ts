@@ -20,6 +20,7 @@
  * - `"date"`: A date picker input.
  * - `"slider"`: A slider input for selecting a value or range.
  * - `"textarea"`: A multi-line text input.
+ * - `"rich-text"`: An HTML body with a visual editor and a raw markup view.
  */
 export type DCPControlType =
   | "text"
@@ -41,6 +42,7 @@ export type DCPControlType =
   | "date"
   | "slider"
   | "textarea"
+  | "rich-text"
   | "condition-groups"
   | "config-panel-output"
   | "model-select"

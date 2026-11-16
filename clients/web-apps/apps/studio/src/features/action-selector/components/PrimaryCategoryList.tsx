@@ -29,7 +29,7 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
 
   const handleKeyDown = (e: KeyboardEvent, index: number) => {
     const totalItems = actionSelectorData.length;
-    const columns = 2;
+    const columns = 1;
     const col = index % columns;
     const row = Math.floor(index / columns);
 
@@ -70,38 +70,44 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
   };
 
   return (
-    <ScrollArea className="h-full bg-surface p-3">
-      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary categories">
-        {actionSelectorData.map((item, index) => {
-          const isDisabled = item.disabled;
-          return (
-            <button
-              key={item.label}
-              ref={(el) => {
-                gridRefs.current[index] = el;
-                if (index === 0) firstItemRef.current = el;
-              }}
-              role="gridcell"
-              tabIndex={isDisabled ? -1 : activeIndex === index ? 0 : -1}
-              disabled={isDisabled}
-              onClick={() => {
-                if (isDisabled) return;
-                setPrimaryCategoryLabel(item.label);
-              }}
-              onKeyDown={(e) => handleKeyDown(e, index)}
-              onFocus={() => !isDisabled && setActiveIndex(index)}
-              className={cn(
-                "group flex h-44 w-full flex-col justify-between rounded-lg border p-4 text-left text-ink outline-none transition-colors",
-                isDisabled
-                  ? "cursor-not-allowed border-line bg-sunken opacity-70"
-                  : "cursor-pointer border-line bg-surface hover:border-line-strong hover:bg-hover focus-visible:shadow-focus",
-              )}
-              aria-label={`Select ${item.label}`}
-            >
-              <PrimaryCategory data={item} />
-            </button>
-          );
-        })}
+    <ScrollArea viewportClassName="[&>div]:!block" className="h-full bg-surface">
+      <div className="px-3 pb-4 pt-1">
+        <div
+          className="divide-y divide-line overflow-hidden rounded-xl bg-surface ring-1 ring-line"
+          role="grid"
+          aria-label="Primary categories"
+        >
+          {actionSelectorData.map((item, index) => {
+            const isDisabled = item.disabled;
+            return (
+              <button
+                key={item.label}
+                ref={(el) => {
+                  gridRefs.current[index] = el;
+                  if (index === 0) firstItemRef.current = el;
+                }}
+                role="gridcell"
+                tabIndex={isDisabled ? -1 : activeIndex === index ? 0 : -1}
+                disabled={isDisabled}
+                onClick={() => {
+                  if (isDisabled) return;
+                  setPrimaryCategoryLabel(item.label);
+                }}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onFocus={() => !isDisabled && setActiveIndex(index)}
+                className={cn(
+                  "group flex w-full items-center gap-3.5 px-3.5 py-3 text-left outline-none transition-colors",
+                  isDisabled
+                    ? "cursor-not-allowed bg-sunken/60 opacity-70"
+                    : "cursor-pointer hover:bg-hover focus-visible:bg-hover focus-visible:shadow-[inset_2px_0_0_var(--primary)]",
+                )}
+                aria-label={`Select ${item.label}`}
+              >
+                <PrimaryCategory data={item} />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </ScrollArea>
   );

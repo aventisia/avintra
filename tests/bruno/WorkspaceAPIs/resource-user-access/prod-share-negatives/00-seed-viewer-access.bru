@@ -1,0 +1,39 @@
+meta {
+  name: Seed a View-only share for the low-privilege user
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "accessLevel": "View",
+    "userId": "{{NEG_VIEWER_ID}}"
+  }
+}
+
+script:post-response {
+  test("owner can grant View to a tenant user", function() {
+    expect([200, 409]).to.include(res.getStatus());
+    if (res.getStatus() === 200) {
+      bru.setVar("NEG_VIEWER_ACCESS_ID", res.getBody().data.id);
+    }
+  });
+}
+
+docs {
+  > Seeds the same-tenant View-only actor used by `11-`…`16-`. A leftover row
+  > from an interrupted run answers 409; `01-` then re-captures its id, and
+  > `27-` removes the row at the end of a complete run.
+}

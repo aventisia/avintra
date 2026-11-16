@@ -136,7 +136,7 @@ export const ToolsTable = () => {
 
           <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>

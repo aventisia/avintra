@@ -1,5 +1,10 @@
 import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
-import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
+import {
+  formatDate,
+  formatTimeZoneLabel,
+  getEnumValueByKey,
+  normalizeTimeZone,
+} from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -10,6 +15,30 @@ import { getColumnName } from "../constants/column-display-names";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
 
+const formatNextTriggerTime = (value: string | undefined, timezone: string) => {
+  if (!value) return "NA";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "NA";
+
+  try {
+    const formatted = new Intl.DateTimeFormat("en-GB", {
+      timeZone: timezone,
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+      .format(date)
+      .replace(/\s(am|pm)$/i, (suffix) => suffix.toUpperCase());
+
+    return `${formatted} ${formatTimeZoneLabel(normalizeTimeZone(timezone), date)}`;
+  } catch {
+    return format(date, "dd MMM yyyy, h:mm a");
+  }
+};
 const renderHeader =
   (columnKey: string) =>
   ({ column }: HeaderContext<TimeTriggerDto, unknown>) => (
@@ -69,9 +98,7 @@ export const triggersTableColumns = (): ColumnDef<TimeTriggerDto>[] => [
     header: renderHeader("nextTriggerTime"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium font-mono tabular-nums">
-        {row.getValue("nextTriggerTime")
-          ? format(row.getValue("nextTriggerTime"), "dd MMM yyyy, h:mm a")
-          : "NA"}
+        {formatNextTriggerTime(row.original.nextTriggerTime, row.original.timezone)}
       </div>
     ),
   },

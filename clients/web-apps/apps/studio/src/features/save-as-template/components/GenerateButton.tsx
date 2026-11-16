@@ -1,5 +1,4 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
@@ -62,14 +61,10 @@ const GenerateButton = ({
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      className={cn("flex items-center gap-2", isPending && "cursor-wait")}
+    <button
       type="button"
       disabled={isPending}
       onClick={() => {
-        // Trigger mutation with serialized prompt data extracted from nodes
         mutate({
           refType: FlowTypesEnum.Agent, // Agent, ChatAgent, Block all comes under Agent umbrella
           refId: currentFlow.versionId,
@@ -77,13 +72,14 @@ const GenerateButton = ({
           payload: JSON.stringify(getPromptDataFromNodes(nodes as Node<NodeDataType>[])),
         });
       }}
+      className={cn(
+        "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-popover px-3 text-[12.5px] font-medium text-ink-2 outline-none ring-1 ring-border transition hover:bg-sunken/80 hover:text-ink focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-60",
+        isPending && "cursor-wait",
+      )}
     >
-      {/* Icon with pulse animation while generating */}
-      <SparkleIcon className={cn("h-4 w-4", isPending && "animate-pulse")} />
-
-      {/* Button text changes based on mutation state */}
-      {isPending ? "Generating..." : isSuccess ? "Generated!" : "Generate"}
-    </Button>
+      <SparkleIcon className={cn("size-3.5 text-primary-text", isPending && "animate-pulse")} />
+      {isPending ? "Generating…" : isSuccess ? "Generated" : "Generate with AI"}
+    </button>
   );
 };
 

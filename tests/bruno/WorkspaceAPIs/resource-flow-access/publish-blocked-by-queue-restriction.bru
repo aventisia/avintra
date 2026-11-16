@@ -33,7 +33,7 @@ script:post-response {
   });
 
   test("publish block message names the restricted queue", function() {
-    expect(text).to.contain("Cannot publish: flow ");
+    expect(text).to.contain("is not allowed to use the");
     expect(text).to.contain(queueName);
   });
 }
@@ -43,7 +43,7 @@ docs {
   > saved reactFlowObject references a queue by name, and RESTRICTED_QUEUE_NAME to
   > name a Dev queue whose flow assignment is non-empty and does NOT include that
   > flow. Publish then blocks with HTTP 403 and the message
-  > "Cannot publish: flow '<flow>' is not assigned to restricted queue '<queue>'".
+  > "Cannot publish: '<flow>' is not allowed to use the queue '<queue>'".
   > Run this before unassigning, while the restriction is still present. Clearing the
   > queue restriction (POST resource-flows/assign with an empty flowIds) and re-running
   > publish returns 200.

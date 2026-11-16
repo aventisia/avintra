@@ -331,12 +331,12 @@ const ExecuteFlow = () => {
       {/* Timer: visible while a run is active (ticks) and after it ends (frozen) so the
           elapsed time stays readable until Clear Results or a new execution. */}
       {executionState === "executing" || executionState === "paused" || showRunResults ? (
-        <div className="group pl-3 pr-1.5 bg-fill rounded-lg flex h-8 items-center gap-1">
-          <span className="flex items-center font-mono text-md font-semibold text-ink-2 tabular-nums">
+        <div className="flex h-7 items-center gap-1 rounded-md border border-line bg-sunken pl-2.5 pr-1">
+          <span className="flex items-center font-mono text-[12.5px] font-medium tabular-nums text-ink-2">
             {formatElapsed(elapsedSeconds)}
           </span>
           <Tooltip content="This timer tracks the elapsed time on your device while the flow is running. The duration shown in the execution logs and jobs may differ slightly as it is calculated by the server.">
-            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-lg hover:bg-hover text-ink-2">
+            <span className="flex size-5 cursor-help items-center justify-center rounded-sm text-muted-foreground hover:bg-hover">
               <InfoIcon className="size-3.5 -mt-[1px]" />
             </span>
           </Tooltip>
@@ -347,37 +347,35 @@ const ExecuteFlow = () => {
           is finished but results are still visible, it appears again so the user can start a
           new execution (Clear Results remains available too). */}
       {executionState === "executing" || executionState === "paused" ? (
-        <Tooltip content={isAborting ? "Aborting..." : "Abort"}>
-          <Button
-            variant="ghost"
-            size="icon8"
-            className="hover:bg-hover bg-fill"
-            onClick={abortExecution}
-            disabled={isAborting}
-          >
-            {isAborting ? (
-              <CircleNotchIcon className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
-            ) : (
-              <SquareIcon weight="fill" className="h-[1.1rem] w-[1.1rem] text-bad" />
-            )}
-          </Button>
-        </Tooltip>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={abortExecution}
+          disabled={isAborting}
+        >
+          {isAborting ? (
+            <CircleNotchIcon className="size-3.5 animate-spin" />
+          ) : (
+            <SquareIcon weight="fill" className="size-3.5 text-bad" />
+          )}
+          {isAborting ? "Stopping…" : "Stop"}
+        </Button>
       ) : (
-        <Tooltip content="Execute">
-          <Button
-            variant="ghost"
-            size="icon8"
-            className="hover:bg-hover"
-            onClick={startExecution}
-            disabled={isSaving}
-          >
-            {isStarting || executionState === "launching-executor" ? (
-              <CircleNotchIcon className="h-[1.1rem] w-[1.1rem] animate-spin text-ink-2" />
-            ) : (
-              <PlayIcon weight="fill" className="h-[1.1rem] w-[1.1rem] text-ok" />
-            )}
-          </Button>
-        </Tooltip>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={startExecution}
+          disabled={isSaving}
+        >
+          {isStarting || executionState === "launching-executor" ? (
+            <CircleNotchIcon className="size-3.5 animate-spin" />
+          ) : (
+            <PlayIcon weight="fill" className="size-3.5" />
+          )}
+          Run
+        </Button>
       )}
     </div>
   );

@@ -238,7 +238,9 @@ ORDER BY a.tenant_id, i.name;
 
 Every Dev share on a cloned resource must exist on its Prod clone for the same user
 (`user_ResourceUserAccess`, `ResourceType` matching the cloned type). Repeat the check
-per resource type by swapping the queue join for the type's table.
+per resource type by swapping the queue join for the type's table. The publisher is never
+copied (they already own the clone) and a non-publisher Dev `Owner` becomes `FullAccess`, so
+each Prod resource has exactly one Owner.
 
 ```sql
 SELECT d."Name", ds."UserId", ds."AccessLevel" AS dev_level, ps."AccessLevel" AS prod_level
@@ -253,8 +255,9 @@ WHERE ds."ResourceType" = 'Queue'
   AND d."TenantId" = :tenant_id
   AND d."EnvType" = 'Dev'
   AND d."Name" IN (:queue_names);
--- Expect one row per Dev share with prod_level = dev_level. A NULL prod_level means
--- publish did not migrate the share.
+-- Expect one row per Dev share with prod_level = dev_level, except the publisher (not
+-- copied) and a non-publisher Dev Owner, whose prod_level is FullAccess. A NULL
+-- prod_level means publish did not migrate the share.
 ```
 
 ## 3. Idempotency (repair path)

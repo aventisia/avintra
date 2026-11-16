@@ -1,33 +1,52 @@
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@avplatform/ui/accordion";
-import { CaretDownIcon } from "@phosphor-icons/react";
+import { DayTimelineCount, DayTimelineItem, DayTimelineSection } from "@/components/day-timeline";
 
 import { DaySection } from "../../types/log-list-type";
+import { isErrorStatus } from "../../utils/job-log-level";
 import ExecutionLogAccordionItem from "./ExecutionLogAccordionItem";
 
-interface Props {
+type Props = {
   section: DaySection;
+  isFirst: boolean;
+  isLast: boolean;
   selectedEntry: string;
   onSelect: (id: string) => void;
-}
+};
 
-export default function ExecutionAccordionSection({ section, selectedEntry, onSelect }: Props) {
+export default function ExecutionAccordionSection({
+  section,
+  isFirst,
+  isLast,
+  selectedEntry,
+  onSelect,
+}: Props) {
+  const errorCount = section.entries.filter((entry) => isErrorStatus(entry.status)).length;
+
   return (
-    <AccordionItem key={section.date} value={section.date} className="border-none">
-      <AccordionTrigger className="group flex h-8 w-full items-center justify-start gap-2 px-4 py-0 text-label uppercase text-muted-foreground hover:bg-hover hover:no-underline [&>svg]:hidden">
-        <CaretDownIcon className="size-3.5 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
-        <span className="font-mono">{section.date}</span>
-      </AccordionTrigger>
-
-      <AccordionContent className="p-0">
-        {section.entries.map((entry) => (
+    <DayTimelineSection
+      day={section.date}
+      startedAt={section.startedAt}
+      isFirst={isFirst}
+      isLast={isLast}
+      meta={
+        <>
+          {errorCount > 0 ? (
+            <span className="rounded-full bg-bad/10 px-1.5 text-[11px] font-medium leading-[18px] tabular-nums text-bad">
+              {errorCount} {errorCount === 1 ? "error" : "errors"}
+            </span>
+          ) : null}
+          <DayTimelineCount count={section.entries.length} noun="run" />
+        </>
+      }
+    >
+      {section.entries.map((entry) => (
+        <DayTimelineItem key={entry.id}>
           <ExecutionLogAccordionItem
-            key={entry.id}
             entry={entry}
             isSelected={entry.id === selectedEntry}
             onClick={onSelect}
           />
-        ))}
-      </AccordionContent>
-    </AccordionItem>
+        </DayTimelineItem>
+      ))}
+    </DayTimelineSection>
   );
 }

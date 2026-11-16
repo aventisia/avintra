@@ -1,0 +1,35 @@
+meta {
+  name: PROD share negatives - owner create
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "accessLevel": "View",
+    "userId": "{{NEG_MEMBER_ID}}"
+  }
+}
+
+script:post-response {
+  test("owner can grant access", function() {
+    expect(res.getStatus()).to.equal(200);
+    bru.setVar("NEG_MEMBER_ACCESS_ID", res.getBody().data.id);
+  });
+}
+
+docs {
+  > AC4/AC7: the owner path is unchanged by the gate.
+}

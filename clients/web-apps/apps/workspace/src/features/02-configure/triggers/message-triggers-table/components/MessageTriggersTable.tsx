@@ -71,7 +71,7 @@ export const MessageTriggersTable = () => {
           </TableCN>
 
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           {/* Bulk actions for data table */}
           {/* <TriggerBulkActions table={table} /> */}

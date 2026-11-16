@@ -23,6 +23,15 @@ public interface IResourceFlowAccessService
     Task<ServiceResponse<IEnumerable<ResourceAssignedFlowDto>>> GetAssignedFlowsAsync(ResourceTypeEnum resourceType, Guid resourceId);
 
     /// <summary>
+    /// Retrieves the resources an agent uses, with who may share each and which recipients still need access.
+    /// </summary>
+    /// <param name="resourceType">The agent type: <see cref="ResourceTypeEnum.Flow"/> or <see cref="ResourceTypeEnum.FlowVersion"/>.</param>
+    /// <param name="resourceId">The agent identifier.</param>
+    /// <param name="userIds">The recipients the agent is being shared with.</param>
+    /// <returns>A service response containing the linked resources, or 400 for another resource type, 404 for an unknown agent, or 403 when the caller cannot read its shares.</returns>
+    Task<ServiceResponse<IEnumerable<LinkedShareCandidateDto>>> GetLinkedShareCandidatesAsync(ResourceTypeEnum resourceType, Guid resourceId, IEnumerable<Guid> userIds);
+
+    /// <summary>
     /// Retrieves, in one query, the identifiers of the flows assigned to each of the given resources.
     /// Resources without rows are absent from the result.
     /// </summary>

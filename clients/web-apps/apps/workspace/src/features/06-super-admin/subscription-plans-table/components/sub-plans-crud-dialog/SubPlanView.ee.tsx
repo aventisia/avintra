@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
@@ -25,8 +26,6 @@ import {
   UserCircleIcon,
   UserGearIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { displayValue } from "../../constants";
 import { PlanStatusEnum } from "../../enums/plan-status-enum.ee";

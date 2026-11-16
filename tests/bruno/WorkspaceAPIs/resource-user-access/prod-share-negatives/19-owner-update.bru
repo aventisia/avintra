@@ -1,0 +1,32 @@
+meta {
+  name: PROD share negatives - owner update level
+  type: http
+  seq: 19
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{NEG_MEMBER_ACCESS_ID}}",
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "accessLevel": "Edit",
+    "userId": "{{NEG_MEMBER_ID}}"
+  }
+}
+
+script:post-response {
+  test("owner can change a level", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.accessLevel).to.equal("Edit");
+  });
+}

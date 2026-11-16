@@ -3,7 +3,7 @@ import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { COUNTRY_LS_KEY, INDIVIDUAL_ORGANIZATION_NAME } from "@/constants/variables";
+import { COUNTRY_LS_KEY } from "@/constants/variables";
 
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useUpdateTenantInfoMutation } from "./useUpdateTenantInfoMutation";
@@ -11,7 +11,7 @@ import { useUpdateTenantInfoMutation } from "./useUpdateTenantInfoMutation";
 type BillingFormData = z.infer<typeof billingInfoSchema>;
 
 /**
- * Completes the organization setup that free sign-up defers: saves the account type and country,
+ * Completes the organization setup that free sign-up defers: saves the organization profile and country,
  * refreshes the session, and stores the country that ChoosePlan prices from.
  * Call it before persisting billing data; it resolves to false when the update fails.
  */
@@ -23,16 +23,13 @@ export const useSaveDeferredTenantProfile = () => {
     })),
   );
 
-  const { updateTenantInfoMutation } = useUpdateTenantInfoMutation();
+  const { updateTenantInfoMutation, isCreationPending } = useUpdateTenantInfoMutation();
 
   const saveDeferredTenantProfile = async (formData: BillingFormData) => {
     try {
       const response = await updateTenantInfoMutation({
-        type: formData.organizationType,
-        organizationName:
-          formData.organizationType === "Organization"
-            ? (formData.organizationName ?? "")
-            : INDIVIDUAL_ORGANIZATION_NAME,
+        type: "Organization",
+        organizationName: formData.organizationName ?? "",
         domain: userSession?.email?.split("@")[1] ?? "",
         country: formData.country,
       });
@@ -45,5 +42,5 @@ export const useSaveDeferredTenantProfile = () => {
     }
   };
 
-  return { saveDeferredTenantProfile };
+  return { saveDeferredTenantProfile, isSavingDeferredProfile: isCreationPending };
 };

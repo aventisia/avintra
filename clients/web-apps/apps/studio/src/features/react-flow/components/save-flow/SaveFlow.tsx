@@ -1,5 +1,7 @@
+import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
+import { CheckIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
@@ -12,19 +14,34 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useSaveFlow } from "../../hooks/useSaveFlow";
 import useUnsavedChanges from "../../hooks/useUnSavedChanges";
 
+const SAVED_FEEDBACK_MS = 2500;
+const SAVED_FADE_OUT_CLASS =
+  "duration-300 animate-out fade-out-0 fill-mode-forwards [animation-delay:2200ms] motion-reduce:animate-none";
+
+type SaveFlowStatus = "hidden" | "saving" | "unsaved" | "saved";
+
+/**
+ * Canvas save status beside the agent type in the header. Unsaved changes show with a Save
+ * action; a finished save shows "Saved" briefly, then the status hides.
+ */
 export default function SaveFlow() {
-  const { isPending, saveData, isSavePending } = useSaveFlow();
+  const { saveData, isSavePending } = useSaveFlow();
+  const isSaving = useCurrentFlowStore((state) => state.isFlowSaving);
 
   // Uncommitted config-form edits count as unsaved changes too.
   const isFormDirty = useDynamicConfigPanelStore((state) => state.isFormDirty);
   const isDirty = isSavePending || isFormDirty;
 
-  const [savedAt, setSavedAt] = useState<Date>();
-  const wasPendingRef = useRef(isPending);
+  const [isSavedVisible, setIsSavedVisible] = useState(false);
+  const wasSavingRef = useRef(isSaving);
   useEffect(() => {
-    if (wasPendingRef.current && !isPending) setSavedAt(new Date());
-    wasPendingRef.current = isPending;
-  }, [isPending]);
+    const hasFinishedSaving = wasSavingRef.current && !isSaving;
+    wasSavingRef.current = isSaving;
+    if (!hasFinishedSaving) return;
+    setIsSavedVisible(true);
+    const hideTimer = window.setTimeout(() => setIsSavedVisible(false), SAVED_FEEDBACK_MS);
+    return () => window.clearTimeout(hideTimer);
+  }, [isSaving]);
 
   // Get setExecutionState action from current flow store
   const { executionState } = useCurrentFlowStore(
@@ -65,28 +82,54 @@ export default function SaveFlow() {
     [handleSave],
   );
 
-  const saveState = isPending
-    ? "Saving…"
+  const status: SaveFlowStatus = isSaving
+    ? "saving"
     : isDirty
-      ? "Not saved"
-      : savedAt
-        ? `Saved ${savedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`
-        : "Saved";
+      ? "unsaved"
+      : isSavedVisible
+        ? "saved"
+        : "hidden";
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1.5">
       <span
         aria-live="polite"
         className={cn(
-          "whitespace-nowrap font-mono text-[12px] text-muted-foreground",
-          !isPending && isDirty && "text-bad",
+          "inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] leading-3 text-muted-foreground",
+          status === "saved" && SAVED_FADE_OUT_CLASS,
         )}
       >
-        {saveState}
+        {status !== "hidden" ? (
+          <span aria-hidden="true" className="size-0.5 shrink-0 rounded-full bg-muted-foreground" />
+        ) : null}
+        {status === "saving" ? (
+          <span className="inline-flex items-center gap-1">
+            <LoadingSpinner className="size-2.5" />
+            Saving…
+          </span>
+        ) : null}
+        {status === "unsaved" ? (
+          <span className="inline-flex items-center gap-1">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-warn" />
+            Not saved
+          </span>
+        ) : null}
+        {status === "saved" ? (
+          <span className="inline-flex items-center gap-1">
+            <CheckIcon
+              aria-hidden="true"
+              weight="bold"
+              className="size-3 text-ok duration-200 animate-in fade-in-0 zoom-in-50 motion-reduce:animate-none"
+            />
+            Saved
+          </span>
+        ) : null}
       </span>
-      <Button disabled={!isDirty} variant="ghost" size="sm" onClick={handleSave}>
-        Save
-      </Button>
+      {status === "unsaved" ? (
+        <Button variant="link" className="text-[11px] leading-3" onClick={handleSave}>
+          Save
+        </Button>
+      ) : null}
     </div>
   );
 }

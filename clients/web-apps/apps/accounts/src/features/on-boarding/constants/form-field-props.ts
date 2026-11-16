@@ -18,14 +18,11 @@ const lastNameProps: InputFieldProps = {
   isRequired: true,
 };
 
-// Organization Type
-const organizationTypeProps: SelectFieldProps = {
-  name: "organizationType",
-  label: "Account Type",
-  selectOptions: [
-    { label: "Individual", value: "Individual" },
-    { label: "Organization", value: "Organization" },
-  ],
+// Organization Name
+const organizationNameProps: InputFieldProps = {
+  name: "organizationName",
+  label: "Organization Name",
+  type: "text",
   isRequired: true,
 };
 
@@ -60,7 +57,7 @@ const stateProps: InputFieldProps = {
   className: "h-control-lg",
   name: "state",
   label: "State/Province",
-  isRequired: false,
+  isRequired: true,
 };
 
 // City
@@ -99,7 +96,7 @@ const countryProps: SelectFieldProps = {
 export {
   firstNameProps,
   lastNameProps,
-  organizationTypeProps,
+  organizationNameProps,
   pinCodeProps,
   addressLine1Props,
   addressLine2Props,

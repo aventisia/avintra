@@ -82,10 +82,8 @@ const setBillingDataInStorage = (tenantId?: string, formData?: any) => {
   }
 };
 
-/** True for Individual tenants and tenants still pending setup, both named after the user's email. */
-const isIndividualTenant = (
-  userSession: { tenantName?: string; email?: string } | null | undefined,
-) => userSession?.tenantName == userSession?.email;
+const isIndividualTenant = (userSession: { tenantType?: string } | null | undefined) =>
+  userSession?.tenantType === "Individual";
 
 export {
   getCreditsLabel,

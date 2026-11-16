@@ -24,7 +24,7 @@ export const TriggerRowActions = ({
   accessLevel,
   isTenantWideAccess,
 }: TriggerRowActionsProps) => {
-  const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
+  const { actions, resourceActions } = useConfigureResourceAccessActions(accessLevel);
 
   // Get the query key used to invalidate both merged lists after a mutation
   const { queryKey } = useTableTab();
@@ -45,7 +45,6 @@ export const TriggerRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Trigger}
           resourceName={name}
-          disabled={isProd}
         />
       )}
       {/* DropdownMenuSeparator component */}
@@ -54,7 +53,7 @@ export const TriggerRowActions = ({
       {resourceActions.delete && <TriggerRowDeleteAction rowId={rowId} />}{" "}
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </TableCNRowActionsMenu>
   );

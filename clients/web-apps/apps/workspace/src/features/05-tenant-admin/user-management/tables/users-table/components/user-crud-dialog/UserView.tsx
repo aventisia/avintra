@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
@@ -28,8 +29,6 @@ import {
   UserGearIcon,
   UserIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { useFetchUserRoles } from "../../hooks/useFetchUserRoles";
 import { useFetchUserSpaces } from "../../hooks/useFetchUserSpaces";

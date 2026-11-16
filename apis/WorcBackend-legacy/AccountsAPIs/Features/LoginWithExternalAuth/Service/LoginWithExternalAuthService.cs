@@ -734,7 +734,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
                         Name = newUser.Email,
                         ContainerName = TenantContainerUtil.GenerateName(newUser.Email),
                         Domain = string.Empty,
-                        Type = TenantTypesEnum.Unspecified,
+                        Type = TenantTypesEnum.Organization,
                         ResourceType = TenantResourceTypesEnum.Shared,
                         Currency = CurrencyTypesEnum.USD,
                         ExpiresOn = DateTimeOffset.MaxValue, // TODO: We need to remove or update it

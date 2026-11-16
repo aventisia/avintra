@@ -24,6 +24,8 @@
 
 defaults:
   autostart: true
+  # Each service also writes its output to local-logs/dekit/<service>.log (gitignored), so logs can be read or shared after they scroll away.
+  log: local-logs/dekit
 
 # IMPORTANT NOTE: dekit starts only .exe programs on Windows, not the npm/npx .cmd shims, so npm scripts run via `node --run`.
 tasks:
@@ -48,10 +50,10 @@ tasks:
     cwd: apis/WorcBackend-legacy/WorkspaceAPIs
     tags: [backend]
   llmpipeline_apis:
-    # IMPORTANT NOTE: dekit.yaml cannot branch per OS; both venv layouts go on PATH so `python` resolves on Linux/macOS and Windows.
-    cmd: python dev.py
+    # IMPORTANT NOTE: dekit resolves a relative program path inconsistently across OSes and finds programs without add_path,
+    # so the venv interpreter is addressed absolutely; a drive-letter root means a Windows venv (Scripts/python.exe).
+    cmd: !js '[std.path.join(ctx.dir, "apis/llmpipeline/venv", /^[A-Za-z]:/.test(ctx.dir) ? "Scripts/python.exe" : "bin/python"), "dev.py"]'
     cwd: apis/llmpipeline
-    add_path: [apis/llmpipeline/venv/bin, apis/llmpipeline/venv/Scripts]
     env: {ENV: local}
     tags: [backend]
   corsair:

@@ -14,10 +14,9 @@ import { useEnvironmentStore } from "@/stores/environment-store";
 import { workItemsOptimisticMutationFn } from "../apis/work-items-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
-import { WorkItemsTableRow } from "../utils/work-items-custom-columns.util";
 
 type WorkItemBulkActionsProps = {
-  table: Table<WorkItemsTableRow>;
+  table: Table<QueueWorkItemDto>;
 };
 
 export function WorkItemBulkActions({ table }: Readonly<WorkItemBulkActionsProps>) {

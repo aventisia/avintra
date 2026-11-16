@@ -68,7 +68,6 @@ export const KBRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.KnowledgeBase}
           resourceName={name}
-          disabled={isProd}
         />
       )}
       {/* DropdownMenuSeparator component */}
@@ -77,7 +76,7 @@ export const KBRowActions = ({
       {resourceActions.delete && <KBRowDeleteAction rowId={rowId} />}{" "}
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </TableCNRowActionsMenu>
   );

@@ -181,10 +181,10 @@ export const VaultCredentialTable = () => {
           )}
           <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
-          <VaultCredentialBulkActions table={table} />
-
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
           <ResourceFlowAccessDialog queryKey={queryKey} />
+
+          <VaultCredentialBulkActions table={table} />
         </div>
       ) : (
         <VaultCredentialTableSkeleton />

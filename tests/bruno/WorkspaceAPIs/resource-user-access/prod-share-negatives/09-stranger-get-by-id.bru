@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - stranger read one share
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_VIEWER_ACCESS_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_STRANGER_TOKEN}}
+}
+
+script:post-response {
+  test("another tenant cannot read a share row", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}
+
+docs {
+  > PT-02: absent row and denied row share the same 404.
+}

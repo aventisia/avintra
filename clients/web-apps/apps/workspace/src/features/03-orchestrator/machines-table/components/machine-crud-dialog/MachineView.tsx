@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
@@ -37,7 +38,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { AgentAvatar } from "@/components/AgentAvatar";
 import { AGENT_NAME_LINK_CLASS, AgentTypeAvatar, AgentVersion } from "@/components/AgentIdentity";
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMachine } from "../../apis/machines-table-apis";

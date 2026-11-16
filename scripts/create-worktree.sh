@@ -333,12 +333,32 @@ fi
 # ---------------------------------------------------------------------------
 # Step 6 — bootstrap dependencies inside the worktree
 # ---------------------------------------------------------------------------
+# IMPORTANT NOTE: the committed web-apps lockfile is generated on Windows/Linux, and npm's
+# optional-dependency bug (https://github.com/npm/cli/issues/4828) then omits the macOS native
+# builds. Install them with --no-save, matching each installed parent's version, so package.json
+# and package-lock.json stay unchanged. One command keeps --no-save installs from removing each other.
+install_macos_native_builds() {
+  local dir="$1" arch entry parent version specs=()
+  [ "$(uname -s)" = "Darwin" ] || return 0
+  command -v node >/dev/null 2>&1 || return 0
+  arch="$(node -p process.arch)"
+  for entry in "@swc/core:@swc/core-darwin-$arch" "rollup:@rollup/rollup-darwin-$arch" "@napi-rs/canvas:@napi-rs/canvas-darwin-$arch"; do
+    parent="${entry%%:*}"
+    [ -f "$dir/node_modules/$parent/package.json" ] || continue
+    version="$(cd "$dir" && node -p "require('./node_modules/$parent/package.json').version")"
+    specs+=("${entry#*:}@$version")
+  done
+  [ "${#specs[@]}" -gt 0 ] || return 0
+  run_task "web apps macOS native builds (npm install --no-save)" "$dir" npm install --no-save --force "${specs[@]}"
+}
+
 step "Installing dependencies"
 if [ "$SKIP_INSTALL" -eq 1 ]; then
   detail "skipped (--skip-install)"
 else
   if [ -f "$WT_PATH/clients/web-apps/package.json" ]; then
     run_task "web apps (npm install)" "$WT_PATH/clients/web-apps" npm install --force
+    [ "$RUN_OK" -eq 1 ] && install_macos_native_builds "$WT_PATH/clients/web-apps"
   else
     omitmark "web apps (npm install)" "clients/web-apps not found"
   fi

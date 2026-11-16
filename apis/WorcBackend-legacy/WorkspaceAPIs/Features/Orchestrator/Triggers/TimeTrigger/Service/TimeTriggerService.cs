@@ -368,22 +368,7 @@ public class TimeTriggerService(
             var model = (TimeTriggerModel)timeTriggerDto;
 
             model.LastTriggeredTime = DateTimeOffset.UtcNow;
-            model.CronExpression = CronScheduleUtil.BuildCronExpression(
-                model.Frequency,
-                model.Interval,
-                model.AtTime,
-                model.Weekdays,
-                model.MonthDays,
-                false
-            );
-            model.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
-                model.CronExpression,
-                model.EffectiveDate,
-                model.ExceptionHours,
-                model.ExceptionWeekdays,
-                model.ExceptionDates,
-                newTimeTrigger.Timezone
-            );
+            TimeTriggerMetadataHelpers.RebuildSchedule(model, newTimeTrigger.Timezone);
 
             newTimeTrigger.Metadata = JsonDocument.Parse(System.Text.Json.JsonSerializer.Serialize(model, TimeTriggerMetadataHelpers.JsonOptions));
 
@@ -568,105 +553,31 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
-            // Determines if scheduling-related changes require the cron expression to be rebuilt.
-            bool shouldRebuildCronExpression = false;
+            var endDateChanged = model.EndDate != timeTriggerDto.EndDate;
+            var storedNextTriggerTime = model.NextTriggerTime;
 
-            // Update Timezone if it has changed
-            if (timeTrigger.Timezone != timeTriggerDto.Timezone)
-            {
-                timeTrigger.Timezone = timeTriggerDto.Timezone;
-                shouldRebuildCronExpression = true;
-            }
+            timeTrigger.Timezone = timeTriggerDto.Timezone;
+            model.Frequency = timeTriggerDto.Frequency;
+            model.Interval = timeTriggerDto.Interval;
+            model.AtTime = timeTriggerDto.AtTime;
+            model.EndDate = timeTriggerDto.EndDate;
+            model.Weekdays = timeTriggerDto.Weekdays;
+            model.MonthDays = timeTriggerDto.MonthDays;
+            model.ExceptionHours = timeTriggerDto.ExceptionHours;
+            model.ExceptionWeekdays = timeTriggerDto.ExceptionWeekdays;
+            model.ExceptionDates = timeTriggerDto.ExceptionDates;
+            model.EffectiveDate = timeTriggerDto.EffectiveDate;
 
-            // Update Frequency if scheduling type has changed (e.g., Daily → Weekly)
-            if (model.Frequency != timeTriggerDto.Frequency)
-            {
-                model.Frequency = timeTriggerDto.Frequency;
-                shouldRebuildCronExpression = true;
-            }
+            // IMPORTANT NOTE: rebuilds on every update so a row stored before the trigger timezone was honoured is repaired by a re-save.
+            TimeTriggerMetadataHelpers.RebuildSchedule(model, timeTrigger.Timezone);
 
-            // Update Interval if execution frequency spacing has changed
-            if (model.Interval != timeTriggerDto.Interval)
-            {
-                model.Interval = timeTriggerDto.Interval;
-                shouldRebuildCronExpression = true;
-            }
+            // IMPORTANT NOTE: keeps a run that fell due within the last minute so a re-save landing before the scheduler tick does not skip it.
+            var now = DateTimeOffset.UtcNow;
+            if (storedNextTriggerTime <= now && storedNextTriggerTime > now.AddMinutes(-1))
+                model.NextTriggerTime = storedNextTriggerTime;
 
-            // Update AtTime if scheduled execution time of day has changed
-            if (model.AtTime != timeTriggerDto.AtTime)
-            {
-                model.AtTime = timeTriggerDto.AtTime;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update EndDate if scheduled execution time of day has changed
-            if (model.EndDate != timeTriggerDto.EndDate)
-                model.EndDate = timeTriggerDto.EndDate;
-
-            // Update Weekdays if the selected execution days of week have changed
-            if (!Enumerable.SequenceEqual(model.Weekdays ?? new(), timeTriggerDto.Weekdays ?? new()))
-            {
-                model.Weekdays = timeTriggerDto.Weekdays;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update MonthDays if specific calendar days for execution have changed
-            if (!Enumerable.SequenceEqual(model.MonthDays ?? new(), timeTriggerDto.MonthDays ?? new()))
-            {
-                model.MonthDays = timeTriggerDto.MonthDays;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update ExceptionHours if restricted execution hours have changed
-            if (!Enumerable.SequenceEqual(model.ExceptionHours ?? new(), timeTriggerDto.ExceptionHours ?? new()))
-            {
-                model.ExceptionHours = timeTriggerDto.ExceptionHours;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update ExceptionWeekdays if excluded weekdays have changed
-            if (!Enumerable.SequenceEqual(model.ExceptionWeekdays ?? new(), timeTriggerDto.ExceptionWeekdays ?? new()))
-            {
-                model.ExceptionWeekdays = timeTriggerDto.ExceptionWeekdays;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update ExceptionDates if specific excluded calendar dates have changed
-            if (!Enumerable.SequenceEqual(model.ExceptionDates ?? new(), timeTriggerDto.ExceptionDates ?? new()))
-            {
-                model.ExceptionDates = timeTriggerDto.ExceptionDates;
-                shouldRebuildCronExpression = true;
-            }
-
-            // Update EffectiveDate if trigger activation start time has changed
-            if (model.EffectiveDate != timeTriggerDto.EffectiveDate)
-            {
-                model.EffectiveDate = timeTriggerDto.EffectiveDate;
-                shouldRebuildCronExpression = true;
-            }
-
-            if (shouldRebuildCronExpression)
-            {
-                // Rebuild cron expression because scheduling parameters have changed (frequency, interval, timezone, time-of-day, weekdays, or month days).
-                model.CronExpression = CronScheduleUtil.BuildCronExpression(
-                    model.Frequency,
-                    model.Interval,
-                    model.AtTime,
-                    model.Weekdays,
-                    model.MonthDays
-                );
-
-                // Recalculate the next execution time based on the updated cron expression and current scheduling constraints (effective date + exceptions).
-                model.NextTriggerTime = CronScheduleUtil.ComputeNextTriggerUtc(
-                    model.CronExpression,
-                    model.EffectiveDate,
-                    model.ExceptionHours,
-                    model.ExceptionWeekdays,
-                    model.ExceptionDates,
-                    timeTriggerDto.Timezone
-                );
-            }
-            if (timeTriggerDto.EndDate.HasValue && timeTriggerDto.EndDate.Value < model.NextTriggerTime)
+            var isUnchangedExpiredEndDate = !endDateChanged && timeTriggerDto.EndDate < now;
+            if (timeTriggerDto.EndDate.HasValue && !isUnchangedExpiredEndDate && timeTriggerDto.EndDate.Value < model.NextTriggerTime)
             {
                 _logger.LogWarning(
                     "Invalid trigger date range. EndDate {EndDate} is earlier than the next trigger time {NextTriggerTime}.",

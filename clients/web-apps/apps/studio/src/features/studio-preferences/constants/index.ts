@@ -1,7 +1,6 @@
-/**
- * The heading for the studio preferences popover. "Preferences"
- */
-export const POPOVER_HEADING = "Preferences";
+export const PANEL_ID = "studio-preferences";
+
+export const PANEL_TITLE = "Preferences";
 
 export const INITIAL_PREFERENCES = {
   layoutDirection: "LR",

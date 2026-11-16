@@ -1,0 +1,44 @@
+meta {
+  name: PROD share
+  seq: 20
+}
+
+docs {
+  > PROD sharing paths for Configure resources (issue #578).
+  >
+  > Sharing a persisted PROD resource is allowed for users the permission table
+  > allows to share (Owner/Personal, see `resource-access-actions.ts`); create,
+  > non-OM edit and delete stay blocked (`prod-env-guard` covers those).
+  >
+  > Order matters in a folder run: `00-`/`01-` seed the Prod clones and their
+  > shares, `02-`/`03-` read them back, and `10-`…`18-` walk all seven share
+  > mutations against the Prod credential clone.
+  >
+  > Prerequisites (Environment or Global Environment):
+  > - `PROD_SHARE_OWNER_TOKEN` — the publisher's token (Owner of the Prod clone).
+  > - `PROD_SHARE_MEMBER_TOKEN` — a shared tenant user's token (self-leave case).
+  > - `PROD_SYNC_FLOW_ID`, `PROD_SYNC_FLOW_VERSION_ID`, `PROD_SYNC_FLOW_NAME` — a
+  >   draft Agent version the publisher may save and publish.
+  > - `PROD_SYNC_CREDENTIAL_NAME`, `PROD_SYNC_QUEUE_NAME`, `PROD_SYNC_TOOL_NAME`,
+  >   `PROD_SYNC_KB_NAME`, `PROD_SYNC_SKILL_NAME` — Dev resource names owned by a
+  >   non-publisher user and shared with `PROD_SHARE_USER_ID`.
+  > - `PROD_SYNC_STORE_NAME` — Dev key store name (identifier form, e.g.
+  >   `BRUNO578_STORE`).
+  > - `PROD_SYNC_STORE_PLACEHOLDER` — the same name wrapped as `{{__config__NAME}}`,
+  >   inserted literally into the saved graph.
+  > - `PROD_SHARE_CREDENTIAL_ID` — the Dev credential id (read back in `02-`).
+  > - `PROD_SHARE_PUBLISHER_ID`, `PROD_SHARE_DEV_OWNER_ID`, `PROD_SHARE_USER_ID` —
+  >   user ids expected on each Prod clone (publisher Owner, Dev Owner FullAccess,
+  >   shared user at the Dev level).
+  > - `PROD_SHARE_MEMBER_ID`, `PROD_SHARE_MEMBER_TWO_ID`, `PROD_SHARE_MEMBER_THREE_ID`
+  >   — recipients for the insert/update/bulk/delete cases.
+  > - `PROD_SHARE_TARGET_ID` — the Prod resource id for `03-` (one run per type).
+  >
+  > Share-row ids (`PROD_SHARE_ACCESS_ID`, `PROD_SHARE_ACCESS_TWO_ID`,
+  > `PROD_SHARE_ACCESS_THREE_ID`) need no environment value: `10-` and `15-`
+  > capture them as runtime variables. Run the folder, not a single file, so the
+  > capture requests execute first.
+  >
+  > The run leaves Prod clones and their share rows in the database; Prod clones
+  > are not deletable by design.
+}

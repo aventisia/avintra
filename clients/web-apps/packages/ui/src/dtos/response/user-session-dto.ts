@@ -26,8 +26,11 @@ interface UserSessionDto {
 
   country: string;
 
-  /** Tenant type: "Unspecified" until organization setup, or "NA" without a tenant */
+  /** Tenant type, or "NA" without a tenant */
   tenantType: string;
+
+  /** Whether the tenant still has to save the organization profile that sign-up deferred */
+  isTenantSetupPending: boolean;
 
   platformVersion: string;
 

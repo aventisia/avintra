@@ -39,8 +39,8 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { setCollaborationBroadcasters, useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 
+import { useCanvasShortcuts } from "../hooks/useCanvasShortcuts.hook";
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
-import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
 import { useDefaultActions } from "../hooks/useDefaultActions";
 import { useFetchConfigKeys } from "../hooks/useFetchConfigKeys";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
@@ -136,7 +136,7 @@ export const ReactFlowExt = () => {
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
 
-  useCopyPasteShortcuts();
+  useCanvasShortcuts();
 
   useHistoryTracker(); // Initialize background  tracking
   useUndoRedoShortcuts(); // Initialize keyboard shortcuts

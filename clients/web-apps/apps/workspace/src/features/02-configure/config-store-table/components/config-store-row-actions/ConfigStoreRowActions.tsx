@@ -59,7 +59,6 @@ export const ConfigStoreRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.ConfigStore}
           resourceName={name}
-          disabled={isProd}
         />
       )}
 
@@ -71,7 +70,7 @@ export const ConfigStoreRowActions = ({
 
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </TableCNRowActionsMenu>
   );

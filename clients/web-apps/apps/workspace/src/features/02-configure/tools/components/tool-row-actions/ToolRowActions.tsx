@@ -65,7 +65,6 @@ export const ToolRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Tool}
           resourceName={name}
-          disabled={isProd}
         />
       )}
 
@@ -74,7 +73,7 @@ export const ToolRowActions = ({
       {!isPlatformTool && resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
 
       {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </TableCNRowActionsMenu>
   );

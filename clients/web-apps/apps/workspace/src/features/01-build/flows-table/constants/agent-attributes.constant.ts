@@ -1,5 +1,11 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { ChatsIcon, CloudIcon, FlowArrowIcon, MicrophoneIcon, MonitorIcon } from "@phosphor-icons/react";
+import {
+  ChatsIcon,
+  CloudIcon,
+  FlowArrowIcon,
+  MicrophoneIcon,
+  MonitorIcon,
+} from "@phosphor-icons/react";
 
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 

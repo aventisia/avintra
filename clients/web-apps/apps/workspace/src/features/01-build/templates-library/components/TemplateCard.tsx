@@ -1,9 +1,8 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { MetaLine } from "@avplatform/ui/meta-line";
 import { CopyIcon } from "@phosphor-icons/react";
 import { Link, type To } from "react-router-dom";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { ProjectTemplateTypesEnum } from "../constants/template-types-enum";
 import { AvPlatformTemplatesDto } from "../dtos/avplatform-templates-dtos";

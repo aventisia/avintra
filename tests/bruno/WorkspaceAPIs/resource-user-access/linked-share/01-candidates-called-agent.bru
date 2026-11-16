@@ -1,0 +1,37 @@
+meta {
+  name: Linked share candidates include a called agent's items
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_CALLING_FLOW_ID}}/linked-share-candidates?userIds={{LINK_RECIPIENT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const toolName = bru.getEnvVar("LINK_CALLED_TOOL_NAME");
+  const tool = data.find((candidate) => candidate.name === toolName);
+
+  test("the calling agent's candidates are readable", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("an item used only by the called agent is listed", function() {
+    expect(tool, "tool " + toolName + " is missing from the candidates").to.be.an("object");
+    expect(tool.resourceType).to.equal("Tool");
+  });
+}
+
+docs {
+  > AC2: discovery walks called agents recursively, so an item the root graph
+  > never touches but a called agent uses is shared too. The called agent itself
+  > stays out of the list.
+}

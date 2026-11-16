@@ -40,30 +40,10 @@ export const StudioPreferencesForm = () => {
 
   // Return the form
   return (
-    // <Form
-    //   methods={form}
-    //   onSubmit={form.handleSubmit(onSubmit)}
-    //   className="space-y-[1rem] px-2.5"
-    //   checkDirtyForm={false}
-    // >
-    //   <RadioGroupField {...layoutDirectionProps} />
-    //   <div className="space-y-1">
-    //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...miniMapProps} />
-    //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...undoRedoProps} />
-    //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...cursorToggleProps} />
-    //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...zoomControlsProps} />
-    //     <Separator className="h-[0.5px]" />
-    //     <SwitchField {...deleteAlertProps} />
-    //   </div>
-    // </Form>
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-[0rem] px-2.5"
+      className="space-y-0"
       checkDirtyForm={false}
     >
       <div className="hidden">

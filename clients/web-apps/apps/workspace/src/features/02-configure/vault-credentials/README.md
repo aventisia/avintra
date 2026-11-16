@@ -23,20 +23,21 @@ queries have finished, so a partially loaded list never shows as empty.
 The page operates on the current space and environment selected in the workspace shell.
 Requests send the space headers (`getSpaceHeaders`); the backend resolves Central
 (`SpaceId == null`) versus a specific space and the persisted `EnvType`. PROD
-credentials are created/edited/deleted under backend guardrails, and sharing is disabled
-for PROD resources.
+credentials are created/edited/deleted under backend guardrails; sharing them works in
+PROD, so owners can add people, change or remove access, toggle tenant-wide access, and a
+shared user can leave.
 
 ## Access and sharing
 
 Each row shows its `accessLevel` (`Owner`, `FullAccess`, `View`, `Edit`, `Delete`).
 Owned rows expose the full row actions menu, including `ResourceUserAccessDialog` to grant or
-revoke access and toggle tenant-wide access. Rows that are shared with the user expose
-remove-from-shared-list and reconnect actions. Actions post
+revoke access and toggle tenant-wide access, in Dev and PROD alike. Rows that are shared with
+the user expose remove-from-shared-list and reconnect actions. Actions post
 `ResourceTypeEnum.VaultCredential` to the resource-user-access flow.
 
 Rows also expose `Assign Agents`, which opens the shared flow-assignment dialog. A non-empty
-list restricts the credential to those agents and an empty list opens it again; the action is
-disabled on PROD rows, like Share.
+list restricts the credential to those agents and an empty list opens it again; the action
+stays disabled on PROD rows.
 
 ## Corsair OAuth connect flow
 

@@ -59,7 +59,6 @@ export const QueueRowActions = ({
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.Queue}
           resourceName={queueName}
-          disabled={isProd}
         />
       )}
       {/* DropdownMenuSeparator component */}
@@ -70,7 +69,7 @@ export const QueueRowActions = ({
 
       {/* Remove the resource from the user's shared list (shown for rows not owned by the user) */}
       {accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} disabled={isProd} />
+        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
       )}
     </TableCNRowActionsMenu>
   );

@@ -1,69 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@avplatform/ui/buttons";
-import { InputField } from "@avplatform/ui/form";
-import { TrashIcon } from "@phosphor-icons/react";
-import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
+import { cn } from "@avplatform/ui/lib";
+import { useId } from "react";
+import { type UseFormReturn, useWatch } from "react-hook-form";
 
-import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
+import { FormField } from "@/components/card-dialog/FormField";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
-interface OutputFieldsProps extends OutputFieldFormValues {
-  id: string;
-}
-const OutputFields = ({
-  field,
-  control,
-  index,
-  remove,
-}: {
-  field: OutputFieldsProps;
-  control: Control<any>;
+import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
+import { FieldCard } from "./FieldCard";
+
+type OutputFieldsProps = {
+  form: UseFormReturn<InputsOutputsFieldsFormType>;
   index: number;
-  remove: UseFieldArrayRemove;
-}) => {
-  return (
-    <div
-      key={field.id}
-      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-sunken p-4"
-    >
-      <div className="col-span-2 flex justify-between">
-        <span className="text-sm">Output {index + 1}</span>
-        <Button
-          variant="ghost"
-          type="button"
-          size="xs"
-          onClick={() => remove(index)}
-          className="text-bad hover:bg-bad/10 hover:text-bad"
-        >
-          <TrashIcon className="h-4 w-4" />
-        </Button>
-      </div>
+  onRemove: () => void;
+};
 
-      {/* Name Field */}
-      <Controller
-        name={`outputs.${index}.name`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="Unique identifier for the field "
-            label="Output variable"
-          />
-        )}
-      />
-      <Controller
-        name={`outputs.${index}.description`}
-        control={control}
-        render={({ field }) => (
-          <InputField
-            {...field}
-            fieldSize="xs"
-            description="Optional helper text"
-            label="Description"
-          />
-        )}
-      />
-    </div>
+const OutputFields = ({ form, index, onRemove }: OutputFieldsProps) => {
+  const fieldId = useId();
+  const nameId = `${fieldId}-name`;
+  const descriptionId = `${fieldId}-description`;
+  const name = useWatch({ control: form.control, name: `outputs.${index}.name` });
+  const errors = form.formState.errors.outputs?.[index];
+
+  return (
+    <FieldCard heading={`Output ${index + 1}`} name={name} onRemove={onRemove}>
+      <FormField htmlFor={nameId} label="Output variable" error={errors?.name?.message}>
+        <input
+          id={nameId}
+          autoComplete="off"
+          spellCheck={false}
+          placeholder="summary"
+          aria-invalid={Boolean(errors?.name)}
+          aria-describedby={errors?.name ? `${nameId}-error` : undefined}
+          {...form.register(`outputs.${index}.name`)}
+          className={cn(getFieldInputClassName(Boolean(errors?.name)), "h-9 font-mono")}
+        />
+      </FormField>
+
+      <FormField htmlFor={descriptionId} label="Description" isOptional>
+        <input
+          id={descriptionId}
+          autoComplete="off"
+          placeholder="What this output holds"
+          {...form.register(`outputs.${index}.description`)}
+          className={cn(getFieldInputClassName(false), "h-9")}
+        />
+      </FormField>
+    </FieldCard>
   );
 };
 

@@ -46,9 +46,14 @@ public class UserSessionDto
     public required string Country { get; set; }
 
     /// <summary>
-    /// Gets or sets the tenant type (Unspecified until organization setup), or "NA" without a tenant.
+    /// Gets or sets the tenant type, or "NA" without a tenant.
     /// </summary>
     public required string TenantType { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the tenant still has to save the organization profile that sign-up deferred.
+    /// </summary>
+    public bool IsTenantSetupPending { get; set; }
 
     public required string PlatformVersion { get; set; }
 

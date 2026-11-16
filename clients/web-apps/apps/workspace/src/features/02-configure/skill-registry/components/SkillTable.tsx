@@ -133,7 +133,7 @@ export const SkillTable = () => {
           <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
           {/* Resource Share Dialog component */}
-          <ResourceUserAccessDialog queryKey={queryKey} />
+          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
 
           <ResourceFlowAccessDialog queryKey={queryKey} />
         </div>

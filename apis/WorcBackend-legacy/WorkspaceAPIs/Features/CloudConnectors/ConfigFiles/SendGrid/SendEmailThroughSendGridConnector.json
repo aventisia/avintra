@@ -57,31 +57,11 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "rich-text",
       "name": "Body",
       "label": "Body",
       "description": "The body of the email.",
       "defaultValue": ""
-    },
-    {
-      "direction": "Input",
-      "type": "select",
-      "name": "BodyFormat",
-      "label": "Body Format",
-      "description": "The format of the email body (Text or Html).",
-      "defaultValue": "Text",
-      "selectOptions": [
-        {
-          "label": "Plain",
-          "value": "Text",
-          "description": "Plain text format"
-        },
-        {
-          "label": "Html",
-          "value": "Html",
-          "description": "HTML format"
-        }
-      ]
     },
     {
       "direction": "Input",

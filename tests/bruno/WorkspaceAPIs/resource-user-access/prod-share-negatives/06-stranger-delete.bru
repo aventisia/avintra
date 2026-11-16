@@ -1,0 +1,21 @@
+meta {
+  name: PROD share negatives - stranger delete
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{NEG_VIEWER_ACCESS_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_STRANGER_TOKEN}}
+}
+
+script:post-response {
+  test("another tenant cannot delete a share row", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

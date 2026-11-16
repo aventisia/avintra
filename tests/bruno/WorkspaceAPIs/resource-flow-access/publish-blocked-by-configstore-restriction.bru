@@ -33,7 +33,7 @@ script:post-response {
   });
 
   test("publish block message names the restricted config store", function() {
-    expect(text).to.contain("Cannot publish: flow ");
+    expect(text).to.contain("is not allowed to use the");
     expect(text).to.contain(configStoreName);
   });
 }
@@ -44,7 +44,7 @@ docs {
   > placeholder, and RESTRICTED_CONFIGSTORE_NAME to name a Dev config store whose flow
   > assignment is non-empty and does NOT include that flow. Publish then blocks with
   > HTTP 403 and the message
-  > "Cannot publish: flow '<flow>' is not assigned to restricted config store '<config store>'".
+  > "Cannot publish: '<flow>' is not allowed to use the key store '<key store>'".
   > Run this before the unassign request while the restriction is still present.
   > Clearing the config store restriction (POST resource-flows/assign with resourceType,
   > resourceId and flowIds []) and re-running publish returns 200.

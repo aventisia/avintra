@@ -48,6 +48,7 @@ export type DCPFieldSchemaType = {
   specialty?: "stt" | "tts"; // Not a html attribute (forces the model list to a speech specialty)
   hideByok?: boolean; // Not a html attribute (hides the BYOK switch on the model config field)
   renderIf?: RenderIfType; // Not a html attribute
+  richTextIf?: RenderIfType; // Not a html attribute (rich-text field falls back to a plain textarea when unmet)
   serviceType?: string;
   category?: string; // By default category's value is 'Inputs' else whatever is set
   errorHandling?: "standard" | "none";

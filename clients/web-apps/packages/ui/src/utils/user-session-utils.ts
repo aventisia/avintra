@@ -30,6 +30,7 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
     planType: decodedJwt?.plan,
     hasPaidPlan: userSession.hasPaidPlan,
     tenantType: userSession.tenantType,
+    isTenantSetupPending: userSession.isTenantSetupPending,
     deploymentType: decodedJwt.type,
 
     // Access mode used for Super Admin tenant viewing ("read_only" / "read_write").
@@ -37,9 +38,9 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
   };
 };
 
-/** True while a free sign-up has not chosen its account type yet (organization setup is deferred to checkout). */
+/** True while a free sign-up has not saved its organization profile yet (organization setup is deferred to checkout). */
 const isTenantSetupPending = (userSession: IUserSessionStore | null | undefined) =>
-  userSession?.tenantType === "Unspecified";
+  userSession?.isTenantSetupPending === true;
 
 /** True when checkout must still collect the name or account type that free sign-up skipped. */
 const needsDeferredProfile = (userSession: IUserSessionStore | null | undefined) =>

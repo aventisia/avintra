@@ -17,12 +17,7 @@ export const DCPTabsWrapper = ({
   return (
     <Tabs
       onValueChange={setTabValue}
-      className={cn(
-        // Fits the fixed Panel body: panel height minus the 4rem DCP header.
-        // (Panel root is h-[calc(100vh-var(--header-height)-var(--header-padding)-1rem)].)
-        "h-[calc(100vh-4rem-var(--header-height)-var(--header-padding)-1rem)] w-full",
-        className,
-      )}
+      className={cn("flex min-h-0 w-full flex-1 flex-col", className)}
       defaultValue={defaultValue}
       value={tabValue}
     >

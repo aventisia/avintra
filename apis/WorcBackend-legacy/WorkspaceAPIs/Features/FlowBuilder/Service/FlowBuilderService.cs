@@ -796,7 +796,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devTool.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted tool '{name}'. Ask the tool owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "tool", name, "Tools"));
             }
         }
     }
@@ -851,7 +851,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devQueue.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted queue '{name}'. Ask the queue owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "queue", name, "Queues"));
             }
         }
     }
@@ -902,7 +902,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devSkill.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted skill '{name}'. Ask the skill owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "skill", name, "Skills"));
             }
         }
     }
@@ -953,7 +953,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devKnowledgeBase.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted knowledge base '{name}'. Ask the knowledge base owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "knowledge base", name, "Knowledge Bases"));
             }
         }
     }
@@ -984,6 +984,11 @@ public class FlowBuilderService : IFlowBuilderService
             .ToDictionary(g => g.Key, g => ResourceFlowAccessHelpers.PickResolvedCredential(g, targetSpaceId)!, StringComparer.OrdinalIgnoreCase);
     }
 
+    private static string FlowNotAssignedMessage(string flowName, string resourceLabel, string resourceName, string configurePage)
+        => $"Cannot publish: '{flowName}' is not allowed to use the {resourceLabel} '{resourceName}'. " +
+           $"Go to Configure > {configurePage}, open the menu on '{resourceName}', choose Assign Agents and add '{flowName}'. " +
+           $"If you cannot, ask the {resourceLabel}'s owner to do it.";
+
     private async Task ValidateFlowVaultCredentialAccessAsync(Guid publishingFlowId, List<string> credentialNames, string flowName)
     {
         if (credentialNames.Count == 0)
@@ -1007,7 +1012,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devVaultCredential.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted credential '{name}'. Ask the credential owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "credential", name, "Vault"));
             }
         }
     }
@@ -1057,7 +1062,7 @@ public class FlowBuilderService : IFlowBuilderService
             if (!assignedFlowIds.TryGetValue(devConfigStore.Id, out var flowIds) || !flowIds.Contains(publishingFlowId))
             {
                 throw new ResourceFlowAccessDeniedException(
-                    $"Cannot publish: flow '{flowName}' is not assigned to restricted key store '{name}'. Ask the key store owner to assign this flow first.");
+                    FlowNotAssignedMessage(flowName, "key store", name, "Key Store"));
             }
         }
     }
@@ -2111,7 +2116,10 @@ public class FlowBuilderService : IFlowBuilderService
                 ResourceType = resourceType,
                 ResourceId = prodResourceId,
                 UserId = w.UserId,
-                AccessLevel = w.AccessLevel
+                // IMPORTANT NOTE: the publisher already owns the clone, so a copied Dev Owner cannot stay an Owner.
+                AccessLevel = w.AccessLevel == ResourceAccessTypeEnum.Owner
+                    ? ResourceAccessTypeEnum.FullAccess
+                    : w.AccessLevel
             }));
     }
 

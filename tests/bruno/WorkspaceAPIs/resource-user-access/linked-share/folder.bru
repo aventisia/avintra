@@ -1,0 +1,40 @@
+meta {
+  name: Linked share
+  seq: 30
+}
+
+docs {
+  > Linked-item discovery and sharing for an agent (issue #481).
+  >
+  > `GET resource-flows/{resourceType}/{resourceId}/linked-share-candidates?userIds=a,b`
+  > lists what the agent uses, per recipient, so the share dialog can offer
+  > "Also share these items". `00-`…`07-` cover discovery (Dev items, items used
+  > only by a called agent, Production copies of a published version, a sharer
+  > who does not own an item, a stranger, a bad resource type, an unknown agent,
+  > and Everyone-flagged items). `10-`…`21-` mirror what the dialog sends on
+  > Save changes and read the result back (AC1–AC7).
+  >
+  > Prerequisites (Environment or Global Environment):
+  > - `LINK_OWNER_TOKEN` — the agent owner's token.
+  > - `LINK_SHARER_TOKEN` — an agent owner who does not own one linked item (AC5).
+  > - `LINK_RECIPIENT_TOKEN`, `LINK_RECIPIENT_ID` — the person the agent is shared with.
+  > - `LINK_SECOND_RECIPIENT_TOKEN`, `LINK_SECOND_RECIPIENT_ID` — the person used only
+  >   for the toggle-off case (AC4).
+  > - `LINK_STRANGER_TOKEN` — a tenant user with no access to the agent.
+  > - `LINK_FLOW_ID` — an unpublished agent (Flow) referencing `LINK_DEV_CREDENTIAL_NAME`
+  >   and a queue named `LINK_QUEUE_NAME`.
+  > - `LINK_CALLING_FLOW_ID`, `LINK_CALLED_TOOL_NAME` — an agent calling another agent
+  >   that uses that tool and nothing else does.
+  > - `LINK_PUBLISHED_VERSION_ID`, `LINK_DEV_CREDENTIAL_ID`, `LINK_PROD_CREDENTIAL_ID`
+  >   — a published chat agent version plus the Dev and Production ids of one credential
+  >   it references (AC3).
+  > - `LINK_QUEUE_ID` — the queue `LINK_FLOW_ID` references (AC2/AC7).
+  > - `LINK_UNSHARED_QUEUE_ID` — another queue `LINK_FLOW_ID` uses that nothing here shares (AC4).
+  > - `LINK_HIGHER_LEVEL_QUEUE_ID` — a queue `LINK_FLOW_ID` uses, seeded at Can edit (AC6).
+  > - `LINK_NON_OWNED_CREDENTIAL_ID` — a credential the agent references that
+  >   `LINK_SHARER_TOKEN`'s user does not own and holds no Owner row on (AC5).
+  > - `LINK_EVERYONE_CREDENTIAL_ID` — a linked credential with Everyone on (AC7).
+  >
+  > Run the folder, not a single file: `10-`…`13-` seed the rows `11-`/`13-` read
+  > back, `17-` seeds the Can edit row, and `21-` depends on `20-`.
+}

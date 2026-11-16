@@ -112,6 +112,7 @@ public class MyAccountService : IMyAccountService
                 RTExpiresOn = session.SessionExpiresOn,
                 Country = tenant != null ? tenant.Country.ToString() : "NA",
                 TenantType = tenant != null ? tenant.Type.ToString() : "NA",
+                IsTenantSetupPending = await TenantSetupHelpers.IsSetupPendingAsync(_unitOfWork, tenant),
                 PlatformVersion = _appDefaultConfig.PlatformVersion
             };
 
@@ -399,13 +400,13 @@ public class MyAccountService : IMyAccountService
                 RTExpiresOn = refreshTokenExpiresOn,
                 Country = tenant != null ? tenant.Country.ToString() : "NA",
                 TenantType = tenant != null ? tenant.Type.ToString() : "NA",
+                IsTenantSetupPending = await TenantSetupHelpers.IsSetupPendingAsync(_unitOfWork, tenant),
                 PlatformVersion = _appDefaultConfig.PlatformVersion,
                 HasPaidPlan = tenantSubscription?.Plan is { Price: > 0 }
             };
 
-            // IMPORTANT NOTE: A verified free account keeps its tenant Unspecified and relies on the active
-            // signup-plan subscription (Starter on Commercial), so the organization-setup gate must not fire while that
-            // subscription is usable. Genuinely incomplete tenants (no usable subscription) still require setup.
+            // IMPORTANT NOTE: Only legacy tenants are still Unspecified; new sign-ups start as Organization. The
+            // organization-setup gate must not fire while the signup-plan subscription is usable.
             var hasUsableActiveSubscription = tenantSubscription != null && tenantSubscription.Status != SubscriptionStatusTypesEnum.Initiated;
 
             // Check if user is associated with an organization (tenant)

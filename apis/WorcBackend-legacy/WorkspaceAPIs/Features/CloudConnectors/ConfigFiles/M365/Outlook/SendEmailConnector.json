@@ -77,10 +77,11 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "rich-text",
       "name": "Content",
       "label": "Body",
       "description": "The main content of the email message. The format of the content should match the selected Content Type (e.g., plain text or HTML).",
+      "richTextIf": { "conditions": [{ "field": "ContentType", "equals": "HTML" }] },
       "defaultValue": ""
     },
     {

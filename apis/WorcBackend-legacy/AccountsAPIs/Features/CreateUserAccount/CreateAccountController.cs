@@ -34,6 +34,7 @@ public class UserRegistrationController : BaseApiController
     }
 
     // Sets or updates the user's tenant organization.
+    [Authorize(Roles = "TA")]
     [HttpPut("tenant-info")]
     public async Task<ActionResult<ServiceResponse<UserSessionDto>>> UpdateTenantOrganization([FromBody] TenantOrganizationDto tenantOrganizationDto)
     {

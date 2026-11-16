@@ -1,0 +1,25 @@
+meta {
+  name: PROD share negatives - owner delete multiple
+  type: http
+  seq: 26
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/delete-multiple
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_OWNER_TOKEN}}
+}
+
+body:json {
+  ["{{NEG_MEMBER_ACCESS_ID}}"]
+}
+
+script:post-response {
+  test("owner can batch-delete share rows", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

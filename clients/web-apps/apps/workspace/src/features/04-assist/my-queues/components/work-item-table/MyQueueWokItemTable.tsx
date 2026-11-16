@@ -9,15 +9,17 @@ import {
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { TableCN, TableCNHeading, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
-import {
-  SEGMENTED_TABS_LIST_CLASS,
-  SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
 
 import {
   MY_QUEUES_INITIAL_STATE,

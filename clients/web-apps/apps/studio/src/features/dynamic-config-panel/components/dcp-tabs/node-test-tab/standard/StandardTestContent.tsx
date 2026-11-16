@@ -22,13 +22,11 @@ const StandardTestContent = ({
     return <RetrieveDocumentsTest formData={formData} />;
 
   return (
-    <DCPTabsContent tabValue="Test" hasFooter={false}>
-      <STJsonViewer
-        jsonData={JSON.stringify(nodeData?.inputs)}
-        label="Inputs"
-        className="mb-5 mt-1.5"
-      />
-      <STJsonViewer jsonData={JSON.stringify(nodeData?.outputs)} label="Outputs" />
+    <DCPTabsContent tabValue="Test">
+      <div className="space-y-3 pb-2">
+        <STJsonViewer jsonData={JSON.stringify(nodeData?.inputs)} label="Inputs" />
+        <STJsonViewer jsonData={JSON.stringify(nodeData?.outputs)} label="Outputs" />
+      </div>
     </DCPTabsContent>
   );
 };

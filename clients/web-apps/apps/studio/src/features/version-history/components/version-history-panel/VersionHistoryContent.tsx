@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from "react";
 
+import { DayTimelineSkeleton } from "@/components/day-timeline";
+
 import { useFetchVersionHistoryList } from "../../hooks/useFetchVersionHistoryList";
 import { useVersionHistoryQueryParams } from "../../hooks/useVersionHistoryQueryParams";
 import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
-import VersionAccordionSkeleton from "./VersionAccordionSkeleton";
 import VersionHistoryAccordion from "./VersionHistoryAccordion";
 
 export default function VersionHistoryContent() {
@@ -29,17 +30,9 @@ export default function VersionHistoryContent() {
     }
   }, [groupedHistory, historyId]);
 
-  if (isLoading) return <VersionAccordionSkeleton />;
+  if (isLoading) return <DayTimelineSkeleton label="Loading change history" />;
   return (
-    <div className="relative p-2 pr-2.5">
-      {/* Continuous Timeline - spans entire height from first to last accordion */}
-      <div
-        className="pointer-events-none absolute left-[23px] w-0.5 rounded-full bg-line"
-        style={{
-          top: "48px", // Starts after first accordion trigger (py-2 + h-8 + py-2 + pt-2)
-          bottom: "16px", // Ends before last accordion trigger
-        }}
-      />
+    <div className="pb-2">
       {groupedHistory.length > 0 && (
         <VersionHistoryAccordion
           data={groupedHistory}

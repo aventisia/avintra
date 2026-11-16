@@ -7,6 +7,7 @@ import { useShallow } from "zustand/react/shallow";
 import { AccessMode } from "../../resource-access-shared/types/access-mode.type";
 import {
   deleteResourceUserAccess,
+  getLinkedShareCandidates,
   getResourceUserAccessById,
   insertResourceUserAccess,
   updateResourceUserAccess,
@@ -14,11 +15,13 @@ import {
 } from "../apis/resource-user-access.apis";
 import { RESOURCE_USER_ACCESS_KEY } from "../constants/resource-user-access.constant";
 import { DEFAULT_USER_ACCESS_ROLE } from "../constants/user-access-roles.constant";
+import { LinkedShareCandidateDto } from "../dtos/resource-user-access.dto";
 import { ResourceAccessTypeEnum } from "../enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceUserAccessStore } from "../stores/resource-user-access.store";
 import { ShareInvite, SharePerson, ShareRow } from "../types/resource-user-access-draft.type";
 import { getHttpErrorMessage } from "../utils/http-error.util";
+import { groupLinkedShareCandidates } from "../utils/linked-share.util";
 import { getShareDraftChanges } from "../utils/resource-user-access.util";
 
 /**
@@ -49,11 +52,14 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
   const saved = useMemo(() => data?.data ?? [], [data]);
 
   const isSpace = resourceType === ResourceTypeEnum.Space;
+  const isAgent =
+    resourceType === ResourceTypeEnum.Flow || resourceType === ResourceTypeEnum.FlowVersion;
   const [savedTenantWide, setSavedTenantWide] = useState(isTenantWideAccess && !isSpace);
   const [mode, setMode] = useState<AccessMode>(savedTenantWide ? "open" : "restricted");
   const [invites, setInvites] = useState<ShareInvite[]>([]);
   const [roleEdits, setRoleEdits] = useState<Record<string, ResourceAccessTypeEnum>>({});
   const [removedIds, setRemovedIds] = useState<string[]>([]);
+  const [shareItems, setShareItems] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -71,6 +77,33 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
   const hasPeopleChanges = added.length + edited.length + removed.length > 0;
   const isDirty = isModeChanged || (!isOpenAccess && hasPeopleChanges);
   const isPending = isLoading && !data;
+
+  const addedUserIds = added.map(({ person }) => person.userId);
+  const {
+    data: linkedData,
+    isError: isLinkedError,
+    isLoading: isLinkedLoading,
+  } = useQuery({
+    queryKey: [RESOURCE_USER_ACCESS_KEY, "linked", resourceId, addedUserIds.join(",")],
+    queryFn: () =>
+      getLinkedShareCandidates(resourceType as ResourceTypeEnum, resourceId ?? "", addedUserIds),
+    enabled: isOpen && isAgent && Boolean(resourceId) && (isOpenAccess || addedUserIds.length > 0),
+    staleTime: 0,
+  });
+  const linkedResources = useMemo(
+    () =>
+      (linkedData?.data ?? []).filter((candidate) =>
+        isOpenAccess ? !candidate.isTenantWideAccess : candidate.userIdsNeedingShare.length > 0,
+      ),
+    [isOpenAccess, linkedData],
+  );
+  const linkedGroups = useMemo(
+    () => groupLinkedShareCandidates(linkedResources),
+    [linkedResources],
+  );
+  const linkedItemsToShare = linkedResources.filter(
+    (candidate) => candidate.canShare && candidate.userIdsNeedingShare.length > 0,
+  );
 
   const editDraft = (apply: () => void) => {
     if (isSaving) return;
@@ -129,6 +162,26 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
 
   const chooseMode = (next: AccessMode) => editDraft(() => setMode(next));
 
+  const shareLinkedItem = async (candidate: LinkedShareCandidateDto, recipientIds: string[]) => {
+    const users = candidate.userIdsNeedingShare
+      .filter((userId) => recipientIds.includes(userId))
+      .map((userId) => ({ userId, accessLevel: ResourceAccessTypeEnum.View }));
+
+    if (users.length === 0) return;
+
+    try {
+      await insertResourceUserAccess({
+        resourceType: candidate.resourceType,
+        resourceId: candidate.resourceId,
+        users,
+      });
+    } catch (error) {
+      // IMPORTANT NOTE: the bulk route answers 409 when access was granted in between, and the axios
+      // interceptor rejects 400 and 429 as plain strings too, so only the already-exists message is ignored.
+      if (typeof error !== "string" || !error.includes("already exists")) throw error;
+    }
+  };
+
   const save = async () => {
     if (!resourceId || !resourceType || !isDirty || isSaving) return;
     setIsSaving(true);
@@ -164,6 +217,11 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
             }),
           );
         }
+        if (shareItems) {
+          requests.push(
+            ...linkedItemsToShare.map((candidate) => shareLinkedItem(candidate, addedUserIds)),
+          );
+        }
       }
 
       const failures = (await Promise.allSettled(requests)).filter(
@@ -171,6 +229,9 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
       );
       void queryClient.invalidateQueries({ queryKey });
       await queryClient.invalidateQueries({ queryKey: [RESOURCE_USER_ACCESS_KEY, resourceId] });
+      void queryClient.invalidateQueries({
+        queryKey: [RESOURCE_USER_ACCESS_KEY, "linked", resourceId],
+      });
 
       if (failures.length === 0) {
         toast.success("Sharing updated", { className: "sonner-toaster-sm" });
@@ -204,7 +265,20 @@ export const useResourceUserAccessDraft = (isOpen: boolean, queryKey: unknown[])
     isModeChanged,
     hasPeopleChanges,
     isDirty,
-    canSave: isDirty && !isSaving && !isPending && !(isError && !data),
+    canSave: isDirty && !isSaving && !isPending && !isLinkedLoading && !(isError && !data),
+    linkedItems: {
+      isVisible:
+        isAgent &&
+        (isOpenAccess || addedUserIds.length > 0) &&
+        (isLinkedError || linkedResources.length > 0),
+      isLoading: isLinkedLoading,
+      isError: isLinkedError,
+      shareItems,
+      setShareItems: (value: boolean) => editDraft(() => setShareItems(value)),
+      credentials: linkedGroups.credentials,
+      groups: linkedGroups.groups,
+      openAccessRows: linkedResources,
+    },
     getPickState,
     togglePerson,
     setRole,

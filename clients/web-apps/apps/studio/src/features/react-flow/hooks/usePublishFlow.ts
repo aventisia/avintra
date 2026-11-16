@@ -1,5 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -29,8 +30,9 @@ export const usePublishFlowMutation = () => {
       });
     },
     onError: (error) => {
-      // Show error toast
-      toast.error(error.toString());
+      // IMPORTANT NOTE: the axios interceptor toasts responses itself, except 400/409/429, which reject with the plain message.
+      if (typeof error === "string") toast.error(error);
+      else if (!isAxiosError(error) || !error.response) toast.error(error.message);
     },
   });
 

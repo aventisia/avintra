@@ -1,9 +1,10 @@
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
-} from "@/components/segmented-tabs.constant";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 

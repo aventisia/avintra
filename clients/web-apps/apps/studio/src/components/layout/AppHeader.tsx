@@ -1,7 +1,7 @@
 import { Header, HeaderContainer } from "@avplatform/layout";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
-import { useAlertDialogStore, useBrandingStore, useUserSessionStore } from "@avplatform/ui/stores";
+import { useAlertDialogStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
@@ -13,22 +13,18 @@ import { PresenceAvatars } from "@/features/collaboration/components/PresenceAva
 import { releasePublishActionIfActive } from "@/features/collaboration/hooks/useCollaboration";
 import { ExecuteFlow } from "@/features/execute-flow";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
+import { FLOW_TYPE_LABELS } from "@/features/flow-versions/constants";
 import { PublishFlow } from "@/features/publish-flow/PublishFlow";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
-import { StudioPreferences } from "@/features/studio-preferences/components";
-import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useIsVoiceConversationsRoute } from "@/features/voice-conversations";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
-import SearchCommandTrigger from "./Search";
 import { StudioViewSwitch } from "./StudioViewSwitch";
 import { TenantSwitchBadge } from "./TenantSwitchBadge";
-import ViewOnlyVersionSelector from "./ViewOnlyVersionSelector";
 import { HeaderActionMenu } from "./header-menu-actions";
 
 const AppHeader: React.FC = () => {
@@ -42,18 +38,9 @@ const AppHeader: React.FC = () => {
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
   const isVoiceConversations = useIsVoiceConversationsRoute();
-  const isReadOnlyView = isAgentHistory || isExecutionLog || isVoiceConversations;
-  const serverBranding = useBrandingStore((state) => state.branding);
-  const headerLabel =
-    serverBranding?.appName ||
-    (serverBranding && Object.values(serverBranding).some((value) => !!value)
-      ? "Agent Builder"
-      : undefined);
-
-  // ChatAgent flows hide search, flow settings, and studio preferences; VoiceAgent flows have no canvas to search.
-  const isChatAgent = useCurrentFlowStore((state) => state.isChatAgent);
-  const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
-  const hidesCanvasTools = isChatAgent || isVoiceAgent;
+  const isCanvas = !isAgentHistory && !isExecutionLog && !isVoiceConversations;
+  const isPublished = useReactFlowExtStore((state) => state.isPublished);
+  const flowType = useReactFlowExtStore((state) => state.flowType);
 
   // Persistent watcher for the publish alert dialog close. The Publish button does not own
   // the dialog lifecycle, so this header component watches the alert dialog
@@ -72,69 +59,63 @@ const AppHeader: React.FC = () => {
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
-    <HeaderContainer>
-      <Header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-0">
-        <div className="flex min-w-0 items-center gap-2 text-ink">
-          {/* Back Button */}
+    <HeaderContainer className="p-0">
+      <Header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 bg-surface pl-1.5 pr-2">
+        <div className="flex min-w-0 items-center gap-2.5 text-ink">
           <Tooltip content="Back to Workspace">
             <Button
-              size="icon7"
+              size="icon8"
               variant="ghost"
               className="shrink-0"
               aria-label="Back to Workspace"
               onClick={() => goBack()}
             >
-              <ArrowLeftIcon className="size-4" />
+              <ArrowLeftIcon className="size-[17px]" />
             </Button>
           </Tooltip>
 
-          {/* App Logo */}
-          <AppLogo label={headerLabel} />
+          <AppLogo markOnly className="h-[22px]" />
 
-          {/* separator */}
-          <span className="rotate-12 text-line-strong">/</span>
+          <div className="flex min-w-0 flex-col">
+            <div className="flex min-w-0 items-center gap-1.5 pl-[7px]">
+              <span className="mb-px truncate text-[10px] font-semibold uppercase leading-3 tracking-[0.1em] text-primary">
+                {FLOW_TYPE_LABELS[flowType]}
+              </span>
+              {isCanvas ? <SaveFlow /> : null}
+            </div>
+            {isCanvas ? <FlowVersions /> : <AgentName className={isViewTenant ? "max-w-56" : ""} />}
+          </div>
 
-          {/* Agent name */}
-          <AgentName className={isViewTenant ? "max-w-56" : ""} />
-
-          {/* Version selector */}
-          {!isReadOnlyView ? <FlowVersions /> : <ViewOnlyVersionSelector />}
+          {isCanvas && isPublished ? (
+            <Badge variant="completed" className="shrink-0">
+              Published
+            </Badge>
+          ) : null}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
-        <div className="flex min-w-0 shrink-0 items-center justify-center gap-2">
-          <StudioViewSwitch />
-          {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}{" "}
+
+        <StudioViewSwitch />
+
+        <div className="flex min-w-0 items-center justify-end gap-3">
+          {isCanvas ? (
+            <>
+              <div className="flex items-center gap-1">
+                <PresenceAvatars />
+                <Chat className="mt-0 mlg:mt-4" />
+              </div>
+              {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}
+              <div className="ml-3 flex items-center gap-2">
+                <ExecuteFlow />
+                <PublishFlow />
+                <HeaderActionMenu />
+              </div>
+            </>
+          ) : userSession?.deploymentType == "Commercial" ? (
+            <div className="md:pr-2">
+              <AvailableCredits />
+            </div>
+          ) : null}
         </div>
-        {!isReadOnlyView ? (
-          <div className="flex min-w-0 items-center justify-end">
-            <div className="mr-2 flex min-w-0 items-center gap-1 text-ink">
-              <PresenceAvatars />
-
-              {!hidesCanvasTools && <SearchCommandTrigger />}
-
-              {!hidesCanvasTools && import.meta.env.MODE !== "production" ? (
-                <SettingsTrigger />
-              ) : null}
-
-              {!isChatAgent && <StudioPreferences className="mt-0 mlg:mt-4" />}
-              <Chat className="mt-0 mlg:mt-4" />
-            </div>
-            <div className="flex items-center gap-2">
-              <SaveFlow />
-              <ExecuteFlow />
-              <PublishFlow />
-              <HeaderActionMenu />
-            </div>
-          </div>
-        ) : (
-          <div className="flex min-w-0 items-center justify-end gap-1">
-            {!hidesCanvasTools && <SearchCommandTrigger />}
-            <Badge variant="outline" className="shrink-0">
-              View only
-            </Badge>
-            {isAgentHistory && <VersionHistoryCloseButton />}{" "}
-          </div>
-        )}
       </Header>
     </HeaderContainer>
   );

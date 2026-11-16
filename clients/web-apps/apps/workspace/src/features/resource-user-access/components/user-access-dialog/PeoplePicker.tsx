@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { HighlightedText } from "@avplatform/ui/highlighted-text";
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { cn } from "@avplatform/ui/lib";
@@ -5,7 +6,6 @@ import { CheckIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { Kbd } from "@/components/Kbd";
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { PickerShell } from "../../../resource-access-shared/components/PickerShell";
 import { ResourceUserAccessDraft } from "../../hooks/useResourceUserAccessDraft.hook";

@@ -1,0 +1,40 @@
+meta {
+  name: Sharing at Can view never lowers an existing Can edit row (AC6)
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{LINK_HIGHER_LEVEL_QUEUE_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{LINK_RECIPIENT_ID}}"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  test("the bulk insert skips a recipient who already has the item", function() {
+    expect(res.getStatus()).to.equal(409);
+  });
+}
+
+docs {
+  > AC6: the dialog sends View for every listable candidate; the bulk route's
+  > skip-existing keeps the recipient at Can edit and the dialog treats the 409
+  > as already shared. `19-` reads the level back.
+}

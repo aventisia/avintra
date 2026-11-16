@@ -1,0 +1,31 @@
+meta {
+  name: PROD share negatives - viewer bulk
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{NEG_VIEWER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{NEG_RESOURCE_ID}}",
+    "users": [
+      { "accessLevel": "Owner", "userId": "{{NEG_MEMBER_ID}}" }
+    ]
+  }
+}
+
+script:post-response {
+  test("a View-only user cannot bulk-grant access", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}
