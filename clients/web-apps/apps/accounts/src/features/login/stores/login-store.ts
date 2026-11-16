@@ -17,11 +17,8 @@ type State = {
   /** To store 2-fa details */
   twoFACodeData: ITwoFACodeData | null;
 
-  /** The provider the account is linked to, offered before the password when both exist */
+  /** The provider a passwordless account signs in with, when the email belongs to such an account */
   socialLoginProvider: string | null;
-
-  /** Whether the account has a password, so the provider can fall back to it */
-  hasPassword: boolean;
 
   /** The outstanding two-step verification of a social sign-in attempt */
   socialChallenge: ISocialChallengeData | null;
@@ -42,11 +39,8 @@ type Actions = {
   /** Set the 2-fa code data */
   setTwoFACodeData: (twoFACodeData: ITwoFACodeData | null) => void;
 
-  /** Set the social provider of a linked account */
+  /** Set the social provider of a passwordless account */
   setSocialLoginProvider: (socialLoginProvider: string | null) => void;
-
-  /** Set whether the account has a password */
-  setHasPassword: (hasPassword: boolean) => void;
 
   /** Set the outstanding two-step verification of a social sign-in attempt */
   setSocialChallenge: (socialChallenge: ISocialChallengeData | null) => void;
@@ -64,7 +58,6 @@ export const useLoginStore = create<State & Actions>((set) => ({
   twoFACodeData: null,
   osInfo: null,
   socialLoginProvider: null,
-  hasPassword: false,
   socialChallenge: null,
   socialLinkData: null,
 
@@ -73,7 +66,6 @@ export const useLoginStore = create<State & Actions>((set) => ({
   setOsInfo: (osInfo) => set({ osInfo }),
   setTwoFACodeData: (twoFACodeData) => set({ twoFACodeData }),
   setSocialLoginProvider: (socialLoginProvider) => set({ socialLoginProvider }),
-  setHasPassword: (hasPassword) => set({ hasPassword }),
   setSocialChallenge: (socialChallenge) => set({ socialChallenge }),
   setSocialLinkData: (socialLinkData) => set({ socialLinkData }),
   resetLoginProcess: () =>
@@ -82,7 +74,6 @@ export const useLoginStore = create<State & Actions>((set) => ({
       twoFACodeData: null,
       stepNo: 1,
       socialLoginProvider: null,
-      hasPassword: false,
       socialChallenge: null,
       socialLinkData: null,
     }),

@@ -1,7 +1,7 @@
 import type { SocialCallbackDto } from "@avplatform/ui/dtos";
 import { VerificationCodeRequestTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
-import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -70,7 +70,6 @@ const useCompleteSocialSignIn = () => {
 
     if (data.status === SOCIAL_SIGN_IN_STATUS.SignedIn && data.userSession) {
       const userSession = setUserSessionLocally(data.userSession);
-      markFreshLogin();
       resetLoginProcess();
 
       const redirect = getSameOriginRedirectPath(data.redirectUrl, window.location.origin);

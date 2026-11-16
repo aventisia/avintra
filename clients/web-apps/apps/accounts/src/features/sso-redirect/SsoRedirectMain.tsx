@@ -1,5 +1,6 @@
 import { AppLogo } from "@avplatform/layout/logo";
 import { MinimalFooter } from "@avplatform/layout/minimal-footer";
+import { LoadingSpinner } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useEffect, useRef } from "react";
@@ -12,7 +13,6 @@ import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
 import { SIGN_IN_CANCELLED, SOCIAL_STATE_PREFIX } from "@/constants/variables";
-import { RedirectPage } from "@/pages/default-pages";
 
 import { useCompleteSsoAdminConsentMutation } from "./useCompleteSsoAdminConsentMutation";
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
@@ -71,17 +71,14 @@ export const SsoRedirectMain = () => {
   }, [code, state, error, adminConsent, grantedTenantId, isSocialAttempt]);
 
   const consentErrorMessage = consentError ? getConsentErrorMessage(consentError) : null;
-  const socialError = socialCallbackError ? getSocialErrorMessage(socialCallbackError) : null;
+  const socialErrorMessage = socialCallbackError ? getSocialErrorMessage(socialCallbackError) : null;
 
   // Cancelling at the provider is neutral: the provider's own error text is never rendered
-  const failureMessage = error ? SIGN_IN_CANCELLED : (consentErrorMessage ?? socialError);
+  const failureMessage = error ? SIGN_IN_CANCELLED : (consentErrorMessage ?? socialErrorMessage);
   const isFailed = Boolean(failureMessage);
   const backHref = error
     ? import.meta.env.VITE_ACCOUNTS_PATH + "login"
     : import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview";
-
-  // The same loading screen password sign-in shows while it redirects
-  if (!isFailed) return <RedirectPage message="Signing you in…" />;
 
   return (
     <PageContainer>
@@ -90,18 +87,29 @@ export const SsoRedirectMain = () => {
           <AppLogo showFullLogo={true} className="h-7" />
         </HeaderContainer>
         <ContentContainer>
-          <ContentHeader
-            biggerHeading={
-              consentErrorMessage ? "We couldn't connect single sign-on" : "We couldn't sign you in"
-            }
-            smallerHeading={failureMessage ?? ""}
-          />
-          <a
-            className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
-            href={backHref}
-          >
-            {consentErrorMessage ? "Back to preferences" : "Back to sign in"}
-          </a>
+          {isFailed ? (
+            <>
+              <ContentHeader
+                biggerHeading={
+                  consentErrorMessage
+                    ? "We couldn't connect single sign-on"
+                    : "We couldn't sign you in"
+                }
+                smallerHeading={failureMessage ?? ""}
+              />
+              <a
+                className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
+                href={backHref}
+              >
+                {consentErrorMessage ? "Back to preferences" : "Back to sign in"}
+              </a>
+            </>
+          ) : (
+            <div role="status" className="flex items-center gap-3 text-body text-ink-2">
+              <LoadingSpinner className="size-5 text-live" />
+              Signing you in…
+            </div>
+          )}
         </ContentContainer>
         <MinimalFooter />
       </LeftContainer>
