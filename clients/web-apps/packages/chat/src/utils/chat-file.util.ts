@@ -39,12 +39,12 @@ const BARE_HTML_PATTERN = /^(<!doctype html|<html[\s>])[\s\S]*<\/html>$/i;
 const TITLE_PATTERNS: Record<string, RegExp> = {
   "text/html": /<title[^>]*>([^<]*)<\/title>/i,
   "image/svg+xml": /<title[^>]*>([^<]*)<\/title>/i,
-  "text/markdown": /^#[ \t]+(.+)$/m,
+  "text/markdown": /^#[ \t]+(\S.*)$/m,
 };
 
 /** Reads the title a spec block carries: the first Markdown heading, or the JSON title. */
 const specTitle = (body: string, contentType: string) => {
-  if (contentType === DOCX_TYPE) return /^#[ \t]+(.+)$/m.exec(body)?.[1] ?? "";
+  if (contentType === DOCX_TYPE) return /^#[ \t]+(\S.*)$/m.exec(body)?.[1] ?? "";
   try {
     const title = (JSON.parse(body) as { title?: unknown }).title;
     return typeof title === "string" ? title : "";
