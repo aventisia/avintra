@@ -11,6 +11,7 @@ import {
 import { PANEL_ID, PANEL_TITLE } from "../constants";
 import { useSetStudioPreferences } from "../hooks/useSetStudioPreferences";
 import { StudioPreferencesForm } from "./StudioPreferencesForm";
+import { StudioThemeSelect } from "./StudioThemeSelect";
 
 /** Studio preferences panel, opened from the header menu. */
 export const StudioPreferences = () => {
@@ -31,6 +32,7 @@ export const StudioPreferences = () => {
       <PanelContent>
         <ScrollArea className="h-[calc(100vh-var(--header-height)-3rem)]">
           <div className="px-4 py-3">
+            <StudioThemeSelect />
             <StudioPreferencesForm />
           </div>
         </ScrollArea>

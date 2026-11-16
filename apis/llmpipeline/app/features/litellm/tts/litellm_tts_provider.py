@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import base64
+import re
 import time
 
 from fastapi import HTTPException
@@ -25,9 +26,64 @@ from ..core.credit_utils import (
 )
 from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
-from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
-from ..core.schemas import TTSRequest, TTSResponse
+from ..core.provider_registry import (
+    get_credit_service_type,
+    normalize_provider,
+    should_post_usage,
+    validate_model,
+    validate_provider,
+)
+from ..core.schemas import PronunciationEntry, TTSRequest, TTSResponse
 from .tts_base import BaseTextToSpeechProvider
+
+
+def canonical_voice(provider: str, voice: str) -> str:
+    """Return the provider's canonical voice spelling.
+
+    Gemini matches voice names case-sensitively ("Journey"), while the Studio
+    sends them lowercase.
+    """
+
+    if provider == "gemini" and voice:
+        stripped = voice.strip()
+        return stripped[:1].upper() + stripped[1:]
+    return voice
+
+
+def apply_pronunciations(
+    text: str,
+    pronunciations: list[PronunciationEntry] | None,
+) -> str:
+    """Rewrite ``text`` with the configured pronunciation aliases.
+
+    Matching is case-insensitive and applies the longest term first so a longer
+    term is never shadowed by a shorter term contained in it. Missing terms or
+    an empty list leave the text unchanged.
+    """
+
+    if not text or not pronunciations:
+        return text
+
+    entries = [
+        (entry.term, entry.pronunciation)
+        for entry in pronunciations
+        if entry.term and entry.pronunciation
+    ]
+    if not entries:
+        return text
+
+    entries.sort(key=lambda pair: len(pair[0]), reverse=True)
+
+    result = text
+    for term, pronunciation in entries:
+        result = re.sub(
+            re.escape(term),
+            lambda _match, replacement=pronunciation: replacement,
+            result,
+            flags=re.IGNORECASE,
+        )
+
+    return result
 
 
 class LiteLLMTTSProvider(BaseTextToSpeechProvider):
@@ -42,6 +98,9 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         """
         start_time = time.perf_counter()
 
+        # IMPORTANT NOTE: Studio voice settings store the provider as
+        # "googlegemini"; LiteLLM only accepts "gemini".
+        tts_request.provider = normalize_provider(tts_request.provider)
         # Validate the provider/model with the request's credential mode.
         validate_provider(tts_request.provider, tts_request.is_byok_enabled, tts_request.credential_name)
         validate_model(tts_request.provider, tts_request.model, tts_request.is_byok_enabled, tts_request.credential_name)
@@ -51,12 +110,18 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             self._check_credits(tts_request, user)
 
         try:
+            # Apply pronunciation aliases before synthesis so the provider speaks
+            # the intended pronunciation.
+            synthesis_input = apply_pronunciations(
+                tts_request.input,
+                tts_request.pronunciations,
+            )
             # Delegate the actual synthesis to the LiteLLM transport.
             audio_bytes = await litellm_service.synthesize(
                 tts_request.provider,
                 tts_request.model,
-                input=tts_request.input,
-                voice=tts_request.voice_id or "",
+                input=synthesis_input,
+                voice=canonical_voice(tts_request.provider, tts_request.voice_id or ""),
                 speed=tts_request.speed if tts_request.speed is not None else 1.0,
                 is_byok=tts_request.is_byok_enabled,
                 credential_name=tts_request.credential_name,

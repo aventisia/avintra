@@ -12,6 +12,7 @@ export interface TTSRequestDto {
   language?: string | null;
   speed?: number;
   pitch?: number;
+  pronunciations?: Array<{ term: string; pronunciation: string }> | null;
   stream: boolean;
 
   credential_name?: string | null;

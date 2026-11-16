@@ -1,0 +1,419 @@
+"""In-process bridge from one LiveKit voice turn to the LangGraph chat engine.
+
+The engine owns the conversation: it resolves the persona, knowledge base,
+skills, tools, memory window, and persisted history for the conversation, and
+it executes every tool call exactly once. The voice runtime only supplies the
+latest caller transcript and consumes the normalized frames as speech.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from collections.abc import AsyncIterator, Awaitable, Callable
+from dataclasses import dataclass, field
+from typing import Any
+
+from livekit.agents import llm
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+
+from app.core.config import settings
+from app.core.database import get_db_session_context
+from app.core.logger import logger
+from app.features.auth.authenticated_user import User
+from app.features.langgraph.services.chat_service import ChatService, chat_service
+from app.features.langgraph.services.conversation_service import (
+    ConversationService,
+    conversation_service,
+)
+from app.features.langgraph.skills.skill_loader import (
+    build_skill_prompt,
+    load_custom_skills,
+    load_platform_skills,
+    resolve_skill_configs,
+)
+from app.features.langgraph.skills.skill_registry import SkillRegistry
+from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
+from app.features.llm_providers.llm_providers_schemas import (
+    LLMRequest,
+    ToolAction,
+    ToolConfig,
+)
+
+from .metadata import VoiceJobClaims
+from .stt_adapter import build_user
+
+VOICE_FALLBACK_APOLOGY = "Sorry, I could not finish that answer. Please try again."
+VOICE_APPROVAL_APOLOGY = (
+    "Sorry, I cannot run that action in this call. Please try a different request."
+)
+
+RetrieveKnowledgeBase = Callable[[LLMRequest, User], Awaitable[None]]
+
+
+@dataclass(frozen=True)
+class VoiceTurnFrame:
+    """One mapped engine frame for the voice runtime."""
+
+    kind: str
+    text: str = ""
+    payload: Any = field(default=None)
+
+
+def build_voice_llm_request(
+    claims: VoiceJobClaims,
+    agent_settings: dict,
+    transcript: str,
+) -> LLMRequest:
+    """Build this turn's request from the resolved S2 settings."""
+
+    llm = agent_settings.get("llm") or {}
+    knowledge_base = agent_settings.get("knowledgeBase") or {}
+    memory = agent_settings.get("memory") or {}
+    agent_name = agent_settings.get("agentName") or ""
+    system_prompt = voice_system_prompt(agent_settings)
+    kb_names = knowledge_base.get("names") or None
+    manager_target = (agent_settings.get("managerAgentTarget") or "").strip()
+
+    manager_agent = None
+    if manager_target:
+        manager_agent = {
+            "target": manager_target,
+            "context": {
+                "current_turn_summary": transcript,
+                "voice_system_prompt": system_prompt,
+                "conversation_id": claims.conversation_id,
+            },
+        }
+
+    return LLMRequest(
+        provider=llm.get("provider") or "",
+        model=llm.get("model") or "",
+        input=transcript,
+        tool_config=_tool_config(agent_settings.get("tools") or []),
+        is_chat_agent=True,
+        is_voice_agent=True,
+        first_speaker=agent_settings.get("firstSpeaker") or "human",
+        introduction_text=agent_settings.get("introduction"),
+        voice_system_prompt=system_prompt,
+        manager_agent=manager_agent,
+        pronunciations=_pronunciations(agent_settings.get("pronunciations") or []),
+        sfx=_sound_effects(agent_settings.get("soundEffects")),
+        stream=True,
+        conversation_id=claims.conversation_id,
+        temperature=llm.get("temperature", 1),
+        top_p=llm.get("topP", 1),
+        reasoning_effort=llm.get("reasoningEffort"),
+        is_byok_enabled=bool(llm.get("isByokEnabled")),
+        credential_name=llm.get("credentialName") or None,
+        max_output_tokens=llm.get("maxOutputTokens"),
+        kb_names=kb_names,
+        top_k=knowledge_base.get("topK") if kb_names else None,
+        source_threshold=knowledge_base.get("sourceThreshold") if kb_names else None,
+        skill_names=agent_settings.get("skills") or None,
+        max_short_term_turns=memory.get("maxShortTermTurns"),
+        flow_version_id=str(claims.flow_version_id),
+        channel="voice",
+        ref_type="Agent",
+        ref_id=str(claims.flow_id),
+        ref_name=agent_name,
+        action="AgentExecution",
+        agent_name=agent_name or None,
+    )
+
+
+def voice_system_prompt(agent_settings: dict) -> str | None:
+    """Compose the persona with the S1 guidance even when the API omitted it."""
+
+    persona = agent_settings.get("persona") or {}
+    prompt = (persona.get("systemPrompt") or "").strip()
+    guidance = (agent_settings.get("spokenStyleGuidance") or "").strip()
+    if guidance and guidance not in prompt:
+        prompt = f"{prompt}\n\n{guidance}".strip()
+    return prompt or None
+
+
+def pronunciation_instruction(entries: list[dict]) -> str | None:
+    """Return the realtime instruction that maps terms to spoken pronunciations."""
+
+    pairs = [
+        (str(entry.get("term") or "").strip(), str(entry.get("pronunciation") or "").strip())
+        for entry in entries
+    ]
+    pairs = [(term, pronunciation) for term, pronunciation in pairs if term and pronunciation]
+    if not pairs:
+        return None
+
+    # IMPORTANT NOTE: a realtime model speaks directly, so unlike the pipeline
+    # TTS path there is no synthesis text to rewrite; the aliases have to reach
+    # the model as instructions.
+    pairs.sort(key=lambda pair: len(pair[0]), reverse=True)
+    lines = [f'- Say "{term}" as "{pronunciation}".' for term, pronunciation in pairs]
+    return (
+        "Pronunciation guide. Whenever you speak one of these terms, use the listed "
+        "pronunciation. Matching is case-insensitive and the longest term wins:\n"
+        + "\n".join(lines)
+    )
+
+
+async def load_realtime_chat_context(
+    claims: VoiceJobClaims,
+    agent_settings: dict,
+    *,
+    service: ConversationService | None = None,
+) -> llm.ChatContext | None:
+    """Seed a realtime session with the conversation's persisted turns."""
+
+    memory = agent_settings.get("memory") or {}
+    async with get_db_session_context(
+        settings.POSTGRESQL_WORKSPACE_DB_NAME
+    ) as session:
+        history = await (service or conversation_service).load_history(
+            session,
+            claims.conversation_id,
+        )
+
+    items = realtime_chat_items(history, memory.get("maxShortTermTurns"))
+    return llm.ChatContext(items=items) if items else None
+
+
+async def load_realtime_skill_prompt(
+    claims: VoiceJobClaims,
+    agent_settings: dict,
+) -> str | None:
+    """Build the realtime instructions fragment for the configured skills."""
+
+    skill_names = [
+        str(skill or "").strip() for skill in agent_settings.get("skills") or []
+    ]
+    skill_names = [name for name in skill_names if name]
+    if not skill_names:
+        return None
+
+    registry = SkillRegistry()
+    load_platform_skills(registry)
+    user = build_user(claims)
+    tenant_id = str(claims.tenant_id)
+    try:
+        async with get_db_session_context(
+            settings.POSTGRESQL_WORKSPACE_DB_NAME
+        ) as session:
+            await load_custom_skills(
+                registry=registry,
+                db_session=session,
+                tenant_id=tenant_id,
+                env_type=user.env_type,
+                space_id=user.space_id,
+            )
+    except Exception:
+        logger.exception(
+            "[voice-agent] realtime skill load failed conversation=%s",
+            claims.conversation_id,
+        )
+
+    return build_skill_prompt(
+        resolve_skill_configs(registry, skill_names, tenant_id=tenant_id)
+    )
+
+
+def realtime_chat_items(
+    history: list[BaseMessage],
+    max_short_term_turns: int | None,
+) -> list[llm.ChatMessage]:
+    """Map replayed history to chat items and keep the configured turn window.
+
+    A turn starts at a user message, matching the pipeline's short-term window.
+    System prompts come from agent instructions and tool rows need the tools
+    that produced them, so both are left out of the seed.
+    """
+
+    items: list[llm.ChatMessage] = []
+    for message in history:
+        if isinstance(message, HumanMessage):
+            role = "user"
+        elif isinstance(message, AIMessage):
+            role = "assistant"
+        else:
+            continue
+
+        text = message.content if isinstance(message.content, str) else ""
+        if not text.strip():
+            continue
+
+        item = llm.ChatMessage(role=role, content=[text])
+        if message.id:
+            item.id = message.id
+        items.append(item)
+
+    if not max_short_term_turns or max_short_term_turns <= 0:
+        return items
+
+    user_indices = [
+        index for index, item in enumerate(items) if item.role == "user"
+    ]
+    if len(user_indices) <= max_short_term_turns:
+        return items
+    return items[user_indices[-max_short_term_turns]:]
+
+
+def _tool_config(tools: list[dict]) -> list[ToolConfig] | None:
+    configs: list[ToolConfig] = []
+    for tool in tools:
+        name = (tool.get("tool") or "").strip()
+        if not name:
+            continue
+        actions = [
+            ToolAction(
+                action=action.get("action") or "",
+                approval=(
+                    "auto"
+                    if str(action.get("approval") or "").strip().lower() == "auto"
+                    else "human"
+                ),
+            )
+            for action in tool.get("actions") or []
+            if action.get("action")
+        ]
+        configs.append(
+            ToolConfig(
+                tool=name,
+                credential_name=tool.get("credentialName") or None,
+                actions=actions,
+            )
+        )
+    return configs or None
+
+
+def _pronunciations(entries: list[dict]) -> list[dict] | None:
+    pronunciations = [
+        {"term": entry.get("term"), "pronunciation": entry.get("pronunciation")}
+        for entry in entries
+        if entry.get("term") and entry.get("pronunciation")
+    ]
+    return pronunciations or None
+
+
+def _sound_effects(settings_: dict | None) -> dict | None:
+    if not settings_:
+        return None
+    enabled = bool(settings_.get("enabled"))
+    cue_url = settings_.get("toolCallCueUrl")
+    ambience_url = settings_.get("ambienceUrl")
+    if not enabled and not cue_url and not ambience_url:
+        return None
+    return {
+        "enabled": enabled,
+        "tool_call_cue_url": cue_url,
+        "ambience_url": ambience_url,
+    }
+
+
+class VoiceChatBridge:
+    """Run one caller turn through the chat engine and map its frames."""
+
+    def __init__(
+        self,
+        claims: VoiceJobClaims,
+        agent_settings: dict,
+        *,
+        service: ChatService | None = None,
+        retrieve_kb: RetrieveKnowledgeBase | None = None,
+    ) -> None:
+        self._claims = claims
+        self._agent_settings = agent_settings
+        self._user = build_user(claims)
+        self._service = service or chat_service
+        self._retrieve_kb = retrieve_kb or retrieve_and_inject_kb_context
+
+    async def stream_turn(self, transcript: str) -> AsyncIterator[VoiceTurnFrame]:
+        """Stream one caller turn, always ending with exactly one ``done`` frame."""
+
+        transcript = transcript.strip()
+        if not transcript:
+            yield VoiceTurnFrame(kind="delta", text=VOICE_FALLBACK_APOLOGY)
+            yield VoiceTurnFrame(kind="done", payload=False)
+            return
+
+        spoken = False
+        persisted = False
+        approval_pending = False
+
+        try:
+            request = build_voice_llm_request(
+                self._claims,
+                self._agent_settings,
+                transcript,
+            )
+            if request.kb_names:
+                await self._retrieve_kb(request, self._user)
+
+            async with get_db_session_context(
+                settings.POSTGRESQL_WORKSPACE_DB_NAME,
+            ) as session:
+                async for chunk in self._service.stream_normalized(
+                    request,
+                    self._user,
+                    db_session=session,
+                ):
+                    chunk_type = getattr(chunk, "type", None)
+                    output = getattr(chunk, "output", None)
+
+                    if chunk_type == "delta":
+                        if isinstance(output, str) and output and not approval_pending:
+                            spoken = True
+                            yield VoiceTurnFrame(kind="delta", text=output)
+                    elif chunk_type == "tool_call":
+                        yield VoiceTurnFrame(kind="tool_call", payload=output)
+                    elif chunk_type == "followup":
+                        yield VoiceTurnFrame(kind="followup", payload=output)
+                    elif chunk_type == "error":
+                        yield VoiceTurnFrame(kind="error", text=str(output or ""))
+                    elif chunk_type == "approval_required":
+                        # IMPORTANT NOTE: the voice channel has no approval UI,
+                        # so a paused tool call must never leave the turn open.
+                        # Speak a fallback and keep consuming the engine stream so
+                        # its transcript/persistence boundary still completes.
+                        approval_pending = True
+                        spoken = True
+                        logger.warning(
+                            "[voice-agent] tool approval requires a UI conversation=%s",
+                            self._claims.conversation_id,
+                        )
+                        yield VoiceTurnFrame(
+                            kind="error",
+                            text="Voice turns cannot approve tool calls.",
+                        )
+                        yield VoiceTurnFrame(
+                            kind="delta",
+                            text=VOICE_APPROVAL_APOLOGY,
+                        )
+                    elif chunk_type == "done":
+                        persisted = True
+                        if (
+                            not approval_pending
+                            and not spoken
+                            and isinstance(output, str)
+                            and output
+                        ):
+                            spoken = True
+                            yield VoiceTurnFrame(kind="delta", text=output)
+
+                if not request.is_temp_chat:
+                    await session.commit()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logger.exception(
+                "[voice-agent] chat engine turn failed conversation=%s",
+                self._claims.conversation_id,
+            )
+            if not spoken:
+                spoken = True
+                yield VoiceTurnFrame(
+                    kind="error",
+                    text="The chat engine could not complete this turn.",
+                )
+                yield VoiceTurnFrame(kind="delta", text=VOICE_FALLBACK_APOLOGY)
+
+        if not spoken:
+            yield VoiceTurnFrame(kind="delta", text=VOICE_FALLBACK_APOLOGY)
+        yield VoiceTurnFrame(kind="done", payload=persisted)

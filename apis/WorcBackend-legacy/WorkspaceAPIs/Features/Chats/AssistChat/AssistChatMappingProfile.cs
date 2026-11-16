@@ -32,6 +32,7 @@ namespace WorkspaceAPIs.MappingProfiles
                         : null)
                 .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
                 .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
+                .Map(dest => dest.FlowType, src => src.Flow != null ? src.Flow.Type : FlowTypesEnum.ChatAgent)
                 .Map(dest => dest.LastModifiedByUsername, src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.UserName
                     : null)

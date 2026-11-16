@@ -92,3 +92,58 @@ export function getSuggestionsConfig(
   }
   return null;
 }
+
+export interface PronunciationConfigEntry {
+  term: string;
+  pronunciation: string;
+}
+
+/** Reports whether a VoiceAgent feature toggle is on, falling back to legacy behavior when absent. */
+export function isVoiceFeatureEnabled(
+  data: Record<string, unknown>,
+  toggleKey: string,
+  legacyOn: boolean,
+): boolean {
+  const value = data[toggleKey];
+
+  return value === undefined ? legacyOn : value === true;
+}
+
+export function getPronunciationConfig(
+  data: Record<string, unknown>,
+): { config: PronunciationConfigEntry[]; key: string } | null {
+  for (const key in data) {
+    if (key.includes("__Pronunciation__Voice")) {
+      const config = data[key] as PronunciationConfigEntry[];
+
+      return {
+        config: isVoiceFeatureEnabled(data, "__PronunciationEnabled__Voice", true) ? config : [],
+        key,
+      };
+    }
+  }
+  return null;
+}
+
+export interface SfxConfig {
+  enabled: boolean;
+  toolCallCueUrl: string;
+  ambienceUrl: string;
+}
+
+export function getSfxConfig(data: Record<string, unknown>): SfxConfig {
+  const masterOn = isVoiceFeatureEnabled(data, "__SfxEnabled__Voice", false);
+  const masterExplicitlyOff = data["__SfxEnabled__Voice"] === false;
+  const cueOn = isVoiceFeatureEnabled(data, "__SfxToolCallCueEnabled__Voice", true);
+  const ambienceOn = isVoiceFeatureEnabled(data, "__SfxAmbienceEnabled__Voice", true);
+  const toolCallCueUrl = data["__SfxToolCallCueUrl__Voice"];
+  const ambienceUrl = data["__SfxAmbienceUrl__Voice"];
+
+  return {
+    enabled: masterOn,
+    toolCallCueUrl:
+      masterExplicitlyOff || !cueOn ? "" : typeof toolCallCueUrl === "string" ? toolCallCueUrl : "",
+    ambienceUrl:
+      masterExplicitlyOff || !ambienceOn ? "" : typeof ambienceUrl === "string" ? ambienceUrl : "",
+  };
+}

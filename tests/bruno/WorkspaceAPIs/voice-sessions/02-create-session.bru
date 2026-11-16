@@ -1,0 +1,40 @@
+meta {
+  name: Create voice session
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/sessions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+      "flowVersionId": "{{VOICE_FLOW_VERSION_ID}}",
+      "mode": "{{VOICE_MODE}}"
+  }
+}
+
+script:post-response {
+  const data = res.getBody()?.data;
+  if (res.getStatus() == 200 && data?.clientToken) {
+      bru.setGlobalEnvVar("VOICE_ROOM_NAME", data.roomName);
+      bru.setGlobalEnvVar("VOICE_SERVER_URL", data.serverUrl);
+      bru.setGlobalEnvVar("VOICE_CLIENT_TOKEN", data.clientToken);
+      bru.setGlobalEnvVar("VOICE_CONVERSATION_ID", data.conversationId);
+  }
+}
+
+docs {
+  > Creates one `run_Conversations` row with `Channel = Voice` and returns the
+  > LiveKit room and caller token. Join with the LiveKit console/CLI. In `test`
+  > mode the conversation row is still created, but messages and turn timing
+  > are not persisted; use a published `live` version for a full persistence
+  > check. The returned token is short-lived; do not commit it.
+}

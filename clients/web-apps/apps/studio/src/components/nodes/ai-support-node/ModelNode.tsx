@@ -12,7 +12,13 @@ import { useShallow } from "zustand/react/shallow";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useDCPNavigationGuard, useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import {
+  DCPFieldSchemaType,
+  getNodeConfig,
+  useDCPNavigationGuard,
+  useDynamicConfigPanelStore,
+} from "@/features/dynamic-config-panel";
+import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { ModelConfigType } from "@/types/model-config-type";
 import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { getProviderBrandIcon } from "@/utils/provider-brand-icons.util";
@@ -39,7 +45,6 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
         ? getProvider(data?.inputs)
         : (data?.selectedModel?.provider as unknown as string);
       if (provider) {
-        //  node by id and update its label
         updateNodeData(id, {
           label: provider,
         });
@@ -75,6 +80,17 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
   // Guarded: switching nodes flushes pending edits first, aborts on validation errors
   const guardNavigation = useDCPNavigationGuard();
 
+  const openModelConfigTab = (nodeData: NodeDataType) => {
+    setTimeout(() => {
+      void getNodeConfig(nodeData.name).then((config) => {
+        const modelField = config?.fields?.find((field: DCPFieldSchemaType) =>
+          field.name.includes("__ModelConfig__"),
+        );
+        if (modelField?.category) setSelectedTab(modelField.category);
+      });
+    }, 100);
+  };
+
   return (
     <>
       <div className="relative">
@@ -87,8 +103,13 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
           )}
           onDoubleClick={() => {
             if (!connectedNodeId || !connectedNodeData?.data) return;
+            const nodeData = connectedNodeData.data as NodeDataType;
             void guardNavigation(() => {
-              openNodeConfig(connectedNodeId, connectedNodeData?.data as NodeDataType);
+              openNodeConfig(connectedNodeId, nodeData);
+              if (nodeData.name === VOICE_AGENT_NODE_NAME) {
+                openModelConfigTab(nodeData);
+                return;
+              }
               setTimeout(() => {
                 setSelectedTab("Model");
               }, 100);

@@ -75,7 +75,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         title: "Invalid JSON",
         description: "Please fix the JSON syntax before saving.",
         confirmBtnText: "Got it",
-        confirmActionFn: () => {},
+        confirmActionFn: () => { },
         isDestructive: false,
       });
     }
@@ -90,7 +90,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         title: "Invalid JSON",
         description: "Please ensure the arguments are valid JSON before executing.",
         confirmBtnText: "Got it",
-        confirmActionFn: () => {},
+        confirmActionFn: () => { },
         isDestructive: false,
       });
       return;
@@ -132,7 +132,11 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
             <div className="mb-2 flex items-center gap-1.5 font-medium text-foreground">
               Editing Arguments:
             </div>
-            <JsonEditor value={draftEditStr} onChange={setDraftEditStr} disabled={false} />
+            <JsonEditor
+              value={draftEditStr}
+              onChange={(value) => setDraftEditStr(value as string)}
+              disabled={false}
+            />
             <div className="mt-3 flex items-center justify-end gap-2">
               <Button variant="outline" size="xs" onClick={handleCancelEdit}>
                 Cancel edit

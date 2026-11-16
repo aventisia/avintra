@@ -513,6 +513,8 @@ clients/web-apps/packages/chat/.turbo/turbo-lint.log
 clients/web-apps/packages/chat/.turbo/turbo-typecheck.log
 clients/web-apps/packages/agents/.turbo/turbo-lint.log
 clients/web-apps/packages/agents/.turbo/turbo-typecheck.log
+clients/web-apps/packages/voice-client/.turbo/turbo-lint.log
+clients/web-apps/packages/voice-client/.turbo/turbo-typecheck.log
 
 # Custom ignore rules
 [Pp]ublished/

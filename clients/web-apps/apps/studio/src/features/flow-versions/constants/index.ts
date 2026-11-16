@@ -11,6 +11,7 @@ const FLOW_TYPE_LABELS: Record<FlowTypesEnum, string> = {
   [FlowTypesEnum.Agent]: "Automation agent",
   [FlowTypesEnum.ChatAgent]: "Chat agent",
   [FlowTypesEnum.Block]: "Block",
+  [FlowTypesEnum.VoiceAgent]: "Voice agent",
 };
 
 export { AGENT_DETAILS_PANEL_ID, DATA_QUERY_KEY, FLOW_TYPE_LABELS };

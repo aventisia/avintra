@@ -18,6 +18,10 @@ const MAX_RESOURCE_FLOWS = 100;
 /**
  * The flow types that can be assigned to a resource.
  */
-const ASSIGNABLE_FLOW_TYPES = [FlowTypesEnum.Agent, FlowTypesEnum.ChatAgent];
+const ASSIGNABLE_FLOW_TYPES = [
+  FlowTypesEnum.Agent,
+  FlowTypesEnum.ChatAgent,
+  FlowTypesEnum.VoiceAgent,
+];
 
 export { ASSIGNABLE_FLOW_TYPES, MAX_RESOURCE_FLOWS, RESOURCE_FLOW_KEY, RESOURCE_FLOW_SEARCH_KEY };

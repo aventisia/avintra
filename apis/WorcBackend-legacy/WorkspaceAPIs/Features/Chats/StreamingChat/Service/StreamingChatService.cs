@@ -7,6 +7,7 @@ using AspNetToolkit.Utils;
 using ExecutorLibrary.Helpers;
 using ExecutorLibrary.Models;
 using WorkspaceAPIs.Features.Chats.StreamingChat.DTOs;
+using WorkspaceAPIs.Features.VoiceSessions.Service;
 using WorkspaceAPIs.Services;
 
 namespace WorkspaceAPIs.Features.Chats.StreamingChat.Service;
@@ -488,7 +489,7 @@ public class StreamingChatService : IStreamingChatService
         var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
                 w.Id == flowVersionId &&
-                w.Flow.Type == FlowTypesEnum.ChatAgent)
+                (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent))
             .Include(w => w.Flow)
                 .ThenInclude(f => f!.FlowUsers)
             .IgnoreQueryFilters()
@@ -536,16 +537,21 @@ public class StreamingChatService : IStreamingChatService
             return (null, null);
         }
 
-        // Parse the flow graph and locate the Chat AI node (CreateConversationAIAgent -> aiNode).
+        // Parse the flow graph and locate the single AI node. ChatAgent graphs use
+        // CreateConversationAIAgent; VoiceAgent graphs use CreateVoiceAIAgent.
         var flow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
+        var agentNodeName = flowVersion.Flow?.Type == FlowTypesEnum.VoiceAgent
+            ? VoiceAgentGraphHelpers.VoiceAgentNodeName
+            : ChatAgentGraphHelpers.ChatAgentNodeName;
         var chatNode = flow?.Nodes?.FirstOrDefault(n =>
             string.Equals(n.Type, "aiNode", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(n.Data?.Name, "CreateConversationAIAgent", StringComparison.OrdinalIgnoreCase));
+            string.Equals(n.Data?.Name, agentNodeName, StringComparison.OrdinalIgnoreCase));
 
         if (chatNode is null)
         {
             _logger.LogWarning(
-                "[StreamingChat] No aiNode named CreateConversationAIAgent found. FlowVersionId={Id}, NodeCount={NodeCount}",
+                "[StreamingChat] No aiNode named {NodeName} found. FlowVersionId={Id}, NodeCount={NodeCount}",
+                agentNodeName,
                 flowVersionId,
                 flow?.Nodes?.Count ?? 0);
             return (flowVersion, null);
@@ -576,7 +582,7 @@ public class StreamingChatService : IStreamingChatService
     }
 
     /// <summary>
-    /// Builds the llmpipeline LLMRequest payload from the resolved Chat AI node config.
+    /// Builds the llmpipeline LLMRequest payload from the resolved AI node config.
     /// A model picked for this turn overrides the node configuration.
     /// </summary>
     private async Task<object> BuildLlmPayloadAsync(
@@ -584,19 +590,58 @@ public class StreamingChatService : IStreamingChatService
         WorkspaceAPIs.Entities.FlowVersion flowVersion,
         JsonNode nodeConfig)
     {
-        var modelConfig = GetObjectProperty(nodeConfig, "__ModelConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__ModelConfig__");
-        var prompt = GetStringProperty(nodeConfig, "__Prompt__Conversation") ?? GetStringProperty(nodeConfig, "__Prompt__");
-        var kbConfig = GetObjectProperty(nodeConfig, "__KbConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__KbConfig__");
-        var toolsConfig = GetArrayProperty(nodeConfig, "__ToolsConfig__Conversation") ?? GetArrayProperty(nodeConfig, "__ToolsConfig__");
-        var skillsConfig = GetObjectProperty(nodeConfig, "__SkillsConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__SkillsConfig__");
-        var memoryConfig = GetObjectProperty(nodeConfig, "__MemoryConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__MemoryConfig__");
+        var isVoiceAgent = flowVersion.Flow?.Type == FlowTypesEnum.VoiceAgent;
+        var voiceSettings = isVoiceAgent
+            ? VoiceAgentSettingsFactory.Create(
+                flowVersion.Id,
+                flowVersion.FlowId,
+                flowVersion.Flow?.Name,
+                nodeConfig as JsonObject ?? new JsonObject())
+            : null;
+
+        var modelConfig = isVoiceAgent
+            ? null
+            : GetObjectProperty(nodeConfig, "__ModelConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__ModelConfig__");
+        var prompt = isVoiceAgent
+            ? null
+            : GetStringProperty(nodeConfig, "__Prompt__Conversation") ?? GetStringProperty(nodeConfig, "__Prompt__");
+        var kbConfig = isVoiceAgent
+            ? null
+            : GetObjectProperty(nodeConfig, "__KbConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__KbConfig__");
+        var toolsConfig = isVoiceAgent
+            ? null
+            : GetArrayProperty(nodeConfig, "__ToolsConfig__Conversation") ?? GetArrayProperty(nodeConfig, "__ToolsConfig__");
+        var skillsConfig = isVoiceAgent
+            ? null
+            : GetObjectProperty(nodeConfig, "__SkillsConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__SkillsConfig__");
+        var memoryConfig = isVoiceAgent
+            ? null
+            : GetObjectProperty(nodeConfig, "__MemoryConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__MemoryConfig__");
         var actionsConfig = GetObjectProperty(nodeConfig, "__RecommendedActionsConfig__Conversation");
 
         var enableDynamicActions = GetBoolProperty(actionsConfig, "enableDynamicActions") ?? false;
         var followUpMessagePrompt = GetStringProperty(actionsConfig, "followUpMessagePrompt");
 
-        var skillNames = GetStringArrayProperty(skillsConfig, "skills");
+        var skillNames = isVoiceAgent ? voiceSettings?.Skills : GetStringArrayProperty(skillsConfig, "skills");
         var hasSkillNames = skillNames is { Count: > 0 };
+
+        var voiceSystemPrompt = voiceSettings?.Persona.SystemPrompt;
+        var firstSpeaker = voiceSettings?.FirstSpeaker ?? "human";
+        var introductionText = voiceSettings?.Introduction;
+        var managerAgentTarget = voiceSettings?.ManagerAgentTarget;
+        var conversationId = request.ConversationId?.ToString() ?? (request.IsTempChat ? null : Guid.NewGuid().ToString());
+        object? managerAgent = string.IsNullOrWhiteSpace(managerAgentTarget)
+            ? null
+            : new
+            {
+                target = managerAgentTarget,
+                context = new
+                {
+                    current_turn_summary = request.UserInput,
+                    voice_system_prompt = voiceSystemPrompt,
+                    conversation_id = conversationId,
+                },
+            };
 
         // Build the ordered input message list: system prompt, follow-up prompt, then chat history.
         var messages = new List<object>();
@@ -620,7 +665,23 @@ public class StreamingChatService : IStreamingChatService
 
         // tool_config: array of { tool, credential_name, actions: [{action, approval}] }
         var toolConfig = new List<object>();
-        if (toolsConfig is not null)
+        if (isVoiceAgent && voiceSettings is not null)
+        {
+            foreach (var tool in voiceSettings.Tools)
+            {
+                toolConfig.Add(new
+                {
+                    tool = tool.Tool,
+                    credential_name = tool.CredentialName,
+                    actions = tool.Actions.Select(action => new
+                    {
+                        action = action.Action,
+                        approval = action.Approval,
+                    }).ToList(),
+                });
+            }
+        }
+        else if (toolsConfig is not null)
         {
             foreach (var item in toolsConfig.AsArray())
             {
@@ -651,43 +712,84 @@ public class StreamingChatService : IStreamingChatService
             }
         }
 
-        var kbNames = kbConfig is JsonObject kb && kb.TryGetPropertyValue("knowledgeBase", out var kbNode) && kbNode is JsonArray kbArray
-            ? kbArray.Where(x => x is not null).Select(x => x!.ToString()).ToList()
-            : null;
+        var kbNames = isVoiceAgent
+            ? voiceSettings?.KnowledgeBase.Names
+            : kbConfig is JsonObject kb && kb.TryGetPropertyValue("knowledgeBase", out var kbNode) && kbNode is JsonArray kbArray
+                ? kbArray.Where(x => x is not null).Select(x => x!.ToString()).ToList()
+                : null;
         var hasKbNames = kbNames is { Count: > 0 };
-        var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
-        var sourceThreshold = hasKbNames ? GetDoubleProperty(kbConfig, "sourceThreshold") : null;
-        var maxOutputTokens = GetIntProperty(modelConfig, "max_output_tokens");
-        var maxShortTermTurns = GetIntProperty(memoryConfig, "maxDataStored");
+        var topK = hasKbNames
+            ? (isVoiceAgent ? voiceSettings!.KnowledgeBase.TopK : GetIntProperty(kbConfig, "numberOfChunks") ?? 5)
+            : (int?)null;
+        var sourceThreshold = hasKbNames
+            ? (isVoiceAgent ? voiceSettings!.KnowledgeBase.SourceThreshold : GetDoubleProperty(kbConfig, "sourceThreshold"))
+            : null;
+        var maxOutputTokens = isVoiceAgent
+            ? voiceSettings?.Llm.MaxOutputTokens
+            : GetIntProperty(modelConfig, "max_output_tokens");
+        var maxShortTermTurns = isVoiceAgent
+            ? voiceSettings?.Memory.MaxShortTermTurns
+            : GetIntProperty(memoryConfig, "maxDataStored");
+        var pronunciations = isVoiceAgent
+            ? voiceSettings?.Pronunciations.Select(item => new
+            {
+                term = item.Term,
+                pronunciation = item.Pronunciation,
+            }).ToList()
+            : null;
+        var sfx = isVoiceAgent && voiceSettings?.SoundEffects is { } soundEffects
+            ? new
+            {
+                enabled = soundEffects.Enabled,
+                tool_call_cue_url = soundEffects.ToolCallCueUrl,
+                ambience_url = soundEffects.AmbienceUrl,
+            }
+            : null;
+
+        var provider = isVoiceAgent ? voiceSettings?.Llm.Provider : GetStringProperty(modelConfig, "provider");
+        var model = isVoiceAgent ? voiceSettings?.Llm.Model : GetStringProperty(modelConfig, "model");
+        var temperature = isVoiceAgent ? voiceSettings?.Llm.Temperature ?? 1 : GetDoubleProperty(modelConfig, "temperature") ?? 1;
+        var topP = isVoiceAgent ? voiceSettings?.Llm.TopP ?? 1 : GetDoubleProperty(modelConfig, "top_p") ?? 1;
+        var reasoningEffort = isVoiceAgent ? voiceSettings?.Llm.ReasoningEffort : GetStringProperty(modelConfig, "reasoning_effort");
+        var isByokEnabled = isVoiceAgent
+            ? voiceSettings?.Llm.IsByokEnabled == true
+            : GetBoolProperty(modelConfig, "is_byok_enabled") == true;
+        var credentialName = isVoiceAgent ? voiceSettings?.Llm.CredentialName : ReadCredentialProperty(modelConfig);
 
         var modelSelection = await ResolveModelSelectionAsync(request);
-        var nodeProvider = modelConfig?.TryGetPropertyValue("provider", out var provider) == true ? provider?.ToString() : null;
-        var nodeModel = modelConfig?.TryGetPropertyValue("model", out var model) == true ? model?.ToString() : null;
-        var nodeByok = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true;
 
         return new
         {
-            provider = modelSelection?.Provider ?? nodeProvider,
-            model = modelSelection?.Model ?? nodeModel,
+            provider = modelSelection?.Provider ?? provider,
+            model = modelSelection?.Model ?? model,
             input = messages,
             files = request.Files,
             tool_config = toolConfig.Count > 0 ? toolConfig : null,
             is_chat_agent = true,
+            is_voice_agent = isVoiceAgent,
+            first_speaker = isVoiceAgent ? firstSpeaker : null,
+            introduction_text = introductionText,
+            voice_system_prompt = voiceSystemPrompt,
+            manager_agent = managerAgent,
             generate_followup_messages = enableDynamicActions,
             stream = true,
             is_temp_chat = request.IsTempChat,
-            conversation_id = request.ConversationId?.ToString() ?? (request.IsTempChat ? null : Guid.NewGuid().ToString()),
-            temperature = modelConfig?.TryGetPropertyValue("temperature", out var temp) == true ? temp?.GetValue<double>() : 1.0,
-            top_p = modelConfig?.TryGetPropertyValue("top_p", out var topP) == true ? topP?.GetValue<double>() : 1.0,
-            reasoning_effort = modelConfig?.TryGetPropertyValue("reasoning_effort", out var reEffort) == true && reEffort?.GetValueKind() == System.Text.Json.JsonValueKind.String ? reEffort?.GetValue<string>() : null,
-            is_byok_enabled = modelSelection?.IsByokEnabled ?? nodeByok,
-            credential_name = modelSelection?.CredentialName ?? ReadCredentialProperty(modelConfig),
+            conversation_id = conversationId,
+            temperature,
+            top_p = topP,
+            reasoning_effort = reasoningEffort,
+            is_byok_enabled = modelSelection?.IsByokEnabled ?? isByokEnabled,
+            credential_name = modelSelection?.CredentialName ?? credentialName,
             max_output_tokens = maxOutputTokens,
             kb_names = kbNames,
             top_k = topK,
             source_threshold = sourceThreshold,
             skill_names = hasSkillNames ? skillNames : null,
             max_short_term_turns = maxShortTermTurns,
+            pronunciations,
+            sfx,
+            flow_version_id = flowVersion.Id.ToString(),
+            channel = ToChannelName(isVoiceAgent ? ConversationChannelEnum.Voice : ConversationChannelEnum.Chat),
             ref_type = "Agent",
             ref_id = flowVersion.FlowId.ToString(),
             ref_name = flowVersion.Flow?.Name ?? string.Empty,
@@ -912,6 +1014,117 @@ public class StreamingChatService : IStreamingChatService
             : trimmed;
         return unprefixed;
     }
+
+    /// <summary>
+    /// Composes the VoiceAgent persona system prompt from its Goal, Role, and
+    /// Instructions fields, in that order. Empty sections are omitted.
+    /// </summary>
+    private static string? ComposeVoiceSystemPrompt(string? goal, string? role, string? instructions)
+    {
+        var sections = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(goal))
+            sections.Add($"Goal:\n{goal.Trim()}");
+        if (!string.IsNullOrWhiteSpace(role))
+            sections.Add($"Role:\n{role.Trim()}");
+        if (!string.IsNullOrWhiteSpace(instructions))
+            sections.Add($"Instructions:\n{instructions.Trim()}");
+
+        return sections.Count > 0 ? string.Join("\n\n", sections) : null;
+    }
+
+    private static readonly Regex VoiceVariablePattern = new(@"\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Replaces {{name}} placeholders in VoiceAgent text with the defaults from
+    /// <c>__Variables__Voice</c>; names without a default are left intact.
+    /// </summary>
+    private static string? ResolveVoiceVariables(JsonNode? nodeConfig, string? text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        var variables = ReadVoiceVariables(nodeConfig);
+        if (variables.Count == 0)
+            return text;
+
+        return VoiceVariablePattern.Replace(text, match =>
+        {
+            var name = match.Groups[1].Value;
+            return variables.TryGetValue(name, out var value) ? value : match.Value;
+        });
+    }
+
+    private static Dictionary<string, string> ReadVoiceVariables(JsonNode? nodeConfig)
+    {
+        var variables = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.VariablesEnabledKey) == false)
+            return variables;
+
+        if (GetObjectProperty(nodeConfig, VoiceAgentGraphHelpers.VariablesKey) is not JsonObject obj)
+            return variables;
+
+        foreach (var pair in obj)
+        {
+            if (pair.Value is null)
+                continue;
+
+            variables[pair.Key] = pair.Value.GetValueKind() == System.Text.Json.JsonValueKind.String
+                ? pair.Value.GetValue<string>()
+                : pair.Value.ToString();
+        }
+
+        return variables;
+    }
+
+    private static List<object>? BuildPronunciationPayload(JsonNode? nodeConfig)
+    {
+        if (GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.PronunciationEnabledKey) == false)
+            return null;
+
+        var arr = GetArrayProperty(nodeConfig, VoiceAgentGraphHelpers.PronunciationKey);
+        if (arr is null)
+            return null;
+
+        var entries = new List<object>();
+        foreach (var item in arr)
+        {
+            if (item is not JsonObject obj)
+                continue;
+
+            var term = GetStringProperty(obj, "term");
+            var pronunciation = GetStringProperty(obj, "pronunciation");
+            if (string.IsNullOrWhiteSpace(term) || string.IsNullOrWhiteSpace(pronunciation))
+                continue;
+
+            entries.Add(new { term, pronunciation });
+        }
+
+        return entries.Count > 0 ? entries : null;
+    }
+
+    private static object? BuildSfxPayload(JsonNode? nodeConfig)
+    {
+        var masterOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxEnabledKey) == true;
+        var cueUrl = GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.SfxToolCallCueUrlKey);
+        var ambienceUrl = GetStringProperty(nodeConfig, VoiceAgentGraphHelpers.SfxAmbienceUrlKey);
+        var cueOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxToolCallCueEnabledKey)
+            ?? !string.IsNullOrWhiteSpace(cueUrl);
+        var ambienceOn = GetBoolProperty(nodeConfig, VoiceAgentGraphHelpers.SfxAmbienceEnabledKey)
+            ?? !string.IsNullOrWhiteSpace(ambienceUrl);
+
+        if (!masterOn && string.IsNullOrWhiteSpace(cueUrl) && string.IsNullOrWhiteSpace(ambienceUrl))
+            return null;
+
+        return new
+        {
+            enabled = masterOn,
+            tool_call_cue_url = masterOn && cueOn ? cueUrl : null,
+            ambience_url = masterOn && ambienceOn ? ambienceUrl : null,
+        };
+    }
+    private static string ToChannelName(ConversationChannelEnum channel) =>
+        channel.ToString().ToLowerInvariant();
 
     // --- JsonNode helpers ---
 

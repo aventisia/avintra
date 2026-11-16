@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { useThemeStore } from "@avplatform/ui/stores";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Edge,
@@ -29,6 +30,7 @@ import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stor
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { VoiceAgentStudio } from "@/features/voice-builder";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
@@ -44,11 +46,14 @@ import { useDefaultActions } from "../hooks/useDefaultActions";
 import { useFetchConfigKeys } from "../hooks/useFetchConfigKeys";
 import { useFetchFlowToLoad } from "../hooks/useFetchFlowToLoad";
 import { useOnNodeDelete } from "../hooks/useOnNodeDelete";
+import { useVoiceIntroduction } from "../hooks/useVoiceIntroduction.hook";
 import "../styles/override-edge-style.css";
 import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
+import { isSingleNodeAgentFlow } from "../utils/single-node-agent-flow.util";
 import { saveViewport } from "../utils/viewport-persistence";
+import { getVoiceAgentEngineMode } from "../utils/voice-agent-graph.util";
 import { AutoFollowExecutingNode } from "./AutoFollowExecutingNode";
 import { BackgroundExt } from "./BackgroundExt";
 import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
@@ -61,6 +66,8 @@ import { ViewControls } from "./view-controls";
  * A custom extension of the ReactFlow component.
  */
 export const ReactFlowExt = () => {
+  const isDark = useThemeStore((state) => state.isDark);
+
   // Get ReactFlowExt store state & actions
   const {
     nodes,
@@ -100,20 +107,33 @@ export const ReactFlowExt = () => {
     queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
   }, [queryClient]);
 
-  // Model label for the always-visible ChatAgent test panel, read from the
-  // Chat AI node's model config so the tester knows what is being exercised.
+  const engineMode = useMemo(
+    () => (flowType === FlowTypesEnum.VoiceAgent ? getVoiceAgentEngineMode(nodes) : undefined),
+    [flowType, nodes],
+  );
+
+  // Model label for the always-visible single-node agent test panel, read from the
+  // AI node's model config so the tester knows what is being exercised.
   const chatModelLabel = useMemo(() => {
-    if (flowType !== FlowTypesEnum.ChatAgent) return undefined;
-    const chatNode = nodes.find((node) => node.type === "aiNode");
+    if (flowType !== FlowTypesEnum.ChatAgent && flowType !== FlowTypesEnum.VoiceAgent)
+      return undefined;
+    const aiNode = nodes.find((node) => node.type === "aiNode");
     const inputs = (
-      chatNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
+      aiNode?.data as { inputs?: Array<{ key?: string; value?: unknown }> } | undefined
     )?.inputs;
-    const modelConfig = inputs?.find((input) => input.key === "__ModelConfig__Conversation")
-      ?.value as { model?: unknown } | undefined;
+    const modelKey =
+      engineMode === "realtime"
+        ? "__ModelConfig__RealtimeVoice"
+        : flowType === FlowTypesEnum.VoiceAgent
+          ? "__ModelConfig__Voice"
+          : "__ModelConfig__Conversation";
+    const modelConfig = inputs?.find((input) => input.key === modelKey)?.value as
+      { model?: unknown } | undefined;
     return typeof modelConfig?.model === "string" ? modelConfig.model : undefined;
-  }, [flowType, nodes]);
+  }, [engineMode, flowType, nodes]);
 
   const isTestChatDisabled = currentFlow.isPublished === true;
+  const isVoiceAgentFlow = flowType === FlowTypesEnum.VoiceAgent;
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -210,6 +230,12 @@ export const ReactFlowExt = () => {
 
   const recommendActions = useDefaultActions();
 
+  const voiceIntroMessages = useVoiceIntroduction();
+  const testPanelActions = recommendActions?.defaultActions ?? [];
+  const testPanelDescription = chatModelLabel
+    ? `Live test · ${chatModelLabel} · history is not saved`
+    : "Live test · history is not saved";
+
   const calculateMenuPosition = (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
     const pane = reactFlowWrapper.current?.getBoundingClientRect();
     if (!pane) return null;
@@ -235,8 +261,8 @@ export const ReactFlowExt = () => {
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -253,8 +279,8 @@ export const ReactFlowExt = () => {
   // Define onEdgeContextMenu handler
   const onEdgeContextMenu = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -270,8 +296,8 @@ export const ReactFlowExt = () => {
 
   const onPaneContextMenu = useCallback(
     (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
-      // ChatAgent has no canvas actions — allow browser default menu.
-      if (flowType === FlowTypesEnum.ChatAgent) return;
+      // Single-node agents have no canvas actions — allow browser default menu.
+      if (isSingleNodeAgentFlow(flowType)) return;
       event.preventDefault();
       const position = calculateMenuPosition(event);
       if (!position) return;
@@ -327,6 +353,16 @@ export const ReactFlowExt = () => {
     ],
   );
 
+  if (isVoiceAgentFlow) {
+    return (
+      <VoiceAgentStudio
+        isLoading={isLoading || isVersionTransitioning}
+        engineMode={engineMode}
+        modelLabel={chatModelLabel}
+      />
+    );
+  }
+
   // Render ReactFlow component
   return (
     <ResizablePanelGroup orientation="horizontal" className="!bg-bg p-1.5">
@@ -338,6 +374,7 @@ export const ReactFlowExt = () => {
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <FlowBreadcrumbs />
           <ReactFlow
+            colorMode={isDark ? "dark" : "light"}
             fitView
             minZoom={0.1}
             panOnDrag={panOnDrag}
@@ -385,7 +422,7 @@ export const ReactFlowExt = () => {
 
         <ReactFlowDialogWrapper />
       </ResizablePanel>
-      {flowType === FlowTypesEnum.ChatAgent && (
+      {isSingleNodeAgentFlow(flowType) && (
         <>
           <ResizableHandle withHandle className="w-1.5 mr-px bg-transparent" />
           <ResizablePanel defaultSize="40%" minSize="35%" className="overflow-hidden rounded-xl">
@@ -401,15 +438,10 @@ export const ReactFlowExt = () => {
               }
               title="Test chat"
               badge="Test mode"
-              description={
-                chatModelLabel
-                  ? `Live test · ${chatModelLabel} · history is not saved`
-                  : "Live test · history is not saved"
-              }
+              description={testPanelDescription}
+              initialMessages={voiceIntroMessages}
               onRequestComplete={handleChatRequestComplete}
-              defaultActions={
-                recommendActions?.defaultActions ? recommendActions?.defaultActions : []
-              }
+              defaultActions={testPanelActions}
             />
           </ResizablePanel>
         </>

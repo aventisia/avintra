@@ -13,7 +13,9 @@ export const getAgentKindLabel = (type?: string | null) =>
     ? "Chat agent"
     : type === FlowTypesEnum.Agent
       ? "Automation agent"
-      : null;
+      : type === FlowTypesEnum.VoiceAgent
+        ? "Voice Agent"
+        : null;
 
 export type AgentMeta = {
   versions: string | null;

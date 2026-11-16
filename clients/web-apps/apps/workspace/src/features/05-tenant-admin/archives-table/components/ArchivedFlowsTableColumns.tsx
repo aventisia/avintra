@@ -3,6 +3,7 @@ import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
+import { getFlowTypeLabel } from "@/features/01-build/flows-table/utils/flow-type-label.util";
 import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
 
 import { getColumnName } from "../constants/column-display-names";
@@ -39,7 +40,11 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     accessorKey: "type",
     meta: { label: getColumnName("type") },
     header: renderHeader("type"),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">
+        {getFlowTypeLabel(String(row.getValue("type")))}
+      </div>
+    ),
   },
   {
     accessorKey: "lastModifiedBy",
