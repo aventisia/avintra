@@ -134,7 +134,14 @@ def test_text_generation_byok_entries_carry_ref_name_in_both_columns(monkeypatch
     )
 
     generation_service._post_byok_usage(
-        request, response, SimpleNamespace(access_token="jwt", space_id="space-1")
+        request,
+        response,
+        SimpleNamespace(
+            access_token="jwt",
+            space_id="space-1",
+            tenant_id=None,
+            env_type="dev",
+        ),
     )
 
     entries = captured.get("entries") or []

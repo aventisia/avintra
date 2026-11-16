@@ -234,7 +234,6 @@ public static class InitialNodesAndEdgesUtil
                 Key = "__ModelConfig__Voice",
                 Value = (object?)new
                 {
-                    is_byok_enabled = true,
                     provider = "",
                     credential_name = "",
                     model = "",
@@ -249,7 +248,6 @@ public static class InitialNodesAndEdgesUtil
                 Key = "__ModelConfig__SpeechToText",
                 Value = (object?)new
                 {
-                    is_byok_enabled = true,
                     provider = "",
                     credential_name = "",
                     model = "",
@@ -263,7 +261,6 @@ public static class InitialNodesAndEdgesUtil
                 Key = "__ModelConfig__TextToSpeech",
                 Value = (object?)new
                 {
-                    is_byok_enabled = true,
                     provider = "",
                     credential_name = "",
                     model = "",
@@ -288,7 +285,6 @@ public static class InitialNodesAndEdgesUtil
                 Key = "__ModelConfig__RealtimeVoice",
                 Value = (object?)new
                 {
-                    is_byok_enabled = true,
                     provider = "",
                     credential_name = "",
                     model = "",

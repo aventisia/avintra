@@ -27,7 +27,6 @@ export const transcribeSpeech = async (
       audio_format: audio.type || "audio/webm",
       stream: false,
       credential_name: model.credentialName,
-      is_byok_enabled: model.isByokEnabled,
       ref_type: "LandingChat",
       ref_id: conversationId ?? "",
       ref_name: "Landing Chat",

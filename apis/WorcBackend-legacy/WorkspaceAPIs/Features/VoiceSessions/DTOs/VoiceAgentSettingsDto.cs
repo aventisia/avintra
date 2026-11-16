@@ -113,10 +113,6 @@ public sealed class VoiceModelSettingsDto
     [JsonPropertyName("credentialName")]
     public string? CredentialName { get; init; }
 
-    /// <summary>Whether the referenced credential is caller-supplied.</summary>
-    [JsonPropertyName("isByokEnabled")]
-    public bool IsByokEnabled { get; init; }
-
     /// <summary>The sampling temperature.</summary>
     [JsonPropertyName("temperature")]
     public double Temperature { get; init; } = 1;

@@ -197,7 +197,7 @@ const ModelConfigField = ({
       if (!showByok) return embeddingModelProviders;
       return embeddingModelProviders.filter((p) => isProviderEnabled(p.value));
     }
-    if (isRealtime && is_byok_enabled) {
+    if (isRealtime && showByok) {
       const realtimeProvidersByValue = new Map(modelProviders.map((p) => [p.value, p]));
       return Object.keys(enabledModelIdsByProvider).map(
         (value): LLMProviderType =>
@@ -447,7 +447,7 @@ const ModelConfigField = ({
         )}
 
       {isRealtime &&
-        is_byok_enabled &&
+        showByok &&
         isInitialized &&
         !isLoading &&
         !isError &&
@@ -459,7 +459,7 @@ const ModelConfigField = ({
         )}
 
       {isRealtime &&
-        is_byok_enabled &&
+        showByok &&
         isInitialized &&
         !!providerValue &&
         !isExecutableRealtimeProvider(providerValue) && (
@@ -485,7 +485,6 @@ const ModelConfigField = ({
           providerPath={fieldNames.provider}
           modelPath={fieldNames.model}
           credentialPath={fieldNames.credential_name}
-          isByokPath={fieldNames.is_byok_enabled}
           capability={isRealtime ? "realtime" : "tts"}
         />
       )}

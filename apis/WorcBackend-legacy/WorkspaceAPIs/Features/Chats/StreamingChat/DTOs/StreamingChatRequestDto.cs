@@ -52,12 +52,6 @@ public class StreamingChatRequestDto
     public string? CredentialName { get; set; }
 
     /// <summary>
-    /// Whether the selected model uses a tenant BYOK credential. Advisory only:
-    /// the credential is resolved server-side from the tenant vault.
-    /// </summary>
-    public bool? IsByokEnabled { get; set; }
-
-    /// <summary>
     /// Landing chat only: how long a reasoning model thinks (low, medium or high).
     /// Null or any other value keeps the model's default.
     /// </summary>

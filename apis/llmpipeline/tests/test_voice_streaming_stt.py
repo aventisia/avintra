@@ -43,7 +43,6 @@ def _settings(model: str = STREAMING_STT_MODEL, **stt_overrides) -> dict:
         "provider": "elevenlabs",
         "model": model,
         "credentialName": "caller-stt-key",
-        "isByokEnabled": True,
     }
     stt_settings.update(stt_overrides)
     return {
@@ -57,10 +56,10 @@ def _patch_credentials(monkeypatch, resolved: dict) -> None:
     monkeypatch.setattr(
         stt_adapter,
         "resolve_credentials",
-        lambda *args, **_kwargs: CredentialResolution(
+        lambda provider, credential_name, user: CredentialResolution(
             kwargs=resolved,
-            uses_platform_credentials=not args[1],
-            credential_name=args[2],
+            uses_platform_credentials=not credential_name,
+            credential_name=credential_name,
         ),
     )
 
@@ -91,7 +90,7 @@ def test_realtime_scribe_model_builds_the_streaming_elevenlabs_adapter(monkeypat
 
 
 def test_every_other_model_keeps_the_batch_stream_adapter():
-    settings = _settings(model="scribe_v2", isByokEnabled=False, credentialName=None)
+    settings = _settings(model="scribe_v2", credentialName=None)
     request = build_stt_request(_claims(), settings)
 
     assert uses_streaming_stt(request) is False
@@ -163,7 +162,7 @@ def test_streamed_seconds_are_posted_as_one_platform_credit_entry(monkeypatch):
         "post_credit_usage",
         lambda *args: posted.append(args),
     )
-    settings = _settings(isByokEnabled=False, credentialName=None)
+    settings = _settings(credentialName=None)
     request = build_stt_request(_claims(), settings)
     recorder = StreamingSTTUsageRecorder(_claims(), request)
 
@@ -212,7 +211,7 @@ def test_a_posting_failure_does_not_escape_the_flush(monkeypatch):
         raise RuntimeError("billing is down")
 
     monkeypatch.setattr(usage, "post_credit_usage", fail)
-    settings = _settings(isByokEnabled=False, credentialName=None)
+    settings = _settings(credentialName=None)
     recorder = StreamingSTTUsageRecorder(
         _claims(), build_stt_request(_claims(), settings)
     )

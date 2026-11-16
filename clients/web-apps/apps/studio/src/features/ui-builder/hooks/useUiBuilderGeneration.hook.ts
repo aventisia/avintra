@@ -32,7 +32,6 @@ const buildUiBuilderRequest = (args: UiBuilderCallArgs, stream: boolean): UiBuil
     { role: "user", content: args.userContent },
   ],
   stream,
-  is_byok_enabled: true,
   credential_name: args.model.credentialName,
   max_output_tokens:
     args.maxOutputTokens ??

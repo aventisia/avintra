@@ -246,7 +246,7 @@ connections; they are stored on the project (`PUT ui-builder/{id}/data-connectio
 - **Only tenant-credential models.** The composer's model picker lists only the `Text` models
   enabled in Tenant Admin > Models whose provider has a vault credential (`GET ui-builder/models`,
   available to every builder, not only tenant admins), grouped by provider with the credential name
-  shown. Every generation sends `is_byok_enabled = true` with that `credential_name` and the
+  shown. Every generation sends that `credential_name` and the
   credential's `X-Env-Type`, so it is billed by the provider. Models enabled without a credential —
   including platform models that would consume credits — are never offered. Generation uses the
   LiteLLM route `/v2/llm/generate`, so any provider LiteLLM supports works. With no such model, a

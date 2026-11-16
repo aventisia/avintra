@@ -245,7 +245,7 @@ def _build_byok_usage_entries(
                 request.ref_id,
                 request.ref_name,
                 request.action,
-                request.agent_name,
+                request.ref_name,
                 space_id,
                 display_name=credential_display_name,
             )
