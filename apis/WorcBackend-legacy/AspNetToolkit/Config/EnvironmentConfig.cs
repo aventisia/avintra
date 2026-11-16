@@ -60,6 +60,28 @@ public class EnvironmentConfig
     /// </summary>
     public string GoogleSsoClientSecret { get; set; } = string.Empty;
 
+    // Social sign-in
+
+    /// <summary>
+    /// Google OAuth client id used by the "Continue with Google" flow.
+    /// </summary>
+    public string GoogleOAuthClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Google OAuth client secret used by the "Continue with Google" flow.
+    /// </summary>
+    public string GoogleOAuthClientSecret { get; set; } = string.Empty;
+
+    /// <summary>
+    /// GitHub OAuth client id used by the "Continue with GitHub" flow.
+    /// </summary>
+    public string GitHubOAuthClientId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// GitHub OAuth client secret used by the "Continue with GitHub" flow.
+    /// </summary>
+    public string GitHubOAuthClientSecret { get; set; } = string.Empty;
+
     // JWT
     public string JwtSecretKey { get; set; } = string.Empty;
     public int JwtValidityInMinutes { get; set; }

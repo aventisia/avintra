@@ -23,5 +23,10 @@ public enum ExternalAuthProviderEnum
     /// <summary>
     /// Represents authentication through Twitter.
     /// </summary>
-    Twitter
+    Twitter,
+
+    /// <summary>
+    /// Represents authentication through GitHub.
+    /// </summary>
+    GitHub
 }

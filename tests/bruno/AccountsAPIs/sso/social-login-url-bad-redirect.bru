@@ -1,0 +1,28 @@
+meta {
+  name: Social login URL rejects a foreign redirect
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/login-url?provider=Google&redirect=https%3A%2F%2Fevil.example%2Fsteal
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("refuses the foreign redirect", function() {
+    expect(res.getBody()).to.contain("The redirect URL is not allowed.");
+  });
+}
+
+docs {
+  > Only a site-relative path survives; an absolute URL, a protocol-relative path, a backslash trick,
+  > an encoded protocol-relative path or a control character is refused before any state is stored.
+  > The redirect is validated before the provider credential check, so this request needs no
+  > `GOOGLE_OAUTH_*` values.
+}

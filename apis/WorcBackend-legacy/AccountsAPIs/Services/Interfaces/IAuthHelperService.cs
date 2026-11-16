@@ -38,12 +38,13 @@ public interface IAuthHelperService
     Task<bool> SavePwdInObsoletePwdList(AccountUser user, string pwdToBeSaved, DateTimeOffset pwdSetOn);
 
     /// <summary>
-    /// Deletes all expired and active verification codes for the provided username and user agent.
+    /// Deletes all expired verification codes and the active codes of one request type for the provided username and user agent.
     /// </summary>
     /// <param name="userName">The username of the user.</param>
     /// <param name="userAgent">The user agent.</param>
+    /// <param name="requestType">The request type whose active codes are replaced.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean value indicating whether the verification codes were deleted successfully or not.</returns>
-    Task<bool> DeleteVerificationCodes(string userName, string userAgent);
+    Task<bool> DeleteVerificationCodes(string userName, string userAgent, VerificationCodeRequestTypesEnum requestType);
 
     /// <summary>
     /// Creates a JSON Web Token (JWT) for a user session or a single user.

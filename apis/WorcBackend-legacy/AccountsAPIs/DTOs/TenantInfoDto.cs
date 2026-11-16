@@ -24,4 +24,9 @@ public class TenantInfoDto
     /// Gets or sets the tenant's single sign-on configuration, if any.
     /// </summary>
     public string? SSOConfigJson { get; set; }
+
+    /// <summary>
+    /// Gets or sets the social provider a passwordless account signs in with, when it has one.
+    /// </summary>
+    public string? SocialLoginProvider { get; set; }
 }

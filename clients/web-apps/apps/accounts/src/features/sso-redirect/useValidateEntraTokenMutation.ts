@@ -3,7 +3,7 @@ import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { getPostLoginDestination } from "@/constants/post-login-destination";
+import { buildOnboardingUrl, getPostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
 import { validateEntraToken } from "./sso-redirect-apis";
@@ -17,7 +17,7 @@ export const useValidateEntraTokenMutation = () => {
       validateEntraToken(code, state),
     onSuccess: ({ data, message }) => {
       if (message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION)) {
-        window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
+        window.location.href = buildOnboardingUrl();
       } else {
         markFreshLogin();
         const userSession = setUserSessionLocally(data);

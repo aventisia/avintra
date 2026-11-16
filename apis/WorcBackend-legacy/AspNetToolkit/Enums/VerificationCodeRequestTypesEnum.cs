@@ -41,5 +41,10 @@ public enum VerificationCodeRequestTypesEnum
     /// <summary>
     /// Request type to create verification code to verify email address for account deacivation.
     /// </summary>
-    UpdateEmail
+    UpdateEmail,
+
+    /// <summary>
+    /// Request type to create the one-time confirmation code that links a social provider account to an existing account.
+    /// </summary>
+    LinkSocialLogin
 }

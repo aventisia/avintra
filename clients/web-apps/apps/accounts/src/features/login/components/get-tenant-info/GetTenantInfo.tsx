@@ -3,6 +3,7 @@ import { useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
+import { SocialSignInBlock } from "@/features/social-sign-in";
 
 import { GetTenantInfoForm } from "./GetTenantInfoForm";
 import { GoToCreateAccount } from "./GoToCreateAccount";
@@ -19,11 +20,8 @@ export const GetTenantInfo = () => {
         smallerHeading="Enter your email address"
       />
 
-      {/* Social sign in options */}
-      {/* <SocialButtons /> */}
-
-      {/* Separator */}
-      {/* <SeparatorWithText width="98%" overlayText="or continue with email" /> */}
+      {/* Social sign in options (hidden on desktop) */}
+      <SocialSignInBlock />
 
       {/* Get Tenant Info form */}
       <GetTenantInfoForm />

@@ -151,11 +151,10 @@ public static class SsoConfigHelpers
     }
 
     /// <summary>
-    /// Builds the token validation parameters used to verify an Entra id_token: JWKS signature (RS256 only),
-    /// audience, lifetime with zero clock skew. Issuer and tenant binding are asserted by the caller against
-    /// the verified tenant claim and the registered configuration.
+    /// Builds the token validation parameters used to verify a provider id_token: JWKS signature (RS256 only),
+    /// audience, lifetime with zero clock skew. Issuer and provider-specific claims are asserted by the caller.
     /// </summary>
-    public static TokenValidationParameters BuildEntraIdTokenValidationParameters(OpenIdConnectConfiguration configuration, string clientId)
+    public static TokenValidationParameters BuildIdTokenValidationParameters(OpenIdConnectConfiguration configuration, string clientId)
     {
         return new TokenValidationParameters
         {
