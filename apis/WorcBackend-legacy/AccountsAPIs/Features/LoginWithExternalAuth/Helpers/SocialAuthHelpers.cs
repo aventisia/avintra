@@ -77,27 +77,6 @@ public static class SocialAuthHelpers
     }
 
     /// <summary>
-    /// True when this deployment offers social sign-in at all.
-    /// </summary>
-    public static bool IsSocialOffered(EnvironmentConfig environmentConfig) =>
-        !environmentConfig.OnPremLoginDisabled
-        && environmentConfig.OnPremTenantType != OnPremTenantTypesEnum.Enterprise.ToString();
-
-    /// <summary>
-    /// True when the deployment has the credentials of the provider.
-    /// </summary>
-    public static bool IsSocialConfigured(EnvironmentConfig environmentConfig, ExternalAuthProviderEnum? provider) => provider switch
-    {
-        ExternalAuthProviderEnum.Google =>
-            !string.IsNullOrWhiteSpace(environmentConfig.GoogleOAuthClientId)
-            && !string.IsNullOrWhiteSpace(environmentConfig.GoogleOAuthClientSecret),
-        ExternalAuthProviderEnum.GitHub =>
-            !string.IsNullOrWhiteSpace(environmentConfig.GitHubOAuthClientId)
-            && !string.IsNullOrWhiteSpace(environmentConfig.GitHubOAuthClientSecret),
-        _ => false
-    };
-
-    /// <summary>
     /// Returns the social provider already linked to the account, or null when it has none.
     /// </summary>
     public static async Task<string?> GetLinkedProviderAsync(UserManager<AccountUser> userManager, AccountUser user)

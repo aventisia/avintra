@@ -26,12 +26,7 @@ public class TenantInfoDto
     public string? SSOConfigJson { get; set; }
 
     /// <summary>
-    /// Gets or sets the social provider the account is linked to, when one applies.
+    /// Gets or sets the social provider a passwordless account signs in with, when it has one.
     /// </summary>
     public string? SocialLoginProvider { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the account has a password to sign in with.
-    /// </summary>
-    public bool HasPassword { get; set; }
 }

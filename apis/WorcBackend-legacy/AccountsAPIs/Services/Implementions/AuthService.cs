@@ -140,14 +140,10 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
-            // A user linked to a social provider is offered it first, whether or not a password exists
-            var socialLoginProvider = await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user);
-            if (socialLoginProvider != null
-                && (!SocialAuthHelpers.IsSocialOffered(_environmentConfig)
-                    || !SocialAuthHelpers.IsSocialConfigured(_environmentConfig, SocialAuthHelpers.ParseProvider(socialLoginProvider))))
-            {
-                socialLoginProvider = null;
-            }
+            // A passwordless user can be told which social provider signs them in
+            var socialLoginProvider = user.PasswordHash == null
+                ? await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user)
+                : null;
 
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
@@ -181,8 +177,7 @@ public class AuthService : IAuthService
                     Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
                     TenantId = user.Tenant.Id,
                     SSOConfigJson = azureLoginUrl,
-                    SocialLoginProvider = socialLoginProvider,
-                    HasPassword = user.PasswordHash != null
+                    SocialLoginProvider = socialLoginProvider
                 };
             }
             else
@@ -193,8 +188,7 @@ public class AuthService : IAuthService
                     Name = "NA",
                     TenantId = Guid.Empty,
                     SSOConfigJson = null,
-                    SocialLoginProvider = socialLoginProvider,
-                    HasPassword = user.PasswordHash != null
+                    SocialLoginProvider = socialLoginProvider
                 };
             }
 

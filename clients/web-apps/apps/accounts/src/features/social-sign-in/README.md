@@ -9,9 +9,8 @@
   sign-up screen.
 - The block renders nothing inside the desktop app, where the
   provider round trip cannot finish in the Tauri webview.
-- `LinkedProviderSignIn` is step two for an account linked to a social provider: only that provider's
-  button. It is the only way in when the account has no password; when it has one, the password form
-  follows below it.
+- `SocialOnlySignIn` is step two for an account that exists without a password: the same buttons, only
+  for the provider that account is linked to.
 
 ## Callback outcomes
 
