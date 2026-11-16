@@ -40,7 +40,8 @@ public partial class LoginWithExternalAuthService
         }
 
         var providerName = SocialAuthHelpers.GetProviderName(provider);
-        if (providerName == null || !IsSocialOffered())
+        // IMPORTANT NOTE: explicit allowlist mirrors GetProviderName so CodeQL sees only Google/GitHub reach the URL builders below.
+        if (providerName == null || (provider != ExternalAuthProviderEnum.Google && provider != ExternalAuthProviderEnum.GitHub) || !IsSocialOffered())
         {
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = "Unsupported authentication provider.";
