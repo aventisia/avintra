@@ -1,8 +1,5 @@
-import { useLocation } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 
-export const useIsVersionHistoryRoute = (): boolean => {
-  const location = useLocation();
+import { AGENT_HISTORY_PATH } from "../constants/agent-history-path.constant";
 
-  // Check if pathname contains 'agent-history'
-  return location.pathname.includes("agent-history");
-};
+export const useIsVersionHistoryRoute = (): boolean => useMatch(AGENT_HISTORY_PATH) !== null;

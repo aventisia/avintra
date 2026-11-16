@@ -1,8 +1,5 @@
-import { useLocation } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 
-export const useIsExecutionLogsRoute = (): boolean => {
-  const location = useLocation();
+import { EXECUTION_LOG_PATH } from "../constants/execution-log-path.constant";
 
-  // Check if pathname contains 'execution'
-  return location.pathname.includes("execution");
-};
+export const useIsExecutionLogsRoute = (): boolean => useMatch(EXECUTION_LOG_PATH) !== null;

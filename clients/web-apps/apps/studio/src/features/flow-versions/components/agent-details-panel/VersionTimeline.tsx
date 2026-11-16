@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
+import { AGENT_HISTORY_PATH } from "@/features/version-history";
 import { useFetchVersionHistoryList } from "@/features/version-history/hooks/useFetchVersionHistoryList";
 import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 
@@ -42,7 +43,7 @@ export const VersionTimeline = ({ versions, isLoading }: VersionTimelineProps) =
       return;
     }
     usePanelStore.getState().closePanel(AGENT_DETAILS_PANEL_ID);
-    navigate(withQueryParams("/agent-history"));
+    navigate(withQueryParams(AGENT_HISTORY_PATH));
   };
 
   return (

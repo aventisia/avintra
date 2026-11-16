@@ -5,6 +5,9 @@ import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom"
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import { BUILD_PATH } from "./constants/studio-routes.constant";
+import { EXECUTION_LOG_PATH } from "./features/execution-logs";
+import { AGENT_HISTORY_PATH } from "./features/version-history";
 import { AgentHistoryPage } from "./pages/AgentHistoryPage";
 import { ExecutionLogsPage } from "./pages/ExecutionLogsPage";
 import { FlowPage } from "./pages/FlowPage";
@@ -28,18 +31,18 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/",
-          element: <Navigate to="/agent" />,
+          element: <Navigate to={BUILD_PATH} />,
         },
         {
-          path: "/agent",
+          path: BUILD_PATH,
           element: <FlowPage />,
         },
         {
-          path: "/agent-history",
+          path: AGENT_HISTORY_PATH,
           element: <AgentHistoryPage />,
         },
         {
-          path: "/execution-log",
+          path: EXECUTION_LOG_PATH,
           element: <ExecutionLogsPage />,
         },
         {

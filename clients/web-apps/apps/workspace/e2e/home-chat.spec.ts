@@ -40,7 +40,7 @@ test("Signing in lands on Home, and a sent message shows the streamed answer", a
     }),
   );
 
-  await page.goto("./?homeChat=1");
+  await page.goto("./");
   const composer = page.getByRole("textbox", { name: /message|ask/i });
   await expect(composer).toBeVisible();
 
