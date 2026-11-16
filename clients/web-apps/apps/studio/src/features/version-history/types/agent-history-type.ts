@@ -10,6 +10,6 @@ export interface HistoryEntry {
 
 export interface DaySection {
   date: string;
-  dateFormatted: string;
+  startedAt: number;
   entries: HistoryEntry[];
 }

@@ -57,7 +57,9 @@ only; it does not carry a space.
   the resource type, resource id, and the complete flow set in its body;
   `GET resource-flows/{resourceType}/{resourceId}/assigned-flows` lists only the flows that
   already hold access, with each flow's type, non-archived version count, and latest
-  modification time across the flow and its versions.
+  modification time across the flow and its versions. The one extra read,
+  `GET resource-flows/{resourceType}/{resourceId}/linked-share-candidates`, is described
+  under Linked share candidates below.
 - `SearchByQueryController.SearchFlowAsync` (`GET search/flow`) searches non-block flows by
   name in the current space (Central sees only spaceless flows) across the flows the caller created or is a member of; an empty query returns the 10
   most recently created flows. Its sole caller is the assignment dialog, so the space rule
@@ -126,3 +128,24 @@ only; it does not carry a space.
   references held only inside subflows are not checked at publish; names generated at run
   time by node output (only saved references are scanned); and restrictions changed while a
   run is already executing.
+
+## Linked share candidates
+
+- `GET resource-flows/{resourceType}/{resourceId}/linked-share-candidates?userIds=a,b` lists the
+  queues, key stores, credentials, tools, knowledge bases and skills an agent uses, so the share
+  dialog can offer to share them in the same save. `userIds` are the people being added.
+- Only `Flow` and `FlowVersion` are accepted; anything else is 400. An unknown id is 404, and the
+  caller must be able to read the agent's shares (its creator, tenant-wide access, or an existing
+  share row) or the answer is 403, so strangers cannot enumerate an agent's items or their owners.
+- Discovery reuses the run graph and the run resolvers, so a `Flow` share resolves the Dev items of
+  its newest non-archived version and a `FlowVersion` share resolves `IsPublished ? Prod : Dev` in
+  the flow's space. Called agents and blocks are walked recursively with the usual cycle guard; a
+  trigger and a called agent itself are never listed. Legacy GUID credential values are normalized
+  to names before resolution, the same way publish normalizes them.
+- Each candidate carries its `name`, the creator's `ownerName`, `isTenantWideAccess`, `canShare`
+  (creator or Owner row, via `IResourceUserAccessService.CanShareResourceAsync`) and
+  `userIdsNeedingShare`: the recipients that are not the creator, when the item is not open to
+  everyone and no share row exists yet.
+- The endpoint is read-only. It writes no share row and changes no tenant-wide flag: the dialog
+  shares each candidate through the existing bulk route, so that route's creator-or-Owner rule and
+  add-only behaviour stay authoritative.

@@ -7,7 +7,6 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
@@ -43,13 +42,6 @@ export const useFetchFlowToLoad = () => {
     useShallow((state) => ({
       versionTransitionId: state.versionTransitionId,
       setVersionTransition: state.setVersionTransition,
-    })),
-  );
-
-  // Get  store state and actions of flow settings
-  const { setSettings } = useSettingsStore(
-    useShallow((state) => ({
-      setSettings: state.setSettings,
     })),
   );
 
@@ -139,10 +131,6 @@ export const useFetchFlowToLoad = () => {
 
     setIsPublished(flowData.isPublished || false);
     setFlowType(flowData.type || FlowTypesEnum.Agent);
-
-    if (data?.data.settings) {
-      setSettings(data?.data.settings);
-    }
 
     // Ensure versionId is present in URL
     if (!searchParams.has("v")) {

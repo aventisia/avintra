@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
   NotificationRecurrenceEnum,
@@ -42,8 +43,6 @@ import {
 } from "@phosphor-icons/react";
 import { isFuture } from "date-fns";
 import type { ComponentType } from "react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { formatEnumLabel } from "../../constants/notifications-table.constant";
 import type { NotificationDto } from "../../dtos/notification.dto";

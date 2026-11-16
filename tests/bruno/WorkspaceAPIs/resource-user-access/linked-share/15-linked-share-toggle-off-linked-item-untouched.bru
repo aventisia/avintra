@@ -1,0 +1,27 @@
+meta {
+  name: A linked item stays unshared with the toggle off (AC4)
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/{{LINK_UNSHARED_QUEUE_ID}}/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_SECOND_RECIPIENT_TOKEN}}
+}
+
+script:post-response {
+  test("the second recipient was never granted the linked queue", function() {
+    expect([403, 404]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  > AC4 read-back: `LINK_UNSHARED_QUEUE_ID` is a queue the agent uses that no
+  > request in this folder shares. Run after `14-`; the second recipient can only
+  > see the agent.
+}

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { TabsList } from "@avplatform/ui/tabs";
+import { SEGMENTED_TABS_LIST_CLASS, TabsList } from "@avplatform/ui/tabs";
 
 export const DCPTabsList = ({
   className,
@@ -8,5 +8,5 @@ export const DCPTabsList = ({
   children: React.ReactNode;
   className?: string;
 }) => {
-  return <TabsList className={cn("h-8 gap-4 border-b-0", className)}>{children}</TabsList>;
+  return <TabsList className={cn(SEGMENTED_TABS_LIST_CLASS, className)}>{children}</TabsList>;
 };

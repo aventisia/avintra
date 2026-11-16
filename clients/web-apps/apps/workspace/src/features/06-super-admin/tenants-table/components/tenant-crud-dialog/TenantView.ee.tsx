@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import { cn } from "@avplatform/ui/lib";
@@ -28,8 +29,6 @@ import {
   UserCircleIcon,
   UserGearIcon,
 } from "@phosphor-icons/react";
-
-import { PersonAvatar } from "@/components/PersonAvatar";
 
 import { dbOptionProps } from "../../constants/tenant-form-field-props.constant.ee";
 import { useFetchTenants } from "../../hooks/useFetchTenants.ee";

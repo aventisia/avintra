@@ -1,0 +1,39 @@
+meta {
+  name: Linked share candidates for a published agent version are PROD copies
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/FlowVersion/{{LINK_PUBLISHED_VERSION_ID}}/linked-share-candidates?userIds={{LINK_RECIPIENT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const devCredentialId = bru.getEnvVar("LINK_DEV_CREDENTIAL_ID");
+  const prodCredentialId = bru.getEnvVar("LINK_PROD_CREDENTIAL_ID");
+  const credential = data.find((candidate) => candidate.resourceId === prodCredentialId);
+
+  test("the published version's candidates are readable", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the Production copy of the credential is offered, not the Dev one", function() {
+    expect(credential, "PROD credential " + prodCredentialId + " is missing from the candidates").to.be.an("object");
+    expect(credential.resourceType).to.equal("VaultCredential");
+    expect(data.map((candidate) => candidate.resourceId)).to.not.include(devCredentialId);
+  });
+}
+
+docs {
+  > AC3: a published chat agent's version resolves its links in Production
+  > (`IsPublished ? Prod : Dev`), so the dialog shares the Production copies and
+  > never the Dev items a published run does not use.
+}

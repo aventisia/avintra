@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
@@ -49,7 +50,6 @@ import {
   AgentTypeAvatar,
   AgentVersion,
 } from "@/components/AgentIdentity";
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { getFlowTypeLabel } from "@/features/01-build/flows-table/utils/flow-type-label.util";
 
 import { getJob } from "../../apis/jobs-table-apis";

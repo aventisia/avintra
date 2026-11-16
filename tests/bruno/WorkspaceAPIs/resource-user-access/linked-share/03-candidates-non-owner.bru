@@ -1,0 +1,38 @@
+meta {
+  name: A linked item the sharer may not share is flagged with its owner
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_FLOW_ID}}/linked-share-candidates?userIds={{LINK_RECIPIENT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_SHARER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const nonOwnedId = bru.getEnvVar("LINK_NON_OWNED_CREDENTIAL_ID");
+  const nonOwned = data.find((candidate) => candidate.resourceId === nonOwnedId);
+
+  test("a non-owner of one linked item still reads the candidates", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the item the sharer does not own carries its owner and is not shareable", function() {
+    expect(nonOwned, "credential " + nonOwnedId + " is missing from the candidates").to.be.an("object");
+    expect(nonOwned.canShare).to.equal(false);
+    expect(nonOwned.ownerName).to.be.a("string");
+    expect(nonOwned.ownerName.length).to.be.greaterThan(0);
+  });
+}
+
+docs {
+  > AC5 discovery: `canShare` mirrors the bulk route's creator-or-Owner rule and
+  > `ownerName` is what the dialog shows as "Ask the owner to share — <ownerName>".
+}

@@ -14,7 +14,7 @@ interface ChatAssistantProps {
 }
 
 const triggerClassName =
-  "fixed bottom-4 z-50 right-4 hidden h-[3.1rem] w-[3.1rem] items-center justify-center rounded-full bg-primary text-primary-foreground shadow-pop msm:flex";
+  "fixed bottom-4 z-50 right-4 hidden h-[3.1rem] w-[3.1rem] items-center justify-center rounded-full text-primary-foreground shadow-pop msm:flex xs:bg-primary";
 
 const ChatAssistant = ({ className }: ChatAssistantProps) => {
   const navigate = useNavigate();

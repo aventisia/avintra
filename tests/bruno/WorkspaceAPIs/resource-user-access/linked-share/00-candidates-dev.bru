@@ -1,0 +1,60 @@
+meta {
+  name: Linked share candidates for an unpublished agent
+  type: http
+  seq: 0
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-flows/Flow/{{LINK_FLOW_ID}}/linked-share-candidates?userIds={{LINK_RECIPIENT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody();
+  const data = Array.isArray(body?.data) ? body.data : [];
+  const recipientId = bru.getEnvVar("LINK_RECIPIENT_ID");
+  const credentialName = bru.getEnvVar("LINK_DEV_CREDENTIAL_NAME");
+  const credential = data.find((candidate) => candidate.name === credentialName);
+
+  test("the agent owner reads the candidates", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("the Dev credential the agent uses is listed for the new person", function() {
+    expect(credential, "credential " + credentialName + " is missing from the candidates").to.be.an("object");
+    expect(credential.resourceType).to.equal("VaultCredential");
+    expect(credential.canShare).to.equal(true);
+    expect(credential.userIdsNeedingShare).to.include(recipientId);
+  });
+
+  test("every candidate carries the linked-share contract", function() {
+    expect(data.length).to.be.greaterThan(0);
+    data.forEach((candidate) => {
+      expect(candidate.resourceType).to.be.a("string");
+      expect(candidate.resourceId).to.be.a("string");
+      expect(candidate.name).to.be.a("string");
+      expect(candidate.isTenantWideAccess).to.be.a("boolean");
+      expect(candidate.canShare).to.be.a("boolean");
+      expect(candidate.userIdsNeedingShare).to.be.an("array");
+      expect(candidate).to.not.have.property("envType");
+    });
+  });
+
+  test("triggers and agents themselves are never linked items", function() {
+    const types = data.map((candidate) => candidate.resourceType);
+    expect(types).to.not.include("Trigger");
+    expect(types).to.not.include("Flow");
+    expect(types).to.not.include("FlowVersion");
+  });
+}
+
+docs {
+  > AC1/AC2 discovery: the unpublished agent's Dev items the recipient cannot
+  > access yet are listed, each shareable by its owner, and no trigger or called
+  > agent is offered as a linked item.
+}

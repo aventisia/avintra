@@ -1,9 +1,11 @@
 import { LoadingSpinner } from "@avplatform/ui";
+import { cn } from "@avplatform/ui/lib";
 import { ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { LEFT_DOCK_CANVAS_CLASS } from "@/components/panel/left-dock-panel.constant";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
@@ -44,11 +46,10 @@ export const ReactFlowViewOnly = () => {
   );
 
   useEffect(() => {
-    openPanel(PANEL_ID, "right");
+    openPanel(PANEL_ID, "left");
 
-    // The node-config editor belongs to the editable /agent route. Its store
-    // persists across routes, so close it on entry — otherwise the stale panel
-    // overlays the Change History panel (both dock on the right).
+    // IMPORTANT NOTE: the node-config editor store persists across routes; close it on entry or
+    // the stale /agent editor panel stays open beside the read-only canvas.
     useDynamicConfigPanelStore.getState().closeNodeConfig();
 
     return () => {
@@ -58,7 +59,7 @@ export const ReactFlowViewOnly = () => {
 
   return (
     <>
-      <div className="relative h-full w-[calc(100%-21.5rem)]">
+      <div className={cn("relative h-full", LEFT_DOCK_CANVAS_CLASS)}>
         <ReactFlow
           fitView
           minZoom={0.1}

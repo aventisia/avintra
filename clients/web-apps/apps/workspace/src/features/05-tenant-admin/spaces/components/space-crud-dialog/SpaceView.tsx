@@ -1,3 +1,4 @@
+import { PersonAvatar } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import {
@@ -26,7 +27,6 @@ import {
   UsersIcon,
 } from "@phosphor-icons/react";
 
-import { PersonAvatar } from "@/components/PersonAvatar";
 import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
 
 import { useFetchSpaces } from "../../hooks/useFetchSpaces";

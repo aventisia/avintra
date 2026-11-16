@@ -1,14 +1,14 @@
-import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { VectorStoreQueryRequestDto } from "@/features/dynamic-config-panel/apis/vector-store-apis";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
 import { useRetrieveChunksMutation } from "@/features/dynamic-config-panel/hooks/useRetrieveChunksMutation";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { ModelConfigType } from "@/types/model-config-type";
+
+import STJsonViewer from "./STJsonViewer";
 
 interface Props {
   formData: Record<string, unknown>;
@@ -166,26 +166,15 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
     execute();
   }, [selectedTab]);
 
-  /* Render result */
-
   return (
-    <DCPTabsContent tabValue="Test" hasFooter={false}>
-      <div className="text-xs ml-0.5 mb-1">Output</div>
-      <div className="border-dividers overflow-hidden rounded-lg border border-solid">
-        {/*   Loading state     */}
-
-        {isPending ? (
-          <JsonViewerSkeleton />
-        ) : (
-          /* API response viewer */
-
-          <JsonViewer
-            jsonData={JSON.stringify(data ?? {}, null, 2)}
-            enableValueClipboard
-            className="h-[70vh]"
-          />
-        )}
-      </div>
+    <DCPTabsContent tabValue="Test">
+      <STJsonViewer
+        jsonData={JSON.stringify(data ?? {})}
+        label="Output"
+        isPending={isPending}
+        viewportClassName="max-h-[70vh]"
+        className="mb-2"
+      />
     </DCPTabsContent>
   );
 };

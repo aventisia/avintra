@@ -1,0 +1,40 @@
+meta {
+  name: Save also shares the agent's queue (AC2)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LINK_OWNER_TOKEN}}
+}
+
+body:json {
+  {
+    "resourceType": "Queue",
+    "resourceId": "{{LINK_QUEUE_ID}}",
+    "users": [
+      {
+        "accessLevel": "View",
+        "userId": "{{LINK_RECIPIENT_ID}}"
+      }
+    ]
+  }
+}
+
+script:post-response {
+  test("the agent owner shares the linked queue at Can view", function() {
+    expect([200, 409]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  > AC2: every non-credential group uses the same bulk call and the same View
+  > level, so queues, key stores, tools, knowledge bases and skills reach the new
+  > person's Configure lists after the save.
+}

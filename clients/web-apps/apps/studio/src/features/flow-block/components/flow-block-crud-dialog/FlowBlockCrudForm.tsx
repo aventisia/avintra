@@ -8,11 +8,12 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { enumToArray } from "@avplatform/ui/utils";
 import { CircleNotchIcon, PlusIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 
 import InputFields from "@/features/add-input-output/components/InputFields";
 import OutputFields from "@/features/add-input-output/components/OutputFields";
+import { InputsOutputsFieldsFormType } from "@/features/add-input-output/constants/inputs-outputs-zod-schema";
 import { formDataToDCPJson } from "@/features/add-input-output/utils/formdataToJson";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -44,6 +45,7 @@ export const FlowBlockCrudForm = () => {
     removeInput,
     removeOutput,
   } = useFlowBlockForm();
+  const fieldsForm = form as unknown as UseFormReturn<InputsOutputsFieldsFormType>;
 
   // Get global store state & actions
   const { currentFlow } = useCurrentFlowStore(
@@ -172,7 +174,12 @@ export const FlowBlockCrudForm = () => {
           </Button>
         </div>
         {inputFields.map((field, index) => (
-          <InputFields field={field} control={control} index={index} remove={removeInput} />
+          <InputFields
+            key={field.id}
+            form={fieldsForm}
+            index={index}
+            onRemove={() => removeInput(index)}
+          />
         ))}
       </div>
       <div>
@@ -189,7 +196,12 @@ export const FlowBlockCrudForm = () => {
           </Button>
         </div>
         {outputFields.map((field, index) => (
-          <OutputFields field={field} control={control} index={index} remove={removeOutput} />
+          <OutputFields
+            key={field.id}
+            form={fieldsForm}
+            index={index}
+            onRemove={() => removeOutput(index)}
+          />
         ))}
       </div>
       {/* Submit button */}

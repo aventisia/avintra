@@ -14,3 +14,4 @@ const FLOW_TYPE_LABELS: Record<FlowTypesEnum, string> = {
 };
 
 export { AGENT_DETAILS_PANEL_ID, DATA_QUERY_KEY, FLOW_TYPE_LABELS };
+export { AGENT_NAME_CLASS, AGENT_TITLE_CLASS, AGENT_VERSION_CLASS } from "./agent-title.constant";
