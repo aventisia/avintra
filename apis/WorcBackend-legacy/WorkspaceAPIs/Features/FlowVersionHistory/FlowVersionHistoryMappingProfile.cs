@@ -35,6 +35,18 @@ public class FlowVersionHistoryMappingProfile : IRegister
             .Map(dest => dest.CreatedByUserInitials,
                 src => src.CreatedByUser != null
                     ? GetUserInitialsUtil.GetUserInitials(src.CreatedByUser.FirstName, src.CreatedByUser.LastName)
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
+                    : null)
+            .Map(dest => dest.LastModifiedByUsername,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.UserName
+                    : null)
+            .Map(dest => dest.LastModifiedByUserInitials,
+                src => src.LastModifiedByUser != null
+                    ? GetUserInitialsUtil.GetUserInitials(src.LastModifiedByUser.FirstName, src.LastModifiedByUser.LastName)
                     : null);
 
         // Mapping from FlowVersionHistory entity to FlowVersionHistoryDetailDto for UI display
@@ -68,6 +80,18 @@ public class FlowVersionHistoryMappingProfile : IRegister
             .Map(dest => dest.CreatedByUserInitials,
                 src => src.CreatedByUser != null
                     ? GetUserInitialsUtil.GetUserInitials(src.CreatedByUser.FirstName, src.CreatedByUser.LastName)
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
+                    : null)
+            .Map(dest => dest.LastModifiedByUsername,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.UserName
+                    : null)
+            .Map(dest => dest.LastModifiedByUserInitials,
+                src => src.LastModifiedByUser != null
+                    ? GetUserInitialsUtil.GetUserInitials(src.LastModifiedByUser.FirstName, src.LastModifiedByUser.LastName)
                     : null);
 
         // Mapping from FlowVersionHistoryDto back to entity for insert/update operations

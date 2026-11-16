@@ -46,4 +46,24 @@ public class FlowVersionHistoryDto
     /// Gets or sets the initials of the user who created this history entry.
     /// </summary>
     public string? CreatedByUserInitials { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier of the user who last modified this history entry.
+    /// </summary>
+    public string? LastModifiedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets the username of the user who last modified this history entry.
+    /// </summary>
+    public string? LastModifiedByUsername { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time when this history entry was last modified.
+    /// </summary>
+    public DateTimeOffset LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the initials of the user who last modified this history entry.
+    /// </summary>
+    public string? LastModifiedByUserInitials { get; set; }
 }
