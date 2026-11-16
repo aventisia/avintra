@@ -4,14 +4,16 @@ import { DaySection } from "../types/agent-history-type";
 export const groupHistoryByDay = (data: FlowVersionHistoryDto[] | undefined): DaySection[] => {
   if (!data?.length) return [];
 
+  const effectiveDate = (item: FlowVersionHistoryDto) => item.lastModifiedOn ?? item.createdOn;
+
   const sorted = [...data].sort(
-    (a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime(),
+    (a, b) => new Date(effectiveDate(b)).getTime() - new Date(effectiveDate(a)).getTime(),
   );
 
   const map = new Map<string, DaySection>();
 
   sorted.forEach((item) => {
-    const dateObj = new Date(item.createdOn);
+    const dateObj = new Date(effectiveDate(item));
 
     const fullDate = dateObj.toLocaleDateString("en-US", {
       month: "short",
@@ -36,8 +38,8 @@ export const groupHistoryByDay = (data: FlowVersionHistoryDto[] | undefined): Da
       id: item.id,
       time,
       user: {
-        name: item.createdBy ?? "Unknown",
-        initials: item.createdByUserInitials ?? "NA",
+        name: item.lastModifiedBy ?? item.createdBy ?? "Unknown",
+        initials: item.lastModifiedByUserInitials ?? item.createdByUserInitials ?? "NA",
       },
     });
   });

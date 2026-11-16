@@ -14,4 +14,9 @@ export interface FlowVersionHistoryDetailDto {
   createdByUsername?: string | null;
   createdOn: string;
   createdByUserInitials?: string | null;
+
+  lastModifiedBy?: string | null;
+  lastModifiedByUsername?: string | null;
+  lastModifiedOn?: string;
+  lastModifiedByUserInitials?: string | null;
 }
