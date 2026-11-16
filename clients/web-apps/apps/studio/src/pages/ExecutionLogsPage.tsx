@@ -2,8 +2,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Suspense, lazy } from "react";
 
 import { AppRedirectPage } from "@/components/layout/AppRedirectPage";
-
-import { loadExecutionLogsView } from "./studio-view-loaders";
+import { loadExecutionLogsView } from "@/features/execution-logs";
 
 const ReactFlowViewOnly = lazy(() =>
   loadExecutionLogsView().then((module) => ({ default: module.ReactFlowViewOnly })),

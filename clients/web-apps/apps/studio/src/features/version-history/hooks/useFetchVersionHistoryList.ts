@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { getAgentsHistory } from "../apis/agents-history-apis";
+import { agentHistoryQueryOptions } from "../utils/agent-history-query.util";
 
 /**
  * Custom hook to fetch flows using react query.
@@ -16,8 +16,7 @@ export const useFetchVersionHistoryList = () => {
 
   // Get flows using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["AGENT_HISTORY", currVersionId],
-    queryFn: () => getAgentsHistory(currVersionId),
+    ...agentHistoryQueryOptions(currVersionId),
     enabled: !!currVersionId,
   });
 

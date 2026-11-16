@@ -12,11 +12,7 @@ import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import { InterfaceDetailPane } from "./features/04-assist/my-interfaces/components/InterfaceDetailPane";
 import { InterfaceNoSelection } from "./features/04-assist/my-interfaces/components/InterfaceNoSelection";
 import { DESKTOP_DOWNLOAD_ROUTE } from "./features/desktop-download";
-import {
-  HOME_CHAT_CONVERSATION_ROUTE,
-  HOME_CHAT_SHARED_ROUTE,
-  isHomeChatEnabled,
-} from "./features/home-chat";
+import { HOME_CHAT_CONVERSATION_ROUTE, HOME_CHAT_SHARED_ROUTE } from "./features/home-chat";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { FolderFlowsPage } from "./pages/01-build/FolderFlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -81,26 +77,22 @@ const routerConfig: RouteObject[] = [
     element: <AppLayout />,
     errorElement: <AppErrorPage />,
     children: [
-      ...(isHomeChatEnabled
-        ? [
-            { index: true, element: <HomeChatPage />, handle: { fullBleed: true } },
-            {
-              path: `${HOME_CHAT_CONVERSATION_ROUTE}/:conversationId`,
-              element: <HomeChatPage />,
-              handle: { fullBleed: true },
-            },
-            {
-              path: `${HOME_CHAT_SHARED_ROUTE}/:shareToken`,
-              element: <SharedChatPage />,
-              handle: { fullBleed: true },
-            },
-            {
-              path: `${HOME_CHAT_SHARED_ROUTE}/file/:shareToken`,
-              element: <SharedArtifactPage />,
-              handle: { fullBleed: true },
-            },
-          ]
-        : []),
+      { index: true, element: <HomeChatPage />, handle: { fullBleed: true } },
+      {
+        path: `${HOME_CHAT_CONVERSATION_ROUTE}/:conversationId`,
+        element: <HomeChatPage />,
+        handle: { fullBleed: true },
+      },
+      {
+        path: `${HOME_CHAT_SHARED_ROUTE}/:shareToken`,
+        element: <SharedChatPage />,
+        handle: { fullBleed: true },
+      },
+      {
+        path: `${HOME_CHAT_SHARED_ROUTE}/file/:shareToken`,
+        element: <SharedArtifactPage />,
+        handle: { fullBleed: true },
+      },
       {
         path: DESKTOP_DOWNLOAD_ROUTE,
         element: <DesktopDownloadPage />,
@@ -284,7 +276,7 @@ const routerConfig: RouteObject[] = [
             path: "chats",
             element: <MyChatsPage />,
             children: [
-              ...(isHomeChatEnabled ? [{ index: true, element: <Navigate to="/" replace /> }] : []),
+              { index: true, element: <Navigate to="/" replace /> },
               {
                 path: ":flowVersionId",
                 element: <Chat />,

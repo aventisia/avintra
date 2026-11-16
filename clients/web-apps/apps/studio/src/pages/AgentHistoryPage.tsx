@@ -2,8 +2,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { Suspense, lazy } from "react";
 
 import { AppRedirectPage } from "@/components/layout/AppRedirectPage";
-
-import { loadAgentHistoryView } from "./studio-view-loaders";
+import { loadAgentHistoryView } from "@/features/version-history";
 
 const ReactFlowViewOnly = lazy(() =>
   loadAgentHistoryView().then((module) => ({ default: module.ReactFlowViewOnly })),
