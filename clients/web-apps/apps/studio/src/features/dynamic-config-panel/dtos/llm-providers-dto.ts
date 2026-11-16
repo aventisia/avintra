@@ -73,11 +73,6 @@ export interface LLMRequestDto {
   max_output_tokens?: number | null;
 
   /**
-   * Enables Bring Your Own Key (BYOK) support.
-   */
-  is_byok_enabled?: boolean;
-
-  /**
    * Optional credential reference for BYOK. May hold a name or a legacy UUID.
    */
   credential_name?: string | null;
@@ -239,11 +234,6 @@ export interface LLMResponseDto {
    * Flag to indicate if the output is expected to be in JSON format.
    */
   is_json_output?: boolean;
-
-  /**
-   * Flag to indicate if BYOK is enabled.
-   */
-  is_byok_enabled?: boolean;
 
   /**
    * Credential ID for BYOK (legacy).

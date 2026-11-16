@@ -89,7 +89,6 @@ function getNodeOutputSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
 function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Start by defining the schema without default values
-  const isByokEnabledSchema = z.boolean();
   const providerSchema = z.string();
   const credentialsSchema = z.string().optional();
   const modelSchema = z.string();
@@ -104,9 +103,6 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   if (field.defaultValue && typeof field.defaultValue === "object") {
     // If the structure is valid, apply default values to the schema
 
-    if ("is_byok_enabled" in field.defaultValue) {
-      isByokEnabledSchema.default(field?.defaultValue?.is_byok_enabled as boolean);
-    }
     if ("provider" in field.defaultValue) {
       providerSchema.default(field?.defaultValue?.provider as string);
     }
@@ -130,7 +126,6 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
   // Return the schema at the end
   return z.object({
-    is_byok_enabled: isByokEnabledSchema,
     provider: providerSchema,
     credential_name: credentialsSchema,
     model: modelSchema,

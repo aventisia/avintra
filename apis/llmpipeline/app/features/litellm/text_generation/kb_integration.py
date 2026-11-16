@@ -31,7 +31,6 @@ def _to_legacy_request(req: LLMGenerationRequest) -> LegacyLLMRequest:
         ref_name=req.ref_name,
         action=req.action,
         credential_name=req.credential_name,
-        is_byok_enabled=req.is_byok_enabled,
     )
 
 

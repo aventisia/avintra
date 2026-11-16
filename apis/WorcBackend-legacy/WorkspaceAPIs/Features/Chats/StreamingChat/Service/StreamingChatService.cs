@@ -778,7 +778,6 @@ public class StreamingChatService : IStreamingChatService
             temperature,
             top_p = topP,
             reasoning_effort = reasoningEffort,
-            is_byok_enabled = modelSelection?.IsByokEnabled ?? isByokEnabled,
             credential_name = modelSelection?.CredentialName ?? credentialName,
             max_output_tokens = maxOutputTokens,
             kb_names = kbNames,

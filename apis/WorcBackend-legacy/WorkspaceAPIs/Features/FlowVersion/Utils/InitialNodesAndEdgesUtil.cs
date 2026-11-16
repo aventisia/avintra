@@ -97,7 +97,6 @@ public static class InitialNodesAndEdgesUtil
                 Key = "__ModelConfig__Conversation",
                 Value = (object?)new
                 {
-                    is_byok_enabled = false,
                     provider = "openai",
                     credential_name = "",
                     model = "gpt-4o-mini",

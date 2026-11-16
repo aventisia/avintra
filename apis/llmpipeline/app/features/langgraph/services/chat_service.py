@@ -44,6 +44,7 @@ from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_resolver import (
     register_configured_custom_tools,
 )
+from app.features.litellm.core.credentials import is_byok
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
     LLMChunkResponse,
@@ -1513,7 +1514,6 @@ class ChatService:
             stream=request.stream,
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
-            is_byok_enabled=request.is_byok_enabled,
             credential_name=request.credential_name,
             error=None,
             conversation_id=request.conversation_id,
@@ -1571,17 +1571,21 @@ class ChatService:
             "output_token_details", {}
         ).get("reasoning", 0)
 
-        if (
-            self.credit_usage_service
-            and not request.is_byok_enabled
-            and not request.credential_name
-        ):
-            self.credit_usage_service.post_usage(
-                request=request,
-                response=response,
-                jwt=jwt,
-                space_id=space_id,
-            )
+        if self.credit_usage_service:
+            if is_byok(request.credential_name):
+                self.credit_usage_service.post_byok_usage(
+                    request=request,
+                    response=response,
+                    jwt=jwt,
+                    space_id=space_id,
+                )
+            else:
+                self.credit_usage_service.post_usage(
+                    request=request,
+                    response=response,
+                    jwt=jwt,
+                    space_id=space_id,
+                )
 
         return response
 

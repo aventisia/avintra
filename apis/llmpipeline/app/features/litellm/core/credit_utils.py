@@ -15,7 +15,8 @@ from app.core.config import settings
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
 
-from .provider_registry import get_credit_service_type, should_post_usage
+from .credentials import is_byok
+from .provider_registry import get_credit_service_type
 
 
 def _workspace_api_base_url() -> str:
@@ -79,23 +80,22 @@ def has_sufficient_platform_credits(access_token: str) -> bool:
     return bool(credit_manager.has_sufficient_credits(task="platform", jwt=access_token))
 
 
-def check_sufficient_credits(is_byok_enabled: bool, credential_name: str | None, provider: str, access_token: str) -> None:
-    """Raise a 400 if the platform lacks credits for a non-BYOK call.
+def check_sufficient_credits(credential_name: str | None, provider: str, access_token: str) -> None:
+    """Raise a 400 if the platform lacks credits for a platform-key call.
 
     BYOK requests skip the platform credit check because the caller supplies
     their own provider credentials. Shared by Text Generation and Embeddings.
 
     Args:
-        is_byok_enabled: Whether the request uses the caller's own credentials.
-        credential_name: The BYOK vault credential name (None when not BYOK).
+        credential_name: The BYOK vault credential name (None/blank when platform).
         provider: The provider name, used for billing/logging labels.
         access_token: The authenticated user's JWT.
 
     Raises:
-        HTTPException(400): When non-BYOK and the platform has insufficient credits.
+        HTTPException(400): When platform-keyed and the platform has insufficient credits.
     """
     # BYOK requests are never billed against platform credits.
-    if is_byok_enabled and credential_name:
+    if is_byok(credential_name):
         return
 
     credit_manager = CreditManagerService()
@@ -195,26 +195,20 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     logger.debug(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
 
 
-def should_record_byok(is_byok: bool, credential_name: str | None) -> bool:
+def should_record_byok(credential_name: str | None) -> bool:
     """True when a request used the caller's own (BYOK) credentials.
 
     BYOK consumption is recorded against the user's own key (not platform
-    credits). A null/empty credential name counts as "no real
+    credits). A null/empty/whitespace credential name counts as "no real
     credential" and therefore not BYOK.
 
     Args:
-        is_byok: Whether the request is flagged as BYOK.
-        credential_name: The BYOK vault credential name (None when not BYOK).
+        credential_name: The BYOK vault credential name (None/blank when platform).
 
     Returns:
-        True when BYOK is enabled AND a real credential name is supplied.
+        True when a real credential name is supplied.
     """
-    if not is_byok:
-        return False
-    if not credential_name:
-        return False
-    cleaned = str(credential_name).strip()
-    return cleaned != ""
+    return is_byok(credential_name)
 
 
 def build_byok_entry(

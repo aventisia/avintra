@@ -12,7 +12,7 @@ export interface AiModelDto {
   model: string;
   /** The credential name referenced by the node. */
   credentialName: string;
-  /** Whether bring-your-own-key is enabled. */
+  /** Whether a credential is attached for bring-your-own-key. */
   isByokEnabled: boolean;
 
   // ---- Resolved per-node context ----

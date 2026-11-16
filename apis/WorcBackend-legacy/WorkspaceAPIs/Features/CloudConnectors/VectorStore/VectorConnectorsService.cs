@@ -213,7 +213,6 @@ public class VectorConnectorsService : IVectorConnectorsService
         string? embeddingProvider = null;
         string? embeddingModel = null;
         string? embeddingCredentialId = null;
-        bool isByokEnabled = false;
 
         // Build Request By Action
 
@@ -302,10 +301,6 @@ public class VectorConnectorsService : IVectorConnectorsService
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
                 embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
-                if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabled))
-                {
-                    isByokEnabled = parsedByokEnabled;
-                }
 
                 // Build Insert Request
                 return new JsonObject
@@ -322,7 +317,6 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["embedding_credential_name"] = embeddingCredentialId,
                     ["batch_size"] = batchSize,
                     ["dimensions"] = dimensions,
-                    ["is_byok_enabled"] = isByokEnabled,
                     ["ref_type"] = refType,
                     ["ref_id"] = refId,
                     ["ref_name"] = refName,
@@ -387,10 +381,6 @@ public class VectorConnectorsService : IVectorConnectorsService
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
                 embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
-                if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabledG))
-                {
-                    isByokEnabled = parsedByokEnabledG;
-                }
 
                 return new JsonObject
                 {
@@ -403,7 +393,6 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["top_k"] = numberOfChunks,
                     ["score_threshold"] = scoreThreshold,
                     ["credential_name"] = cloudConnectorReqDto.CredentialName,
-                    ["is_byok_enabled"] = isByokEnabled,
                     ["kb_names"] = !string.IsNullOrWhiteSpace(knowledgeBaseNames)
                         ? System.Text.Json.JsonSerializer.SerializeToNode(
                             knowledgeBaseNames.Split(

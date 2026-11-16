@@ -22,7 +22,7 @@ public class AiModelDto
     public string? CredentialName { get; set; }
 
     /// <summary>
-    /// Whether bring-your-own-key is enabled.
+    /// Whether the model runs on a customer-supplied credential.
     /// </summary>
     public bool IsByokEnabled { get; set; }
 
