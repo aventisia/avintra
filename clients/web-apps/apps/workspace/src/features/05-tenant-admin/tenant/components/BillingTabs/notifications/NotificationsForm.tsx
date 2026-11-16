@@ -54,7 +54,7 @@ const NotificationsForm = () => {
       {/* Delivery channel */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Delivery Channel</CardTitle>
+          <CardTitle className="text-base">Delivery channel</CardTitle>
           <CardDescription>
             Choose how automatic notifications are delivered to recipients.
           </CardDescription>
@@ -67,7 +67,7 @@ const NotificationsForm = () => {
       {/* Notification types */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Notification Types</CardTitle>
+          <CardTitle className="text-base">Notification types</CardTitle>
           <CardDescription>
             Enable or disable each automatic notification type for this tenant. All types are turned
             on by default.

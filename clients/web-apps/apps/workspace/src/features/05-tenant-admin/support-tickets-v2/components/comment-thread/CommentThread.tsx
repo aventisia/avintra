@@ -94,11 +94,11 @@ export const CommentThread = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Comments</h2>
+      <h2 className="text-heading">Comments</h2>
 
       <div className="space-y-4">
         {comments.map((comment) => (
-          <div key={comment.id} className="flex gap-3 rounded-lg border p-3">
+          <div key={comment.id} className="flex gap-3 rounded-lg border border-line bg-surface p-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={comment.avatarSrc} alt={comment.userFullName || "User"} />
               <AvatarFallback>{comment.initials || "U"}</AvatarFallback>
@@ -121,7 +121,7 @@ export const CommentThread = ({
                 {!isClosed && comment.userName === userSession?.email && (
                   <div className="flex gap-2">
                     <button
-                      className="text-xs text-muted-foreground hover:text-foreground"
+                      className="text-xs text-muted-foreground hover:text-ink"
                       onClick={() => {
                         setEditingId(comment.id || null);
                         editForm.setValue("message", comment.message);
@@ -130,7 +130,7 @@ export const CommentThread = ({
                       Edit
                     </button>
                     <button
-                      className="text-xs text-destructive hover:text-destructive/80"
+                      className="text-xs text-bad hover:text-bad/80"
                       onClick={() => deleteMutation.mutate(comment.id || "")}
                     >
                       Delete

@@ -6,13 +6,14 @@ import { Form } from "@avplatform/ui/form";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { enumToArray } from "@avplatform/ui/utils";
-import { Loader2, Plus } from "lucide-react";
+import { CircleNotchIcon, PlusIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 
 import InputFields from "@/features/add-input-output/components/InputFields";
 import OutputFields from "@/features/add-input-output/components/OutputFields";
+import { InputsOutputsFieldsFormType } from "@/features/add-input-output/constants/inputs-outputs-zod-schema";
 import { formDataToDCPJson } from "@/features/add-input-output/utils/formdataToJson";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -44,6 +45,7 @@ export const FlowBlockCrudForm = () => {
     removeInput,
     removeOutput,
   } = useFlowBlockForm();
+  const fieldsForm = form as unknown as UseFormReturn<InputsOutputsFieldsFormType>;
 
   // Get global store state & actions
   const { currentFlow } = useCurrentFlowStore(
@@ -130,8 +132,8 @@ export const FlowBlockCrudForm = () => {
             <InputField
               {...field}
               fieldSize="xs"
-              description="Enter name for the Block node"
-              label="Block Name"
+              description="Enter name for the block node"
+              label="Block name"
             />
           )}
         />
@@ -141,7 +143,7 @@ export const FlowBlockCrudForm = () => {
           render={({ field }) => (
             <SelectField
               {...field}
-              label="Access Type"
+              label="Access type"
               description="Select the access type"
               size="xs"
               selectOptions={selectOptions}
@@ -156,8 +158,8 @@ export const FlowBlockCrudForm = () => {
               <InputField
                 {...field}
                 fieldSize="xs"
-                description="Enter description for the Block node"
-                label="Block Description"
+                description="Enter description for the block node"
+                label="Block description"
               />
             )}
           />
@@ -167,12 +169,17 @@ export const FlowBlockCrudForm = () => {
         <div className="mb-2 flex items-center justify-between">
           <h2>Inputs</h2>
           <Button variant="ghost" type="button" size="sm" onClick={() => appendInput(inputDefault)}>
-            <Plus className="h-4 w-4" />
+            <PlusIcon className="h-4 w-4" />
             Field
           </Button>
         </div>
         {inputFields.map((field, index) => (
-          <InputFields field={field} control={control} index={index} remove={removeInput} />
+          <InputFields
+            key={field.id}
+            form={fieldsForm}
+            index={index}
+            onRemove={() => removeInput(index)}
+          />
         ))}
       </div>
       <div>
@@ -184,12 +191,17 @@ export const FlowBlockCrudForm = () => {
             size="sm"
             onClick={() => appendOutput(outputDefault)}
           >
-            <Plus className="h-4 w-4" />
+            <PlusIcon className="h-4 w-4" />
             Field
           </Button>
         </div>
         {outputFields.map((field, index) => (
-          <OutputFields field={field} control={control} index={index} remove={removeOutput} />
+          <OutputFields
+            key={field.id}
+            form={fieldsForm}
+            index={index}
+            onRemove={() => removeOutput(index)}
+          />
         ))}
       </div>
       {/* Submit button */}
@@ -219,7 +231,7 @@ export const FlowBlockCrudForm = () => {
         >
           {isPending || isUpdating ? (
             <div className="flex items-center gap-1">
-              <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+              <CircleNotchIcon className="mr-1 h-3.5 w-3.5 animate-spin" />
               <span>Saving</span>
             </div>
           ) : crudAction === "create" ? (

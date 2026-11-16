@@ -1,10 +1,11 @@
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
-import { KeyValueLookupType } from "@avplatform/ui/types";
+import { TableCNColumnHeader } from "@avplatform/ui/table-cn";
 import { Column, ColumnDef } from "@tanstack/react-table";
 
-import { TABLE_KEY, getStatusColor } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
+import { getStatusBadgeVariant } from "../constants";
 import { InputSchemaField } from "../dtos/queues-table-dto";
 import { WorkItemRow } from "../types/my-queue-types";
 import { WorkItemsTableCellLink } from "./work-item-table/WorkItemsTableCellLink";
@@ -33,12 +34,11 @@ const formatDynamicCell = (value: unknown, fallback: string): string => {
 export const generateDTColumns = (fields: InputSchemaField[]): ColumnDef<WorkItemRow>[] =>
   fields.map((field) => ({
     accessorKey: field.name,
-
+    meta: { label: field.name.charAt(0).toUpperCase() + field.name.slice(1) },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         column={column}
-        title={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+        label={field.name.charAt(0).toUpperCase() + field.name.slice(1)}
         className="max-w-40"
       />
     ),
@@ -52,12 +52,6 @@ export const generateDTColumns = (fields: InputSchemaField[]): ColumnDef<WorkIte
     },
   }));
 
-export const generateColumnsDisplayName = (fields: InputSchemaField[]): KeyValueLookupType[] =>
-  fields.map((field) => ({
-    key: field.name,
-    value: field.name.charAt(0).toUpperCase() + field.name.slice(1),
-  }));
-
 export const buildColumns = (
   inputSchema: InputSchemaField[],
   isFifo = false,
@@ -69,9 +63,8 @@ export const buildColumns = (
   return [
     {
       accessorKey: "rowId",
-      header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="WorkItem" />
-      ),
+      meta: { label: "WorkItem" },
+      header: ({ column }) => <TableCNColumnHeader column={column} label="WorkItem" />,
       cell: ({ row }) => (
         <WorkItemsTableCellLink rowId={row.original.rowId}>
           {row.original.rowId}
@@ -82,9 +75,8 @@ export const buildColumns = (
     ...generateDTColumns(inputSchema),
     {
       accessorKey: "assignee",
-      header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Assignee" />
-      ),
+      meta: { label: "Assignee" },
+      header: ({ column }) => <TableCNColumnHeader column={column} label="Assignee" />,
       cell: ({ row }) => {
         const value = row.original.assignee ?? FALLBACK_VALUE;
         return (
@@ -96,15 +88,17 @@ export const buildColumns = (
     },
     {
       accessorKey: "createdOn",
-      header: ({ column }) => (
-        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created On" />
-      ),
+      meta: { label: "Created on" },
+      header: ({ column }) => <TableCNColumnHeader column={column} label="Created on" />,
       cell: ({ row }) => {
         const value = row.original.createdOn;
         if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
         const formatted = new Date(value).toLocaleString();
         return (
-          <span className="inline-block w-40 truncate font-medium" title={formatted}>
+          <span
+            className="inline-block w-40 truncate font-mono font-medium tabular-nums"
+            title={formatted}
+          >
             {formatted}
           </span>
         );
@@ -115,15 +109,19 @@ export const buildColumns = (
       ? [
           {
             accessorKey: "closedOn",
+            meta: { label: "Closed on" },
             header: ({ column }: { column: Column<WorkItemRow, unknown> }) => (
-              <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Closed On" />
+              <TableCNColumnHeader column={column} label="Closed on" />
             ),
             cell: ({ row }: { row: { original: WorkItemRow } }) => {
               const value = row.original.closedOn;
               if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
               const formatted = new Date(value).toLocaleString();
               return (
-                <span className="inline-block w-40 truncate font-medium" title={formatted}>
+                <span
+                  className="inline-block w-40 truncate font-mono font-medium tabular-nums"
+                  title={formatted}
+                >
                   {formatted}
                 </span>
               );
@@ -133,15 +131,12 @@ export const buildColumns = (
       : []),
     {
       accessorKey: "status",
+      meta: { label: isHistory ? "Disposition Status" : "Status" },
       header: ({ column }) => (
-        <DTColumnHeader
-          tableKey={TABLE_KEY}
-          column={column}
-          title={isHistory ? "Disposition Status" : "Status"}
-        />
+        <TableCNColumnHeader column={column} label={isHistory ? "Disposition Status" : "Status"} />
       ),
       cell: ({ row }) => (
-        <Badge className={getStatusColor(row.original.status)}>
+        <Badge variant={getStatusBadgeVariant(row.original.status)}>
           {row.original.status?.replace(/([A-Z])/g, " $1")}
         </Badge>
       ),
@@ -150,16 +145,15 @@ export const buildColumns = (
     ...(viewOnly
       ? []
       : [
-          {
-            id: "actions",
-            cell: ({ row }: { row: { original: WorkItemRow } }) => (
+          getRowActionsColumn<WorkItemRow>({
+            actions: ({ row }) => (
               <WorkItemActions
                 rowId={row.original.rowId}
                 status={row.original.status ?? ""}
                 isFifo={isFifo}
               />
             ),
-          },
+          }),
         ]),
   ];
 };

@@ -13,19 +13,12 @@ const FormLabel = React.forwardRef<
     size?: FormFieldSizeType;
   }
 >(({ className, size = "base", ...props }, ref) => {
-  const { error, formItemId } = useFormField();
+  const { formItemId } = useFormField();
 
   return (
     <Label
       ref={ref}
-      className={cn(
-        "font-medium",
-        size === "xs" && "text-3xs",
-        size === "sm" && "text-2xs",
-        size === "base" && "text-2xs",
-        error && "text-destructive",
-        className,
-      )}
+      className={cn(size === "xs" && "text-[11.5px]/4", size === "sm" && "text-hint", className)}
       htmlFor={formItemId}
       {...props}
     />

@@ -59,7 +59,7 @@ export const SearchMultiSelect: React.FC = () => {
                 <LoadingSpinner className="mr-2 h-4 w-4" /> Sharing
               </>
             ) : (
-              <>Share Access</>
+              <>Share access</>
             )}
           </Button>
         </div>

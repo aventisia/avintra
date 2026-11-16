@@ -3,14 +3,14 @@ import { InputFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 // Is Password Enabled (Login)
 const isPwdEnabledProps: SwitchFieldProps = {
   name: "isPwdEnabled",
-  label: "Enable Password Login",
+  label: "Enable password login",
   description: "If disabled, users cannot log in using their password",
 };
 
 // Is Password Never Expires
 const isPwdNeverExpiresEnabledProps: SwitchFieldProps = {
   name: "isPwdNeverExpiresEnabled",
-  label: "Password Never Expires",
+  label: "Password never expires",
   description: "Enabling this removes password expiration",
 };
 
@@ -44,7 +44,7 @@ const ssoReconnectLabel = "Reconnect";
 // Is Two-Factor Authentication Enabled (2FA)
 const isTwoFAEnabledProps: SwitchFieldProps = {
   name: "isTwoFAEnabled",
-  label: "Required Two Factor Authentication (2FA)",
+  label: "Required two factor authentication (2FA)",
   description:
     "If enabled, all users will need an additional verification step (e.g., one-time password via email or code from an authenticator app) to log in, enhancing security",
 };
@@ -52,21 +52,21 @@ const isTwoFAEnabledProps: SwitchFieldProps = {
 // Is Idle Session Timeout Enabled
 const isIdleSessionTimeoutEnabledProps: SwitchFieldProps = {
   name: "isIdleSessionTimeoutEnabled",
-  label: "Enable Idle Session Timeout",
+  label: "Enable idle session timeout",
   description: "If enabled, user sessions will automatically time out after a period of inactivity",
 };
 
 // Idle Session Timeout Minutes
 const idleSessionTimeoutMinutesProps: InputFieldProps = {
   name: "idleSessionTimeoutMinutes",
-  label: "Idle Session Timeout (in Minutes)",
+  label: "Idle session timeout (in minutes)",
   type: "number",
 };
 
 // Password Expiry Days
 const daysBeforePwdExpiresProps: InputFieldProps = {
   name: "daysBeforePwdExpires",
-  label: "Days Before Password Expires",
+  label: "Days before password expires",
   type: "number",
 };
 

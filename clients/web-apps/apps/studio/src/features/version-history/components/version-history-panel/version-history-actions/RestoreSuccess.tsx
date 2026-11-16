@@ -12,7 +12,7 @@ export const RestoreSuccessToast = ({ flowId, versionId }: Props) => {
 
       <Link
         to={`/agents/${flowId}?v=${versionId}`}
-        className="text-sm text-primary underline hover:opacity-80"
+        className="text-body-sm font-medium text-primary-text underline underline-offset-[3px]"
       >
         View restored version
       </Link>

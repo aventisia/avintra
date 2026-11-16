@@ -56,12 +56,12 @@ export const ValidationApprovalSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 06"
-      title="Validation & Approval"
+      title="Validation & approval"
       description="Confirm the information provided is accurate, select an approver, and submit for approval."
     >
       <div className="space-y-6">
         {/* Accuracy confirmation */}
-        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/20 p-4">
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-line bg-sunken/20 p-4">
           <Checkbox
             checked={approval.isInformationAccurate}
             onCheckedChange={(checked) => updateApproval({ isInformationAccurate: !!checked })}
@@ -73,7 +73,7 @@ export const ValidationApprovalSection = () => {
         </label>
 
         {/* Approver selection */}
-        <div className="rounded-lg border border-border bg-muted/20 p-4">
+        <div className="rounded-lg border border-line bg-sunken/20 p-4">
           <div className="mb-3 text-sm font-semibold">Select Approver &amp; Submit</div>
 
           {approval.isSubmitted ? (
@@ -102,7 +102,7 @@ export const ValidationApprovalSection = () => {
                     })
                   }
                 >
-                  Edit Approval Request
+                  Edit approval request
                 </Button>
               </div>
             </div>
@@ -110,17 +110,17 @@ export const ValidationApprovalSection = () => {
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-[11px] font-semibold text-muted-foreground">
-                  Select Approver
+                  Select approver
                 </label>
                 <div className="relative">
                   <input
-                    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                     placeholder="Search approver by name…"
                     value={approverSearch}
                     onChange={(e) => setApproverSearch(e.target.value)}
                   />
                   {showApproverDropdown && (
-                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md">
+                    <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-md border border-line bg-surface shadow-pop">
                       {approvers.length === 0 && (
                         <div className="p-2 text-xs text-muted-foreground">No users found</div>
                       )}
@@ -128,7 +128,7 @@ export const ValidationApprovalSection = () => {
                         <button
                           key={user.id}
                           type="button"
-                          className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
+                          className="block w-full px-3 py-2 text-left text-sm hover:bg-hover"
                           onClick={() => {
                             const name = `${user.firstName} ${user.lastName}`.trim();
                             updateApproval({
@@ -148,7 +148,7 @@ export const ValidationApprovalSection = () => {
               {approval.requestedToName && (
                 <div className="text-xs text-muted-foreground">
                   Selected approver:{" "}
-                  <span className="font-medium text-foreground">{approval.requestedToName}</span>
+                  <span className="font-medium text-ink">{approval.requestedToName}</span>
                 </div>
               )}
               <Button
@@ -162,16 +162,16 @@ export const ValidationApprovalSection = () => {
                   })
                 }
               >
-                Submit for Approval
+                Submit for approval
               </Button>
             </div>
           )}
 
           {approval.isSubmitted && approval.decision === "pending" && (
-            <div className="mt-4 space-y-3 border-t border-border pt-3">
-              <Field label="Decision Notes">
+            <div className="mt-4 space-y-3 border-t border-line pt-3">
+              <Field label="Decision notes">
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Notes accompanying the decision"
                   value={approval.decisionNotes}
                   onChange={(e) => updateApproval({ decisionNotes: e.target.value })}
@@ -214,7 +214,7 @@ export const ValidationApprovalSection = () => {
                       })
                     }
                   >
-                    Request Changes
+                    Request changes
                   </Button>
                 </div>
               ) : (

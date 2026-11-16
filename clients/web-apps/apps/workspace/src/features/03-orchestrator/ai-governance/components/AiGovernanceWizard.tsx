@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { toast } from "@avplatform/ui/sonner";
-import { ArrowLeftIcon, ArrowRightIcon, SaveIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, FloppyDiskIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 
 import { GOVERNANCE_SECTIONS } from "../constants/governance-sections";
@@ -186,12 +186,12 @@ export const AiGovernanceWizard = () => {
           className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-primary"
         >
           <ArrowLeftIcon className="h-3.5 w-3.5" />
-          Agent Risk Registry
+          Agent risk registry
         </button>
 
         {renderSection(activeSection)}
 
-        <div className="mt-9 flex items-center justify-between border-t border-border pt-5">
+        <div className="mt-9 flex items-center justify-between border-t border-line pt-5">
           <Button variant="outline" onClick={handleBack} disabled={currentIndex <= 0}>
             <ArrowLeftIcon className="mr-2 h-4 w-4" />
             Back
@@ -199,7 +199,7 @@ export const AiGovernanceWizard = () => {
           <Button onClick={handleNext} disabled={isSaving}>
             {isLast ? (
               <>
-                <SaveIcon className="mr-2 h-4 w-4" />
+                <FloppyDiskIcon className="mr-2 h-4 w-4" />
                 Save &amp; Finish
               </>
             ) : (

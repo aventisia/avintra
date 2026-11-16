@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Loader2, Sparkles } from "lucide-react";
+import { CircleNotchIcon, SparkleIcon } from "@phosphor-icons/react";
 
 import { DCPTabsFooterWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsFooterWrapper";
 
@@ -21,21 +21,21 @@ export function TestTabExecuteButton({
         size="sm"
         type="button"
         disabled={isPending}
-        className={cn("relative overflow-hidden transition-all duration-300 ease-out")}
+        className={cn("relative overflow-hidden transition-all duration-[120ms] ease-out")}
       >
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <CircleNotchIcon className="mr-2 h-4 w-4 animate-spin" />
             Executing
           </>
         ) : (
           <>
-            <Sparkles className="mr-2 h-4 w-4 text-primary-foreground" />
+            <SparkleIcon className="mr-2 h-4 w-4 text-primary-foreground" />
             Execute
           </>
         )}
         {isPending && (
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-primary-foreground/20 to-transparent" />
         )}
       </Button>
     </DCPTabsFooterWrapper>

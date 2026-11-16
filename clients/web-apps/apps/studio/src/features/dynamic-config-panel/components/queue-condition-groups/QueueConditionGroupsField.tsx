@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { ISelectOption } from "@avplatform/ui/types";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useController, useFieldArray, useFormContext, useWatch } from "react-hook-form";
@@ -82,8 +82,8 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
   }, [queueSelectField.value, data]);
 
   return (
-    <GroupedFieldsWrapper groupName="Configure Conditions">
-      <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
+    <GroupedFieldsWrapper groupName="Configure conditions">
+      <div className="mt-2 rounded-lg border bg-sunken px-5 pb-5 pt-2.5">
         <FieldsLabelHeader />
 
         {fields.map((item, index) => (
@@ -123,8 +123,8 @@ export const QueueConditionGroupsField = (field: DCPFieldSchemaType) => {
           onClick={() => append(defaultConditionObj)}
           className="mt-2 w-full gap-1 text-xs"
         >
-          <PlusIcon className="h-4 w-4 stroke-2" />
-          Add Condition
+          <PlusIcon className="h-4 w-4" />
+          Add condition
         </Button>
       </div>
     </GroupedFieldsWrapper>

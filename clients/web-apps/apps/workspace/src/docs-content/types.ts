@@ -21,6 +21,8 @@ export interface HelpGuide {
   summary: string;
   /** Which sidebar section the guide belongs to. */
   section: HelpSection;
+  /** Pages the guide explains; the help panel opens it on these routes and their sub-pages. */
+  routes?: string[];
   /** Optional external link to the full docs site page (hybrid linking). */
   docsSiteUrl?: string;
   /** Optional list of related guide ids for cross-linking. */

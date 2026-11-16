@@ -1,40 +1,52 @@
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@avplatform/ui/accordion";
-import { ChevronDown } from "lucide-react";
+import { DayTimelineCount, DayTimelineItem, DayTimelineSection } from "@/components/day-timeline";
 
 import { DaySection } from "../../types/log-list-type";
+import { isErrorStatus } from "../../utils/job-log-level";
 import ExecutionLogAccordionItem from "./ExecutionLogAccordionItem";
 
-interface Props {
+type Props = {
   section: DaySection;
+  isFirst: boolean;
+  isLast: boolean;
   selectedEntry: string;
   onSelect: (id: string) => void;
-}
+};
 
-export default function ExecutionAccordionSection({ section, selectedEntry, onSelect }: Props) {
+export default function ExecutionAccordionSection({
+  section,
+  isFirst,
+  isLast,
+  selectedEntry,
+  onSelect,
+}: Props) {
+  const errorCount = section.entries.filter((entry) => isErrorStatus(entry.status)).length;
+
   return (
-    <AccordionItem key={section.date} value={section.date} className="border-none">
-      {/* Date Header */}
-      <AccordionTrigger className="group relative flex w-full items-center justify-start gap-3 rounded-lg py-2 [&>svg]:hidden">
-        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-          <ChevronDown className="h-4 w-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
-        </div>
-        <span className="text-md font-medium">{section.date}</span>
-      </AccordionTrigger>
-
-      <AccordionContent className="p-0">
-        {/* Timeline Container */}
-        <div className="relative ml-4 space-y-0">
-          {/* Timeline Entries */}
-          {section.entries.map((entry) => (
-            <ExecutionLogAccordionItem
-              key={entry.id}
-              entry={entry}
-              isSelected={entry.id === selectedEntry}
-              onClick={onSelect}
-            />
-          ))}
-        </div>
-      </AccordionContent>
-    </AccordionItem>
+    <DayTimelineSection
+      day={section.date}
+      startedAt={section.startedAt}
+      isFirst={isFirst}
+      isLast={isLast}
+      meta={
+        <>
+          {errorCount > 0 ? (
+            <span className="rounded-full bg-bad/10 px-1.5 text-[11px] font-medium leading-[18px] tabular-nums text-bad">
+              {errorCount} {errorCount === 1 ? "error" : "errors"}
+            </span>
+          ) : null}
+          <DayTimelineCount count={section.entries.length} noun="run" />
+        </>
+      }
+    >
+      {section.entries.map((entry) => (
+        <DayTimelineItem key={entry.id}>
+          <ExecutionLogAccordionItem
+            entry={entry}
+            isSelected={entry.id === selectedEntry}
+            onClick={onSelect}
+          />
+        </DayTimelineItem>
+      ))}
+    </DayTimelineSection>
   );
 }

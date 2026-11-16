@@ -49,11 +49,11 @@ const FloatingLabelInputField = ({
               <label
                 htmlFor={id}
                 className={cn(
-                  "origin-start absolute top-1/2 z-10 block -translate-y-1/2 cursor-text px-2 text-sm font-normal text-muted-foreground transition-all group-focus-within:pointer-events-none group-focus-within:top-0 group-focus-within:cursor-default group-focus-within:text-2xs group-focus-within:font-medium group-focus-within:text-foreground has-[+input:not(:placeholder-shown)]:pointer-events-none has-[+input:not(:placeholder-shown)]:top-0 has-[+input:not(:placeholder-shown)]:cursor-default has-[+input:not(:placeholder-shown)]:text-2xs has-[+input:not(:placeholder-shown)]:font-medium has-[+input:not(:placeholder-shown)]:text-foreground",
+                  "origin-start absolute top-1/2 z-10 block -translate-y-1/2 cursor-text px-2 text-sm font-normal text-muted-foreground transition-all group-focus-within:pointer-events-none group-focus-within:top-0 group-focus-within:cursor-default group-focus-within:text-2xs group-focus-within:font-medium group-focus-within:text-ink has-[+input:not(:placeholder-shown)]:pointer-events-none has-[+input:not(:placeholder-shown)]:top-0 has-[+input:not(:placeholder-shown)]:cursor-default has-[+input:not(:placeholder-shown)]:text-2xs has-[+input:not(:placeholder-shown)]:font-medium has-[+input:not(:placeholder-shown)]:text-ink",
                   labelClassName,
                 )}
               >
-                <span className="inline-flex rounded-lg bg-background px-[0.32rem]">{label}</span>
+                <span className="inline-flex rounded-sm bg-surface px-[0.32rem]">{label}</span>
               </label>
               <Input
                 id={id}

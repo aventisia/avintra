@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { CreditPlansRowDeleteAction } from "./CreditPlansRowDeleteAction.ee";
 
@@ -12,21 +13,21 @@ interface ModelRowActionsProps {
 export const CreditPlansRowActions = ({ rowId }: ModelRowActionsProps) => {
   return (
     // Dropdown menu for model table row action */}
-    <DataTableRowActions className="w-32">
+    <TableCNRowActionsMenu ariaLabel="Open credit plans actions" contentClassName="w-32">
       {/* DropdownMenuSeparator component */}
       {/* <DropdownMenuSeparator /> */}
 
       {/* View the model details */}
-      <DTRowAction rowId={rowId} crudAction="read" entity="creditPlan" />
+      <CrudRowAction rowId={rowId} crudAction="read" entity="creditPlan" />
 
       {/* Edit model details */}
-      <DTRowAction rowId={rowId} crudAction="update" entity="creditPlan" />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="creditPlan" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
 
       {/* Triggers model delete alert dialog  */}
       <CreditPlansRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

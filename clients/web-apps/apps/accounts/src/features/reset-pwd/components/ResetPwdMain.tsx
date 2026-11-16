@@ -53,11 +53,7 @@ export const ResetPwdMain = () => {
         <MinimalFooter />
       </LeftContainer>
 
-      <RightContainer
-        heading="Your AI-Powered Journey Starts Here"
-        subHeading="Enter your gateway to affordable, scalable, and practical automation."
-        imgSrc="agentbuilder.svg"
-      />
+      <RightContainer variant="reset-pwd" stepNo={stepNo} />
     </PageContainer>
   );
 };

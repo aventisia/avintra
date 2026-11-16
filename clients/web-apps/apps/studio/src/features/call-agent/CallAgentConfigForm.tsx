@@ -1,6 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { AsyncSingleSelectField, Form } from "@avplatform/ui/form";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 
@@ -91,7 +91,7 @@ const CallAgentConfigForm = () => {
               >
                 name="selectAgent"
                 size="sm"
-                label="Select Agent"
+                label="Select agent"
                 description="Select an agent"
                 placeholder="Search agent"
                 queryKeyBase={["call-agent-search-flow-versions"]}
@@ -130,14 +130,12 @@ const CallAgentConfigForm = () => {
                       )}
 
                       <h3 className="!mt-6 flex items-center gap-1 text-sm font-medium">
-                        <span className="rounded-full bg-accent px-1.5 text-indigo-600">
-                          Outputs
-                        </span>
+                        <span className="rounded-full bg-accent px-1.5 text-ink-2">Outputs</span>
                         <span className="h-[0.06rem] flex-grow rounded bg-accent"></span>
                       </h3>
 
                       {showOutputFields ? (
-                        <div className="space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                        <div className="space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                           {renderedOutputFields.map((field) => (
                             <RenderField key={field.name} {...field} />
                           ))}

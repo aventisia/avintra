@@ -147,15 +147,14 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
     }
   };
 
-  // Width parity with the old dialog variants (default 32rem, wide nodes 40rem,
-  // AIAgent/WorkItem half viewport, file-viewer full width).
+  // Default 29.25rem inspector, wide nodes 40rem, AIAgent/WorkItem half viewport, file-viewer full width.
   const panelWidth = showViewer
-    ? "w-[calc(100vw-2*var(--header-padding))]"
+    ? "w-screen"
     : nodeData?.name.includes("AIAgent") || nodeData?.name.includes("WorkItem")
-      ? "w-[calc((100vw-(2*var(--header-padding)))/2)]"
+      ? "w-[50vw]"
       : nodeData?.name === "ConditionalBranchActivity" || nodeData?.name === "LoopActivity"
         ? "w-[40rem]"
-        : "w-[32rem]";
+        : "w-[29.25rem]";
 
   return (
     <>
@@ -163,14 +162,16 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
       <Panel
         id={DCP_PANEL_ID}
         side="right"
-        contained
+        contained={isChatAgent}
+        flush={!isChatAgent}
         fill={isChatAgent}
         width={panelWidth}
+        className="rounded-none border-y-0 border-r-0 shadow-none"
         // Off: Escape is handled above with the dirty-form guard
         closeOnEscape={false}
       >
         <div className={cn("flex h-full", showViewer && "grid grid-cols-2")}>
-          <div className={cn(showViewer ? "border-r" : "hidden")}>
+          <div className={cn(showViewer ? "border-r border-line" : "hidden")}>
             <FileViewer />
           </div>
           <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col")}>

@@ -296,7 +296,7 @@ const ModelConfigField = ({
         <SwitchField
           size="sm"
           name={fieldNames.is_json_output}
-          label="Is JSON Output"
+          label="Is JSON output"
           description="Output results in JSON format."
         />
       )}
@@ -304,7 +304,7 @@ const ModelConfigField = ({
       <InputField
         name={fieldNames.max_output_tokens}
         type="number"
-        label="Max Output Token"
+        label="Max output token"
         fieldSize="sm"
         description="Maximum number of tokens the model may generate in its reply. Leave empty to use the model default; values must be greater than 0 (0 is invalid)."
       />
@@ -317,7 +317,7 @@ const ModelConfigField = ({
           { value: "medium", label: "Medium" },
           { value: "high", label: "High" },
         ]}
-        label="Reasoning Effort"
+        label="Reasoning effort"
         description="Controls how much internal reasoning the model performs before answering. Higher effort can improve accuracy on complex tasks at the cost of speed and tokens. Not supported by all models."
       />
     </>
@@ -347,7 +347,7 @@ const ModelConfigField = ({
             size="sm"
             name={fieldNames.provider}
             selectOptions={filteredProviders}
-            label="Model Provider"
+            label="Model provider"
             disabled={is_byok_enabled && isLoading}
           />
         </div>

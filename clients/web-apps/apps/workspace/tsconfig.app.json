@@ -14,7 +14,9 @@
   "include": [
     "src",
     "react-toolkit",
+    "../../packages/agents/src/**/*",
     "../../packages/assistant-chat/src/**/*",
+    "../../packages/chat/src/**/*",
     "../../packages/ui/src/**/*",
     "../../packages/layout/src/**/*",
     "../../packages/tauri-utils/src/**/*"

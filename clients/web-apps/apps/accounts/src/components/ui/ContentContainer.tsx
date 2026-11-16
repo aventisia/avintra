@@ -7,10 +7,8 @@ interface ContentContainerProps {
 
 const ContentContainer = ({ children, className = "" }: ContentContainerProps) => {
   return (
-    <div className={cn("relative", className)}>
-      <div className="flex w-[calc(100vw-1.5rem)] flex-col items-start justify-center space-y-6 p-5 xs:w-[30rem] xs:p-10">
-        {children}
-      </div>
+    <div className={cn("relative w-full max-w-[340px]", className)}>
+      <div className="flex w-full flex-col items-start justify-center space-y-6">{children}</div>
     </div>
   );
 };

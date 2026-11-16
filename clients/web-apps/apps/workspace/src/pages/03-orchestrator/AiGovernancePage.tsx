@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -32,7 +32,7 @@ export const AiGovernancePage = () => {
   }, [location.key, goToTable]);
 
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       {view === "table" && <AgentRiskRegistryTable />}
       {view === "wizard" && <AiGovernanceWizard />}
       {view === "issues" && <IssuesTable />}

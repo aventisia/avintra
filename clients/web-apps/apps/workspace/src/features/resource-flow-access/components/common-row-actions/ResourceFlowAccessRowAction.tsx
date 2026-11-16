@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { BotIcon } from "lucide-react";
+import { RobotIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -34,8 +34,8 @@ export const ResourceFlowAccessRowAction: React.FC<ResourceFlowAccessRowActionPr
   return (
     <SimpleDDMenuItem
       size="md"
-      content="Assign Agents"
-      Icon={BotIcon}
+      content="Assign agents"
+      Icon={RobotIcon}
       disabled={disabled}
       onClick={() => {
         if (disabled) return;

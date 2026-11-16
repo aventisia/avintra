@@ -1,0 +1,27 @@
+meta {
+  name: View published UI
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/published/{{UIBUILDER_PROJECT_ID}}/view
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response includes head version HTML", function() {
+    expect(res.body.data.headVersion.generatedHtml).to.be.a("string");
+  });
+
+  test("view returns the pinned published version", function() {
+    expect(res.body.data.headVersion.versionNumber).to.equal(
+      Number(bru.getGlobalEnvVar("UIBUILDER_PUBLISHED_VERSION_NUMBER"))
+    );
+  });
+}

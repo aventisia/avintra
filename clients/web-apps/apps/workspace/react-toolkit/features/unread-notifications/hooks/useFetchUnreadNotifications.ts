@@ -1,54 +1,28 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { getUnreadNotifications } from "@/react-toolkit/features/unread-notifications/apis/unread-notifications-apis";
 import { UN_QUERY_KEY } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { useUnreadNotificationsStore } from "@/react-toolkit/features/unread-notifications/stores/unread-notifications-store";
 
-/**
- * Hook to fetch unread notifications for the user
- * @returns isFetching and isLoading status
- */
+/** Polls the user's unread notifications to keep the unread count fresh. */
 export const useFetchUnreadNotifications = () => {
-  // Get store state and actions
-  const { isOpen, setUnreadCount } = useUnreadNotificationsStore(
-    useShallow((state) => ({
-      isOpen: state.isOpen,
-      setUnreadCount: state.setUnreadCount,
-    })),
-  );
+  const setUnreadCount = useUnreadNotificationsStore((state) => state.setUnreadCount);
 
-  // Get unread notifications using react query.
-  // Poll periodically so the bell badge stays fresh when new notifications are
-  // sent by other users while this client has the app open. Without this, the
-  // badge only refreshes on mount, on dialog open, or on window focus.
-  const { data, isFetching, isLoading, refetch, isError, error } = useQuery({
+  // IMPORTANT NOTE: polls in the background because other users send notifications while this client stays open.
+  const { data, isError, error } = useQuery({
     queryKey: UN_QUERY_KEY,
     queryFn: getUnreadNotifications,
-    refetchInterval: 30_000, // refetch every 30 seconds
+    refetchInterval: 30_000,
     refetchIntervalInBackground: true,
   });
 
-  // Show toast on fetch error
   useEffect(() => {
     if (isError) toast.error(error.toString());
   }, [error, isError]);
 
-  // Set unread notifications count
   useEffect(() => {
-    if (data) setUnreadCount(data?.data.length);
+    if (data) setUnreadCount(data.data.length);
   }, [data, setUnreadCount]);
-
-  // Refetch unread notifications on dialog open
-  useEffect(() => {
-    if (isOpen) {
-      // Refetch unread notifications
-      refetch();
-    }
-  }, [isOpen, refetch]);
-
-  // Return the fetching and loading status
-  return { isFetching, isLoading };
 };

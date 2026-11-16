@@ -62,9 +62,6 @@ const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
     );
     root.style.setProperty("--ring", `color-mix(in srgb, ${primary} 20%, transparent)`);
     applyColorRamp(root, "primary", primary);
-    // Branded header gradient. Only set when a brand color is present so the
-    // unbranded header keeps the built-in gradient from the Header fallback.
-    root.style.setProperty("--header-via", primary);
   } else if (primaryForeground) {
     root.style.setProperty("--primary-foreground", primaryForeground);
   }
@@ -89,13 +86,6 @@ const applyBrandColors = (root: HTMLElement, branding: ResolvedBranding) => {
     applyColorRamp(root, "secondary", secondary);
   } else if (secondaryForeground) {
     root.style.setProperty("--secondary-foreground", secondaryForeground);
-  }
-
-  // Branded header edges need both colors; otherwise the Header fallback keeps the built-in gradient.
-  if (primary && secondary) {
-    const headerEdge = `color-mix(in srgb, ${primary} 75%, ${secondary})`;
-    root.style.setProperty("--header-from", headerEdge);
-    root.style.setProperty("--header-to", headerEdge);
   }
 };
 

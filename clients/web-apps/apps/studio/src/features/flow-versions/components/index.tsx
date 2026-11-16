@@ -1,13 +1,10 @@
-import { PopoverContent, PopoverDefaultHeader, PopoverWrapper } from "@avplatform/ui/popover";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import { useFetchFlowVersions } from "../hooks/useFetchFlowVersions";
-import { useFlowVersionPopoverStore } from "../stores/flow-version-popover-store";
 import { useFlowsVersionsStore } from "../stores/flow-versions-store";
-import { FlowVersionsTrigger } from "./FlowVersionsTrigger";
-import { FVPopoverContent } from "./flow-version-popover-content";
+import { AgentDetailsTrigger } from "./AgentDetailsTrigger";
+import { AgentDetailsPanel } from "./agent-details-panel/AgentDetailsPanel";
 
 export const FlowVersions = () => {
   const location = useLocation();
@@ -18,23 +15,9 @@ export const FlowVersions = () => {
 
   const versionId = queryParams.get("v") || undefined;
 
-  // Fetch flow versions list data
   const { data, isLoading } = useFetchFlowVersions(flowId || "");
 
-  // Get store state and actions
-  const { isPopoverOpen, togglePopoverOpen } = useFlowVersionPopoverStore(
-    useShallow((state) => ({
-      isPopoverOpen: state.isPopoverOpen,
-      togglePopoverOpen: state.togglePopoverOpen,
-    })),
-  );
-
-  const { setVersion } = useFlowsVersionsStore(
-    useShallow((state) => ({
-      versionID: state.versionID,
-      setVersion: state.setVersion,
-    })),
-  );
+  const setVersion = useFlowsVersionsStore((state) => state.setVersion);
 
   //Set initial version to view as draft
   useEffect(() => {
@@ -55,12 +38,9 @@ export const FlowVersions = () => {
   }, [data?.data, versionId, setVersion]);
 
   return (
-    <PopoverWrapper open={isPopoverOpen} onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}>
-      <FlowVersionsTrigger />
-      <PopoverContent align="end" variant={"responsive"} className="ml-1 mt-1.5">
-        <PopoverDefaultHeader heading={"Versions"} />
-        <FVPopoverContent flowVersionsList={data?.data} isLoading={isLoading} />
-      </PopoverContent>
-    </PopoverWrapper>
+    <>
+      <AgentDetailsTrigger />
+      <AgentDetailsPanel versions={data?.data} isLoading={isLoading} />
+    </>
   );
 };

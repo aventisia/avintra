@@ -19,7 +19,7 @@ import React from "react";
  *
  * @example
  * ```tsx
- * <MinimalFooterLink href="https://example.com" className="text-blue-500">
+ * <MinimalFooterLink href="https://example.com" className="text-primary-text">
  *   Example Link
  * </MinimalFooterLink>
  * ```
@@ -31,7 +31,7 @@ const MinimalFooterLink = React.forwardRef<
   return (
     <a
       ref={ref}
-      className={cn("underline-offset-4 hover:text-primary hover:underline", className)}
+      className={cn("underline-offset-4 hover:text-ink hover:underline", className)}
       {...props}
     />
   );

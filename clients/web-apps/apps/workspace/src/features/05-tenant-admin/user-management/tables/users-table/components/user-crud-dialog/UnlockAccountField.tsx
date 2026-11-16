@@ -1,13 +1,12 @@
 import { SwitchField } from "@avplatform/ui/form";
-import { CrudActionType } from "@avplatform/ui/types";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { unlockAccountProps } from "../../constants/user-form-field-props";
+import { unlockAccountProps } from "../../constants/user-form-field-props.constant";
 import { userZodSchema } from "../../constants/user-zod-schema";
+import { isAccountLocked } from "../../utils/account-status.util";
 
 interface UnlockAccountFieldProps {
-  crudAction: CrudActionType;
   form: UseFormReturn<z.infer<typeof userZodSchema>>;
 }
 
@@ -15,21 +14,8 @@ interface UnlockAccountFieldProps {
  * Renders the Switch field which allows the user-manager to unlock the account
  * of a user if the account is locked.
  */
-export const UnlockAccountField = ({ crudAction, form }: UnlockAccountFieldProps) => {
-  // Show unlock account field if the user is locked
-  const showUnlockAccount = () => {
-    // Get the lockout end date
-    const lockoutEnd = form.getValues("lockoutEnd");
-
-    // Return showUnlockAccount state
-    return lockoutEnd ? new Date() < new Date(lockoutEnd) : false;
-  };
-
-  return (
-    <>
-      {showUnlockAccount() && (
-        <SwitchField {...unlockAccountProps} disabled={crudAction === "read"} />
-      )}
-    </>
-  );
+export const UnlockAccountField = ({ form }: UnlockAccountFieldProps) => {
+  return isAccountLocked(form.getValues("lockoutEnd")) ? (
+    <SwitchField {...unlockAccountProps} />
+  ) : null;
 };

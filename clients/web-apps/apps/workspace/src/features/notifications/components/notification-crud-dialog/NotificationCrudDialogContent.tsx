@@ -1,5 +1,6 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { AudienceScopeEnum } from "@avplatform/ui/enums";
+import { RecordSheetLoading } from "@avplatform/ui/record-sheet";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -30,7 +31,13 @@ export const NotificationCrudDialogContent = ({
     return <NotificationUpdateForm rowId={rowId} />;
   }
 
-  return <NotificationComposeForm />;
+  return <NotificationCreateForm />;
+};
+
+const NotificationCreateForm = () => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
+  return <NotificationComposeForm onSuccess={onCloseConfirmed} />;
 };
 
 /**
@@ -53,7 +60,7 @@ const NotificationUpdateForm = ({ rowId }: { rowId: string }) => {
   });
 
   if (isLoading || !data?.data) {
-    return <div className="px-4 pb-5 text-sm text-muted-foreground">Loading...</div>;
+    return <RecordSheetLoading label="Loading notification..." />;
   }
 
   return (

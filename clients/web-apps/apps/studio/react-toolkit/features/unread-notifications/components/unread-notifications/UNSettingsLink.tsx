@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { GearIcon } from "@phosphor-icons/react";
 
 /**
  * Renders a button that represents a link to the notification settings.
@@ -8,7 +8,7 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 export const UNSettingsLink = () => {
   return (
     <Button variant="ghost" size="icon8">
-      <Cog6ToothIcon className="h-5 w-5" />
+      <GearIcon className="h-5 w-5" />
       <span className="sr-only">Settings</span>
     </Button>
   );

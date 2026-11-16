@@ -3,7 +3,6 @@ import { cn } from "@avplatform/ui/lib";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
-import { HelpButton } from "@/components/help/HelpButton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { useFetchChatAgents } from "../hooks/useFetchChatAgents";
@@ -111,8 +110,7 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
       {layoutMode !== "stacked" && (
         <div className={cn("w-full flex items-center justify-between")}>
           <div className="flex items-center gap-2">
-            <p className="text-lg font-medium">Chats</p>
-            <HelpButton guideId="assist-chats" />
+            <h1 className="text-title text-ink">Chats</h1>
           </div>
           {HAS_AGENTS && <SearchCommandTrigger />}
         </div>
@@ -125,7 +123,7 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
         <>
           <div
             className={cn(
-              "w-full border flex bg-background rounded-lg  overflow-hidden",
+              "w-full border border-line flex bg-surface rounded-lg  overflow-hidden",
               containerHeight,
             )}
           >

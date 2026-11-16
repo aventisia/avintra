@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.core.database import get_db_session_context
 from app.dependencies.authorize import authorize
 from app.features.auth.authenticated_user import User
-from app.features.llm_providers.llm_providers_schemas import LLMRequest
+from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest
 from app.features.langgraph.services.chat_service import chat_service
 from app.features.llm_providers.llm_kb_retrieval import retrieve_and_inject_kb_context
 from app.core.logger import logger
@@ -162,6 +162,20 @@ async def generate_langgraph_response_route(
         )
 
 
+GENERIC_STREAM_ERROR_MESSAGE = "The assistant couldn't finish this reply. Please try again."
+CREDENTIAL_STREAM_ERROR_MESSAGE = (
+    "The AI model isn't configured for this workspace yet. Ask an admin to check its API key."
+)
+
+
+def _stream_error_message(exc: Exception) -> str:
+    if isinstance(exc, HTTPException):
+        return CREDENTIAL_STREAM_ERROR_MESSAGE
+    if isinstance(exc, ValueError) and str(exc):
+        return str(exc)
+    return GENERIC_STREAM_ERROR_MESSAGE
+
+
 @router.post("/chat/completions/normalized")
 async def generate_langgraph_response_normalized_route(
     request: LLMRequest,
@@ -190,11 +204,26 @@ async def generate_langgraph_response_normalized_route(
         await retrieve_and_inject_kb_context(request, user)
 
     async def event_generator():
-        async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
-            async for chunk in chat_service.stream_normalized(request, user, db_session=session):
-                yield _serialize_chunk(chunk)
-                if not request.is_temp_chat:
-                    await session.commit()
+        try:
+            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
+                async for chunk in chat_service.stream_normalized(request, user, db_session=session):
+                    yield _serialize_chunk(chunk)
+                    if not request.is_temp_chat:
+                        await session.commit()
+        except Exception as exc:
+            # IMPORTANT NOTE: a stream that dies without a frame looks like an empty reply to
+            # the client, so the failure is sent as an error frame before the body closes.
+            logger.exception("Normalized chat stream failed. conversation_id=%s", request.conversation_id)
+            message = _stream_error_message(exc)
+            yield _serialize_chunk(
+                LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output=message,
+                    type="error",
+                    conversation_id=request.conversation_id,
+                )
+            )
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

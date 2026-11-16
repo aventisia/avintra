@@ -36,7 +36,7 @@ export const OUTPUT_CONSUMER_OPTIONS: SelectOption<OutputConsumer>[] = [
 /** Risk category dropdown options. */
 export const RISK_CATEGORY_OPTIONS: SelectOption<RiskCategory>[] = [
   { value: RiskCategory.Data, label: "Data" },
-  { value: RiskCategory.ModelOutput, label: "Model / Output" },
+  { value: RiskCategory.ModelOutput, label: "Model / output" },
   { value: RiskCategory.Compliance, label: "Compliance" },
   { value: RiskCategory.Security, label: "Security" },
   { value: RiskCategory.Operational, label: "Operational" },
@@ -63,21 +63,21 @@ export const RISK_IMPACT_OPTIONS: SelectOption<RiskImpact>[] = [
 
 /** Lifecycle status dropdown options. */
 export const RISK_LIFECYCLE_STATUS_OPTIONS: SelectOption<RiskLifecycleStatus>[] = [
-  { value: RiskLifecycleStatus.NotAssessed, label: "Not Assessed" },
-  { value: RiskLifecycleStatus.InAssessment, label: "In Assessment" },
+  { value: RiskLifecycleStatus.NotAssessed, label: "Not assessed" },
+  { value: RiskLifecycleStatus.InAssessment, label: "In assessment" },
   { value: RiskLifecycleStatus.Submitted, label: "Submitted" },
-  { value: RiskLifecycleStatus.InReview, label: "In Review" },
+  { value: RiskLifecycleStatus.InReview, label: "In review" },
   { value: RiskLifecycleStatus.Approved, label: "Approved" },
-  { value: RiskLifecycleStatus.ApprovedWithExceptions, label: "Approved with Exceptions" },
+  { value: RiskLifecycleStatus.ApprovedWithExceptions, label: "Approved with exceptions" },
   { value: RiskLifecycleStatus.Monitored, label: "Monitored" },
-  { value: RiskLifecycleStatus.ActionRequired, label: "Action Required" },
+  { value: RiskLifecycleStatus.ActionRequired, label: "Action required" },
   { value: RiskLifecycleStatus.Retired, label: "Retired" },
 ];
 
 /** Mitigation status options (for each risk register row). */
 export const MITIGATION_STATUS_OPTIONS: SelectOption[] = [
   { value: "planned", label: "Planned" },
-  { value: "in-progress", label: "In Progress" },
+  { value: "in-progress", label: "In progress" },
   { value: "implemented", label: "Implemented" },
   { value: "monitored", label: "Monitored" },
 ];

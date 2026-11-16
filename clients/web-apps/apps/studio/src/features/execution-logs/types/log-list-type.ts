@@ -14,6 +14,7 @@ export interface LogEntry {
 
 export interface DaySection {
   date: string;
-  dateFormatted: string;
+  /** Start time (ms) of the section's newest run, used for relative day labels. */
+  startedAt: number;
   entries: LogEntry[];
 }

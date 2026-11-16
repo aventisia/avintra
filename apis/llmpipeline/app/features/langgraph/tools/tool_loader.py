@@ -4,6 +4,7 @@ from app.features.langgraph.tools.github.github_tools import github_create_issue
 from app.features.langgraph.tools.slack.slack_tools import slack_list_channels, slack_send_message
 from app.features.langgraph.tools.calendar.calendar_tools import calendar_create_event, calendar_list_events
 from app.features.langgraph.tools.outlook.outlook_tools import outlook_send_email
+from app.features.langgraph.tools.workspace.workspace_tools import workspace_navigate
 
 
 def load_platform_tools(
@@ -28,6 +29,8 @@ def load_platform_tools(
 
         - calendar_create_event, calendar_list_events: Calendar integration.
 
+        - workspace_navigate: Shows a button that opens a Workspace page.
+
     Args:
         registry:
             ToolRegistry instance responsible for storing and retrieving
@@ -49,5 +52,6 @@ def load_platform_tools(
             calendar_create_event,
             calendar_list_events,
             outlook_send_email,
+            workspace_navigate,
         ]
     )

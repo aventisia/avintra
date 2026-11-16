@@ -29,21 +29,21 @@ export const AgentIdentitySection = () => {
   return (
     <SectionLayout
       eyebrow="Section 01"
-      title="Agent Identity & Classification"
+      title="Agent identity & classification"
       description="Baseline record for the agent being assessed."
     >
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Agent Name" hint="Auto-filled from the agent definition.">
+          <Field label="Agent name" hint="Auto-filled from the agent definition.">
             <Input value={assessment.agentName} readOnly />
           </Field>
-          <Field label="Agent Type" hint="Auto-filled.">
+          <Field label="Agent type" hint="Auto-filled.">
             <Input value={assessment.agentType} readOnly />
           </Field>
           <Field label="Version" hint="Auto-filled.">
             <Input value={String(assessment.versionNumber)} readOnly />
           </Field>
-          <Field label="Published On" hint="Auto-filled.">
+          <Field label="Published on" hint="Auto-filled.">
             <Input value={publishedDate} readOnly />
           </Field>
           <Field label="Agent ID" hint="Auto-filled.">
@@ -57,8 +57,8 @@ export const AgentIdentitySection = () => {
         >
           <SegmentedControl
             options={[
-              { value: "no", label: "No - Internal" },
-              { value: "yes", label: "Yes - Customer-facing" },
+              { value: "no", label: "No - internal" },
+              { value: "yes", label: "Yes - customer-facing" },
             ]}
             value={assessment.isConsumerFacing ? "yes" : "no"}
             onChange={(v) => update({ isConsumerFacing: v === "yes" })}
@@ -66,7 +66,7 @@ export const AgentIdentitySection = () => {
         </Field>
 
         <Field
-          label="Intended Use & Business Purpose"
+          label="Intended use & business purpose"
           required
           info="Describe what decision or process this agent supports or automates, and its expected benefit. Be specific about the business outcome."
         >
@@ -78,7 +78,7 @@ export const AgentIdentitySection = () => {
         </Field>
 
         <Field
-          label="Business Processes Affected"
+          label="Business processes affected"
           required
           info="List the business processes this agent touches, e.g. lending decisioning, customer onboarding, collections, or complaint triage. Separate multiple processes with commas."
         >

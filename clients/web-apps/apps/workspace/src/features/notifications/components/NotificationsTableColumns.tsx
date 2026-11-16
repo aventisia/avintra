@@ -1,45 +1,32 @@
-import { Checkbox } from "@avplatform/ui";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { NOTIFICATIONS_TABLE_KEY } from "../constants/notifications-table.constant";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
+import { getColumnName } from "../constants/column-display-names";
 import { NotificationDto } from "../dtos/notification.dto";
 import { NotificationRowActions } from "./notification-row-actions/NotificationRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<NotificationDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Builds the array of table columns for the notifications table.
  */
 export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => [
-  {
-    accessorKey: "selectRow",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        onClick={(e) => e.stopPropagation()}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<NotificationDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "title",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Title" />
-    ),
+    meta: { label: getColumnName("title") },
+    header: renderHeader("title"),
     cell: ({ row }) => {
       const title = row.getValue<string | null>("title");
       return (
@@ -49,9 +36,8 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
   },
   {
     accessorKey: "message",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Message" />
-    ),
+    meta: { label: getColumnName("message") },
+    header: renderHeader("message"),
     cell: ({ row }) => {
       const message = row.getValue<string>("message");
       return <div className="w-auto max-w-[24rem] truncate font-medium">{message}</div>;
@@ -59,9 +45,8 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Type" />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => {
       const type = row.getValue<string>("type");
       return <div className="w-auto truncate font-medium">{type || FALLBACK_VALUE}</div>;
@@ -69,9 +54,8 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Status" />
-    ),
+    meta: { label: getColumnName("status") },
+    header: renderHeader("status"),
     cell: ({ row }) => {
       const status = row.getValue<string>("status");
       return <div className="w-auto truncate font-medium">{status || FALLBACK_VALUE}</div>;
@@ -79,31 +63,33 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
   },
   {
     accessorKey: "recipientCount",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Recipients" />
-    ),
+    meta: { label: getColumnName("recipientCount") },
+    header: renderHeader("recipientCount"),
     cell: ({ row }) => {
       const recipientCount = row.getValue<number>("recipientCount");
-      return <div className="w-auto truncate font-medium">{recipientCount ?? FALLBACK_VALUE}</div>;
+      return (
+        <div className="w-auto truncate font-mono font-medium tabular-nums">
+          {recipientCount ?? FALLBACK_VALUE}
+        </div>
+      );
     },
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={NOTIFICATIONS_TABLE_KEY} column={column} title="Created" />
-    ),
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
     cell: ({ row }) => {
       const createdOn = row.getValue<string | null>("createdOn");
       const formattedDate = formatDate(createdOn, true);
       if (!formattedDate || formattedDate === "01 Jan 0001") {
         return <div className="truncate font-medium">{FALLBACK_VALUE}</div>;
       }
-      return <div className="truncate font-medium">{formattedDate}</div>;
+      return <div className="truncate font-mono font-medium tabular-nums">{formattedDate}</div>;
     },
   },
-  createDTActionsColumn<NotificationDto>({
-    renderCell: (notification) => (
-      <NotificationRowActions rowId={notification.id} status={notification.status} />
+  getRowActionsColumn<NotificationDto>({
+    actions: ({ row }) => (
+      <NotificationRowActions rowId={row.original.id} status={row.original.status} />
     ),
   }),
 ];

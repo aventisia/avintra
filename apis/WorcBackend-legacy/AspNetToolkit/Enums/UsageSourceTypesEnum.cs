@@ -16,5 +16,11 @@ public enum UsageSourceTypesEnum
     /// Indicates that the credits were consumed by the platform itself.
     /// </summary>
     [Description("Platform")]
-    Platform
+    Platform,
+
+    /// <summary>
+    /// Indicates that the credits were consumed by the custom UI builder.
+    /// </summary>
+    [Description("UiBuilder")]
+    UiBuilder
 }

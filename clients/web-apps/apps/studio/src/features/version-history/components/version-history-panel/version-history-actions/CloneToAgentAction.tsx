@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { toast } from "@avplatform/ui/sonner";
-import { CopyPlus } from "lucide-react";
+import { CopySimpleIcon } from "@phosphor-icons/react";
 
 import { useCloneToAgentMutation } from "@/features/version-history/hooks/useCloneToAgentMutation";
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
@@ -25,7 +25,7 @@ export default function CloneToAgentAction({ id }: { id: string }) {
 
   return (
     <SimpleDDMenuItem
-      Icon={CopyPlus}
+      Icon={CopySimpleIcon}
       size="sm"
       content="Clone to new agent"
       disabled={detailQuery.isFetching || cloneToNewAgentMutation.isPending}

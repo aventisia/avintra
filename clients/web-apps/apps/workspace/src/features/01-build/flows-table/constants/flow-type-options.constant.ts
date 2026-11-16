@@ -1,11 +1,11 @@
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
-import { Blocks, type LucideIcon, MessagesSquare, Workflow } from "lucide-react";
+import { ChatsIcon, CubeIcon, FlowArrowIcon, type Icon } from "@phosphor-icons/react";
 
 export type FlowTypeOption = {
   value: FlowTypesEnum;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon: Icon;
 };
 
 /**
@@ -14,20 +14,20 @@ export type FlowTypeOption = {
 export const FLOW_TYPE_OPTIONS: FlowTypeOption[] = [
   {
     value: FlowTypesEnum.Agent,
-    label: "Automation Agent",
+    label: "Automation agent",
     description: "Automates tasks and processes with rules and logic",
-    icon: Workflow,
+    icon: FlowArrowIcon,
   },
   {
     value: FlowTypesEnum.ChatAgent,
-    label: "Chat Agent",
+    label: "Chat agent",
     description: "Holds dynamic, context-aware conversations",
-    icon: MessagesSquare,
+    icon: ChatsIcon,
   },
   {
     value: FlowTypesEnum.Block,
     label: "Block",
     description: "A reusable piece that other agents can call",
-    icon: Blocks,
+    icon: CubeIcon,
   },
 ];

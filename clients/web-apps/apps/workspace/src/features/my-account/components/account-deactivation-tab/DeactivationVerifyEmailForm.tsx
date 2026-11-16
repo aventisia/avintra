@@ -1,8 +1,8 @@
 import { Button, ResendCodeButton, SubmitButton } from "@avplatform/ui/buttons";
-import Lucide from "@avplatform/ui/components/Lucide";
 import { Form, InputField, InputOtpField } from "@avplatform/ui/form";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import type { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
@@ -58,8 +58,8 @@ export const DeactivationVerifyEmailForm = () => {
       checkDirtyForm={false}
     >
       <div className="box flex flex-col p-5">
-        {/* <div className="mb-6 border-b border-dashed border-slate-300/70 pb-5 text-sm font-medium">
-          Email Settings
+        {/* <div className="mb-6 border-b border-dashed border-line pb-5 text-sm font-medium">
+          Email settings
         </div> */}
         <div>
           <InputDivElement
@@ -74,12 +74,7 @@ export const DeactivationVerifyEmailForm = () => {
             isRequired={true}
             messageForInput="Please enter your password to continue."
           >
-            <InputField
-              name="password"
-              type="password"
-              className="border-slate-300/60 shadow-sm"
-              size={80}
-            />
+            <InputField name="password" type="password" className="border-input" size={80} />
           </InputDivElement>
         </div>
         <div className="flex flex-wrap pt-5 md:justify-end">
@@ -89,7 +84,7 @@ export const DeactivationVerifyEmailForm = () => {
             type="reset"
             onClick={() => setStepNo(1)}
           >
-            <Lucide icon="ArrowLeft" className="h-6 w-6" />
+            <ArrowLeftIcon className="h-6 w-6" />
             <span className="ml-1">Cancel</span>
           </Button>
           <div className="me-2 flex flex-row flex-wrap items-center gap-2 text-sm">
@@ -102,7 +97,7 @@ export const DeactivationVerifyEmailForm = () => {
           </div>
           <SubmitButton
             primaryText={
-              deactivationStatusData?.deactivating ? "Cancel Deactivation" : "Deactivate"
+              deactivationStatusData?.deactivating ? "Cancel deactivation" : "Deactivate"
             }
             variant="destructive"
             className="text-sm"

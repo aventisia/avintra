@@ -1,15 +1,13 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { CrudDialogActions, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { Form, InputField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
 import { skillOptimisticMutationFn } from "../../apis/skill-registry.apis";
 import {
   descriptionProps,
-  idProps,
   isDisabledProps,
   nameProps,
 } from "../../constants/skill-form-field-props.constant";
@@ -20,7 +18,7 @@ import { useTableTab } from "../../hooks/useTableTab.hook";
 
 interface SkillCrudFormProps {
   rowId: string;
-  crudAction: CrudActionType;
+  crudAction: "create" | "update";
 }
 
 export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
@@ -72,46 +70,24 @@ export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
     if (crudAction === "create" && isSuccess) onCloseConfirmed();
   }, [isSuccess, crudAction, onCloseConfirmed]);
 
-  // Is form in read mode?
-  const isReadMode = crudAction === "read";
-
-  // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-      disabled={isReadMode}
-    >
-      {/* Skill Id */}
-      {isReadMode && <InputField {...idProps} />}
-
-      {/* Name */}
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)}>
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         disabled={crudAction !== "create"}
       />
-
-      {/* Description */}
       <TextareaField {...descriptionProps} />
-
-      {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
-
-      {/* Submit button */}
-      {!isReadMode && (
-        <div className="!mt-5 flex w-full justify-end">
-          <SubmitButton
-            className="min-w-[5rem]"
-            primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText="Creating..."
-            isPending={isPending}
-            disabled={!isDirty || !isAvailable || isCheckPending}
-          />
-        </div>
-      )}
+      <CrudDialogActions>
+        <SubmitButton
+          primaryText={crudAction === "create" ? "Create skill" : "Save changes"}
+          secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
+          isPending={isPending}
+          disabled={!isDirty || !isAvailable || isCheckPending}
+        />
+      </CrudDialogActions>
     </Form>
   );
 };

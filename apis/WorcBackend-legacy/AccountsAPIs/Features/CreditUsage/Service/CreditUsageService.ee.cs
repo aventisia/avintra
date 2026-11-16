@@ -53,6 +53,10 @@ public class CreditUsageService : ICreditUsageService
                 endDate = DateTime.UtcNow.Date;
             }
 
+            // IMPORTANT NOTE: Npgsql only writes UTC DateTimeOffset values; query dates bind with the server's local offset.
+            startDate = new DateTimeOffset(startDate.Value.Date, TimeSpan.Zero);
+            endDate = new DateTimeOffset(endDate.Value.Date, TimeSpan.Zero);
+
             var tenant = await _unitOfWork.TenantRepo.GetByConditionAsync(w => w.Id == _tenantId).FirstOrDefaultAsync();
 
             // If no tenant is found, log a warning and return failure message
@@ -94,7 +98,7 @@ public class CreditUsageService : ICreditUsageService
             // Generate a sequence of all dates in the requested range.
             // var totalDays = (endDate.Value - startDate.Value).Days + 1;
             var allDatesInRange = Enumerable.Range(0, (endDate.Value - startDate.Value).Days + 1)
-                                            .Select(s => startDate.Value.AddDays(s));
+                                            .Select(s => startDate.Value.Date.AddDays(s));
 
             // Build the credit usage summary DTO to return
             var creditUsageDto = new CreditsUsageSummaryDto
@@ -585,6 +589,9 @@ public class CreditUsageService : ICreditUsageService
                 exportCreditUsageRequestDto.EndDate = DateTime.UtcNow.Date;
                 exportCreditUsageRequestDto.StartDate = DateTime.UtcNow.Date.AddDays(-6);
             }
+
+            exportCreditUsageRequestDto.StartDate = new DateTimeOffset(exportCreditUsageRequestDto.StartDate.Value.Date, TimeSpan.Zero);
+            exportCreditUsageRequestDto.EndDate = new DateTimeOffset(exportCreditUsageRequestDto.EndDate.Value.Date, TimeSpan.Zero);
 
             // Fetch the tenant details from the repository based on the TenantId
             var tenant = await _unitOfWork.TenantRepo

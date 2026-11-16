@@ -36,13 +36,6 @@ export const generateOperationId = (
   return combined.length === 0 ? "operation" : combined;
 };
 
-/** Indicates whether every "{" in an endpoint template has a matching "}". */
-export const hasBalancedPathPlaceholders = (endpoint: string): boolean => {
-  const openings = endpoint.match(/\{/g)?.length ?? 0;
-  const closings = endpoint.match(/\}/g)?.length ?? 0;
-  return openings === closings;
-};
-
 const inferSchema = (value: unknown): JsonSchemaObject => {
   if (Array.isArray(value)) {
     const schema: JsonSchemaObject = { type: "array" };

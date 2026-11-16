@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
-import { Check, ChevronDown } from "lucide-react";
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 interface PromptSelectProps {
@@ -79,16 +79,16 @@ export const PromptSelect = ({
           className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
         >
           <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
-          <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
+          <CaretDownIcon className={cn("ml-2 h-4 w-4 opacity-50")} />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2")}
       >
         <Command>
-          <div className="mb-1.5 rounded-lg bg-slate-100">
+          <div className="mb-1.5 rounded-lg bg-sunken">
             <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>
@@ -124,7 +124,7 @@ export const PromptSelect = ({
                             </span>
                           </Tooltip>
                         </p>
-                        <Check
+                        <CheckIcon
                           className={cn(
                             "h-3.5 w-3.5 shrink-0",
                             value === option.value ? "opacity-100" : "opacity-0",

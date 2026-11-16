@@ -2,19 +2,19 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "select", value: "Select row" },
 
   //  Core
   { key: "name", value: "Name" },
   { key: "type", value: "Type" },
   { key: "currency", value: "Currency" },
-  { key: "resourceType", value: "Resource Type" },
+  { key: "resourceType", value: "Resource type" },
   { key: "activePlan", value: "Plan" },
 
   //  Dates
-  { key: "effectiveDate", value: "Effective Date" },
-  { key: "renewalDate", value: "Renewal Date" },
-  { key: "expiresOn", value: "Expires On" },
+  { key: "effectiveDate", value: "Effective date" },
+  { key: "renewalDate", value: "Renewal date" },
+  { key: "expiresOn", value: "Expires on" },
 
   //  Business
   { key: "domain", value: "Domain" },
@@ -24,22 +24,22 @@ export const columnDisplayNames: KeyValueLookupType[] = [
 
   //  Usage / Metrics
   { key: "totalUsers", value: "Users" },
-  { key: "availableCredits", value: "Available Credits" },
-  { key: "consumedCredits", value: "Consumed Credits" },
-  { key: "totalExecutionTime", value: "Execution Time" },
+  { key: "availableCredits", value: "Available credits" },
+  { key: "consumedCredits", value: "Consumed credits" },
+  { key: "totalExecutionTime", value: "Execution time" },
   { key: "storageSize", value: "Storage" },
-  { key: "publishAgent", value: "Publish Agent" },
+  { key: "publishAgent", value: "Publish agent" },
   { key: "totalJobs", value: "Jobs" },
-  { key: "lastLoginDate", value: "Last Login Date" },
+  { key: "lastLoginDate", value: "Last login date" },
 
   //  Flags
   { key: "isDisabled", value: "Disabled" },
 
   //  Audit
-  { key: "createdOn", value: "Created On" },
-  { key: "createdBy", value: "Created By" },
-  { key: "lastModifiedOn", value: "Last Modified On" },
-  { key: "lastModifiedBy", value: "Last Modified By" },
+  { key: "createdOn", value: "Created on" },
+  { key: "createdBy", value: "Created by" },
+  { key: "lastModifiedOn", value: "Last modified on" },
+  { key: "lastModifiedBy", value: "Last modified by" },
 ];
 // Get the column display name for the given column key.
 export const getColumnName = (key: string): string => {

@@ -1,16 +1,18 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@avplatform/ui/hover-card";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import type { IconProps } from "@avplatform/ui/types";
-import { NavLink } from "react-router-dom";
+
+import { useMenuItemLink } from "./useMenuItemLink.hook";
 
 interface MenuItemProps {
   Icon: React.ComponentType<IconProps>;
   name: string;
   route: string;
+  /** Routes that mark the item current instead of its own route, for a hub entry. */
+  activeRoutes?: string[];
 }
 
 /**
- * A functional component that renders a collapsible menu item with an icon and a hoverable tooltip.
- * The component uses `HoverCard` for displaying additional information when hovered over.
+ * A functional component that renders a collapsible menu item with an icon and a right-side tooltip naming it.
  *
  * @param {MenuItemProps} props - The properties for the `CollapsedMenuItem` component.
  * @param {React.ComponentType} props.Icon - The icon component to display inside the menu item.
@@ -28,27 +30,21 @@ interface MenuItemProps {
  * />
  * ```
  */
-const CollapsedMenuItem = ({ Icon, name, route }: MenuItemProps) => {
+const CollapsedMenuItem = ({ Icon, name, route, activeRoutes }: MenuItemProps) => {
+  const { LinkComponent, ariaCurrent } = useMenuItemLink(activeRoutes);
+
   return (
-    <HoverCard openDelay={0} closeDelay={0}>
-      <HoverCardTrigger asChild>
-        <div className="items-cente mx-4 my-1.5 flex h-9 cursor-pointer">
-          <NavLink
-            to={route}
-            className={({ isActive }) => {
-              return isActive ? "active group" : "";
-            }}
-          >
-            <li className="group flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg hover:bg-slate-100 group-[.active]:bg-slate-100">
-              <Icon className="h-5 w-5 stroke-[1.5] text-[--icon-color] group-hover:text-primary group-[.active]:text-primary" />
-            </li>
-          </NavLink>
-        </div>
-      </HoverCardTrigger>
-      <HoverCardContent className="absolute bottom-[0.5rem] left-[1.8rem] whitespace-nowrap rounded-lg border border-secondary bg-secondary px-3 py-1 text-sm font-normal capitalize text-white shadow-sm">
-        {name}
-      </HoverCardContent>
-    </HoverCard>
+    <Tooltip content={name} side="right">
+      <LinkComponent
+        to={route}
+        aria-current={ariaCurrent}
+        aria-label={name}
+        className="group relative mx-auto my-0.5 flex size-9 items-center justify-center rounded-sm text-muted-foreground transition-colors duration-[120ms] ease-out hover:bg-hover hover:text-ink focus-visible:shadow-focus focus-visible:outline-none aria-[current=page]:bg-fill aria-[current=page]:text-ink motion-reduce:transition-none"
+      >
+        <span className="absolute inset-y-1.5 left-0 hidden w-[3px] rounded-r-full bg-indicator group-aria-[current=page]:block" />
+        <Icon className="size-4 stroke-[1.75]" />
+      </LinkComponent>
+    </Tooltip>
   );
 };
 

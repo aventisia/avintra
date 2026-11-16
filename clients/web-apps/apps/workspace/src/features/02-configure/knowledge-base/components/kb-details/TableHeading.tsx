@@ -15,7 +15,7 @@ import { TABLE_HEADING } from "../../constants";
 export const TableHeading = ({ kbName = "KB Details" }: { kbName?: string }) => {
   useDocumentTitle(`${kbName} - ${TABLE_HEADING}`);
   return (
-    <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+    <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

@@ -1,45 +1,35 @@
 import { LoadingSpinner } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import { formatCredits, formatCreditsExact } from "@avplatform/ui/utils";
+import { CoinsIcon } from "@phosphor-icons/react";
 
 import { cn } from "@/ui/lib";
 
 import { useFetchAvailableCredits } from "./useFetchAvailableCredits.ee";
 
-/**
- * Displays the user's available credits inside a styled badge.
- * Fetches the available credits using the `useFetchAvailableCredits` hook.
- * Shows a loading spinner while the credits are being fetched.
- *
- * @returns {JSX.Element} A badge component displaying the available credits or a loading spinner.
- */
+/** Shows the tenant's available credits in the app header. */
 const AvailableCredits = () => {
-  // Get available credits
   const { data, isLoading } = useFetchAvailableCredits();
+  const availableCredits = data?.data?.availableCredits ?? 0;
 
   return (
-    <Badge variant={"outline"} className="border-none hidden md:flex bg-secondary px-4 py-2">
-      <p className="flex items-center gap-1 text-xs font-semibold text-secondary-foreground">
-        Credits <span className="font-normal opacity-60">-</span>{" "}
+    <Tooltip content={`Available credits: ${formatCreditsExact(availableCredits)}`}>
+      <span className="hidden items-center gap-1.5 whitespace-nowrap text-[12.5px] md:inline-flex">
+        <CoinsIcon className="size-3.5 shrink-0 text-muted-foreground" />
         {isLoading ? (
-          <LoadingSpinner className="text-primary-300 size-3" />
+          <LoadingSpinner className="size-3 text-muted-foreground" />
         ) : (
-          <span
+          <b
             className={cn(
-              "font-mono",
-              data?.data?.availableCredits && data?.data?.availableCredits < 0
-                ? "text-destructive"
-                : "",
+              "font-mono font-medium tabular-nums text-ink",
+              availableCredits < 0 && "text-bad",
             )}
           >
-            {data
-              ? data?.data?.availableCredits.toLocaleString("en-US", {
-                  maximumFractionDigits: 2,
-                })
-              : "0"}
-          </span>
+            {formatCredits(availableCredits)}
+          </b>
         )}
-      </p>
-    </Badge>
+      </span>
+    </Tooltip>
   );
 };
 

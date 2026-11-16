@@ -1,20 +1,20 @@
 import { Separator } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  BanIcon,
-  CircleCheckIcon,
-  Copy,
-  GroupIcon,
-  Library,
-  Scissors,
-  Trash2,
-  UngroupIcon,
-  XCircle,
-} from "lucide-react";
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
+  BooksIcon,
+  CheckCircleIcon,
+  CopyIcon,
+  ProhibitIcon,
+  ScissorsIcon,
+  SelectionPlusIcon,
+  SelectionSlashIcon,
+  TrashIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { memo, useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -107,12 +107,12 @@ export const ReactFlowContextMenu = memo(() => {
         right: menu.right,
         bottom: menu.bottom,
       }}
-      className="absolute z-[1000] min-w-[12rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80 zoom-in-95"
+      className="absolute z-[1000] min-w-[12rem] overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-pop animate-in fade-in-80 zoom-in-95"
     >
       {isNodeUnderCut ? (
         <MenuItem
-          icon={<XCircle size={14} />}
-          label="Cancel Cut"
+          icon={<XCircleIcon size={14} />}
+          label="Cancel cut"
           onClick={() => {
             cancelCut();
           }}
@@ -120,8 +120,8 @@ export const ReactFlowContextMenu = memo(() => {
       ) : (
         <>
           <MenuItem
-            icon={<Scissors size={14} />}
-            label={isBranchNode ? "Cut Branch" : "Cut"}
+            icon={<ScissorsIcon size={14} />}
+            label={isBranchNode ? "Cut branch" : "Cut"}
             shortcut="Ctrl+x"
             disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
@@ -129,8 +129,8 @@ export const ReactFlowContextMenu = memo(() => {
             }}
           />
           <MenuItem
-            icon={<Copy size={14} />}
-            label={isBranchNode ? "Copy Branch" : "Copy"}
+            icon={<CopyIcon size={14} />}
+            label={isBranchNode ? "Copy branch" : "Copy"}
             shortcut="Ctrl+c"
             disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
@@ -143,8 +143,8 @@ export const ReactFlowContextMenu = memo(() => {
           {isBranchNode ? (
             <>
               <MenuItem
-                icon={<ArrowUp size={14} />}
-                label="Paste Above"
+                icon={<ArrowUpIcon size={14} />}
+                label="Paste above"
                 shortcut="Ctrl+shift+v"
                 disabled={
                   isPaneOrStartOrEnd ||
@@ -157,8 +157,8 @@ export const ReactFlowContextMenu = memo(() => {
                 }}
               />
               <MenuItem
-                icon={<ArrowDown size={14} />}
-                label="Paste Below"
+                icon={<ArrowDownIcon size={14} />}
+                label="Paste below"
                 shortcut="Ctrl+v"
                 disabled={
                   isPaneOrStartOrEnd ||
@@ -174,8 +174,8 @@ export const ReactFlowContextMenu = memo(() => {
           ) : (
             <>
               <MenuItem
-                icon={<ArrowLeft size={14} />}
-                label="Paste Before"
+                icon={<ArrowLeftIcon size={14} />}
+                label="Paste before"
                 shortcut="Ctrl+shift+v"
                 disabled={
                   isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch
@@ -185,8 +185,8 @@ export const ReactFlowContextMenu = memo(() => {
                 }}
               />
               <MenuItem
-                icon={<ArrowRight size={14} />}
-                label="Paste After"
+                icon={<ArrowRightIcon size={14} />}
+                label="Paste after"
                 shortcut="Ctrl+v"
                 disabled={
                   isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch
@@ -203,7 +203,7 @@ export const ReactFlowContextMenu = memo(() => {
           {isGroupHead ? (
             <>
               <MenuItem
-                icon={<UngroupIcon size={14} />}
+                icon={<SelectionSlashIcon size={14} />}
                 label="Ungroup"
                 disabled={isPaneOrStartOrEnd || isDefaultBranchNode}
                 onClick={() => {
@@ -224,7 +224,7 @@ export const ReactFlowContextMenu = memo(() => {
           ) : (
             !isGroupMember && (
               <MenuItem
-                icon={<GroupIcon size={14} />}
+                icon={<SelectionPlusIcon size={14} />}
                 label="Group up"
                 disabled={
                   isPaneOrStartOrEnd || isBranchNode || isDefaultBranchNode || !selectedNode
@@ -237,7 +237,7 @@ export const ReactFlowContextMenu = memo(() => {
           )}
 
           <MenuItem
-            icon={<Library size={14} />}
+            icon={<BooksIcon size={14} />}
             label="Organize"
             onClick={() => {
               autoLayout();
@@ -246,7 +246,7 @@ export const ReactFlowContextMenu = memo(() => {
           />
 
           <MenuItem
-            icon={shouldDisable ? <BanIcon size={14} /> : <CircleCheckIcon size={14} />}
+            icon={shouldDisable ? <ProhibitIcon size={14} /> : <CheckCircleIcon size={14} />}
             label={shouldDisable ? "Disable" : "Enable"}
             shortcut="Ctrl+d"
             disabled={disableTargetIds.length === 0}
@@ -258,7 +258,7 @@ export const ReactFlowContextMenu = memo(() => {
           <Separator className="my-0.5" />
 
           <MenuItem
-            icon={<Trash2 size={14} />}
+            icon={<TrashIcon size={14} />}
             label="Delete"
             shortcut="DEL"
             isDestructive

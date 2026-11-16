@@ -6,26 +6,26 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import {
-  DTCreateButton,
-  DTPagination,
-  DTSearchBox,
-  DTViewOptions,
-  DataTable,
-  DataTableSkeleton,
-  getDataTablePreferences,
-} from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, TableCNSkeleton, TableCNToolbar, useTableCN } from "@avplatform/ui/table-cn";
 import { NavLink } from "react-router-dom";
 
-import { TABLE_HEADING, TABLE_KEY } from "../constants";
-import { columnDisplayNames } from "../constants/column-display-names.ee";
-import { columnVisibilityState } from "../constants/column-visibility-state.ee";
+import {
+  TABLE_HEADING,
+  TABLE_KEY,
+  TENANT_INSTANCE_INITIAL_STATE,
+  TENANT_INSTANCE_PAGE_SIZE_OPTIONS,
+} from "../constants";
 import { useFetchTenantInstances } from "../hooks/useFetchTenantInstances.ee";
 import { useTenantRoute } from "../hooks/useTenantRoute.ee";
 import { TenantInstanceBulkActions } from "./TenantInstanceBulkActions.ee";
 import { tenantInstanceTableColumns } from "./TenantInstanceTableColumns.ee";
 import { TenantStats } from "./TenantStats.ee";
+
+const PAGINATION_PROPS = {
+  pageSizeOptions: TENANT_INSTANCE_PAGE_SIZE_OPTIONS,
+};
 
 /**
  * Renders a table of on-prem tenants.
@@ -37,22 +37,20 @@ export const TenantInstanceTable = () => {
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
-  // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
-
   // Fetch on-prem tenants data
   const { data } = useFetchTenantInstances(tid ?? "");
 
-  // Create a React table for on-prem tenants data
-  const table = useDataTable(
-    tenantInstanceTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  // Create a TableCN table; page, size, and sorting live in the URL
+  const { table } = useTableCN({
+    data: data?.data ?? [],
+    columns: tenantInstanceTableColumns,
+    getRowId: (row) => row.id,
+    initialState: TENANT_INSTANCE_INITIAL_STATE,
+    persistKey: TABLE_KEY,
+    searchColumns: ["name"],
+  });
 
-  // Return the rendered DataTable component.
+  // Return the rendered TableCN component.
   return (
     <>
       {data ? (
@@ -63,7 +61,7 @@ export const TenantInstanceTable = () => {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <NavLink to="/on-prem-tenants">On-prem Tenants</NavLink>
+                    <NavLink to="/on-prem-tenants">On-prem tenants</NavLink>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -74,29 +72,24 @@ export const TenantInstanceTable = () => {
             </Breadcrumb>
 
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <DTCreateButton buttonText="Create" entity="tenantInstance" />
+              <CrudCreateButton buttonText="Create" entity="tenantInstance" />
             </div>
           </div>
-          <div className="flex flex-col gap-2">
+
+          {/* Data table with its search, stats, footer and bulk actions */}
+          <TableCN
+            table={table}
+            label={TABLE_HEADING}
+            paginationProps={PAGINATION_PROPS}
+            actionBar={<TenantInstanceBulkActions table={table} />}
+          >
+            <TableCNToolbar table={table} searchPlaceholder="Search..." />
             <TenantStats />
-
-            <div className="pr-0.5">
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={tenantInstanceTableColumns.length} />
-            </div>
-          </div>
-
-          {/* Data table Pagination component */}
-          <DTPagination table={table} />
-
-          {/* Bulk actions for data table */}
-          <TenantInstanceBulkActions table={table} />
+          </TableCN>
         </div>
       ) : (
-        // Show data table skeleton while fetching the tenants data
-        <DataTableSkeleton />
+        // Show the table skeleton while fetching the tenants data
+        <TableCNSkeleton columnCount={7} withSearch />
       )}
     </>
   );

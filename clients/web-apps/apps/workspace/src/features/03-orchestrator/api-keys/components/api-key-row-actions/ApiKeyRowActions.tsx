@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { ApiKeyRowDeleteAction } from "./ApiKeyRowDeleteAction";
 
@@ -10,11 +11,11 @@ interface ApiKeyRowActionsProps {
 
 export const ApiKeyRowActions = ({ rowId, isRevoked }: ApiKeyRowActionsProps) => {
   return (
-    <DataTableRowActions>
-      <DTRowAction rowId={rowId} crudAction="read" entity="apiKey" />
-      {!isRevoked && <DTRowAction rowId={rowId} crudAction="update" entity="apiKey" />}
+    <TableCNRowActionsMenu ariaLabel="Open api key actions">
+      <CrudRowAction rowId={rowId} crudAction="read" entity="apiKey" />
+      {!isRevoked && <CrudRowAction rowId={rowId} crudAction="update" entity="apiKey" />}
       <DropdownMenuSeparator />
       <ApiKeyRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

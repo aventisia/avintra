@@ -1,4 +1,9 @@
-import { AlertCircleIcon, CheckCircleIcon, FileTextIcon, Loader2Icon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  CircleNotchIcon,
+  FileTextIcon,
+  WarningCircleIcon,
+} from "@phosphor-icons/react";
 
 import type { FileQueueItem, FileUploadStatus } from "./types";
 
@@ -30,23 +35,23 @@ export const fileToDataUri = (file: File): Promise<string> => {
 // -- Status display helpers --------------------------------------------------
 
 const STATUS_COLORS: Record<FileUploadStatus, string> = {
-  completed: "text-green-600",
-  failed: "text-red-600",
+  completed: "text-ok",
+  failed: "text-bad",
   registering: "text-primary",
   chunking: "text-primary",
-  queued: "text-gray-500",
+  queued: "text-muted-foreground",
 };
 
 export const getStatusColor = (status: FileUploadStatus): string =>
-  STATUS_COLORS[status] ?? "text-gray-500";
+  STATUS_COLORS[status] ?? "text-muted-foreground";
 
 const STATUS_ICONS: Record<FileUploadStatus, React.ReactNode> = {
-  completed: <CheckCircleIcon className="h-4 w-4 text-green-600" />,
-  failed: <AlertCircleIcon className="h-4 w-4 text-red-600" />,
-  registering: <Loader2Icon className="h-4 w-4 text-primary-500 animate-spin" />,
-  chunking: <Loader2Icon className="h-4 w-4 text-primary-500 animate-spin" />,
-  queued: <FileTextIcon className="h-4 w-4 text-gray-400" />,
+  completed: <CheckCircleIcon className="h-4 w-4 text-ok" />,
+  failed: <WarningCircleIcon className="h-4 w-4 text-bad" />,
+  registering: <CircleNotchIcon className="h-4 w-4 text-live animate-spin" />,
+  chunking: <CircleNotchIcon className="h-4 w-4 text-live animate-spin" />,
+  queued: <FileTextIcon className="h-4 w-4 text-muted-foreground" />,
 };
 
 export const getStatusIcon = (status: FileUploadStatus): React.ReactNode =>
-  STATUS_ICONS[status] ?? <FileTextIcon className="h-4 w-4 text-gray-400" />;
+  STATUS_ICONS[status] ?? <FileTextIcon className="h-4 w-4 text-muted-foreground" />;

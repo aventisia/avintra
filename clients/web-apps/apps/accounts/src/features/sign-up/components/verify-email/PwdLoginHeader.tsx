@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCreateAccountStore } from "../../stores/create-account-store";
@@ -25,9 +25,9 @@ export const PwdLoginHeader = () => {
         >
           <ArrowLeftIcon className="h-4 w-4" />
         </Button>
-        <h2 className="text-md ml-3 w-full truncate">{verifyEmailData?.email}</h2>
+        <h2 className="ml-3 w-full truncate text-body text-ink-2">{verifyEmailData?.email}</h2>
       </div>
-      <h1 className="text-3xl font-medium">Enter password</h1>
+      <h1 className="text-title text-ink">Enter password</h1>
     </div>
   );
 };

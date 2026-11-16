@@ -1,8 +1,8 @@
 # TableCN
 
-TableCN is the new data table, ported from [tablecn](https://github.com/sadmann7/tablecn) (MIT). It runs alongside the legacy `components/data-table` while pages migrate. The Agents page and the agents folder page use it. Every other table still uses the legacy one.
+TableCN is the data table for every web app, ported from [tablecn](https://github.com/sadmann7/tablecn) (MIT). It replaced the legacy `components/data-table`; the CRUD dialog pieces that lived there moved to `@avplatform/ui/crud-dialog`.
 
-Import it from `@avplatform/ui/table-cn`. Nothing in this folder imports the legacy table.
+Import it from `@avplatform/ui/table-cn`.
 
 ## Differences from tablecn
 
@@ -69,6 +69,6 @@ A column gets a toolbar filter and a URL parameter when it sets `meta.variant` (
 - `hooks/`: `useTableCN` (table and state) and `useTableCNUrlState` (URL read and write)
 - `utils/`: URL, filter value, filter function, column index, storage, and pinning helpers, all pure and covered by `__tests__/`
 - `filters/`: toolbar filters (input, faceted, date)
-- `columns/`: select and actions column helpers
+- `columns/`: select and actions column helpers, and `TableCNRowActionsMenu`
 - `action-bar/`: selection action bar (`TableCNActionBarSelection`, `TableCNActionBarSeparator`, and `TableCNActionBarItem` with an `icon` and a `destructive` tone)
 - `primitives/`: table elements and checkbox

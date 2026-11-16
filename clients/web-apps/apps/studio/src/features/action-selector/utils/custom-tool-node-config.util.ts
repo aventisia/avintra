@@ -123,7 +123,7 @@ export function buildCustomToolNodeConfig(
     direction: "Input",
     type: "json-editor",
     name: CUSTOM_TOOL_REQUEST_PAYLOAD_FIELD,
-    label: "Request Payload",
+    label: "Request payload",
     description: "JSON request body, sent with POST, PUT, PATCH and DELETE operations.",
     defaultValue: requestPayloadDefault,
   };

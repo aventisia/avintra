@@ -8,6 +8,9 @@ public interface IUnitOfWork
     IFlowRepo FlowRepo { get; }
     IFolderRepo FolderRepo { get; }
     IFlowVersionRepo FlowVersionRepo { get; }
+    IUiBuilderProjectRepo UiBuilderProjectRepo { get; }
+    IUiBuilderVersionRepo UiBuilderVersionRepo { get; }
+    IUiBuilderAssetRepo UiBuilderAssetRepo { get; }
     IFlowVersionHistoryRepo FlowVersionHistoryRepo { get; }
     IAgentRiskRegistryRepo AgentRiskRegistryRepo { get; }
     IMachineRepo MachineRepo { get; }
@@ -30,6 +33,9 @@ public interface IUnitOfWork
     ITenantModelProviderRepo TenantModelProviderRepo { get; }
     IConversationRepo ConversationRepo { get; }
     IConversationMessageRepo ConversationMessageRepo { get; }
+    IChatArtifactRepo ChatArtifactRepo { get; }
+    IUserChatProfileRepo UserChatProfileRepo { get; }
+    IChatProjectRepo ChatProjectRepo { get; }
     IVectorStoreRepo VectorStoreRepo { get; }
     IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }

@@ -11,7 +11,7 @@ type ToolOperationHeader = {
   description?: string;
 };
 
-type ToolOperation = {
+export type ToolOperation = {
   operationId: string;
   method: string;
   path: string;

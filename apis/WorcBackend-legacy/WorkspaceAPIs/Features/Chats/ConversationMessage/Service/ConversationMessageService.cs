@@ -207,6 +207,18 @@ public class ConversationMessageService : IConversationMessageService
 
         try
         {
+            // An unknown or foreign conversation must fail, not look like an empty chat.
+            var conversationExists = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
+                .SingleOrDefaultAsync();
+
+            if (conversationExists == null)
+            {
+                serviceResponse.Message = "Conversation not found.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
             // Fetch messages belonging to the conversation and user
             var messages = await _unitOfWork.ConversationMessageRepo
                 .GetByConditionAsync(w =>
@@ -226,6 +238,56 @@ public class ConversationMessageService : IConversationMessageService
                 ex,
                 "[GetMessages] Failed for ConversationId {ConversationId}",
                 conversationId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Gets all messages of a shared conversation by its read-only token.
+    public async Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetSharedMessagesAsync(string shareToken)
+    {
+        // Initialize response with default failure state
+        var serviceResponse = new ServiceResponse<IEnumerable<ConversationMessageDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve shared messages. Please try again."
+        };
+
+        try
+        {
+            // A blank token never matches
+            if (string.IsNullOrWhiteSpace(shareToken))
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // The token authorizes the read; ownership is not required
+            var conversationId = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.ShareToken == shareToken)
+                .Select(s => (Guid?)s.Id)
+                .SingleOrDefaultAsync();
+
+            if (conversationId == null)
+            {
+                serviceResponse.Message = "Shared conversation not found.";
+                return serviceResponse;
+            }
+
+            // Fetch messages belonging to the shared conversation
+            var messages = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w => w.ConversationId == conversationId)
+                .OrderBy(o => o.CreatedOn)
+                .ProjectToType<ConversationMessageDto>()
+                .ToListAsync();
+
+            serviceResponse.Data = messages;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Shared messages retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[GetSharedMessages] Failed for share token.");
         }
 
         return serviceResponse;
@@ -313,6 +375,74 @@ public class ConversationMessageService : IConversationMessageService
                 ex,
                 "[SearchMessages] Failed. Query: {Query}, UserId: {UserId}",
                 query,
+                _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Stores the rating on the first assistant row of the turn's reply.
+    public async Task<ServiceResponse<bool>> SetFeedbackAsync(Guid conversationId, MessageFeedbackDto feedback)
+    {
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Message = "Couldn't save your feedback. Please try again."
+        };
+
+        try
+        {
+            var rows = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w =>
+                    w.ConversationId == conversationId &&
+                    w.Conversation.UserId == _userId)
+                .OrderBy(o => o.CreatedOn)
+                .ToListAsync();
+
+            WorkspaceAPIs.Entities.ConversationMessage? reply = null;
+            var userTurnsSeen = -1;
+            foreach (var row in rows)
+            {
+                if (row.Role == ConversationMessageSenderEnum.User)
+                {
+                    if (++userTurnsSeen > feedback.UserTurn) break;
+                }
+                else if (userTurnsSeen == feedback.UserTurn && row.Role == ConversationMessageSenderEnum.Assistant)
+                {
+                    reply = row;
+                    break;
+                }
+            }
+
+            var metadata = reply?.Metadata is null
+                ? new JsonObject()
+                : JsonNode.Parse(reply.Metadata.RootElement.GetRawText()) as JsonObject;
+            if (reply == null || metadata == null)
+            {
+                serviceResponse.Message = "That reply wasn't found.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            metadata["feedback"] = feedback.Rating;
+            var updatedMetadata = JsonDocument.Parse(metadata.ToJsonString());
+            // IMPORTANT NOTE: only Metadata is written; a full update rewrites Role in enum casing, which the pipeline doesn't read.
+            var updated = await _unitOfWork.ConversationMessageRepo
+                .GetByConditionAsync(w => w.Id == reply.Id)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(m => m.Metadata, updatedMetadata));
+
+            if (updated == 1)
+            {
+                serviceResponse.Data = true;
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Feedback saved.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "[SetFeedback] Failed for ConversationId {ConversationId}, UserId: {UserId}",
+                conversationId,
                 _userId);
         }
 

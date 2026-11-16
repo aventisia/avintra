@@ -1,4 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
@@ -18,9 +19,11 @@ export const useProfileEmailMutation = () => {
   // Define mutation to update email of account
   const { mutate: updateProfileEmailMutation, isPending: isUpdatePending } = useMutation({
     mutationFn: updateMyAccountEmail,
-    onSuccess: (data) => {
+    onSuccess: (data, { email }) => {
       // Reset update email data
       setupdateProfileEmailData(null);
+      const { userSession, setUserSession } = useUserSessionStore.getState();
+      if (userSession) setUserSession({ ...userSession, email });
       toast.success(data.message);
     },
     onError: (error) => {

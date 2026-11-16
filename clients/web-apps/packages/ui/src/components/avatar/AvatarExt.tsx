@@ -23,7 +23,7 @@ const AvatarExt = ({ initials, avatarSrc, className }: AvatarExtProps) => {
         src={avatarSrc}
         alt={initials}
       />
-      <AvatarPrimitive.Fallback className="flex h-full w-full items-center justify-center rounded-full bg-muted text-sm capitalize tracking-wide">
+      <AvatarPrimitive.Fallback className="flex h-full w-full items-center justify-center rounded-full border border-line bg-fill font-mono text-xs font-medium uppercase text-ink-2">
         {initials}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>

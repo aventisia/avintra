@@ -3,11 +3,12 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArchiveIcon, ArrowLeftIcon, SquarePenIcon } from "lucide-react";
+import { ArchiveIcon, ArrowLeftIcon, NotePencilIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { isHomeChatEnabled } from "@/features/home-chat";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 
@@ -105,7 +106,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
   return (
     <div className="flex flex-col h-full w-full">
       {/* HEADER */}
-      <div className="px-3 h-16 min-h-16 max-h-16 border-b flex items-center justify-between">
+      <div className="px-3 h-16 min-h-16 max-h-16 border-b border-line flex items-center justify-between">
         <div className="flex items-center gap-3 justify-center">
           {/* MOBILE BACK BUTTON */}
           {layoutMode === "stacked" && (
@@ -113,7 +114,7 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
               variant="ghost"
               size="icon7"
               className="mr-1"
-              onClick={() => navigate("/external/chats")}
+              onClick={() => navigate(isHomeChatEnabled ? "/" : "/external/chats")}
             >
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
@@ -124,9 +125,9 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold">{agentMeta.name}</span>
+              <span className="text-sm font-semibold text-ink">{agentMeta.name}</span>
 
-              <Badge className="px-2 py-0 rounded-full text-2xs bg-slate-200 text-secondary font-medium">
+              <Badge variant="outline" className="tabular-nums">
                 v{agentMeta.version}
               </Badge>
             </div>
@@ -140,15 +141,15 @@ export default function ChatSection({ mode = "page" }: { mode?: LayoutMode }) {
         {/* ACTIONS */}
         {conversationId && !isArchived && (
           <div className="flex flex-row-reverse items-center gap-1 justify-center">
-            <Tooltip content="New Conversation">
+            <Tooltip content="New conversation">
               <Button variant="ghost" size="icon7" onClick={handleNewConversation}>
-                <SquarePenIcon className="h-4 w-4" />
+                <NotePencilIcon className="h-4 w-4" />
               </Button>
             </Tooltip>
 
             <Separator orientation="vertical" className="h-5 w-[0.5px]" />
 
-            <Tooltip content="Archive Conversation">
+            <Tooltip content="Archive conversation">
               <Button
                 variant="ghost"
                 size="icon7"

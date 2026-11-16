@@ -1,0 +1,25 @@
+meta {
+  name: Name a UI builder version
+  type: http
+  seq: 35
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/versions/{{UIBUILDER_STUDIO_VERSION_NUMBER}}/label
+  body: json
+  auth: none
+}
+
+body:json {
+  "label": "  Approved by ops  "
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("label is trimmed and stored", function() {
+    expect(res.getBody().data.label).to.equal("Approved by ops");
+  });
+}

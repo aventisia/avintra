@@ -1,6 +1,6 @@
-import { DataTableRowActions } from "@avplatform/ui/data-table";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 interface ArchivedFlowRowActionsProps {
   rowId: string;
@@ -15,12 +15,12 @@ export const ArchivedFlowRowActions = ({ rowId, refId }: ArchivedFlowRowActionsP
 
   return (
     // Dropdown menu for Archived flow table row actions
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open archived flow actions">
       <SimpleDDMenuItem
         content="View"
-        Icon={ArrowTopRightOnSquareIcon}
+        Icon={ArrowSquareOutIcon}
         onClick={handleOpenArchivedFlowAction}
       />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

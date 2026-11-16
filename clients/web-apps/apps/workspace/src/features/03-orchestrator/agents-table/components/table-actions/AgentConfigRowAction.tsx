@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { Settings2Icon } from "lucide-react";
+import { SlidersHorizontalIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -28,7 +28,7 @@ export const AgentConfigRowAction: React.FC<AgentConfigRowActionProps> = ({
       size={size}
       disabled={isDisabled}
       content="Config"
-      Icon={Settings2Icon}
+      Icon={SlidersHorizontalIcon}
       onClick={() => {
         setFlowVersionId(rowId);
         setOpen(true);

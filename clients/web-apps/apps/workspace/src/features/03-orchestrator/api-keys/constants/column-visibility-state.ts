@@ -1,6 +1,7 @@
 import { VisibilityState } from "@tanstack/react-table";
 
 const columnVisibilityState: VisibilityState = {
+  select: true,
   id: true,
   name: true,
   keyPrefix: true,

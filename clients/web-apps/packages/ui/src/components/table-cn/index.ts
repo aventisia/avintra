@@ -1,6 +1,7 @@
-// TableCN data table (port of tablecn); coexists with the legacy `data-table` during migration
+// TableCN data table (port of tablecn)
 export { TableCN } from "./TableCN";
 export { TableCNColumnHeader } from "./TableCNColumnHeader";
+export { TableCNHeading } from "./TableCNHeading";
 export { TableCNPagination, type TableCNPaginationProps } from "./TableCNPagination";
 export { TableCNSearchInput } from "./TableCNSearchInput";
 export { TableCNSkeleton } from "./TableCNSkeleton";
@@ -22,9 +23,16 @@ export {
   TABLE_CN_DEFAULT_QUERY_KEYS,
   TABLE_CN_SELECT_COLUMN_ID,
 } from "./constants/table-cn.constant";
+export {
+  TABLE_CN_COMMAND_INPUT_CLASS_NAME,
+  TABLE_CN_COMMAND_ITEM_CLASS_NAME,
+  TABLE_CN_PANEL_CLASS_NAME,
+  TABLE_CN_TOOLBAR_BUTTON_CLASS_NAME,
+} from "./constants/table-cn-class-names.constant";
 export { TableCNDateFilter } from "./filters/TableCNDateFilter";
-export { TableCNFacetedFilter } from "./filters/TableCNFacetedFilter";
+export { TableCNFacetedFilter, TableCNOptionMark } from "./filters/TableCNFacetedFilter";
 export { TableCNFilterInput } from "./filters/TableCNFilterInput";
+export { TableCNFilterTrigger, TableCNFilterValue } from "./filters/TableCNFilterTrigger";
 export { type UseTableCNOptions, useTableCN } from "./hooks/useTableCN.hook";
 export {
   type TableCNFilterOption,

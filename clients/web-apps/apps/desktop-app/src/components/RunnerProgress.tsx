@@ -1,4 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { useState } from "react";
 
 import { type RunnerProgress as RunnerProgressType } from "../hooks/useRunnerProvisioning";
@@ -50,7 +52,8 @@ export function RunnerProgress({
   const total = error ? undefined : progress?.total;
 
   const statusLabel = error ? "Failed" : STATUS_LABELS[status];
-  const statusColor = error ? "text-destructive" : "text-muted-foreground";
+  const statusColor = error ? "text-bad" : "text-ink-2";
+  const statusDot = error ? "bg-bad" : status === "DONE" ? "bg-ok" : "bg-live";
 
   const handleContinueAnyway = () => {
     setRedirecting(true);
@@ -60,31 +63,37 @@ export function RunnerProgress({
   // Redirecting to the login page can take a moment; show clear feedback.
   if (redirecting) {
     return (
-      <main className="flex flex-1 items-center justify-center bg-background p-6">
-        <div className="flex items-center gap-3 text-foreground">
+      <main className="flex flex-1 items-center justify-center bg-bg p-6">
+        <div className="flex items-center gap-3 text-ink">
           <LoadingSpinner />
-          <span className="text-base font-medium">Redirecting to login...</span>
+          <span className="text-body font-medium">Redirecting to login...</span>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-background p-6">
+    <main className="flex flex-1 items-center justify-center bg-bg p-6">
       <div className="w-[85vw] max-w-xl">
-        <div className="mb-4 flex items-center justify-between gap-4 text-sm">
-          <span className="min-w-0 truncate font-medium text-foreground">{heading}</span>
-          <span className={`shrink-0 text-right ${statusColor}`}>{statusLabel}</span>
+        <div className="mb-4 flex items-center justify-between gap-4 text-body-sm">
+          <span className="min-w-0 truncate font-medium text-ink">{heading}</span>
+          <span className={cn("inline-flex shrink-0 items-center gap-1.5", statusColor)}>
+            <span className={cn("size-1.5 rounded-full", statusDot)} />
+            {statusLabel}
+          </span>
         </div>
 
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-fill">
           <div
-            className={`h-full rounded-full transition-all duration-200 ${error ? "bg-destructive" : "bg-primary"}`}
+            className={cn(
+              "h-full rounded-full transition-all duration-200",
+              error ? "bg-bad" : "bg-primary",
+            )}
             style={{ width: `${percentage}%` }}
           />
         </div>
 
-        <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mt-3 flex items-center justify-between font-mono text-code tabular-nums text-muted-foreground">
           <span className="flex w-12 items-center gap-1">
             {status === "CHECKING" && !error && <LoadingSpinner className="h-3.5 w-3.5" />}
             {percentage.toFixed(0)}%
@@ -98,22 +107,14 @@ export function RunnerProgress({
 
         {error && (
           <div className="mt-4 flex flex-col gap-3">
-            <p className="text-left text-xs text-destructive">{error}</p>
+            <p className="text-left text-hint text-bad">{error}</p>
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={onRetry}
-                className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
+              <Button type="button" size="sm" onClick={onRetry}>
                 Retry
-              </button>
-              <button
-                type="button"
-                onClick={handleContinueAnyway}
-                className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-              >
+              </Button>
+              <Button type="button" size="sm" variant="outline" onClick={handleContinueAnyway}>
                 Continue anyway
-              </button>
+              </Button>
             </div>
           </div>
         )}

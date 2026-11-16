@@ -1,0 +1,30 @@
+meta {
+  name: Share UI builder project with a user
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/resource-user-access/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "resourceType": "UiBuilder",
+    "resourceId": "{{UIBUILDER_PROJECT_ID}}",
+    "users": [
+      {
+        "accessLevel": "Edit",
+        "userId": "{{USER_ID}}"
+      }
+    ]
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

@@ -1,20 +1,34 @@
-import { NoContentMessage } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { LogsIcon, TriangleAlert } from "lucide-react";
+import { CheckCircleIcon, ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
+
+import { DayTimelineSkeleton } from "@/components/day-timeline";
 
 import { useFetchExecutionLogsList } from "../../hooks/useFetchExecutionLogsList.hook";
 import { useJobExecutionQueryParams } from "../../hooks/useJobExecutionQueryParams";
 import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
-import AccordionSkeleton from "./AccordionSkeleton";
+import { isErrorStatus } from "../../utils/job-log-level";
 import ExecutionLogAccordion from "./ExecutionLogAccordion";
 
-export default function ExecutionLogContent() {
+interface Props {
+  errorsOnly: boolean;
+}
+
+export default function ExecutionLogContent({ errorsOnly }: Props) {
   const { jobId, setJobId } = useJobExecutionQueryParams();
 
   const { data: logList, isFetching, isError, refetch } = useFetchExecutionLogsList();
 
   const groupedLogs = useMemo(() => groupHistoryByDay(logList?.data), [logList?.data]);
+
+  const visibleLogs = useMemo(
+    () =>
+      errorsOnly
+        ? groupHistoryByDay(logList?.data?.filter((log) => isErrorStatus(log.status)))
+        : groupedLogs,
+    [errorsOnly, groupedLogs, logList?.data],
+  );
 
   // IMPORTANT NOTE: Auto-select waits for fetching to finish so it never picks a stale entry.
   useEffect(() => {
@@ -29,17 +43,16 @@ export default function ExecutionLogContent() {
     }
   }, [groupedLogs, jobId, isFetching, setJobId]);
 
-  if (isFetching) return <AccordionSkeleton />;
+  if (isFetching) return <DayTimelineSkeleton label="Loading runs" />;
 
   if (isError && !groupedLogs.length) {
     return (
-      <NoContentMessage
-        className="absolute inset-0"
-        Icon={TriangleAlert}
-        primaryMessage="Could not load executions"
-        secondaryMessage="Something went wrong while fetching the execution logs."
+      <RunLogEmptyState
+        Icon={WarningIcon}
+        title="Could not load runs"
+        description="Something went wrong while fetching the execution logs."
         action={
-          <Button className="mt-4" size="sm" variant="outline" onClick={() => refetch()}>
+          <Button className="mt-3" size="sm" variant="outline" onClick={() => refetch()}>
             Retry
           </Button>
         }
@@ -49,26 +62,46 @@ export default function ExecutionLogContent() {
 
   if (!groupedLogs.length) {
     return (
-      <NoContentMessage
-        className="absolute inset-0"
-        Icon={LogsIcon}
-        primaryMessage="No executions found for this flow version"
-        secondaryMessage="Run this version to create its first execution log."
+      <RunLogEmptyState
+        Icon={ListDashesIcon}
+        title="No runs for this version"
+        description="Run this version to create its first execution log."
       />
     );
   }
 
   return (
-    <div className="relative p-2 pr-2.5">
-      {/* Continuous Timeline - spans entire height from first to last accordion */}
-      <div
-        className="pointer-events-none absolute left-[23px] w-0.5 rounded-full bg-neutral-200 dark:bg-neutral-800"
-        style={{
-          top: "48px", // Starts after first accordion trigger (py-2 + h-8 + py-2 + pt-2)
-          bottom: "16px", // Ends before last accordion trigger
-        }}
-      />
-      <ExecutionLogAccordion data={groupedLogs} selectedEntry={jobId ?? ""} onSelect={setJobId} />
+    <div className="pb-2">
+      {visibleLogs.length > 0 ? (
+        <ExecutionLogAccordion
+          data={visibleLogs}
+          selectedEntry={jobId ?? ""}
+          onSelect={(id) => setJobId(id)}
+        />
+      ) : (
+        <RunLogEmptyState
+          Icon={CheckCircleIcon}
+          title="No failed runs"
+          description="Every run of this version finished without errors."
+        />
+      )}
     </div>
   );
 }
+
+interface RunLogEmptyStateProps {
+  Icon: Icon;
+  title: string;
+  description: string;
+  action?: React.ReactNode;
+}
+
+/** Dashed placeholder box, matching the empty state in the agent details panel. */
+const RunLogEmptyState = ({ Icon, title, description, action }: RunLogEmptyStateProps) => (
+  <div className="mx-4 my-4 flex h-36 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong/50 px-4 text-center">
+    <Icon className="size-5 text-muted-foreground" aria-hidden="true" />
+    <p className="text-body-sm font-medium text-ink-2">{title}</p>
+    <p className="text-hint text-muted-foreground">{description}</p>
+    {action}
+  </div>
+);

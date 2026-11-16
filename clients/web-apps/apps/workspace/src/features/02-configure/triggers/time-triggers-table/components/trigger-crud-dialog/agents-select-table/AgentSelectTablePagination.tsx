@@ -1,10 +1,10 @@
 import { Button } from "@avplatform/ui/buttons";
 import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 import { useShallow } from "zustand/react/shallow";
 
@@ -49,7 +49,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <ChevronDoubleLeftIcon className="h-4 w-4" />
+            <CaretDoubleLeftIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -58,7 +58,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to previous page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <CaretLeftIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -67,7 +67,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to next page</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <CaretRightIcon className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -76,7 +76,7 @@ export function AgentSelectTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <ChevronDoubleRightIcon className="h-4 w-4" />
+            <CaretDoubleRightIcon className="h-4 w-4" />
           </Button>
         </div>
       </div>

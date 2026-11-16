@@ -2,7 +2,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { TextareaField } from "@avplatform/ui/form";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { BookCopyIcon } from "lucide-react";
+import { BooksIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -108,7 +108,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
 
     if (promptField.value) {
       showCustomAlertDialog({
-        title: "Use Prompt Template",
+        title: "Use prompt template",
         description: "This will replace the existing prompt content and model configurations.",
         confirmBtnText: "Continue",
         isDestructive: false,
@@ -141,7 +141,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
           onValueChange={handleOptionChange}
         />
 
-        <Tooltip content="Save Prompt Template">
+        <Tooltip content="Save prompt template">
           <Button
             type="button"
             variant="outline"
@@ -153,7 +153,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
               setTemplateId(selectedTemplate || "");
             }}
           >
-            <BookCopyIcon className="mr-1 size-3.5" />
+            <BooksIcon className="mr-1 size-3.5" />
             Save
           </Button>
         </Tooltip>

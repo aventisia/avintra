@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 import { useNavigateToTenant } from "../../hooks/useNavigateToTenant.ee";
 
@@ -15,7 +15,7 @@ export const TenantInstanceOpenAction = ({ rowId, cellValue }: TenantInstanceOpe
   return (
     <SimpleDDMenuItem
       content="Open"
-      Icon={ArrowTopRightOnSquareIcon}
+      Icon={ArrowSquareOutIcon}
       onClick={() => handleOpenTenant(rowId, cellValue)}
     />
   );

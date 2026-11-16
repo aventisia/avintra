@@ -20,7 +20,7 @@ const Slider = React.forwardRef<
     >
       <SliderPrimitive.Track
         className={cn(
-          "relative h-1.5 w-full grow overflow-hidden rounded-full bg-white",
+          "relative h-1.5 w-full grow overflow-hidden rounded-full bg-fill",
           trackColor,
         )}
       >
@@ -28,11 +28,11 @@ const Slider = React.forwardRef<
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
         className={cn(
-          "relative block h-4 w-4 rounded-full bg-background shadow transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border border-primary group",
+          "relative block h-4 w-4 rounded-full bg-background transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border border-primary group",
           thumbColor,
         )}
       >
-        <span className="absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-white px-3 py-0.5 rounded-md bg-primary group-hover:block">
+        <span className="absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-primary-foreground px-3 py-0.5 rounded-md bg-primary group-hover:block">
           {currentValue}
         </span>
       </SliderPrimitive.Thumb>

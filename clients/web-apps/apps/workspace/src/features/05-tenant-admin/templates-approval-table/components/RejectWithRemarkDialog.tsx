@@ -1,21 +1,24 @@
-import { LoadingSpinner, Textarea } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { Dialog, DialogContent, DialogDefaultHeader, DialogFooter } from "@avplatform/ui/dialog";
-import { Label } from "@avplatform/ui/label";
+import { IconTile } from "@avplatform/ui/icon-tile";
+import { cn } from "@avplatform/ui/lib";
+import { FileXIcon } from "@phosphor-icons/react";
+import { useId } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { useFetchTemplateDetails } from "../hooks/useFetchTemplateDetails";
 import { useUpdateTemplateMutation } from "../hooks/useUpdateTemplateMutation";
 import { useTemplateApprovalStore } from "../stores/template-approval-store";
 
 /**
- * Dialog component for rejecting a template with an remark.
- *
- * This dialog is triggered from the Templates Approval table and allows
- * an admin to enter a remark explaining the reason for rejection.
+ * Rejects the template selected in the approval table with a required remark.
  */
 const RejectWithRemarkDialog = () => {
-  // Extract state and actions from the approval store
+  const remarkId = useId();
   const { remark, rowId, showDialog, setRemark, setShowDialog } = useTemplateApprovalStore(
     useShallow((state) => ({
       rowId: state.rowId,
@@ -26,13 +29,10 @@ const RejectWithRemarkDialog = () => {
     })),
   );
 
-  // Fetch detailed information for the selected template
   const { data } = useFetchTemplateDetails(rowId);
-
-  // Mutation hook to update the template's approval status
   const { mutate, isPending } = useUpdateTemplateMutation();
+  const templateName = data?.data?.name;
 
-  // Handle rejection action with remark
   const handleReject = () => {
     if (data?.data) {
       mutate({
@@ -44,34 +44,50 @@ const RejectWithRemarkDialog = () => {
   };
 
   return (
-    <Dialog open={showDialog} onOpenChange={() => setShowDialog(!showDialog)}>
-      <DialogContent>
-        <DialogDefaultHeader heading="Reject Template" />
-
-        {/* Remarks input section */}
-        <div className="space-y-2 p-3">
-          <Label htmlFor="remarks" className="ml-1 flex items-center gap-0.5">
-            <span>Remarks</span>
-            <span className="text-destructive">*</span>
-          </Label>
-
-          <Textarea
-            id="remarks"
-            value={remark}
-            onChange={(e) => setRemark(e.target.value)}
-            rows={4}
-          />
-        </div>
-
-        {/* Footer with Reject button */}
-        <DialogFooter className="flex gap-2 p-3 pt-0">
-          <Button onClick={handleReject} disabled={isPending || !remark} variant="destructive">
-            {isPending && <LoadingSpinner className="mr-2 h-4 w-4" />}
-            Reject
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <CardDialog
+      isOpen={showDialog}
+      onClose={() => setShowDialog(false)}
+      isDismissLocked={isPending}
+      isOutsideClickLocked={Boolean(remark)}
+      mark={<IconTile Icon={FileXIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
+      eyebrow="Reject template"
+      eyebrowClassName="text-bad"
+      title={
+        <span className={cn(!templateName && "text-muted-foreground")}>
+          {templateName || "Template"}
+        </span>
+      }
+      footer={
+        <>
+          <StatusLine tone="idle">A remark is required to reject</StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={() => setShowDialog(false)} disabled={isPending}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="danger"
+              onClick={handleReject}
+              disabled={isPending || !remark}
+              isBusy={isPending}
+            >
+              {isPending ? "Rejecting" : "Reject template"}
+            </CardDialogButton>
+          </div>
+        </>
+      }
+    >
+      <FormField htmlFor={remarkId} label="Remark">
+        <textarea
+          id={remarkId}
+          data-autofocus
+          rows={4}
+          value={remark}
+          onChange={(e) => setRemark(e.target.value)}
+          placeholder="Why is this template rejected?"
+          className={cn(getFieldInputClassName(false), "block resize-none py-2.5 leading-5")}
+        />
+      </FormField>
+    </CardDialog>
   );
 };
 

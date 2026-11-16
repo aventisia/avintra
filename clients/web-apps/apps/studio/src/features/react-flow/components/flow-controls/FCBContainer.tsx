@@ -6,6 +6,8 @@
  */
 export const FCBContainer = ({ children }: React.PropsWithChildren) => {
   return (
-    <div className="flex items-center gap-1 rounded-lg border bg-white p-1 shadow">{children}</div>
+    <div className="flex items-center gap-1 rounded-lg border border-line bg-surface p-1">
+      {children}
+    </div>
   );
 };

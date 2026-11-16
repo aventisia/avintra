@@ -71,7 +71,7 @@ public class ResourceUserAccessService : IResourceUserAccessService
     }
 
     // Retrieves all users who have been granted access to a specific resource.
-    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId)
+    public async Task<ServiceResponse<IEnumerable<ResourceUserAccessDto>>> GetResourceUserAccessesAsync(Guid resourceId, ResourceTypeEnum? requestedResourceType = null)
     {
         // Initialize response with default failure state.
         var serviceResponse = new ServiceResponse<IEnumerable<ResourceUserAccessDto>>
@@ -83,7 +83,13 @@ public class ResourceUserAccessService : IResourceUserAccessService
         try
         {
             var tenantIds = ShareRowTenantIds();
-            var workspaceShareTarget = await FindWorkspaceShareTargetAsync(resourceId);
+            var workspaceShareTarget = await FindWorkspaceShareTargetAsync(resourceId, requestedResourceType);
+
+            if (requestedResourceType is { } requested && requested != ResourceTypeEnum.Space && workspaceShareTarget == null)
+            {
+                return serviceResponse.Update("Resource not found.", 404);
+            }
+
             var resourceType = workspaceShareTarget?.ResourceType ?? ResourceTypeEnum.Space;
 
             if (workspaceShareTarget is { } found &&
@@ -811,6 +817,10 @@ public class ResourceUserAccessService : IResourceUserAccessService
                             _unitOfWork.ToolRepo.Update(tool);
                         });
                 }
+            case ResourceTypeEnum.UiBuilder:
+                return await LoadShareTargetAsync(_unitOfWork.UiBuilderProjectRepo, resourceId, w => w.IsTenantWideAccess, (w, isOn) => w.IsTenantWideAccess = isOn);
+            case ResourceTypeEnum.UiBuilderPublished:
+                return await LoadShareTargetAsync(_unitOfWork.UiBuilderProjectRepo, resourceId, w => w.IsPublishedTenantWide, (w, isOn) => w.IsPublishedTenantWide = isOn);
             default:
                 return null;
         }
@@ -839,9 +849,17 @@ public class ResourceUserAccessService : IResourceUserAccessService
 
     // IMPORTANT NOTE: share rows carry a client-chosen ResourceType, so a Workspace resource's type is
     // resolved from its own table; only an id no Workspace table holds counts as a Space.
-    private async Task<(ResourceTypeEnum ResourceType, ShareTarget ShareTarget)?> FindWorkspaceShareTargetAsync(Guid resourceId)
+    // IMPORTANT NOTE: a UI Builder project and its published UI share one id, so callers that know which
+    // one they mean pass requestedResourceType instead of taking the first table that holds the id.
+    private async Task<(ResourceTypeEnum ResourceType, ShareTarget ShareTarget)?> FindWorkspaceShareTargetAsync(
+        Guid resourceId,
+        ResourceTypeEnum? requestedResourceType = null)
     {
-        foreach (var resourceType in Enum.GetValues<ResourceTypeEnum>().Where(w => w != ResourceTypeEnum.Space))
+        IEnumerable<ResourceTypeEnum> candidateTypes = requestedResourceType is { } requested && requested != ResourceTypeEnum.Space
+            ? [requested]
+            : Enum.GetValues<ResourceTypeEnum>().Where(w => w != ResourceTypeEnum.Space);
+
+        foreach (var resourceType in candidateTypes)
         {
             var shareTarget = await FindShareTargetAsync(resourceId, resourceType);
 
@@ -1014,20 +1032,38 @@ public class ResourceUserAccessService : IResourceUserAccessService
     {
         try
         {
-            // Create ownership mapping
-            var resourceUserAccess = new ResourceUserAccess
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            // IMPORTANT NOTE: Owner rows created before tenant scoping was applied can have an empty tenant id, so ignore the filter to repair them instead of inserting a duplicate.
+            var existingAccess = await _unitOfWork.ResourceUserAccessRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == userId &&
+                    w.ResourceId == resourceId &&
+                    w.ResourceType == resourceType)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            if (existingAccess == null)
             {
-                UserId = userId,
-                ResourceId = resourceId,
-                ResourceType = resourceType,
-                AccessLevel = ResourceAccessTypeEnum.Owner
-            };
+                await _unitOfWork.ResourceUserAccessRepo.InsertAsync(new ResourceUserAccess
+                {
+                    UserId = userId,
+                    ResourceId = resourceId,
+                    ResourceType = resourceType,
+                    AccessLevel = ResourceAccessTypeEnum.Owner,
+                    TenantId = tenantId
+                });
+            }
+            else if (existingAccess.TenantId != tenantId ||
+                     existingAccess.AccessLevel != ResourceAccessTypeEnum.Owner)
+            {
+                existingAccess.TenantId = tenantId;
+                existingAccess.AccessLevel = ResourceAccessTypeEnum.Owner;
+                _unitOfWork.ResourceUserAccessRepo.Update(existingAccess);
+            }
 
-            // Insert access mapping
-            await _unitOfWork.ResourceUserAccessRepo.InsertAsync(resourceUserAccess);
-
-            // Persist owner assignment
-            if (!await _unitOfWork.SaveAsync())
+            // SaveAsync(true) treats an already-correct owner row as success.
+            if (!await _unitOfWork.SaveAsync(true))
             {
                 _logger.LogWarning(
                     "Failed assigning owner access. User {UserId}, Resource {ResourceId}",

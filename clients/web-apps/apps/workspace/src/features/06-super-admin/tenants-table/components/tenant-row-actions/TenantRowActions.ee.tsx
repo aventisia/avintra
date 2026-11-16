@@ -1,5 +1,6 @@
-import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
+import { CrudRowAction } from "@avplatform/ui/crud-dialog";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
+import { TableCNRowActionsMenu } from "@avplatform/ui/table-cn";
 
 import { TenantRowDeleteAction } from "./TenantRowDeleteAction.ee";
 import { TenantSwitchRowAction } from "./TenantSwitchRowAction.ee";
@@ -11,12 +12,12 @@ interface TenantRowActionsProps {
 export const TenantRowActions = ({ rowId }: TenantRowActionsProps) => {
   return (
     // Dropdown menu for tenant table row action */}
-    <DataTableRowActions>
+    <TableCNRowActionsMenu ariaLabel="Open tenant actions">
       {/* View the tenant details */}
-      <DTRowAction rowId={rowId} crudAction="read" entity="tenant" />
+      <CrudRowAction rowId={rowId} crudAction="read" entity="tenant" />
 
       {/* Edit tenant details */}
-      <DTRowAction rowId={rowId} crudAction="update" entity="tenant" />
+      <CrudRowAction rowId={rowId} crudAction="update" entity="tenant" />
 
       <TenantSwitchRowAction rowId={rowId} />
 
@@ -25,6 +26,6 @@ export const TenantRowActions = ({ rowId }: TenantRowActionsProps) => {
 
       {/* Triggers Tenant delete alert dialog  */}
       <TenantRowDeleteAction rowId={rowId} />
-    </DataTableRowActions>
+    </TableCNRowActionsMenu>
   );
 };

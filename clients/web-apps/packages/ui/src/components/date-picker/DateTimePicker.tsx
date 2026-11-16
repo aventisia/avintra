@@ -1,6 +1,6 @@
+import { CalendarIcon } from "@phosphor-icons/react";
 import { format, toDate } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import type { Locale } from "react-day-picker";
 
@@ -127,13 +127,13 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
           <Button
             variant="outline"
             className={cn(
-              "w-full pl-3 justify-start text-left font-normal",
+              "w-full justify-start pl-[11px] text-left text-body font-normal data-[state=open]:border-focus data-[state=open]:ring-[3px] data-[state=open]:ring-focus/[0.28]",
               !displayDate && "text-muted-foreground",
               className,
             )}
             ref={buttonRef}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
             {displayDate ? (
               format(displayDate, hourCycle === 24 ? formatStrings.hour24 : formatStrings.hour12, {
                 locale,

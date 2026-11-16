@@ -3,7 +3,7 @@ import { ToolCallMessagePartComponent, ToolCallMessagePartStatus } from "@assist
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { PencilIcon, PlayIcon, XIcon } from "lucide-react";
+import { PencilSimpleIcon, PlayIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
@@ -119,7 +119,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   return (
     <ToolFallbackRoot
       defaultOpen={status === "pending" || isStreaming || isExecuting}
-      className="shadow-sm mb-2"
+      className="mb-2"
     >
       <ToolFallbackTrigger toolName={toolLabel} status={uiStatus} className={cn("rounded-lg")} />
 
@@ -135,7 +135,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
             <JsonEditor value={draftEditStr} onChange={setDraftEditStr} disabled={false} />
             <div className="mt-3 flex items-center justify-end gap-2">
               <Button variant="outline" size="xs" onClick={handleCancelEdit}>
-                Cancel Edit
+                Cancel edit
               </Button>
               <Button variant="default" size="xs" onClick={handleSaveEdit}>
                 Save
@@ -160,11 +160,11 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
                   Cancel
                 </Button>
                 <Button variant="outline" size="xs" onClick={handleStartEdit}>
-                  <PencilIcon className="mr-1.5 size-3" />
+                  <PencilSimpleIcon className="mr-1.5 size-3" />
                   Edit
                 </Button>
                 <Button variant="default" size="xs" onClick={handleExecute}>
-                  <PlayIcon className="mr-1.5 size-3 fill-current" />
+                  <PlayIcon weight="fill" className="mr-1.5 size-3" />
                   Execute
                 </Button>
               </div>

@@ -1,4 +1,4 @@
-import { Check, Copy } from "lucide-react";
+import { CheckIcon, CopyIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 /**
@@ -29,9 +29,9 @@ export function FileNameCell({ fileName }: { fileName: string }) {
         title={copied ? "Copied!" : "Copy file name"}
       >
         {copied ? (
-          <Check className="h-3.5 w-3.5 text-green-500" />
+          <CheckIcon className="h-3.5 w-3.5 text-ok" />
         ) : (
-          <Copy className="h-3.5 w-3.5" />
+          <CopyIcon className="h-3.5 w-3.5" />
         )}
       </button>
     </div>

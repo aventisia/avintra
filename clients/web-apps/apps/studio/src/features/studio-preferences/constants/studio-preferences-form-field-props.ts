@@ -4,14 +4,14 @@ import { RadioGroupFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 const layoutDirectionProps: RadioGroupFieldProps = {
   size: "sm",
   name: "layoutDirection",
-  label: "Layout Direction",
+  label: "Layout direction",
   selectOptions: [
     {
-      label: "Top to Bottom",
+      label: "Top to bottom",
       value: "TB",
     },
     {
-      label: "Left to Right",
+      label: "Left to right",
       value: "LR",
     },
   ],
@@ -22,7 +22,7 @@ const miniMapProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
   name: "miniMap",
-  label: "Mini Map",
+  label: "Mini map",
   description: "Show a mini map to navigate the flow",
 };
 
@@ -40,7 +40,7 @@ const cursorToggleProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
   name: "cursorToggle",
-  label: "Select or Move Mode",
+  label: "Select or move mode",
   description:
     "Show toggle option between Select (arrow cursor) and Move (grab hand) modes to interact with the flow",
 };
@@ -50,7 +50,7 @@ const zoomControlsProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
   name: "zoomControls",
-  label: "Zoom Controls",
+  label: "Zoom controls",
   description: "Show zoom in and zoom out buttons to adjust the flow zoom level",
 };
 
@@ -59,7 +59,7 @@ const deleteAlertProps: SwitchFieldProps = {
   size: "sm",
   showBorder: false,
   name: "deleteAlert",
-  label: "Delete Alert",
+  label: "Delete alert",
   description: "Show a confirmation alert before deleting a node",
 };
 

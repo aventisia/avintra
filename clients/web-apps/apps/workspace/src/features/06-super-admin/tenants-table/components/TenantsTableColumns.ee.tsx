@@ -1,11 +1,11 @@
-import { Checkbox } from "@avplatform/ui";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { CountriesEnum, CurrenciesEnum } from "@avplatform/ui/enums";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef, SortingFn } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext, SortingFn } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names.ee";
 import { TenantsTableDto } from "../dtos/tenants-table-dto.ee";
 import { formatSecondsToCompactDuration, round2 } from "../utils";
@@ -32,53 +32,42 @@ const planSortingFn: SortingFn<TenantsTableDto> = (rowA, rowB) => {
   return rankA - rankB;
 };
 
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<TenantsTableDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
+
 /**
  * Array of table columns for the tenants table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   // SELECT
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<TenantsTableDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
 
   // CORE
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <TenantNameCell tenantId={row.original.id ?? ""} tenantName={row.getValue("name")} />
     ),
   },
   {
     accessorKey: "type",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
-    ),
+    meta: { label: getColumnName("type") },
+    header: renderHeader("type"),
     cell: ({ row }) => <div className="truncate">{row.getValue("type")}</div>,
   },
   {
     accessorKey: "activePlan",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("activePlan")} />
-    ),
+    meta: { label: getColumnName("activePlan") },
+    header: renderHeader("activePlan"),
 
     // To support plan filter filter
     filterFn: (row, columnId, filterValue: string[]) => {
@@ -98,196 +87,196 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
   },
   {
     accessorKey: "renewalDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("renewalDate")} />
+    meta: { label: getColumnName("renewalDate") },
+    header: renderHeader("renewalDate"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("renewalDate"))}
+      </span>
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("renewalDate")),
   },
   {
     accessorKey: "currency",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("currency")} />
-    ),
+    meta: { label: getColumnName("currency") },
+    header: renderHeader("currency"),
     cell: ({ row }) => (
       <div className="truncate">{getEnumValueByKey(CurrenciesEnum, row.getValue("currency"))}</div>
     ),
   },
   {
     accessorKey: "resourceType",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("resourceType")} />
-    ),
+    meta: { label: getColumnName("resourceType") },
+    header: renderHeader("resourceType"),
     cell: ({ row }) => <div className="truncate">{row.getValue("resourceType")}</div>,
   },
 
   // DATES
   {
     accessorKey: "effectiveDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("effectiveDate")} />
+    meta: { label: getColumnName("effectiveDate") },
+    header: renderHeader("effectiveDate"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("effectiveDate"))}
+      </span>
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("effectiveDate")),
   },
   {
     accessorKey: "expiresOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("expiresOn")} />
+    meta: { label: getColumnName("expiresOn") },
+    header: renderHeader("expiresOn"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{formatDate(row.getValue<Date>("expiresOn"))}</span>
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("expiresOn")),
   },
 
   // BUSINESS
   {
     accessorKey: "domain",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("domain")} />
-    ),
+    meta: { label: getColumnName("domain") },
+    header: renderHeader("domain"),
     cell: ({ row }) => row.getValue("domain") || FALLBACK_VALUE,
   },
   {
     accessorKey: "country",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("country")} />
-    ),
+    meta: { label: getColumnName("country") },
+    header: renderHeader("country"),
     cell: ({ row }) => getEnumValueByKey(CountriesEnum, row.getValue("country")) ?? FALLBACK_VALUE,
   },
   {
     accessorKey: "numberOfEmployees",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("numberOfEmployees")}
-      />
+    meta: { label: getColumnName("numberOfEmployees") },
+    header: renderHeader("numberOfEmployees"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("numberOfEmployees") ?? FALLBACK_VALUE}
+      </span>
     ),
-    cell: ({ row }) => row.getValue("numberOfEmployees") ?? FALLBACK_VALUE,
   },
   {
     accessorKey: "industry",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("industry")} />
-    ),
+    meta: { label: getColumnName("industry") },
+    header: renderHeader("industry"),
     cell: ({ row }) => row.getValue("industry") || FALLBACK_VALUE,
   },
 
   // METRICS
   {
     accessorKey: "publishAgent",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("publishAgent")} />
+    meta: { label: getColumnName("publishAgent") },
+    header: renderHeader("publishAgent"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("publishAgent") || FALLBACK_VALUE}
+      </span>
     ),
-    cell: ({ row }) => row.getValue("publishAgent") || FALLBACK_VALUE,
   },
   {
     accessorKey: "totalJobs",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalJobs")} />
+    meta: { label: getColumnName("totalJobs") },
+    header: renderHeader("totalJobs"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {row.getValue<number>("totalJobs") ?? FALLBACK_VALUE}
+      </span>
     ),
-    cell: ({ row }) => row.getValue("totalJobs") ?? FALLBACK_VALUE,
   },
   {
     accessorKey: "totalUsers",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("totalUsers")} />
+    meta: { label: getColumnName("totalUsers") },
+    header: renderHeader("totalUsers"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{row.getValue<number>("totalUsers")}</span>
     ),
-    cell: ({ row }) => row.getValue("totalUsers"),
   },
   {
     accessorKey: "availableCredits",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("availableCredits")}
-      />
+    meta: { label: getColumnName("availableCredits") },
+    header: renderHeader("availableCredits"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{round2(row.getValue("availableCredits"))}</span>
     ),
-    cell: ({ row }) => round2(row.getValue("availableCredits")),
   },
   {
     accessorKey: "consumedCredits",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("consumedCredits")}
-      />
+    meta: { label: getColumnName("consumedCredits") },
+    header: renderHeader("consumedCredits"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{round2(row.getValue("consumedCredits"))}</span>
     ),
-    cell: ({ row }) => round2(row.getValue("consumedCredits")),
   },
   {
     accessorKey: "totalExecutionTime",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("totalExecutionTime")}
-      />
+    meta: { label: getColumnName("totalExecutionTime") },
+    header: renderHeader("totalExecutionTime"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatSecondsToCompactDuration(row.getValue("totalExecutionTime"))}
+      </span>
     ),
-    cell: ({ row }) => formatSecondsToCompactDuration(row.getValue("totalExecutionTime")),
   },
   {
     accessorKey: "storageSize",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("storageSize")} />
+    meta: { label: getColumnName("storageSize") },
+    header: renderHeader("storageSize"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatBytes(row.getValue("storageSize") || 0)}
+      </span>
     ),
-    cell: ({ row }) => formatBytes(row.getValue("storageSize") || 0),
   },
   {
     accessorKey: "lastLoginDate",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("lastLoginDate")} />
+    meta: { label: getColumnName("lastLoginDate") },
+    header: renderHeader("lastLoginDate"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("lastLoginDate"))}
+      </span>
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("lastLoginDate")),
   },
 
   // FLAGS
   {
     accessorKey: "isDisabled",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("isDisabled")} />
-    ),
+    meta: { label: getColumnName("isDisabled") },
+    header: renderHeader("isDisabled"),
     cell: ({ row }) => (row.getValue("isDisabled") ? "Yes" : "No"),
   },
 
   // AUDIT
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => row.getValue("createdBy") || FALLBACK_VALUE,
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
+    meta: { label: getColumnName("createdOn") },
+    header: renderHeader("createdOn"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">{formatDate(row.getValue("createdOn"))}</span>
     ),
-    cell: ({ row }) => formatDate(row.getValue("createdOn")),
   },
   {
     accessorKey: "lastModifiedBy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedBy")}
-      />
-    ),
+    meta: { label: getColumnName("lastModifiedBy") },
+    header: renderHeader("lastModifiedBy"),
     cell: ({ row }) => row.getValue("lastModifiedBy") || FALLBACK_VALUE,
   },
   {
     accessorKey: "lastModifiedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedOn")}
-      />
+    meta: { label: getColumnName("lastModifiedOn") },
+    header: renderHeader("lastModifiedOn"),
+    cell: ({ row }) => (
+      <span className="font-mono tabular-nums">
+        {formatDate(row.getValue<Date>("lastModifiedOn"))}
+      </span>
     ),
-    cell: ({ row }) => formatDate(row.getValue<Date>("lastModifiedOn")),
   },
 
-  createDTActionsColumn<TenantsTableDto>({
-    renderCell: (row) => <TenantRowActions rowId={row.id ?? "rowId"} />,
+  getRowActionsColumn<TenantsTableDto>({
+    actions: ({ row }) => <TenantRowActions rowId={row.original.id ?? "rowId"} />,
   }),
 ];

@@ -1,19 +1,15 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuTrigger } from "@avplatform/ui/dropdown-menu";
-import { cn } from "@avplatform/ui/lib";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { DotsThreeIcon } from "@phosphor-icons/react";
 
 export const FVIActionsTrigger = () => {
   return (
     <DropdownMenuTrigger
-      className={cn(
-        buttonVariants({ variant: "ghost", size: "icon7" }),
-        "hover:bg-slate-200",
-        //"opacity-0 group-hover/CommandItem:opacity-100 group-data-[selected]/CommandItem:opacity-100",
-        "data-[state=open]:bg-slate-200 data-[state=open]:opacity-100",
-      )}
+      aria-label="Version actions"
+      className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground outline-none transition hover:bg-muted hover:text-ink-2 focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-muted data-[state=open]:text-ink-2"
     >
-      <EllipsisHorizontalIcon className="h-4 w-4 text-[--icon-color]" />
+      <DotsThreeIcon className="size-4" />
     </DropdownMenuTrigger>
   );
 };
+
+FVIActionsTrigger.displayName = "FVIActionsTrigger";

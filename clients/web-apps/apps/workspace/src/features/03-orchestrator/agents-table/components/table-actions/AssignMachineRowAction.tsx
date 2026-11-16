@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { MonitorCheck } from "lucide-react";
+import { MonitorIcon } from "@phosphor-icons/react";
 import React from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -36,7 +36,7 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
       size={size}
       disabled={isDisabled}
       content="Machines"
-      Icon={MonitorCheck}
+      Icon={MonitorIcon}
       onClick={() => {
         setFlowVersionId(rowId);
         setFlowMetadata(flowName ?? "", flowVersionNumber ?? 0, supportedPlatform ?? "");

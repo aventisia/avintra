@@ -1,4 +1,10 @@
-import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import {
+  SEGMENTED_TABS_LIST_CLASS,
+  SEGMENTED_TABS_TRIGGER_CLASS,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@avplatform/ui/tabs";
 
 import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 
@@ -10,8 +16,8 @@ interface QueueTypeSwitchProps {
 }
 
 const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
-  { value: QueueTypesEnum.User, label: "User Queues" },
-  { value: QueueTypesEnum.Agent, label: "Agent Queues" },
+  { value: QueueTypesEnum.User, label: "User queues" },
+  { value: QueueTypesEnum.Agent, label: "Agent queues" },
 ];
 
 /**
@@ -22,12 +28,12 @@ const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
 export const QueueTypeSwitch: React.FC<QueueTypeSwitchProps> = ({ value, onChange }) => {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as QueueTypesEnum)}>
-      <TabsList className="grid grid-cols-2 rounded-none border-b bg-white px-3 text-base">
+      <TabsList className={SEGMENTED_TABS_LIST_CLASS}>
         {OPTIONS.map((option) => (
           <TabsTrigger
             key={option.value}
             value={option.value}
-            className="rounded-none data-[state=active]:border-b-black"
+            className={SEGMENTED_TABS_TRIGGER_CLASS}
           >
             {option.label}
           </TabsTrigger>

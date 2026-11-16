@@ -1,5 +1,6 @@
+import { EmptyState } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 
 import { TABLE_HEADING } from "../../constants";
@@ -38,7 +39,7 @@ export const QueueOverview = () => {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <CircleNotchIcon className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -46,17 +47,17 @@ export const QueueOverview = () => {
   if (queues.length === 0) {
     return (
       <div className="space-y-4 pb-4 pt-[17px]">
-        <div className="flex items-start justify-between gap-2">
-          <QueueTypeSwitch value={queueType} onChange={setQueueType} />
-        </div>
-        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border text-center">
-          <p className="text-sm font-medium text-accent-foreground">No queues available</p>
-          <p className="text-xs text-muted-foreground">
-            {isAgent
+        <h1 className="text-title text-ink">{TABLE_HEADING} Overview</h1>
+        <QueueTypeSwitch value={queueType} onChange={setQueueType} />
+        <EmptyState
+          className="h-64 rounded-lg border border-dashed border-line"
+          primaryMessage="No queues available"
+          secondaryMessage={
+            isAgent
               ? "You don't have access to any agent queues yet."
-              : "You don't have access to any queues yet."}
-          </p>
-        </div>
+              : "You don't have access to any queues yet."
+          }
+        />
       </div>
     );
   }
@@ -76,7 +77,7 @@ export const QueueOverview = () => {
     <div className="space-y-4 pb-6 pt-[17px]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-accent-foreground">{TABLE_HEADING} Overview</h1>
+          <h1 className="text-title text-ink">{TABLE_HEADING} Overview</h1>
           <p className="text-sm text-muted-foreground">
             {isAgent
               ? "A summary of the agent queues you have access to. Click a queue to view its work items."

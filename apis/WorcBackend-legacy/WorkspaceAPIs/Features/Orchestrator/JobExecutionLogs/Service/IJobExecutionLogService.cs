@@ -22,4 +22,15 @@ public interface IJobExecutionLogService
     /// A task representing the asynchronous operation, containing detailed job execution information.
     /// </returns>
     Task<ServiceResponse<JobExecutionLogDetailDto>> GetLogDetailAsync(Guid jobId);
+
+    /// <summary>
+    /// Retrieves an agent's run counts, outcomes, and average duration across all of its versions.
+    /// </summary>
+    /// <param name="flowId">The unique identifier of the agent.</param>
+    /// <param name="days">The number of local days to cover, ending today.</param>
+    /// <param name="utcOffsetMinutes">The caller's UTC offset in minutes, used to bucket runs by local day.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing the agent's run activity.
+    /// </returns>
+    Task<ServiceResponse<AgentRunActivityDto>> GetRunActivityAsync(Guid flowId, int days, int utcOffsetMinutes);
 }

@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { SparklesIcon } from "lucide-react";
+import { SparkleIcon } from "@phosphor-icons/react";
 
 type PromptActionButtonProps = {
   /** Button label when idle. */
@@ -34,7 +34,7 @@ const PromptActionButton = ({
     disabled={disabled || isPending}
     className={cn(
       "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
-      isPending ? "cursor-wait" : "hover:bg-primary hover:text-white",
+      isPending ? "cursor-wait" : "hover:bg-primary hover:text-primary-foreground",
     )}
     onClick={onClick}
   >
@@ -45,7 +45,7 @@ const PromptActionButton = ({
       </>
     ) : (
       <>
-        <SparklesIcon className="h-4 w-4" />
+        <SparkleIcon className="h-4 w-4" />
         {label}
       </>
     )}

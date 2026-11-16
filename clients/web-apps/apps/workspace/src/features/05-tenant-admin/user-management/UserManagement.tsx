@@ -5,7 +5,7 @@ import { UsersTable } from "./tables/users-table/components/UsersTable";
 export const UserManagement = () => {
   return (
     <div className="">
-      {/* <p className="py-3 text-2xl font-semibold">User Manager</p> */}
+      {/* <p className="py-3 text-2xl font-semibold">User manager</p> */}
       {/* <div className="w-full rounded border p-5"> */}
       {/* <Tabs defaultValue="roles">
           <TabsList>

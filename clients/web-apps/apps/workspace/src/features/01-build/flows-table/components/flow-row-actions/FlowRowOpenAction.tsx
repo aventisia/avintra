@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 
 interface FlowRowOpenActionProps {
   rowId: string;
@@ -13,10 +13,6 @@ export const FlowRowOpenAction = ({ rowId }: FlowRowOpenActionProps) => {
 
   // Return the component
   return (
-    <SimpleDDMenuItem
-      content="Open"
-      Icon={ArrowTopRightOnSquareIcon}
-      onClick={handleOpenFlowAction}
-    />
+    <SimpleDDMenuItem content="Open" Icon={ArrowSquareOutIcon} onClick={handleOpenFlowAction} />
   );
 };

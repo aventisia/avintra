@@ -33,10 +33,10 @@ export const ThirdPartyToolsUsedSection = () => {
     return (
       <SectionLayout
         eyebrow="Section 05"
-        title="Third-Party Tools Used"
+        title="Third-party tools used"
         description="Tools used by the agent, resolved automatically from the agent definition."
       >
-        <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-line p-6 text-center text-sm text-muted-foreground">
           No third-party tools detected for this agent.
         </div>
       </SectionLayout>
@@ -46,12 +46,12 @@ export const ThirdPartyToolsUsedSection = () => {
   return (
     <SectionLayout
       eyebrow="Section 05"
-      title="Third-Party Tools Used"
+      title="Third-party tools used"
       description="Tools used by the agent, resolved automatically. Complete due diligence and record any risks and mitigations."
     >
       <div className="space-y-4">
         {tools.map((tool, index) => (
-          <div key={index} className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+          <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{tool.tool}</Badge>
               {tool.credentialName && (
@@ -73,11 +73,11 @@ export const ThirdPartyToolsUsedSection = () => {
             </label>
 
             <Field
-              label="Due Diligence Status"
+              label="Due diligence status"
               info="Summarise the due-diligence performed on this tool, e.g. vendor assessment reviewed, data-handling confirmed, or contract terms verified."
             >
               <input
-                className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+                className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
                 placeholder="e.g. Vendor assessment reviewed"
                 value={tool.dueDiligenceStatus}
                 onChange={(e) => updateRow(index, { dueDiligenceStatus: e.target.value })}
@@ -90,7 +90,7 @@ export const ThirdPartyToolsUsedSection = () => {
                 info="List the specific risks posed by this tool, such as unauthorised data access, supply-chain exposure, or unsupported actions."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Risks specific to this tool"
                   value={tool.risks}
                   onChange={(e) => updateRow(index, { risks: e.target.value })}
@@ -101,7 +101,7 @@ export const ThirdPartyToolsUsedSection = () => {
                 info="Describe the controls in place to address the risks above, e.g. least-privilege credentials, audit logging, or action restrictions."
               >
                 <textarea
-                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
                   placeholder="Mitigations for the above"
                   value={tool.mitigations}
                   onChange={(e) => updateRow(index, { mitigations: e.target.value })}

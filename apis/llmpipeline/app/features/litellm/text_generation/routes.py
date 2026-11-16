@@ -45,7 +45,11 @@ async def generate_llm_response_route(
             return StreamingResponse(
                 stream_gen,
                 media_type="text/event-stream",
-                headers={"X-Job-Id": job_id},
+                headers={
+                    "X-Job-Id": job_id,
+                    "X-Accel-Buffering": "no",
+                    "Cache-Control": "no-cache",
+                },
             )
         return await generation_service.generate(req, _user)
     except HTTPException:

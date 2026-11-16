@@ -1,3 +1,7 @@
+import type { BadgeProps } from "@avplatform/ui/badge";
+import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
+import { InitialTableState } from "@tanstack/react-table";
+
 import { QueueTransactionStatusTypesEnum } from "../enums/queue-work-item-status-enum";
 
 /**
@@ -14,25 +18,42 @@ const TABLE_HEADING = "Queues";
 
 const TABLE_KEY = "my-queues";
 
-export const statusColor: { [key: string]: string } = {
-  [QueueTransactionStatusTypesEnum.Completed]: "bg-green-200 text-green-700",
-  [QueueTransactionStatusTypesEnum.InProgress]: "bg-slate-200 text-slate-600",
-  [QueueTransactionStatusTypesEnum.Pending]: "bg-orange-200 text-orange-600",
-  [QueueTransactionStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
+/** Page sizes offered by the table, unchanged from the legacy table. */
+const MY_QUEUES_PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200, 500, 1000];
+
+const MY_QUEUES_INITIAL_STATE: InitialTableState = {
+  pagination: { pageIndex: 0, pageSize: 50 },
+  columnPinning: { right: [TABLE_CN_ACTIONS_COLUMN_ID] },
+};
+
+type StatusBadgeVariant = NonNullable<BadgeProps["variant"]>;
+
+export const statusBadgeVariant: { [key: string]: StatusBadgeVariant } = {
+  [QueueTransactionStatusTypesEnum.Completed]: "completed",
+  [QueueTransactionStatusTypesEnum.InProgress]: "running",
+  [QueueTransactionStatusTypesEnum.Pending]: "queued",
+  [QueueTransactionStatusTypesEnum.Failed]: "failed",
 };
 
 /**
- * Fallback badge classes used for custom statuses that do not have a predefined color.
+ * Fallback badge variant used for custom statuses that do not have a predefined variant.
  */
-const DEFAULT_STATUS_COLOR = "bg-slate-200 text-slate-600";
+const DEFAULT_STATUS_BADGE_VARIANT: StatusBadgeVariant = "secondary";
 
 /**
- * Returns the badge classes for a given status, falling back to a neutral style
+ * Returns the badge variant for a given status, falling back to a neutral variant
  * for custom statuses that are not part of the core set.
  */
-export const getStatusColor = (status?: string | null): string => {
-  if (!status) return DEFAULT_STATUS_COLOR;
-  return statusColor[status] ?? DEFAULT_STATUS_COLOR;
+export const getStatusBadgeVariant = (status?: string | null): StatusBadgeVariant => {
+  if (!status) return DEFAULT_STATUS_BADGE_VARIANT;
+  return statusBadgeVariant[status] ?? DEFAULT_STATUS_BADGE_VARIANT;
 };
 
-export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY, EVENT_QUERY_KEY };
+export {
+  DATA_QUERY_KEY,
+  TABLE_HEADING,
+  TABLE_KEY,
+  EVENT_QUERY_KEY,
+  MY_QUEUES_INITIAL_STATE,
+  MY_QUEUES_PAGE_SIZE_OPTIONS,
+};

@@ -44,8 +44,8 @@ export const RemoteCursors = () => {
       {remoteCursors.map((c) => {
         const key = c.connectionId ?? c.userId;
         const displayName = c.displayName ?? c.email ?? "Collaborator";
-        const colorClass = colorMap[c.userId]?.border ?? "border-gray-300";
-        const fillClass = colorMap[c.userId]?.fill ?? "fill-gray-300";
+        const colorClass = colorMap[c.userId]?.border ?? "border-line-strong";
+        const fillClass = colorMap[c.userId]?.fill ?? "fill-line-strong";
         return (
           <div
             key={key}
@@ -63,7 +63,7 @@ export const RemoteCursors = () => {
                   <path d="M4 2l7 18 2.5-7.5L21 10 4 2z" />
                 </svg>
                 {/* Initials-only bubble (name kept in the tooltip) */}
-                <div className="absolute left-4 top-0 flex items-center rounded-full border bg-white p-0.5 shadow-sm">
+                <div className="absolute left-4 top-0 flex items-center rounded-full border border-line bg-surface p-0.5 shadow-pop">
                   <Avatar className={`h-5 w-5 rounded-full border-2 ${colorClass}`}>
                     <AvatarFallback className="text-[7px] font-bold uppercase">
                       {getInitials(c.displayName, c.email)}

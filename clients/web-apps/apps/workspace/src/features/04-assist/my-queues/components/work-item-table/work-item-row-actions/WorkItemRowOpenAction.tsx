@@ -1,6 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { QueueWorkItemStatusEnum } from "@avplatform/ui/enums/queue-work-item-status-enum";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 
 import { useOpenWorkItem } from "../../../hooks/useOpenWorkItem";
@@ -27,7 +27,7 @@ export const WorkItemRowOpenAction = ({
   return (
     <SimpleDDMenuItem
       content="Open"
-      Icon={ArrowTopRightOnSquareIcon}
+      Icon={ArrowSquareOutIcon}
       disabled={disabled}
       onClick={() => {
         navigate(getWorkItemUrl(rowId));

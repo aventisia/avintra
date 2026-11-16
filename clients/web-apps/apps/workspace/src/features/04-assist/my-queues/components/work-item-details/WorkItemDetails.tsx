@@ -197,7 +197,7 @@ export const WorkItemDetails = () => {
     <div className="space-y-4 h-full pt-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-foreground">
+        <h2 className="ml-1 flex w-full items-center truncate text-lg font-medium text-ink">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -232,7 +232,7 @@ export const WorkItemDetails = () => {
             workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
               <SearchableSelect
                 options={buildDispositionOptions(myCurrentQueue)}
-                placeholder="Disposition Status"
+                placeholder="Disposition status"
                 value={selectedDisposition}
                 onValueChange={handleDispositionChange}
                 className="w-60"

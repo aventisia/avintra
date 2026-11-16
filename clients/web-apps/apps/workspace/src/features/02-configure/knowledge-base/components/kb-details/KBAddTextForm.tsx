@@ -1,10 +1,15 @@
-import { SubmitButton } from "@avplatform/ui/buttons";
-import { Form, InputField, TextareaField } from "@avplatform/ui/form";
-import { ScrollArea } from "@avplatform/ui/scroll";
+import { Form, InputField, TextareaField, crudDialogFieldClasses } from "@avplatform/ui/form";
+import { IconTile } from "@avplatform/ui/icon-tile";
+import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
+import { TextTIcon } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
+
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 
 import {
   ingestVectorStoreInput,
@@ -22,6 +27,9 @@ import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKBAddTextForm } from "../../hooks/useDefineKBAddTextForm";
 import FileUploadDisclaimer from "./FileUploadDisclaimer";
 
+/**
+ * Card dialog that chunks pasted text into a knowledge base.
+ */
 export const KBAddTextForm = ({
   knowledgeBaseId,
   knowledgeBaseName,
@@ -131,36 +139,54 @@ export const KBAddTextForm = ({
     submitText(data);
   };
 
+  const handleSubmit = form.handleSubmit(onSubmit);
+  const { isDirty } = form.formState;
+
   return (
-    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 p-0 ">
-      <div className="flex flex-col justify-between">
-        <ScrollArea className="h-[calc(40rem-7.5rem)] p-4 pt-3 ">
-          <div className="space-y-4 px-1">
-            {/* Query */}
-            <TextareaField {...textContentProps} autoFocus />
-
-            {/* Number of chunks */}
-            <div className="grid grid-cols-2 gap-4">
-              <InputField {...chunkSizeProps} />
-
-              <InputField {...chunkOverlapProps} />
-            </div>
-
-            <FileUploadDisclaimer />
+    <CardDialog
+      isOpen
+      onClose={onCompleted}
+      isDismissLocked={isPending}
+      isOutsideClickLocked={isDirty}
+      widthClassName="w-[min(42rem,calc(100vw-2rem))]"
+      mark={<IconTile Icon={TextTIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />}
+      eyebrow="Add raw text"
+      title={knowledgeBaseName}
+      footer={
+        <>
+          <StatusLine tone={isPending ? "pending" : "idle"}>
+            {isPending ? "Chunking text" : "Saved as a text file"}
+          </StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={onCompleted} disabled={isPending}>
+              Cancel
+            </CardDialogButton>
+            <CardDialogButton
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={isPending}
+              isBusy={isPending}
+            >
+              {isPending ? "Chunking" : "Add text"}
+            </CardDialogButton>
           </div>
-        </ScrollArea>
+        </>
+      }
+    >
+      <Form methods={form} onSubmit={handleSubmit}>
+        <TextareaField
+          {...textContentProps}
+          className={cn(crudDialogFieldClasses.textarea, textContentProps.className)}
+          autoFocus
+        />
 
-        <div className="flex h-16 border-t px-4 justify-end items-center">
-          <SubmitButton
-            size={"sm"}
-            type="submit"
-            isPending={isPending}
-            primaryText="Submit"
-            secondaryText="Chunking..."
-            disabled={isPending}
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <InputField {...chunkSizeProps} className={crudDialogFieldClasses.input} />
+          <InputField {...chunkOverlapProps} className={crudDialogFieldClasses.input} />
         </div>
-      </div>
-    </Form>
+
+        <FileUploadDisclaimer className="px-0 leading-5 text-muted-foreground" />
+      </Form>
+    </CardDialog>
   );
 };

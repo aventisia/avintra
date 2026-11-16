@@ -1,3 +1,4 @@
+import { useIsInsideCrudDialog } from "@avplatform/ui/crud-dialog";
 import {
   BaseFieldProps,
   FormControl,
@@ -5,6 +6,7 @@ import {
   FormItem,
   FormLabelExt,
   FormMessage,
+  crudDialogFieldClasses,
 } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import * as React from "react";
@@ -33,6 +35,7 @@ const ConfigPanelAutosizeTextareaField = ({
   ...props
 }: ConfigPanelAutosizeTextareaFieldProps) => {
   const caretRef = React.useRef<number>(0);
+  const isInDialog = useIsInsideCrudDialog();
 
   // Get the form context
   const { control } = useFormContext<FieldValues>();
@@ -53,15 +56,20 @@ const ConfigPanelAutosizeTextareaField = ({
       <FormField
         {...{ name, textareaField }}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className={cn(isInDialog && crudDialogFieldClasses.item)}>
             {label && <FormLabelExt {...{ label, disabled, isRequired, description }} />}
 
             <FormControl>
               <ConfigPanelAutosizeTextarea
                 size="sm"
-                minHeight={minHeight}
+                // IMPORTANT NOTE: The autosize hook adds 2px to both the min and measured height, so 40 settles a single line at the 44px dialog input height.
+                minHeight={isInDialog ? 40 : minHeight}
                 maxHeight={maxHeight}
-                className={cn("h-8", className)}
+                className={cn(
+                  "h-8",
+                  isInDialog && cn(crudDialogFieldClasses.textarea, "py-[11px]"),
+                  className,
+                )}
                 disabled={disabled}
                 {...field}
                 onBlur={(e) => {

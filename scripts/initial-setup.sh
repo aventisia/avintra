@@ -254,34 +254,17 @@ run_install() {
   fi
 }
 
+# IMPORTANT NOTE: npm 11 writes this OS's native binaries into a lockfile generated on another OS, so
+# --no-save keeps package-lock.json unchanged; scripts/setup-fix.mjs then installs what npm 10 leaves out.
 install_npm() {
   local label="$1" workdir="$2"
   if [ ! -f "$workdir/package.json" ]; then
     omitmark "$label" "${workdir#"$ROOT"/} not found"
   elif command -v npm >/dev/null 2>&1; then
-    run_install "$label" "$workdir" npm install --force
+    run_install "$label" "$workdir" npm install --no-save --force
   else
     omitmark "$label" "npm not found"
   fi
-}
-
-# IMPORTANT NOTE: the committed web-apps lockfile is generated on Windows/Linux, and npm's
-# optional-dependency bug (https://github.com/npm/cli/issues/4828) then omits the macOS native
-# builds. Install them with --no-save, matching each installed parent's version, so package.json
-# and package-lock.json stay unchanged. One command keeps --no-save installs from removing each other.
-install_macos_native_builds() {
-  local dir="$1" arch entry parent version specs=()
-  [ "$(uname -s)" = "Darwin" ] || return 0
-  command -v node >/dev/null 2>&1 || return 0
-  arch="$(node -p process.arch)"
-  for entry in "@swc/core:@swc/core-darwin-$arch" "rollup:@rollup/rollup-darwin-$arch" "@napi-rs/canvas:@napi-rs/canvas-darwin-$arch"; do
-    parent="${entry%%:*}"
-    [ -f "$dir/node_modules/$parent/package.json" ] || continue
-    version="$(cd "$dir" && node -p "require('./node_modules/$parent/package.json').version")"
-    specs+=("${entry#*:}@$version")
-  done
-  [ "${#specs[@]}" -gt 0 ] || return 0
-  run_install "web apps macOS native builds (npm install --no-save)" "$dir" npm install --no-save --force "${specs[@]}"
 }
 
 step "Installing dependencies"
@@ -292,7 +275,6 @@ else
   trap 'rm -rf "$LOGDIR"' EXIT
 
   install_npm "web apps (npm install)" "$ROOT/clients/web-apps"
-  [ "$RUN_OK" -eq 1 ] && install_macos_native_builds "$ROOT/clients/web-apps"
   TAURI_DIR="$ROOT/clients/web-apps/apps/desktop-app/src-tauri"
   if [ ! -f "$TAURI_DIR/Cargo.toml" ]; then
     omitmark "desktop-app Rust deps (cargo fetch)" "src-tauri/Cargo.toml not found"
@@ -304,6 +286,11 @@ else
   install_npm "corsair (npm install)" "$ROOT/apis/corsair"
   install_npm "docs (npm install)" "$ROOT/clients/docs"
   install_npm "bruno tests (npm install)" "$ROOT/tests/bruno"
+  if command -v node >/dev/null 2>&1; then
+    run_install "native binaries for this OS (scripts/setup-fix.sh)" "$ROOT" node "$ROOT/scripts/setup-fix.mjs"
+  else
+    omitmark "native binaries for this OS (scripts/setup-fix.sh)" "node not found"
+  fi
 
   if command -v npm >/dev/null 2>&1; then
     run_install "dekit (npm install -g @dekit/cli)" "$ROOT" npm install -g @dekit/cli

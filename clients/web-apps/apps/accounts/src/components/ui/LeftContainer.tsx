@@ -1,3 +1,4 @@
+import { ThemeSwitcher } from "@avplatform/layout/header";
 import { cn } from "@avplatform/ui/lib";
 
 interface LeftContainerProps {
@@ -5,10 +6,16 @@ interface LeftContainerProps {
   children?: React.ReactNode;
 }
 
-const LeftContainer = ({ className = "lg:w-[50%]", children }: LeftContainerProps) => {
+const LeftContainer = ({ className, children }: LeftContainerProps) => {
   return (
-    <div className={cn("flex w-full flex-col items-center justify-between", className)}>
+    <div
+      className={cn(
+        "relative flex min-h-screen w-full flex-col items-center justify-between gap-6 px-4 py-6 xs:px-8",
+        className,
+      )}
+    >
       {children}
+      <ThemeSwitcher className="absolute right-4 top-6 px-0 xs:right-8" />
     </div>
   );
 };

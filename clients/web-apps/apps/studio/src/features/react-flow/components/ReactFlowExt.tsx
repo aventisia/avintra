@@ -329,11 +329,11 @@ export const ReactFlowExt = () => {
 
   // Render ReactFlow component
   return (
-    <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200 p-1.5">
+    <ResizablePanelGroup orientation="horizontal" className="!bg-bg p-1.5">
       <ResizablePanel
         defaultSize="60%"
         minSize="35%"
-        className="overflow-hidden rounded-xl bg-white"
+        className="overflow-hidden rounded-xl bg-surface"
       >
         <div ref={reactFlowWrapper} className="relative h-full w-full">
           <FlowBreadcrumbs />
@@ -399,7 +399,7 @@ export const ReactFlowExt = () => {
                   ? "Testing is unavailable while this agent is published."
                   : undefined
               }
-              title="Test Chat"
+              title="Test chat"
               badge="Test mode"
               description={
                 chatModelLabel

@@ -5,12 +5,10 @@ import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { CircleNotchIcon, InfoIcon, PlayIcon, SquareIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
-import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -333,13 +331,13 @@ const ExecuteFlow = () => {
       {/* Timer: visible while a run is active (ticks) and after it ends (frozen) so the
           elapsed time stays readable until Clear Results or a new execution. */}
       {executionState === "executing" || executionState === "paused" || showRunResults ? (
-        <div className="group pl-3 pr-1.5 bg-white/10 rounded-lg flex h-8 items-center gap-1">
-          <span className="flex items-center font-mono text-md font-semibold text-white/80 tabular-nums">
+        <div className="flex h-7 items-center gap-1 rounded-md border border-line bg-sunken pl-2.5 pr-1">
+          <span className="flex items-center font-mono text-[12.5px] font-medium tabular-nums text-ink-2">
             {formatElapsed(elapsedSeconds)}
           </span>
           <Tooltip content="This timer tracks the elapsed time on your device while the flow is running. The duration shown in the execution logs and jobs may differ slightly as it is calculated by the server.">
-            <span className="flex h-5 w-5 cursor-help items-center justify-center rounded-lg hover:bg-white/10 text-white/70">
-              <InformationCircleIcon className="size-3.5 -mt-[1px]" />
+            <span className="flex size-5 cursor-help items-center justify-center rounded-sm text-muted-foreground hover:bg-hover">
+              <InfoIcon className="size-3.5 -mt-[1px]" />
             </span>
           </Tooltip>
         </div>
@@ -349,37 +347,35 @@ const ExecuteFlow = () => {
           is finished but results are still visible, it appears again so the user can start a
           new execution (Clear Results remains available too). */}
       {executionState === "executing" || executionState === "paused" ? (
-        <Tooltip content={isAborting ? "Aborting..." : "Abort"}>
-          <Button
-            variant="ghost"
-            size="icon8"
-            className="hover:bg-white/10 bg-white/10"
-            onClick={abortExecution}
-            disabled={isAborting}
-          >
-            {isAborting ? (
-              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
-            ) : (
-              <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
-            )}
-          </Button>
-        </Tooltip>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={abortExecution}
+          disabled={isAborting}
+        >
+          {isAborting ? (
+            <CircleNotchIcon className="size-3.5 animate-spin" />
+          ) : (
+            <SquareIcon weight="fill" className="size-3.5 text-bad" />
+          )}
+          {isAborting ? "Stopping…" : "Stop"}
+        </Button>
       ) : (
-        <Tooltip content="Execute">
-          <Button
-            variant="ghost"
-            size="icon8"
-            className="hover:bg-white/10"
-            onClick={startExecution}
-            disabled={isSaving}
-          >
-            {isStarting || executionState === "launching-executor" ? (
-              <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
-            ) : (
-              <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
-            )}
-          </Button>
-        </Tooltip>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5"
+          onClick={startExecution}
+          disabled={isSaving}
+        >
+          {isStarting || executionState === "launching-executor" ? (
+            <CircleNotchIcon className="size-3.5 animate-spin" />
+          ) : (
+            <PlayIcon weight="fill" className="size-3.5" />
+          )}
+          Run
+        </Button>
       )}
     </div>
   );

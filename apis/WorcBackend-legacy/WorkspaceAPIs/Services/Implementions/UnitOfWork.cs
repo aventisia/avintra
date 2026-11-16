@@ -17,6 +17,9 @@ public class UnitOfWork : IUnitOfWork
     public IProjectTemplateRepo ProjectTemplateRepo => new ProjectTemplateRepo(_workspaceDbContext);
     public ITemplateResourceRepo TemplateResourceRepo => new TemplateResourceRepo(_workspaceDbContext);
     public IFlowVersionRepo FlowVersionRepo => new FlowVersionRepo(_workspaceDbContext);
+    public IUiBuilderProjectRepo UiBuilderProjectRepo => new UiBuilderProjectRepo(_workspaceDbContext);
+    public IUiBuilderVersionRepo UiBuilderVersionRepo => new UiBuilderVersionRepo(_workspaceDbContext);
+    public IUiBuilderAssetRepo UiBuilderAssetRepo => new UiBuilderAssetRepo(_workspaceDbContext);
     public IFlowVersionHistoryRepo FlowVersionHistoryRepo => new FlowVersionHistoryRepo(_workspaceDbContext);
     public IAgentRiskRegistryRepo AgentRiskRegistryRepo => new AgentRiskRegistryRepo(_workspaceDbContext);
     public IMachineRepo MachineRepo => new MachineRepo(_workspaceDbContext);
@@ -37,6 +40,9 @@ public class UnitOfWork : IUnitOfWork
     public ITenantModelProviderRepo TenantModelProviderRepo => new TenantModelProviderRepo(_workspaceDbContext);
     public IConversationRepo ConversationRepo => new ConversationRepo(_workspaceDbContext);
     public IConversationMessageRepo ConversationMessageRepo => new ConversationMessageRepo(_workspaceDbContext);
+    public IChatArtifactRepo ChatArtifactRepo => new ChatArtifactRepo(_workspaceDbContext);
+    public IUserChatProfileRepo UserChatProfileRepo => new UserChatProfileRepo(_workspaceDbContext);
+    public IChatProjectRepo ChatProjectRepo => new ChatProjectRepo(_workspaceDbContext);
     public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);
     public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);

@@ -1,0 +1,34 @@
+meta {
+  name: Insert version for studio settings tests
+  type: http
+  seq: 28
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/versions
+  body: json
+  auth: none
+}
+
+body:json {
+  "uiBuilderProjectId": "{{UIBUILDER_STUDIO_PROJECT_ID}}",
+  "promptText": "A claims dashboard",
+  "generatedHtml": "<!doctype html><html><body><h1>Claims</h1></body></html>",
+  "provider": "openai",
+  "model": "gpt-4o-mini"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_STUDIO_VERSION_NUMBER",
+          res.getBody().data.versionNumber
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

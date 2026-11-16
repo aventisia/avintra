@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -23,11 +23,11 @@ export const FPTNameAndVersion = () => {
       <span className="truncate text-xs">{currentFlow.name}</span>
 
       {/* flow version container */}
-      <Badge variant={"default"} className="gap-1 bg-white text-3xs text-foreground shadow">
+      <Badge variant="outline">
         {/* show flow version is saving */}
         {isFlowSaving ? (
           <>
-            <Loader2 className="h-3 w-3 animate-spin text-[--icon-color]" />
+            <CircleNotchIcon className="h-3 w-3 animate-spin text-[--icon-color]" />
             Saving...
           </>
         ) : (

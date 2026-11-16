@@ -3,7 +3,7 @@ import { InputFieldProps, TextareaFieldProps } from "@avplatform/ui/form";
 // Query
 export const textContentProps: TextareaFieldProps = {
   name: "textContent",
-  label: "Text Content",
+  label: "Text content",
   placeholder: "Enter or paste your text content here...",
   className: "min-h-[8rem]",
   isRequired: true,
@@ -13,7 +13,7 @@ export const textContentProps: TextareaFieldProps = {
 // Chunk Size
 export const chunkSizeProps: InputFieldProps = {
   name: "chunkSize",
-  label: "Chunk Size",
+  label: "Chunk size",
   type: "number",
   isRequired: true,
 };
@@ -21,7 +21,7 @@ export const chunkSizeProps: InputFieldProps = {
 // Chunk Overlap
 export const chunkOverlapProps: InputFieldProps = {
   name: "chunkOverlap",
-  label: "Chunk Overlap",
+  label: "Chunk overlap",
   type: "number",
   isRequired: true,
 };

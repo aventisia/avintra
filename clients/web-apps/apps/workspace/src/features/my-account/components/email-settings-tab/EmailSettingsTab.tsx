@@ -1,25 +1,26 @@
-import { useShallow } from "zustand/react/shallow";
+import { useEffect } from "react";
 
 import { useProfileEmailUpdateStore } from "../../stores/profile-email-update-store";
+import type { AccountTabProps } from "../../types/account-tab.type";
 import { EnterEmail } from "./EnterEmail";
 import { VerifyEmail } from "./VerifyEmail";
 
-export const EmailSettingsTab = () => {
-  // Get store state
-  const { stepNo } = useProfileEmailUpdateStore(
-    useShallow((state) => ({
-      stepNo: state.stepNo,
-    })),
+export const EmailSettingsTab = ({ footerSlot }: AccountTabProps) => {
+  const stepNo = useProfileEmailUpdateStore((state) => state.stepNo);
+
+  useEffect(
+    () => () =>
+      useProfileEmailUpdateStore.setState({
+        stepNo: 1,
+        updateProfileEmailData: null,
+        verifyEmailData: null,
+      }),
+    [],
   );
 
-  // Return component
-  return (
-    <>
-      {/* Step 1 - update email step */}
-      {stepNo === 1 && <EnterEmail />}
-
-      {/* Step 2 - Verify email address step */}
-      {stepNo === 2 && <VerifyEmail />}
-    </>
+  return stepNo === 2 ? (
+    <VerifyEmail footerSlot={footerSlot} />
+  ) : (
+    <EnterEmail footerSlot={footerSlot} />
   );
 };

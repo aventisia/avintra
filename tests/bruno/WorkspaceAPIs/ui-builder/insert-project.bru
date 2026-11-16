@@ -1,0 +1,25 @@
+meta {
+  name: Insert UI builder project
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder
+  body: json
+  auth: none
+}
+
+body:json {
+  "name": "{{$randomProductName}}",
+  "description": "{{$randomLoremParagraph}}"
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_PROJECT_ID",
+          res.getBody().data.id
+      );
+  }
+}

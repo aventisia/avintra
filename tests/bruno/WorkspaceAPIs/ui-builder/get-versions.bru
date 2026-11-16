@@ -1,0 +1,11 @@
+meta {
+  name: Get UI builder versions
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_PROJECT_ID}}/versions
+  body: none
+  auth: none
+}

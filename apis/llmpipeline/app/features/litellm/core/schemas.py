@@ -78,6 +78,8 @@ class LLMGenerationRequest(BaseModel):
     # KB augmentation
     kb_names: Optional[list[str]] = None
     top_k: Optional[int] = Field(default=5, ge=1, le=100)
+    # Platform or tenant custom skill names whose instructions are injected into the input
+    skill_names: Optional[list[str]] = None
     # Credit / reference metadata (mirrors legacy payload expectations)
     ref_type: str = ""
     ref_id: str = ""

@@ -17,11 +17,11 @@ export const ParticipantAvatar: React.FC<Props> = ({
 }) => (
   <div onMouseEnter={() => onHoverStart(user)} onMouseLeave={onHoverEnd}>
     <Avatar
-      className="-ml-4 h-8 w-8 border-[2.2px] border-primary !bg-[#aba7e7] text-xs font-bold capitalize tracking-wider text-secondary hover:z-10 hover:border-slate-200"
+      className="-ml-4 h-8 w-8 border-2 border-surface !bg-sunken text-xs font-bold capitalize tracking-wider text-ink-2 hover:z-10 hover:border-line-strong"
       onMouseEnter={onCancel}
     >
       <AvatarImage src={user.avatarSrc || ""} alt={user.initials} />
-      <AvatarFallback className="bg-[#aba7e7] text-xs font-bold capitalize text-secondary">
+      <AvatarFallback className="bg-sunken text-xs font-bold capitalize text-ink-2">
         {user.initials}
       </AvatarFallback>
     </Avatar>

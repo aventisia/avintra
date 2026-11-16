@@ -8,7 +8,7 @@ import { GoToLogin } from "./GoToLogin";
 
 export const CreateAccount = () => {
   // Set dcoument title
-  useDocumentTitle("Create Account");
+  useDocumentTitle("Create account");
 
   // Return component
   return (

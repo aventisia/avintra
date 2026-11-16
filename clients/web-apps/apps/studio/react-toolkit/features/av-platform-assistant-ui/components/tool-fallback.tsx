@@ -5,7 +5,13 @@ import {
 } from "@assistant-ui/react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@avplatform/ui/collapsible";
 import { cn } from "@avplatform/ui/lib";
-import { AlertCircleIcon, CheckIcon, ChevronDownIcon, LoaderIcon, XCircleIcon } from "lucide-react";
+import {
+  CaretDownIcon,
+  CheckIcon,
+  SpinnerIcon,
+  WarningCircleIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { memo, useCallback, useRef, useState } from "react";
 
 const ANIMATION_DURATION = 200;
@@ -72,10 +78,10 @@ function ToolFallbackRoot({
 type ToolStatus = ToolCallMessagePartStatus["type"];
 
 const statusIconMap: Record<ToolStatus, React.ElementType> = {
-  running: LoaderIcon,
+  running: SpinnerIcon,
   complete: CheckIcon,
   incomplete: XCircleIcon,
-  "requires-action": AlertCircleIcon,
+  "requires-action": WarningCircleIcon,
 };
 
 function ToolFallbackTrigger({
@@ -131,11 +137,11 @@ function ToolFallbackTrigger({
           </span>
         )}
       </span>
-      <ChevronDownIcon
+      <CaretDownIcon
         data-slot="tool-fallback-trigger-chevron"
         className={cn(
           "aui-tool-fallback-trigger-chevron size-4 shrink-0",
-          "transition-transform duration-300 ease-out",
+          "transition-transform duration-[120ms] ease-out motion-reduce:transition-none",
           "group-data-[state=closed]/trigger:-rotate-90",
           "group-data-[state=open]/trigger:rotate-0",
         )}
@@ -159,8 +165,8 @@ function ToolFallbackContent({
         "data-[state=open]:animate-collapsible-down",
         "data-[state=closed]:fill-mode-forwards",
         "data-[state=closed]:pointer-events-none",
-        "data-[state=open]:duration-300",
-        "data-[state=closed]:duration-300",
+        "data-[state=open]:duration-200",
+        "data-[state=closed]:duration-200",
         className,
       )}
       {...props}

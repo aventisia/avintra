@@ -11,19 +11,23 @@ const DEFAULT_VIEW: FlowsViewMode = "grid";
  * grid/table choice is remembered independently and survives reloads, route
  * changes, and re-visits to the Build > Agents screen.
  */
-const getStorageKey = () =>
-  `flows-view-preference:${useUserSessionStore.getState().userSession?.email ?? "anonymous"}`;
+const getStorageKey = (list: string) =>
+  `${list}-view-preference:${useUserSessionStore.getState().userSession?.email ?? "anonymous"}`;
 
-export const useFlowsView = () => {
+/** `list` names the stored preference; each agents list keeps its own. */
+export const useFlowsView = (list = "flows") => {
   const [view, setViewState] = useState<FlowsViewMode>(() => {
-    const stored = localStorage.getItem(getStorageKey());
+    const stored = localStorage.getItem(getStorageKey(list));
     return stored === "table" || stored === "grid" ? stored : DEFAULT_VIEW;
   });
 
-  const setView = useCallback((nextView: FlowsViewMode) => {
-    setViewState(nextView);
-    localStorage.setItem(getStorageKey(), nextView);
-  }, []);
+  const setView = useCallback(
+    (nextView: FlowsViewMode) => {
+      setViewState(nextView);
+      localStorage.setItem(getStorageKey(list), nextView);
+    },
+    [list],
+  );
 
   return { view, setView };
 };

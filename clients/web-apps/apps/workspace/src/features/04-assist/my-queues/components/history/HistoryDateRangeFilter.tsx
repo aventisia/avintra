@@ -1,8 +1,8 @@
 import { Calendar } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export type DateRange = {
@@ -34,8 +34,8 @@ const HistoryDateRangeFilter = ({ value, onChange }: HistoryDateRangeFilterProps
 
   const presets = [
     { label: "Today", value: "today" },
-    { label: "Week to Date", value: "week" },
-    { label: "Month to Date", value: "month" },
+    { label: "Week to date", value: "week" },
+    { label: "Month to date", value: "month" },
     { label: "Last 7 days", value: 7 },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
@@ -69,7 +69,7 @@ const HistoryDateRangeFilter = ({ value, onChange }: HistoryDateRangeFilterProps
     <Popover open={showRangePicker} onOpenChange={setShowRangePicker}>
       <PopoverTrigger>
         <Button variant={"outline"} className="flex items-center" size="sm">
-          <CalendarDays className="mr-2 h-4 w-4" />
+          <CalendarDotsIcon className="mr-2 h-4 w-4" />
           {format(value?.from || "", "MMM d, yyyy")} - {format(value?.to || "", "MMM d, yyyy")}
         </Button>
       </PopoverTrigger>
@@ -88,7 +88,7 @@ const HistoryDateRangeFilter = ({ value, onChange }: HistoryDateRangeFilterProps
                   variant={isSelected ? "default" : "outline"}
                   size="sm"
                   className={`justify-start border-none shadow-none ${
-                    isSelected ? "hover:bg-primary/90 bg-primary-50 text-primary" : ""
+                    isSelected ? "bg-selected text-primary-text hover:bg-selected" : ""
                   }`}
                   onClick={() => setSelectedRange(presetRange)}
                 >

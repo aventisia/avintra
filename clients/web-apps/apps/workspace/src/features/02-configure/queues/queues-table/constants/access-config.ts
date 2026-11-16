@@ -1,5 +1,11 @@
 import { IconProps } from "@avplatform/ui/types";
-import { EditIcon, EyeIcon, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import {
+  EyeIcon,
+  NotePencilIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+} from "@phosphor-icons/react";
 
 import { QueueWorkItemAccessTypesEnum } from "../enums/queue-work-item-access-enum";
 
@@ -12,29 +18,29 @@ export const QUEUE_WORK_ITEM_ACCESS_META: Record<
   }
 > = {
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
-    label: "Full Access",
+    label: "Full access",
     description: "Unrestricted access to all queue work item actions",
-    badgeClass: "bg-purple-50 text-purple-700 border-purple-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.View]: {
-    label: "Can View",
+    label: "Can view",
     description: "View queue work items without changes",
-    badgeClass: "bg-gray-50 text-gray-700 border-gray-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
-    label: "Can Create",
+    label: "Can create",
     description: "Add new items to the queue",
-    badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
-    label: "Can Edit",
+    label: "Can edit",
     description: "Modify queue work item details or state",
-    badgeClass: "bg-orange-50 text-orange-700 border-orange-200",
+    badgeClass: "bg-sunken text-ink-2 border-line",
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
-    label: "Can Delete",
+    label: "Can delete",
     description: "Remove or process queue items",
-    badgeClass: "bg-red-50 text-red-700 border-red-200",
+    badgeClass: "bg-bad/10 text-bad border-bad/35",
   },
 };
 
@@ -46,24 +52,24 @@ export const ACCESS_MENU_CONFIG: Record<
   }
 > = {
   [QueueWorkItemAccessTypesEnum.FullAccess]: {
-    label: "Full Access",
-    Icon: ShieldCheck,
+    label: "Full access",
+    Icon: ShieldCheckIcon,
   },
   [QueueWorkItemAccessTypesEnum.View]: {
-    label: "Can View",
+    label: "Can view",
     Icon: EyeIcon,
   },
   [QueueWorkItemAccessTypesEnum.Create]: {
-    label: "Can Create",
-    Icon: Plus,
+    label: "Can create",
+    Icon: PlusIcon,
   },
   [QueueWorkItemAccessTypesEnum.Edit]: {
-    label: "Can Edit",
-    Icon: EditIcon,
+    label: "Can edit",
+    Icon: NotePencilIcon,
   },
   [QueueWorkItemAccessTypesEnum.Delete]: {
-    label: "Can Delete",
-    Icon: Trash2,
+    label: "Can delete",
+    Icon: TrashIcon,
   },
 };
 

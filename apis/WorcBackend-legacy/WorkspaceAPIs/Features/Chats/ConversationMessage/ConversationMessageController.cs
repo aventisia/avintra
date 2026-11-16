@@ -26,11 +26,25 @@ public class ConversationMessageController : BaseApiController
         return ResultHelper(await _conversationMessageService.GetMessagesAsync(conversationId));
     }
 
+    // Gets all messages of a shared conversation by its read-only token.
+    [HttpGet("shared/{shareToken}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationMessageDto>>>> GetSharedMessages(string shareToken)
+    {
+        return ResultHelper(await _conversationMessageService.GetSharedMessagesAsync(shareToken));
+    }
+
     // Gets recent messages for LLM context window.
     [HttpGet("{conversationId}/recent")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<ConversationMessageDto>>>> GetRecentMessages(Guid conversationId, [FromQuery] int count = 20)
     {
         return ResultHelper(await _conversationMessageService.GetRecentMessagesAsync(conversationId, count));
+    }
+
+    // Rates the reply to one user turn.
+    [HttpPut("{conversationId}/feedback")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SetFeedback(Guid conversationId, [FromBody] MessageFeedbackDto feedback)
+    {
+        return ResultHelper(await _conversationMessageService.SetFeedbackAsync(conversationId, feedback));
     }
 
     // Searches messages across all conversations.

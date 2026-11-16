@@ -49,12 +49,12 @@ export const PresenceAvatars = () => {
       {uniquePresence.map((p) => {
         const displayName = p.displayName ?? p.email ?? "Collaborator";
         const avatarSrc = p.email && p.email === localEmail ? localAvatarSrc : undefined;
-        const ringColor = colorMap[p.userId]?.border ?? "border-gray-300";
+        const ringColor = colorMap[p.userId]?.border ?? "border-line-strong";
         return (
           <Tooltip key={p.connectionId ?? p.userId} content={displayName}>
-            <Avatar className={`h-7 w-7 rounded-full border-[2px] ${ringColor} bg-primary-200`}>
+            <Avatar className={`h-7 w-7 rounded-full border-[2px] ${ringColor} bg-sunken`}>
               {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
-              <AvatarFallback className="border-none bg-primary-200 text-[10px] font-bold uppercase tracking-wider text-secondary">
+              <AvatarFallback className="border-none bg-sunken text-[10px] font-bold uppercase tracking-wider text-ink-2">
                 {getInitials(p.displayName, p.email)}
               </AvatarFallback>
             </Avatar>

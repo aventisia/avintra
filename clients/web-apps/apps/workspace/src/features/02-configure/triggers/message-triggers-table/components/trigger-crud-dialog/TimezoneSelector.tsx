@@ -2,7 +2,7 @@ import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 
 // Props for the TimezoneSelector component
@@ -85,13 +85,13 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
             type="button"
             variant="ghost"
             size="icon7"
-            className="absolute right-2 top-1.5"
+            className="absolute right-1 top-1/2 -translate-y-1/2"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              <CaretUpIcon className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <CaretDownIcon className="h-4 w-4 text-muted-foreground" />
             )}
           </Button>
         </div>
@@ -99,7 +99,7 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border bg-white shadow">
+        <div className="absolute top-full z-50 mt-1 w-full rounded-lg border border-line bg-surface shadow-pop">
           <div className="p-2">
             {inputValue && filteredResults.length === 0 && (
               <div className="p-4 text-center text-sm text-muted-foreground">
@@ -113,7 +113,7 @@ export const TimezoneSelector: React.FC<TimezoneSelectorProps> = ({
                   <div
                     key={option.value}
                     className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-hover",
                       isItemSelected(option.value) && "cursor-not-allowed opacity-50",
                     )}
                     onClick={() => !isItemSelected(option.value) && handleItemSelect(option)}

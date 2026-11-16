@@ -1,10 +1,9 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { Node } from "@xyflow/react";
-import { SparklesIcon } from "lucide-react";
 import { useEffect } from "react";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
@@ -53,26 +52,19 @@ const GenerateButton = ({
     return (
       <UpgradeFeatureButton
         label="Generate"
-        icon={<SparklesIcon className="h-4 w-4" />}
+        icon={<SparkleIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
         size="sm"
-        className="flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+        className="flex items-center gap-2"
       />
     );
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      className={cn(
-        "flex items-center gap-2 border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white",
-        isPending && "cursor-wait",
-      )}
+    <button
       type="button"
       disabled={isPending}
       onClick={() => {
-        // Trigger mutation with serialized prompt data extracted from nodes
         mutate({
           refType: FlowTypesEnum.Agent, // Agent, ChatAgent, Block all comes under Agent umbrella
           refId: currentFlow.versionId,
@@ -80,13 +72,14 @@ const GenerateButton = ({
           payload: JSON.stringify(getPromptDataFromNodes(nodes as Node<NodeDataType>[])),
         });
       }}
+      className={cn(
+        "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md bg-popover px-3 text-[12.5px] font-medium text-ink-2 outline-none ring-1 ring-border transition hover:bg-sunken/80 hover:text-ink focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-60",
+        isPending && "cursor-wait",
+      )}
     >
-      {/* Icon with pulse animation while generating */}
-      <SparklesIcon className={cn("h-4 w-4", isPending && "animate-pulse")} />
-
-      {/* Button text changes based on mutation state */}
-      {isPending ? "Generating..." : isSuccess ? "Generated!" : "Generate"}
-    </Button>
+      <SparkleIcon className={cn("size-3.5 text-primary-text", isPending && "animate-pulse")} />
+      {isPending ? "Generating…" : isSuccess ? "Generated" : "Generate with AI"}
+    </button>
   );
 };
 

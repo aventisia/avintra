@@ -17,8 +17,9 @@ public class ConversationDto
 
     /// <summary>
     /// Gets or sets the unique identifier of the related flow version.
+    /// Null for agent-less landing conversations.
     /// </summary>
-    public required Guid FlowVersionId { get; set; }
+    public Guid? FlowVersionId { get; set; }
 
     /// <summary>
     /// Gets or sets the conversation title, generated from the most recent message

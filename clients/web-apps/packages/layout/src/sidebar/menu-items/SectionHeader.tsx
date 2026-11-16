@@ -10,8 +10,8 @@ interface SectionHeaderProps {
 
 /**
  * A React functional component that renders a section header for a sidebar menu.
- * The header includes a horizontal rule (if applicable) and a title or a visual indicator,
- * depending on the sidebar's expansion state.
+ * Shows the uppercase group label when the sidebar is expanded, and a short separator
+ * between groups on the collapsed rail.
  *
  * @param {SectionHeaderProps} props - The properties passed to the component.
  * @param {number} props.index - The index of the current section in the menu.
@@ -23,10 +23,7 @@ interface SectionHeaderProps {
  * @remarks
  * - The component uses the `useBaseLayoutStore` hook to retrieve the `sidebarExpand` state,
  *   which determines the layout and appearance of the section header.
- * - A horizontal rule (`<hr>`) is conditionally rendered between sections, except for the first
- *   and last sections.
- * - The section name is displayed when the sidebar is expanded; otherwise, a small circular
- *   indicator is shown.
+ * - On the collapsed rail, a separator is rendered before every section except the first.
  *
  * @example
  * ```tsx
@@ -40,38 +37,27 @@ interface SectionHeaderProps {
 const SectionHeader = ({
   index,
   name,
-  menuSectionsLength,
   sectionHeaderAction: SectionHeaderAction,
 }: SectionHeaderProps) => {
-  // Get the sidebarExpand state from the base layout store
   const { sidebarExpand } = useBaseLayoutStore(
     useShallow((state) => ({
       sidebarExpand: state.sidebarExpand,
     })),
   );
 
+  if (!sidebarExpand) {
+    return index === 0 ? null : <hr className="mx-auto my-2 w-6 border-line" />;
+  }
+
   return (
-    <>
-      {index !== 0 && index !== menuSectionsLength && (
-        <hr
-          className={`mb-5 mt-5 border-gray-200 transition-all duration-500 ${sidebarExpand ? "mx-8" : "mx-5"}`}
-        />
+    <h3 className="flex h-[34px] items-end justify-between gap-2 whitespace-nowrap px-2 pb-[5px] font-mono text-label uppercase text-muted-foreground">
+      {name}
+      {SectionHeaderAction && (
+        <span className="-mb-[5px] flex">
+          <SectionHeaderAction />
+        </span>
       )}
-      <h3
-        className={`mb-2 mt-4 flex h-5 items-center whitespace-nowrap text-2xs font-medium uppercase tracking-widest text-gray-500 transition-all duration-500 ${
-          sidebarExpand
-            ? "mx-6 pl-0.5 " + (SectionHeaderAction ? "justify-between pr-0" : "pr-3")
-            : "mx-3 justify-center"
-        }`}
-      >
-        {sidebarExpand ? (
-          name
-        ) : (
-          <span className="block h-[0.5rem] w-[0.5rem] rounded-full bg-slate-400 transition-all duration-500"></span>
-        )}
-        {sidebarExpand && SectionHeaderAction && <SectionHeaderAction />}
-      </h3>
-    </>
+    </h3>
   );
 };
 

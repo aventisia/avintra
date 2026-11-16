@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Loader2 } from "lucide-react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
 interface ResendCodeButtonProps {
@@ -42,7 +42,7 @@ const ResendCodeButton = ({ isPending, disabled, resendCodeFn }: ResendCodeButto
     >
       {isPending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <CircleNotchIcon className="h-4 w-4 animate-spin" />
           Resending...
         </>
       ) : (
@@ -50,7 +50,7 @@ const ResendCodeButton = ({ isPending, disabled, resendCodeFn }: ResendCodeButto
           {timer > 0 ? (
             <>
               Resend in
-              <div className="flex w-12 justify-center text-md rounded-sm bg-slate-100 font-medium">
+              <div className="flex w-12 justify-center text-md rounded-sm bg-fill font-mono font-medium">
                 <div className="w-[1.2rem]">{formattedMinutes(timer)}</div>
                 <div className="w-1">:</div>
                 <div className="w-[1.2rem]">{formattedSeconds(timer)}</div>

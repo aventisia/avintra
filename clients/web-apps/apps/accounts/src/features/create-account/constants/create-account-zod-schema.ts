@@ -35,9 +35,9 @@ export const createAccountZodSchema = z
   })
   .refine((data) => data.pwd === data.confirmPwd, {
     path: ["confirmPwd"],
-    message: "Passwords do not match",
+    message: "Passwords don't match. Type the same password in both fields.",
   })
   .refine((data) => data.termsAgreement, {
     path: ["termsAgreement"],
-    message: "You must accept Terms and Conditions",
+    message: "Accept the Terms of Service to continue.",
   });

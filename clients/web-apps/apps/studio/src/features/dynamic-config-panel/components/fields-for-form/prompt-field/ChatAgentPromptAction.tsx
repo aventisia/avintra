@@ -1,6 +1,6 @@
 import { UpgradeFeatureButton } from "@avplatform/ui";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { SparklesIcon } from "lucide-react";
+import { SparkleIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -69,9 +69,9 @@ const ChatAgentPromptAction = ({ name, disabled }: ChatAgentPromptActionProps) =
     return (
       <UpgradeFeatureButton
         label={isImprove ? "Improve with AI" : "Generate"}
-        icon={<SparklesIcon className="h-4 w-4" />}
+        icon={<SparkleIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
-        className="flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+        className="flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
       />
     );
   }

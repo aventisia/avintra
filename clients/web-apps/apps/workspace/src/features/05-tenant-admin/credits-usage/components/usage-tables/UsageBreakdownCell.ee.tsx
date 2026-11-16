@@ -42,12 +42,12 @@ export const UsageBreakdownCell = ({
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-52 flex-col gap-1.5 py-1">
       <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
         {llmPct > 0 && <div style={{ width: `${llmPct}%`, backgroundColor: LLM_COLOR }} />}
         {execPct > 0 && <div style={{ width: `${execPct}%`, backgroundColor: EXEC_COLOR }} />}
       </div>
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex items-center gap-1.5 whitespace-nowrap">
         <Badge variant="outline" className="gap-1 text-2xs font-normal">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: LLM_COLOR }} />
           LLM {llm.toLocaleString("en-US", { maximumFractionDigits: 2 })}

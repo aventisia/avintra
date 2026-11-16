@@ -19,11 +19,6 @@ export const groupHistoryByDay = (data: FlowVersionHistoryDto[] | undefined): Da
       year: "numeric",
     });
 
-    const shortDate = dateObj.toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-    });
-
     const time = dateObj.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
@@ -32,7 +27,7 @@ export const groupHistoryByDay = (data: FlowVersionHistoryDto[] | undefined): Da
     if (!map.has(fullDate)) {
       map.set(fullDate, {
         date: fullDate,
-        dateFormatted: shortDate,
+        startedAt: dateObj.getTime(),
         entries: [],
       });
     }

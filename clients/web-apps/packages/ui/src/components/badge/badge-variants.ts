@@ -1,16 +1,21 @@
 import { cva } from "class-variance-authority";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-2xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex h-[22px] items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 font-mono text-[10.5px]/none font-medium uppercase tracking-[0.05em]",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "border-primary-text/35 text-primary-text",
+        secondary: "border-line-strong text-muted-foreground",
+        destructive: "border-bad/35 text-bad",
+        outline: "border-line-strong text-ink-2",
+        primary: "border-primary-text/35 text-primary-text",
+        running: "border-live/35 text-live",
+        completed: "border-ok/35 text-ok",
+        review: "border-warn/35 text-warn",
+        failed: "border-bad/35 text-bad",
+        queued: "border-muted-foreground/35 text-muted-foreground",
+        draft: "border-dashed border-muted-foreground/35 text-muted-foreground",
       },
     },
     defaultVariants: {
@@ -19,4 +24,16 @@ const badgeVariants = cva(
   },
 );
 
-export { badgeVariants };
+const badgeDotVariants = cva("relative size-1.5 shrink-0 rounded-full bg-current", {
+  variants: {
+    variant: {
+      running: "",
+      completed: "",
+      review: "rotate-45 rounded-[1px]",
+      failed: "rounded-[1px]",
+      queued: "size-[7px] border-[1.5px] border-current bg-transparent",
+    },
+  },
+});
+
+export { badgeDotVariants, badgeVariants };

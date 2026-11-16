@@ -8,7 +8,7 @@ import { enumToArray } from "@avplatform/ui/utils";
 // Agent Id
 const idProps: InputFieldProps = {
   name: "id",
-  label: "Agent Id",
+  label: "Agent ID",
   disabled: true,
 };
 
@@ -37,7 +37,7 @@ const descriptionProps: TextareaFieldProps = {
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
-  label: "Disable Record",
+  label: "Disable record",
   description: "Disable this record if it's been outdated, or not required anymore",
 };
 

@@ -12,7 +12,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { FormFieldSizeType, ISelectOption } from "@avplatform/ui/types";
-import { Check, ChevronDown } from "lucide-react";
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import * as React from "react";
 
 interface SearchableSelectProps {
@@ -25,13 +25,14 @@ interface SearchableSelectProps {
   disabled?: boolean;
   size?: FormFieldSizeType;
   className?: string;
+  triggerClassName?: string;
   isLoading?: boolean;
 }
 
 const sizeClasses: Record<FormFieldSizeType, string> = {
   xs: "h-7 text-2xs px-2",
   sm: "h-8 text-xs px-2.5",
-  base: "h-10 text-sm px-3",
+  base: "h-control-md text-sm px-3",
 };
 
 export const SearchableSelect = ({
@@ -44,6 +45,7 @@ export const SearchableSelect = ({
   disabled,
   size = "base",
   className,
+  triggerClassName,
   isLoading,
 }: SearchableSelectProps) => {
   const [open, setOpen] = React.useState(false);
@@ -75,25 +77,30 @@ export const SearchableSelect = ({
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
+          className={cn(
+            "w-full justify-between hover:bg-hover",
+            sizeClasses[size],
+            className,
+            triggerClassName,
+          )}
         >
-          <span className="line-clamp-1 text-foreground font-normal">
+          <span className="line-clamp-1 text-ink font-normal">
             {selectedOption?.label ? (
               <>{selectedOption?.label}</>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
           </span>
-          <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
+          <CaretDownIcon className={cn("ml-2 h-4 w-4 opacity-50")} />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
         align="start"
-        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-pop")}
       >
         <Command>
-          <div className="mb-1.5 rounded-lg bg-slate-100">
+          <div className="mb-1.5 rounded-lg bg-sunken">
             <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>
@@ -117,11 +124,11 @@ export const SearchableSelect = ({
                       onValueChange(option.value);
                       setOpen(false);
                     }}
-                    className={cn(value === option.value && "bg-accent")}
+                    className={cn(value === option.value && "bg-selected")}
                   >
                     <div className="flex w-full items-center justify-between">
                       {option.label}
-                      <Check
+                      <CheckIcon
                         className={cn(
                           "h-3.5 w-3.5",
                           value === option.value ? "opacity-100" : "opacity-0",

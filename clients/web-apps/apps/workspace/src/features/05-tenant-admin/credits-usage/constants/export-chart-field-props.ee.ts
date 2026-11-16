@@ -7,7 +7,7 @@ const serviceTypeProps: MultiSelectFieldProps = {
   name: "serviceType",
   isRequired: false,
   className: "text-sm",
-  label: "Service Type",
+  label: "Service type",
   selectOptions: enumToArray(ServiceTypeEnum),
   placeholder: "Select",
 };
@@ -30,7 +30,7 @@ const agentsProps: MultiSelectFieldProps = {
 
 const startDateProps: DateTimePickerFieldProps = {
   name: "startDate",
-  label: "Start Date",
+  label: "Start date",
   granularity: "minute",
   hourCycle: 12,
   placeholder: "DD/MM/YYYY",
@@ -38,7 +38,7 @@ const startDateProps: DateTimePickerFieldProps = {
 
 const endDateProps: DateTimePickerFieldProps = {
   name: "endDate",
-  label: "End Date",
+  label: "End date",
   granularity: "minute",
   hourCycle: 12,
   placeholder: "DD/MM/YYYY",

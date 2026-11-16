@@ -9,8 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
+import { CalendarDotsIcon } from "@phosphor-icons/react";
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 
@@ -70,7 +70,7 @@ export const NotificationHistoryFilters = ({
         <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
           <PopoverTrigger asChild>
             <Button size="xs" variant="outline" className="justify-start">
-              <CalendarDays className="mr-1.5 h-3.5 w-3.5" />
+              <CalendarDotsIcon className="mr-1.5 h-3.5 w-3.5" />
               {filters.from || filters.to ? (
                 <>
                   {filters.from ? format(new Date(filters.from), "MMM d, yyyy") : "Start"} -{" "}

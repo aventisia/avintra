@@ -18,11 +18,11 @@ export const SectionHeading = ({ id, title, count, hint, actions }: SectionHeadi
       className="flex min-w-0 items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
     >
       {title}
-      <span className="rounded-full bg-muted px-1.5 py-px text-[11px] tabular-nums tracking-normal text-slate-600">
+      <span className="rounded-sm bg-muted px-1.5 py-px text-[11px] tabular-nums tracking-normal text-ink-2">
         {count}
       </span>
       {hint && (
-        <span className="truncate text-[12px] font-normal normal-case tracking-normal text-slate-400">
+        <span className="truncate text-[12px] font-normal normal-case tracking-normal text-muted-foreground">
           {hint}
         </span>
       )}

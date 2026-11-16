@@ -24,7 +24,7 @@ export const LockedNodeOverlay = ({ nodeId, className }: LockedNodeOverlayProps)
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-slate-900/40",
+        "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-scrim",
         className,
       )}
     >

@@ -61,9 +61,9 @@ export const DateTimePickerField = ({
               onChange={field.onChange}
               disabled={disabled}
               className={cn(
-                fieldSize === "xs" && "h-7 pl-[0.45rem] pr-1 text-2xs",
-                fieldSize === "sm" && "h-8 pl-[0.55rem] pr-1.5 text-xs",
-                fieldSize === "base" && "h-10 pl-3 pr-2.5 text-sm",
+                fieldSize === "xs" && "h-6 px-2 text-hint",
+                fieldSize === "sm" && "h-7 px-2.5 text-body-sm",
+                fieldSize === "base" && "h-8 px-[11px] text-body",
                 className,
               )}
               {...props}

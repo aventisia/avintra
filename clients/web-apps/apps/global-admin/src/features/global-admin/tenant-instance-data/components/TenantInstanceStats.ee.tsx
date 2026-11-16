@@ -1,5 +1,5 @@
 import { StatsCard } from "@avplatform/ui/cards";
-import { BadgeCheckIcon, ClockIcon, UsersIcon } from "lucide-react";
+import { ClockIcon, SealCheckIcon, UsersIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon.ee";
 import { formatSecondsToCompactDuration } from "@/utils/format-time-utils.ee";
@@ -17,25 +17,25 @@ export const TenantInstanceStats = () => {
       <StatsCard
         key="Total Execution Time"
         icon={<ClockIcon stroke="var(--primary)" className="h-6 w-6" />}
-        title={"Total Execution Time"}
+        title={"Total execution time"}
         content={formatSecondsToCompactDuration(data?.data.totalExecutionTimeConsumed ?? 0)}
       />
       <StatsCard
         key={"Total Users"}
         icon={<UsersIcon stroke="var(--primary)" className="h-6 w-6" />}
-        title={"Total Users"}
+        title={"Total users"}
         content={formatNumber(data?.data.totalUsers ?? 0)}
       />
       <StatsCard
         key={"Total Published Agents"}
         icon={<NewAgentIcon className="h-6 w-6 text-primary" />}
-        title={"Total Published Agents"}
+        title={"Total published agents"}
         content={formatNumber(data?.data.totalPublishedAgents ?? 0)}
       />
       <StatsCard
         key={"Total Executed Jobs"}
-        icon={<BadgeCheckIcon stroke="var(--primary)" className="h-6 w-6" />}
-        title={"Total Executed Jobs"}
+        icon={<SealCheckIcon stroke="var(--primary)" className="h-6 w-6" />}
+        title={"Total executed jobs"}
         content={formatNumber(data?.data.totalExecutedJobs ?? 0)}
       />
     </div>

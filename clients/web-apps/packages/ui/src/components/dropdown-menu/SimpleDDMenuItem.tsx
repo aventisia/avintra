@@ -1,7 +1,7 @@
 import React from "react";
 
 import { buttonVariants } from "@/ui/components/buttons";
-import { DropdownMenuItem } from "@/ui/components/dropdown-menu";
+import { DropdownMenuItem, MenuShortcut } from "@/ui/components/dropdown-menu";
 import { cn } from "@/ui/lib";
 import { type IconProps } from "@/ui/types";
 
@@ -11,15 +11,17 @@ export const SimpleDDMenuItem = React.forwardRef<
     content?: string;
     Icon?: React.ComponentType<IconProps>;
     size?: "sm" | "md";
+    /** Display text for the shortcut that runs this item, shown at the end of the row. */
+    shortcut?: string;
   }
->(({ className, content, children, Icon, size = "md", ...props }, ref) => (
+>(({ className, content, children, Icon, size = "md", shortcut, ...props }, ref) => (
   <DropdownMenuItem
     ref={ref}
     className={cn(
       buttonVariants({ variant: "dropdownItem" }),
-      "focus:bg-muted focus:text-slate-900 data-[highlighted]:bg-muted data-[highlighted]:text-slate-900",
+      "focus:bg-hover data-[highlighted]:bg-hover",
       size === "sm" && "h-7 !px-[0.3rem] text-xs",
-      size === "md" && "h-auto gap-2.5 border-0 !px-2.5 py-2 text-[13px] font-normal",
+      size === "md" && "h-auto min-h-8 gap-2 border-0 py-1.5",
       className,
     )}
     {...props}
@@ -27,7 +29,7 @@ export const SimpleDDMenuItem = React.forwardRef<
     {Icon ? (
       <Icon
         className={cn(
-          "text-[--icon-color]",
+          "shrink-0 text-muted-foreground",
           size === "sm" && "h-3.5 w-3.5",
           size === "md" && "h-4 w-4",
         )}
@@ -35,5 +37,6 @@ export const SimpleDDMenuItem = React.forwardRef<
     ) : null}
     {content}
     {children}
+    {shortcut ? <MenuShortcut>{shortcut}</MenuShortcut> : null}
   </DropdownMenuItem>
 ));

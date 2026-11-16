@@ -1,0 +1,39 @@
+meta {
+  name: Upload UI builder asset
+  type: http
+  seq: 32
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/ui-builder/{{UIBUILDER_STUDIO_PROJECT_ID}}/assets
+  body: json
+  auth: none
+}
+
+body:json {
+  "name": "companyLogo",
+  "contentType": "image/png",
+  "dataBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "UIBUILDER_ASSET_ID",
+          res.getBody().data.id
+      );
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("metadata is returned without content", function() {
+    const data = res.getBody().data;
+    expect(data.name).to.equal("companyLogo");
+    expect(data.sizeBytes).to.be.above(0);
+    expect(data.dataBase64 == null).to.equal(true);
+  });
+}

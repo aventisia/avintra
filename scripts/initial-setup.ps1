@@ -324,7 +324,7 @@ function Install-Npm {
     if (-not (Test-Path -LiteralPath (Join-Path $WorkDir 'package.json'))) {
         OmitMark $Label $MissingReason
     } elseif (Get-Command npm -ErrorAction SilentlyContinue) {
-        Invoke-Install $Label $WorkDir 'npm' @('install', '--force')
+        Invoke-Install $Label $WorkDir 'npm' @('install', '--no-save', '--force')
     } else {
         OmitMark $Label 'npm not found'
     }
@@ -348,6 +348,11 @@ if ($SkipInstall.IsPresent) {
     Install-Npm 'corsair (npm install)' (Join-Path $Root 'apis/corsair') 'apis/corsair not found'
     Install-Npm 'docs (npm install)' (Join-Path $Root 'clients/docs') 'clients/docs not found'
     Install-Npm 'bruno tests (npm install)' (Join-Path $Root 'tests/bruno') 'tests/bruno not found'
+    if (Get-Command node -ErrorAction SilentlyContinue) {
+        Invoke-Install 'native binaries for this OS (scripts\setup-fix.ps1)' $Root 'node' @((Join-Path $PSScriptRoot 'setup-fix.mjs'))
+    } else {
+        OmitMark 'native binaries for this OS (scripts\setup-fix.ps1)' 'node not found'
+    }
 
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         Invoke-Install 'dekit (npm install -g @dekit/cli)' $Root 'npm' @('install', '-g', '@dekit/cli')

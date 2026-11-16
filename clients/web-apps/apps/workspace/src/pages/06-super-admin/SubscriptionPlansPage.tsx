@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { TableCNSkeleton } from "@avplatform/ui/table-cn";
 import { Suspense, lazy } from "react";
 
 // Lazy load the SubPlansTable component.
@@ -16,7 +16,7 @@ const SubPlansTable = lazy(() =>
  */
 export const SubscriptionPlansPage = () => {
   return (
-    <Suspense fallback={<DataTableSkeleton />}>
+    <Suspense fallback={<TableCNSkeleton />}>
       <SubPlansTable />
     </Suspense>
   );

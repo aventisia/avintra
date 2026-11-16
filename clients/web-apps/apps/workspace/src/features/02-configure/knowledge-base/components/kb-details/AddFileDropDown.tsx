@@ -1,7 +1,7 @@
 import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { SplitButton } from "@avplatform/ui/buttons";
 import { DropdownMenuContent, SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { FileTextIcon, TypeIcon } from "lucide-react";
+import { FileTextIcon, TextTIcon } from "@phosphor-icons/react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 
@@ -42,7 +42,7 @@ export default function AddFileDropDown() {
               disabled={locked}
               onClick={handleAddFile}
               Icon={FileTextIcon}
-              content="Add File"
+              content="Add file"
             />
             <SimpleDDMenuItem
               size="md"
@@ -51,14 +51,14 @@ export default function AddFileDropDown() {
                 setShowDialog(true);
                 setType("text");
               }}
-              Icon={TypeIcon}
-              content="Add Text"
+              Icon={TextTIcon}
+              content="Add text"
             />
           </DropdownMenuContent>
         }
       >
         <FileTextIcon className="h-3.5 w-3.5" />
-        Add File
+        Add file
       </SplitButton>
     </LockedActionTooltip>
   );

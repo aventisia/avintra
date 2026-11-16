@@ -1,9 +1,13 @@
-import { Separator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { DTBulkActions, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useOptimisticMutation, useQueryData, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { ProhibitIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
-import { CircleOff } from "lucide-react";
 
 import { disableUsers } from "../../apis/users-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -16,6 +20,7 @@ interface UsersBulkActionsProps {
 export function UsersBulkActions({ table }: UsersBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   // Get users query data
   const usersQueryData = useQueryData<UsersTableDto>(DATA_QUERY_KEY);
@@ -52,22 +57,18 @@ export function UsersBulkActions({ table }: UsersBulkActionsProps) {
   };
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <Button
-            variant="ghost"
-            size="xs"
-            className="gap-2.5 text-sm tracking-wide"
-            onClick={disableSelectedUsersHandler}
-          >
-            <CircleOff className="h-3.5 w-3.5 text-[--icon-color]" />
-            Disable
-          </Button>
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={ProhibitIcon}
+          onClick={disableSelectedUsersHandler}
+          disabled={locked}
+        >
+          Disable
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

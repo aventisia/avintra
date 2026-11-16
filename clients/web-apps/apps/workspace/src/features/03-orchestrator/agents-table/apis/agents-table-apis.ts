@@ -56,46 +56,11 @@ export const assignMachines = (assignMachineDto: AgentAssignMachineDto) => {
 };
 
 /**
- * assign machines to the agent
- */
-export const removeMachines = (assignMachineDto: AgentAssignMachineDto) => {
-  return axiosInstance
-    .post<IHttpResponse<boolean>>(
-      `${baseAPIURL}/${assignMachineDto.flowVersionId}/remove-machines`,
-      assignMachineDto.machineIds,
-      { headers: getSpaceHeaders() },
-    )
-    .then((res) => res.data);
-};
-
-/**
  * Updates an existing project.
  */
 export const updateAgent = (updatedAgent: AgentsTableDto) => {
   return axiosInstance
     .put<IHttpResponse<AgentsTableDto>>(`${baseAPIURL}`, updatedAgent, {
-      headers: getSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
-
-/**
- * Archives a flow's latest version together with its other unarchived draft versions.
- */
-export const archiveFlowVersions = (flowId: string) => {
-  return axiosInstance
-    .post<IHttpResponse<number>>(`${baseAPIURL}/${flowId}/archive`, undefined, {
-      headers: getSpaceHeaders(),
-    })
-    .then((res) => res.data);
-};
-
-/**
- * Unarchives every archived version of a flow.
- */
-export const unarchiveFlowVersions = (flowId: string) => {
-  return axiosInstance
-    .post<IHttpResponse<number>>(`${baseAPIURL}/${flowId}/unarchive`, undefined, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { MinusIcon, PlusIcon } from "@phosphor-icons/react";
 
 import { SCALE_MAX, SCALE_MIN, useZoomControls } from "../../stores/file-viewer-store";
 

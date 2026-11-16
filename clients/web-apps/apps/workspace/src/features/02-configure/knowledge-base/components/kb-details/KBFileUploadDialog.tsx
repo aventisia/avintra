@@ -1,4 +1,3 @@
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useShallow } from "zustand/react/shallow";
 
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
@@ -15,7 +14,6 @@ export const KBFileUploadDialog = ({
   knowledgeBaseName: string;
   knowledgeBase?: KnowledgeBaseTableDto;
 }) => {
-  // Get crud dialog store state
   const { showDialog, setShowDialog, type } = useKBFilesDialogStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
@@ -24,43 +22,16 @@ export const KBFileUploadDialog = ({
     })),
   );
 
-  const handleOpenChange = (open: boolean) => {
-    setShowDialog(open);
-  };
+  if (!showDialog) return null;
 
-  const handleComplete = () => {
-    handleOpenChange(false);
-  };
+  const AddForm = type == "text" ? KBAddTextForm : KBAddFileForm;
 
-  // Return dialog
   return (
-    <Dialog open={showDialog} onOpenChange={handleOpenChange}>
-      <DialogContent
-        side={"center"}
-        className="!max-w-3xl h-[40rem] flex flex-col p-0 overflow-hidden"
-      >
-        <DialogDefaultHeader
-          heading={type == "text" ? "Raw Text Input" : "Add File"}
-          className="p-3 px-4"
-        />
-        <div className="flex-1 overflow-hidden">
-          {type == "text" ? (
-            <KBAddTextForm
-              knowledgeBaseId={knowledgeBaseId}
-              knowledgeBaseName={knowledgeBaseName}
-              knowledgeBase={knowledgeBase}
-              onCompleted={handleComplete}
-            />
-          ) : (
-            <KBAddFileForm
-              knowledgeBaseId={knowledgeBaseId}
-              knowledgeBaseName={knowledgeBaseName}
-              knowledgeBase={knowledgeBase}
-              onCompleted={handleComplete}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <AddForm
+      knowledgeBaseId={knowledgeBaseId}
+      knowledgeBaseName={knowledgeBaseName}
+      knowledgeBase={knowledgeBase}
+      onCompleted={() => setShowDialog(false)}
+    />
   );
 };

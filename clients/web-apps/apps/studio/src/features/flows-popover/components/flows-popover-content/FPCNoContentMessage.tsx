@@ -1,14 +1,14 @@
-import { NoContentMessage } from "@avplatform/ui";
-import { Workflow } from "lucide-react";
+import { EmptyState } from "@avplatform/ui";
+import { FlowArrowIcon } from "@phosphor-icons/react";
 
 /**
  * Renders a component that displays a message when there are no flows.
  */
 export const FPCNoContentMessage = () => {
   return (
-    <NoContentMessage
+    <EmptyState
       className="-mt-5"
-      Icon={Workflow}
+      Icon={FlowArrowIcon}
       primaryMessage="No flows found"
       secondaryMessage="Try adjusting your search or filter criteria"
     />

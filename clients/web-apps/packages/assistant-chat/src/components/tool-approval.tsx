@@ -2,13 +2,13 @@ import { type ToolApprovalResponse, useAuiState } from "@assistant-ui/react";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
-  AlertCircleIcon,
-  BanIcon,
+  CaretDownIcon,
   CheckIcon,
-  ChevronDownIcon,
-  LoaderCircleIcon,
+  CircleNotchIcon,
+  ProhibitIcon,
+  WarningCircleIcon,
   XCircleIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -122,19 +122,19 @@ export const ToolApprovalRequest = ({
     <div
       className={cn(
         "aui-tool-approval-root w-full rounded-lg border shadow-sm",
-        state === "pending" ? "border-amber-500/40 bg-amber-500/5" : "border-border/60 bg-muted/20",
+        state === "pending" ? "border-warn/40 bg-warn/5" : "border-line/60 bg-sunken/20",
       )}
     >
       <div className="flex items-start gap-2 px-4 py-3">
         {state === "pending" ? (
-          <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-amber-600" />
+          <WarningCircleIcon className="mt-0.5 size-4 shrink-0 text-warn" />
         ) : state === "approved" ? (
-          <CheckIcon className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+          <CheckIcon className="mt-0.5 size-4 shrink-0 text-ok" />
         ) : (
           <XCircleIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">{STATE_LABELS[state]}</p>
+          <p className="text-sm font-medium text-ink">{STATE_LABELS[state]}</p>
           <p className="text-xs text-muted-foreground">
             {state === "pending" && (
               <>
@@ -163,20 +163,20 @@ export const ToolApprovalRequest = ({
       </div>
 
       {argsText && argsText !== "{}" && (
-        <div className="border-t border-border/60">
+        <div className="border-t border-line/60">
           <button
             type="button"
             onClick={() => setShowArgs((value) => !value)}
-            className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/40"
+            className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs text-muted-foreground transition-colors hover:bg-hover/40"
             aria-expanded={showArgs}
           >
-            <ChevronDownIcon
+            <CaretDownIcon
               className={cn("size-3.5 shrink-0 transition-transform", showArgs && "rotate-180")}
             />
             {showArgs ? "Hide arguments" : "View arguments"}
           </button>
           {showArgs && (
-            <pre className="max-h-48 overflow-auto border-t border-border/60 bg-muted/30 px-4 py-2 text-xs whitespace-pre-wrap">
+            <pre className="max-h-48 overflow-auto border-t border-line/60 bg-sunken/30 px-4 py-2 text-xs whitespace-pre-wrap">
               {argsText}
             </pre>
           )}
@@ -197,9 +197,9 @@ export const ToolApprovalRequest = ({
             disabled={submitting !== null || isRunning}
           >
             {submitting === "deny" ? (
-              <LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />
+              <CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />
             ) : (
-              <BanIcon className="mr-1.5 size-3.5" />
+              <ProhibitIcon className="mr-1.5 size-3.5" />
             )}
             Deny
           </Button>
@@ -210,7 +210,7 @@ export const ToolApprovalRequest = ({
             disabled={submitting !== null || isRunning}
           >
             {submitting === "approve" ? (
-              <LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />
+              <CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />
             ) : (
               <CheckIcon className="mr-1.5 size-3.5" />
             )}

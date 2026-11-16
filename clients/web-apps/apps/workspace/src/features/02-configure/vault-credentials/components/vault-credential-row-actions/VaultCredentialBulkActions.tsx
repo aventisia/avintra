@@ -1,6 +1,12 @@
-import { Separator } from "@avplatform/ui";
-import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { LockedActionTooltip, useActionLock } from "@avplatform/ui/action-lock";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
+import {
+  TableCNActionBar,
+  TableCNActionBarItem,
+  TableCNActionBarSelection,
+  TableCNActionBarSeparator,
+} from "@avplatform/ui/table-cn";
+import { TrashIcon } from "@phosphor-icons/react";
 import { Table } from "@tanstack/react-table";
 
 import { vaultCredentialOptimisticMutationFn } from "../../apis/vault-credentials.apis";
@@ -13,42 +19,42 @@ interface VaultCredentialBulkActionsProps {
 
 export function VaultCredentialBulkActions({ table }: Readonly<VaultCredentialBulkActionsProps>) {
   const { showDefaultAlertDialog } = useShowAlertHandler();
+  const { locked } = useActionLock();
 
   const selectedRowIds = table
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
-  const { mutate: deleteConfigs } = useListOptimisticMutation<
+  const { mutate: deleteCredentials } = useListOptimisticMutation<
     string[],
     VaultCredentialDto | boolean | number,
     VaultCredentialDto
   >(selectedRowIds, vaultCredentialOptimisticMutationFn, DATA_QUERY_KEY);
 
   return (
-    <>
-      {selectedRowIds.length > 0 && (
-        <DTBulkActions>
-          <DTSelectionInfo table={table} />
-          <Separator orientation="vertical" className="h-6 w-[0.5px]" />
-          <DTBulkDeleteAction
-            onClick={() => {
-              showDefaultAlertDialog({
-                confirmActionFn: () => {
-                  deleteConfigs({
-                    payload: selectedRowIds,
-                    crudAction: "delete-multiple",
-                  });
-
-                  table.toggleAllRowsSelected(false);
-                },
-                alertType: "delete-multiple",
-                additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "credentials" : "credential"}`,
-              });
-            }}
-          />
-        </DTBulkActions>
-      )}
-    </>
+    <TableCNActionBar table={table}>
+      <TableCNActionBarSelection table={table} />
+      <TableCNActionBarSeparator />
+      <LockedActionTooltip>
+        <TableCNActionBarItem
+          icon={TrashIcon}
+          tone="destructive"
+          disabled={locked || selectedRowIds.length === 0}
+          onClick={() => {
+            showDefaultAlertDialog({
+              confirmActionFn: () => {
+                deleteCredentials({ payload: selectedRowIds, crudAction: "delete-multiple" });
+                table.toggleAllRowsSelected(false);
+              },
+              alertType: "delete-multiple",
+              additionalText: `${selectedRowIds.length} ${selectedRowIds.length > 1 ? "credentials" : "credential"}`,
+            });
+          }}
+        >
+          Delete
+        </TableCNActionBarItem>
+      </LockedActionTooltip>
+    </TableCNActionBar>
   );
 }

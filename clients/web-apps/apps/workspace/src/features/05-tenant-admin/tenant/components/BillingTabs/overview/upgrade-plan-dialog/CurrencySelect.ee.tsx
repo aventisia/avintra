@@ -17,7 +17,7 @@ const CurrencySelect = ({ value, onChange, className }: CurrencySelectProps) => 
   return (
     <Select defaultValue="USD" value={value} onValueChange={onChange}>
       <SelectTrigger className={cn("w-32", className)}>
-        <SelectValue placeholder="Select Currency" />
+        <SelectValue placeholder="Select currency" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="USD">USD ($)</SelectItem>

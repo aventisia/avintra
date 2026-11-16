@@ -85,7 +85,7 @@ export const useUpdateFlowSilently = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (currentFlow?.accessType === "View" && isSavePending) {
-        toast.info("You are in View-only mode. Changes will not be saved.");
+        toast.info("You are in view-only mode. Changes will not be saved.");
         return;
       }
 

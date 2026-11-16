@@ -1,4 +1,7 @@
-import CustomRadioItem from "@/components/CustomRadioItem";
+import { Label } from "@avplatform/ui/label";
+import { cn } from "@avplatform/ui/lib";
+import { RadioGroupItem } from "@avplatform/ui/radio-group";
+
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map.ee";
 import { SubscriptionPlanDTO } from "@/features/05-tenant-admin/tenant/dtos/subscription-plans-dto.ee";
 import { PlanFrequency } from "@/features/05-tenant-admin/tenant/types/plan-type.ee";
@@ -9,34 +12,35 @@ type Props = {
   plan: SubscriptionPlanDTO;
   planFrequency: PlanFrequency;
   selectedId: string;
-  highlightSelected?: boolean;
 };
 
-export const PlanItem = ({ plan, planFrequency, selectedId, highlightSelected = true }: Props) => {
+export const PlanItem = ({ plan, planFrequency, selectedId }: Props) => {
   const isSelected = selectedId === plan.id;
   const timeUnit = planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
   return (
-    <CustomRadioItem
-      value={plan.id}
-      selected={selectedId}
-      showRadioCircle
-      highlightSelected={highlightSelected}
-      className="flex flex-col items-start gap-4 p-4 pl-10"
-      radioClassName="top-[1.375rem] left-4 "
+    <Label
+      htmlFor={plan.id}
+      className={cn(
+        "flex cursor-pointer items-start gap-3 rounded-lg bg-surface p-4 font-normal ring-1 transition-[box-shadow,background-color]",
+        isSelected ? "bg-selected/40 ring-2 ring-primary" : "ring-line hover:ring-line-strong",
+      )}
     >
-      <div className="flex w-full flex-col items-start gap-2">
-        <div className="flex w-full items-center justify-between">
-          <h6 className="text-base font-medium">{plan.name}</h6>
-
-          <div className="flex items-baseline gap-1">
-            <p className="text-base">{formatCurrency(plan.price ?? 0, plan.currency)}</p>
-            <span className="text-sm text-muted-foreground">/{timeUnit}</span>
-          </div>
+      <RadioGroupItem value={plan.id} id={plan.id} className="mt-0.5" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="truncate text-[13.5px] font-semibold text-ink">{plan.name}</span>
+          <span className="shrink-0 font-mono text-[15px] font-medium tabular-nums text-ink">
+            {formatCurrency(plan.price ?? 0, plan.currency)}
+            <span className="ml-1 font-sans text-[12px] font-normal text-muted-foreground">
+              / {timeUnit}
+            </span>
+          </span>
         </div>
 
         {isSelected && (
           <PlanFeatures
+            className="mt-3 border-t border-line pt-3"
             frequency={plan.frequency}
             credits={plan.maxCredits}
             publishedItems={plan.maxPublishedItems}
@@ -47,6 +51,6 @@ export const PlanItem = ({ plan, planFrequency, selectedId, highlightSelected = 
           />
         )}
       </div>
-    </CustomRadioItem>
+    </Label>
   );
 };

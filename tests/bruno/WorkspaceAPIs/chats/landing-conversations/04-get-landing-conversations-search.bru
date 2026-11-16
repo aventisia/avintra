@@ -1,0 +1,31 @@
+meta {
+  name: Get landing conversations search
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:pre-request {
+  const search = bru.getVar("LANDING_TITLE").slice(-20).toUpperCase();
+  req.setUrl(`${req.getUrl()}?search=${encodeURIComponent(search)}&take=5`);
+}
+
+script:post-response {
+  const data = res.getBody().data;
+  test("search matches the trimmed title case-insensitively", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(data).to.have.lengthOf(1);
+    expect(data[0].id).to.equal(bru.getVar("LANDING_CONVERSATION_ID"));
+    expect(data[0].title).to.equal(bru.getVar("LANDING_TITLE"));
+    expect(data[0].lastModifiedOn).to.be.a("string");
+  });
+}

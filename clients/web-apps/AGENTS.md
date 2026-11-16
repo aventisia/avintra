@@ -4,6 +4,7 @@
 
 - Governs every app and package in `clients/web-apps` (`apps/*`, `packages/*`).
 - `studio` still carries legacy patterns; adopt these conventions there incrementally.
+- Studio canvas node sizes stay at their pre-ink shapes (64×64 square, 64×64 circle for block and call-agent nodes, 192×64 wide for AI nodes; `shapeClass` in `apps/studio/src/components/node-container/NodeCard.tsx`) because saved flows are laid out for them. Restyle nodes freely, but change their size or shape only under the dedicated node-size issue.
 - `desktop-app` runs both inside the Tauri shell (`src-tauri/`) and in a plain browser. Guard every Tauri `invoke()` call with a `__TAURI_INTERNALS__` check (as in `src/TauriAppFooter.tsx` and `src/lib/setupStore.ts`) so browser use never crashes. Provision the runner (`check_runner_app`, `download_runner_app`) when the desktop app opens; launch it only during flow execution.
 - Shared UI comes from `@avplatform/*` workspace packages; confirm an export exists in the package before importing it.
 - Shared `packages/*` are source-only TypeScript with no build step; apps import the raw TS through Vite.

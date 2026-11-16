@@ -1,5 +1,12 @@
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CaretUpDownIcon,
+  CheckIcon,
+  EyeSlashIcon,
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
 import { type Column, type SortDirection } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, Check, ChevronsUpDown, EyeOff, type LucideIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -13,28 +20,25 @@ import { cn } from "@/ui/lib";
 import { TABLE_CN_PANEL_CLASS_NAME } from "./constants/table-cn-class-names.constant";
 
 const SortIcon = ({ direction }: { direction: false | SortDirection }) => {
-  if (direction === "asc") return <ArrowUp className="size-3.5 text-indigo-600" />;
-  if (direction === "desc") return <ArrowDown className="size-3.5 text-indigo-600" />;
+  if (direction === "asc") return <ArrowUpIcon className="size-3" />;
+  if (direction === "desc") return <ArrowDownIcon className="size-3" />;
   return (
-    <ChevronsUpDown className="size-3.5 text-slate-300 transition-colors group-hover/header:text-slate-500" />
+    <CaretUpDownIcon className="size-3 text-muted-foreground/50 transition-colors group-hover/header:text-muted-foreground" />
   );
 };
 
 type HeaderMenuItemProps = {
-  icon: LucideIcon;
+  icon: PhosphorIcon;
   label: string;
   isActive?: boolean;
   onSelect: () => void;
 };
 
 const HeaderMenuItem = ({ icon: Icon, label, isActive = false, onSelect }: HeaderMenuItemProps) => (
-  <DropdownMenuItem
-    onSelect={onSelect}
-    className="gap-2.5 rounded-lg px-2.5 py-2 text-[13px] text-slate-700 focus:bg-muted focus:text-slate-900"
-  >
-    <Icon className="size-4 text-slate-500" />
+  <DropdownMenuItem onSelect={onSelect} className="text-ink-2 focus:text-ink">
+    <Icon className="size-4 text-muted-foreground" />
     {label}
-    {isActive && <Check className="ml-auto size-4 text-indigo-600" />}
+    {isActive && <CheckIcon className="ml-auto size-4 text-primary-text" />}
   </DropdownMenuItem>
 );
 
@@ -69,9 +73,9 @@ export const TableCNColumnHeader = <TData, TValue>({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "group/header -ml-2 inline-flex h-7 items-center gap-1 rounded-lg px-2 outline-none transition-colors",
-          "hover:bg-slate-200/60 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/50 data-[state=open]:bg-slate-200/60 data-[state=open]:text-slate-900",
-          sortDirection && "text-slate-900",
+          "group/header -ml-2 inline-flex h-6 items-center gap-1 rounded-sm px-2 uppercase outline-none transition-colors duration-[120ms] ease-out",
+          "hover:bg-hover hover:text-ink-2 focus-visible:shadow-focus data-[state=open]:bg-hover data-[state=open]:text-ink-2",
+          sortDirection && "text-ink-2",
           className,
         )}
       >
@@ -81,28 +85,28 @@ export const TableCNColumnHeader = <TData, TValue>({
       <DropdownMenuContent
         align="start"
         sideOffset={6}
-        className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-48 max-w-none p-1.5")}
+        className={cn(TABLE_CN_PANEL_CLASS_NAME, "w-48 max-w-none p-1")}
       >
         {canSort && (
           <>
             <HeaderMenuItem
-              icon={ArrowUp}
+              icon={ArrowUpIcon}
               label="Sort ascending"
               isActive={sortDirection === "asc"}
               onSelect={() => onSortDirectionChange("asc")}
             />
             <HeaderMenuItem
-              icon={ArrowDown}
+              icon={ArrowDownIcon}
               label="Sort descending"
               isActive={sortDirection === "desc"}
               onSelect={() => onSortDirectionChange("desc")}
             />
           </>
         )}
-        {canSort && canHide && <DropdownMenuSeparator className="-mx-1.5 my-1.5 bg-slate-100" />}
+        {canSort && canHide && <DropdownMenuSeparator className="bg-line" />}
         {canHide && (
           <HeaderMenuItem
-            icon={EyeOff}
+            icon={EyeSlashIcon}
             label="Hide column"
             onSelect={() => column.toggleVisibility(false)}
           />

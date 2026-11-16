@@ -1,35 +1,39 @@
-import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogPrimitive,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
-import { X } from "lucide-react";
+import { IconTile } from "@avplatform/ui/icon-tile";
+import { CreditCardIcon } from "@phosphor-icons/react";
 
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { usePaymentMethodsDialogStore } from "@/features/05-tenant-admin/tenant/store/payment-methods/payment-methods-dialog-store.ee";
 
 import PaymentMethodOptions from "./PaymentMethodOptions.ee";
 
 const PaymentMethodsDialog = () => {
   const { isOpen, setOpen } = usePaymentMethodsDialogStore();
-  return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent className="!max-w-[35rem] space-y-2 px-1">
-        <DialogHeader className="border-b px-4 py-4 pb-2">
-          <DialogTitle className="justify-between">
-            <h2 className="text-lg font-semibold">Add Payment Method</h2>
-            <DialogPrimitive.Close className={buttonVariants({ variant: "ghost", size: "icon8" })}>
-              <X className="h-5 w-5 text-[--icon-color]" />
-              <span className="sr-only">Add Payment Method</span>
-            </DialogPrimitive.Close>
-          </DialogTitle>
-        </DialogHeader>
 
-        <PaymentMethodOptions />
-      </DialogContent>
-    </Dialog>
+  return (
+    <CardDialog
+      isOpen={isOpen}
+      onClose={() => setOpen(false)}
+      mark={
+        <IconTile Icon={CreditCardIcon} size="lg" className="size-12 rounded-lg [&>svg]:size-6" />
+      }
+      eyebrow="Billing"
+      title="Add payment method"
+      footer={
+        <>
+          <StatusLine tone="idle">Choose a payment method type</StatusLine>
+          <div className="flex shrink-0 items-center gap-2">
+            <CardDialogButton onClick={() => setOpen(false)}>Cancel</CardDialogButton>
+            <CardDialogButton variant="primary" onClick={() => setOpen(false)}>
+              Add
+            </CardDialogButton>
+          </div>
+        </>
+      }
+    >
+      <PaymentMethodOptions />
+    </CardDialog>
   );
 };
 

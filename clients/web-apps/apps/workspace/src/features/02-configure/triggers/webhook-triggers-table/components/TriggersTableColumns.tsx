@@ -1,52 +1,39 @@
-import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { TableCNColumnHeader, getTableCNSelectColumn } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
-import { TABLE_KEY } from "../constants";
+import { getRowActionsColumn } from "@/utils/get-row-actions-column.util";
+
 import { getColumnName } from "../constants/column-display-names";
 import { WebhookTriggerDto } from "../dtos/webhook-trigger-dto";
 import { TriggerRowActions } from "./table-actions/TriggerRowActions";
+
+const renderHeader =
+  (columnKey: string) =>
+  ({ column }: HeaderContext<WebhookTriggerDto, unknown>) => (
+    <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
+  );
 
 /**
  * Array of table columns for the triggers table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
 export const triggersTableColumns = (): ColumnDef<WebhookTriggerDto>[] => [
-  {
-    accessorKey: "id",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-  },
+  getTableCNSelectColumn<WebhookTriggerDto>({
+    enableHiding: true,
+    meta: { label: getColumnName("select") },
+  }),
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
-    ),
+    meta: { label: getColumnName("name") },
+    header: renderHeader("name"),
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3 ">
         <div title={row.getValue("name")} className="w-auto truncate max-w-80 font-medium">
           {row.getValue("name")}
         </div>
 
-        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+        <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-ink-2 rounded-sm">
           {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
         </p>
       </div>
@@ -54,9 +41,8 @@ export const triggersTableColumns = (): ColumnDef<WebhookTriggerDto>[] => [
   },
   {
     accessorKey: "agent",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("agent")} />
-    ),
+    meta: { label: getColumnName("agent") },
+    header: renderHeader("agent"),
     cell: ({ row }) => {
       if (!row.original?.agent) return null;
       return (
@@ -66,66 +52,61 @@ export const triggersTableColumns = (): ColumnDef<WebhookTriggerDto>[] => [
       );
     },
   },
-
   {
     accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
-    ),
+    meta: { label: getColumnName("createdBy") },
+    header: renderHeader("createdBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
+    meta: { label: getColumnName("createdOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        label={getColumnName("createdOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
+        {formatDate(row.getValue("createdOn"))}
+      </div>
     ),
   },
   {
     accessorKey: "lastModifiedBy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedBy")}
-      />
-    ),
+    meta: { label: getColumnName("lastModifiedBy") },
+    header: renderHeader("lastModifiedBy"),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("lastModifiedBy")}</div>
     ),
   },
   {
     accessorKey: "lastModifiedOn",
+    meta: { label: getColumnName("lastModifiedOn") },
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
+      <TableCNColumnHeader
         className="w-[7rem]"
         column={column}
-        title={getColumnName("lastModifiedOn")}
+        label={getColumnName("lastModifiedOn")}
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
+      <div className="w-auto truncate font-medium font-mono tabular-nums">
         {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },
-  createDTActionsColumn<WebhookTriggerDto>({
-    renderCell: (row) => (
+  getRowActionsColumn<WebhookTriggerDto>({
+    actions: ({ row }) => (
       <TriggerRowActions
-        rowId={row.id ?? "rowId"}
-        name={row.name}
-        accessLevel={row.accessLevel}
-        isTenantWideAccess={row.isTenantWideAccess || false}
+        rowId={row.original.id ?? "rowId"}
+        name={row.original.name}
+        accessLevel={row.original.accessLevel}
+        isTenantWideAccess={row.original.isTenantWideAccess || false}
       />
     ),
   }),

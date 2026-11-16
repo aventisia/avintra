@@ -1,6 +1,6 @@
 /** Column visibility initial state for the subscription plans table. */
 export const columnVisibilityState = {
-  id: false,
+  select: false,
   name: true,
   uniqueName: false,
   type: false,

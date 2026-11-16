@@ -1,4 +1,4 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { toDateOrNull } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";

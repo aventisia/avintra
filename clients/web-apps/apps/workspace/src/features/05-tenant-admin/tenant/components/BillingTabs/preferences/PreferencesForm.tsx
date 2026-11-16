@@ -28,42 +28,54 @@ const PreferencesForm = () => {
     isLoading,
   } = useDefinePreferencesForm();
 
-  // Define submit handler
   const onSubmit = (formData: z.infer<typeof preferencesSchema>) => {
     mutate(formData);
   };
 
   if (isLoading) return <TabLoader />;
 
-  // Return the form
+  const isSaving = isSubmitting || isPending;
+
   return (
     <Form
       methods={form}
       onSubmit={form.handleSubmit(onSubmit)}
-      disabled={isSubmitting || isPending || isLoading}
+      disabled={isSaving || isLoading}
       checkDirtyForm={false}
+      className="gap-0"
     >
-      <SwitchField {...isTwoFAEnabledProps} />
-
-      <div className="hidden">
-        <SwitchField {...isPwdEnabledProps} />
-      </div>
-      <SwitchField {...isPwdNeverExpiresEnabledProps} />
-      {!isPwdNeverExpiresEnabled && <InputField {...daysBeforePwdExpiresProps} />}
-      <div className="hidden">
-        <SwitchField {...isIdleSessionTimeoutEnabledProps} />
-        {isIdleSessionTimeoutEnabled && <InputField {...idleSessionTimeoutMinutesProps} />}
-      </div>
-      <div className="flex items-center justify-end">
-        <Button type="submit" disabled={isSubmitting || !isDirty || isPending}>
-          {isSubmitting || isPending ? (
-            <>
-              <LoadingSpinner className="mr-1 h-4 w-4" /> Saving
-            </>
-          ) : (
-            "Save"
-          )}
-        </Button>
+      <div className="overflow-hidden rounded-lg bg-surface ring-1 ring-line">
+        <div className="divide-y divide-line">
+          <SwitchField {...isTwoFAEnabledProps} showBorder={false} />
+          <div className="hidden">
+            <SwitchField {...isPwdEnabledProps} showBorder={false} />
+          </div>
+          <div>
+            <SwitchField {...isPwdNeverExpiresEnabledProps} showBorder={false} />
+            {!isPwdNeverExpiresEnabled && (
+              <div className="max-w-xs px-4 pb-4">
+                <InputField {...daysBeforePwdExpiresProps} />
+              </div>
+            )}
+          </div>
+          <div className="hidden">
+            <SwitchField {...isIdleSessionTimeoutEnabledProps} showBorder={false} />
+            {isIdleSessionTimeoutEnabled && (
+              <div className="max-w-xs px-4 pb-4">
+                <InputField {...idleSessionTimeoutMinutesProps} />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3 border-t border-line bg-sunken/60 px-4 py-2.5">
+          <p className="text-[12px] text-muted-foreground">
+            {isDirty ? "You have unsaved changes." : "Applies to everyone in this tenant."}
+          </p>
+          <Button type="submit" size="sm" disabled={isSaving || !isDirty} aria-busy={isSaving}>
+            {isSaving && <LoadingSpinner className="mr-1 size-4" />}
+            {isSaving ? "Saving" : "Save changes"}
+          </Button>
+        </div>
       </div>
     </Form>
   );

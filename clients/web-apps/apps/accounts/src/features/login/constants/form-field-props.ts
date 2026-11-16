@@ -1,6 +1,6 @@
 import type { InputFieldProps, InputOtpFieldProps } from "@avplatform/ui/form";
 
-const className = "h-11 text-md";
+const className = "h-control-lg";
 
 // Email
 const emailProps: InputFieldProps = {

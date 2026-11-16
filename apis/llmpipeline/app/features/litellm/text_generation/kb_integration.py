@@ -15,7 +15,7 @@ from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest as LegacyLLMRequest,
 )
 
-from ..core.schemas import LLMGenerationRequest
+from ..core.schemas import LLMGenerationRequest, V2ChatMessage
 
 
 def _to_legacy_request(req: LLMGenerationRequest) -> LegacyLLMRequest:
@@ -42,12 +42,14 @@ def _as_legacy_input(input_value) -> str | list[LegacyLLMMessage]:
     return [LegacyLLMMessage(role=m.role, content=m.content) for m in input_value]
 
 
-def _as_v2_input(legacy_input) -> str | list:
+def _as_v2_input(legacy_input) -> str | list[V2ChatMessage]:
     if isinstance(legacy_input, str):
         return legacy_input
     return [
-        {"role": m.role if hasattr(m, "role") else m.get("role"),
-         "content": m.content if hasattr(m, "content") else m.get("content")}
+        V2ChatMessage(
+            role=m.role if hasattr(m, "role") else m.get("role"),
+            content=m.content if hasattr(m, "content") else m.get("content"),
+        )
         for m in legacy_input
     ]
 

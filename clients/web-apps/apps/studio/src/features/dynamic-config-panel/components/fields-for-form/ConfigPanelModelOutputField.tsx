@@ -5,7 +5,7 @@ import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { InformationCircleIcon, VariableIcon } from "@heroicons/react/24/outline";
+import { BracketsRoundIcon, InfoIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -103,12 +103,12 @@ const ConfigPanelModelOutputField = ({
                     setOpenState(true);
                   }}
                 >
-                  <VariableIcon className="h-4 w-4" />
+                  <BracketsRoundIcon className="h-4 w-4" />
                 </PopoverTrigger>
                 {/* TODO: not sure if JsonViewer is required here or not */}
                 {description ? (
                   <Tooltip
-                    className="max-w-[50vw] bg-white"
+                    className="max-w-[50vw] bg-surface"
                     content={
                       <JsonViewer
                         jsonData={description}
@@ -118,8 +118,8 @@ const ConfigPanelModelOutputField = ({
                       />
                     }
                   >
-                    <div className="rounded hover:bg-slate-100 hover:text-primary">
-                      <InformationCircleIcon className="h-3.5 w-3.5" />
+                    <div className="rounded hover:bg-hover hover:text-primary">
+                      <InfoIcon className="h-3.5 w-3.5" />
                     </div>
                   </Tooltip>
                 ) : null}

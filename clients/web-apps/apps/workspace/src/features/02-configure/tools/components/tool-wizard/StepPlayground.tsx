@@ -1,9 +1,14 @@
+import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { Button } from "@avplatform/ui/buttons";
+import { crudDialogFieldClasses } from "@avplatform/ui/form";
 import { JsonViewer } from "@avplatform/ui/json-viewer";
+import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { GlobeIcon, PlayIcon, WarningCircleIcon, WarningIcon } from "@phosphor-icons/react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { FormField } from "@/components/card-dialog/FormField";
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import { testTool, testToolDirectly } from "../../apis/tools.apis";
@@ -13,7 +18,7 @@ import {
   normalizeParsedSchemaOperations,
   setParsedSchemaOperationVerification,
 } from "../../utils/tool-operations.util";
-import { FieldLabel } from "./FieldLabel";
+import { FieldHint } from "./FieldHint";
 
 type OperationTestResult =
   { status: "tested"; response: TestToolResponseDto } | { status: "failed"; message: string };
@@ -58,6 +63,9 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
   const [lastTestedId, setLastTestedId] = useState("");
 
   const isCreate = crudAction === "create";
+  const fieldId = useId();
+  const operationsId = `${fieldId}-operations`;
+  const parametersId = `${fieldId}-parameters`;
   const isTestingRef = useRef(false);
   const batchTokenRef = useRef(0);
 
@@ -212,149 +220,164 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
 
   if (!draftTool) {
     return (
-      <p className="text-sm text-muted-foreground">No tool draft loaded. Go back to Step 1.</p>
+      <p className="text-[13px] text-muted-foreground">No tool draft loaded. Go back to step 1.</p>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="rounded border p-3">
-        <p className="text-sm font-medium">Tool: {draftTool.name}</p>
-        <p className="text-xs text-muted-foreground">Base URL: {draftTool.baseUrl}</p>
-      </div>
-
-      <div className="flex items-center justify-between gap-3">
-        <FieldLabel
-          label="Operation Verification"
-          description="Select the operations to test. An operation is marked Verified only when the server records a successful HTTP 200 test."
-        />
-        {operations.length > 0 && (
-          <div className="flex shrink-0 items-center gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => setSelectedIds(operations.map((operation) => operation.operationId))}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Select all
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedIds([])}
-              disabled={selectedIds.length === 0}
-              className="text-muted-foreground hover:text-foreground disabled:opacity-50"
-            >
-              Clear
-            </button>
-          </div>
-        )}
+      <div className="flex min-w-0 items-center gap-2 rounded-md bg-sunken/80 px-3.5 py-2.5 text-[12.5px] ring-1 ring-line">
+        <GlobeIcon className="size-4 shrink-0 text-muted-foreground" />
+        <span className="shrink-0 text-muted-foreground">Base URL</span>
+        <span className="truncate font-mono text-ink-2">{draftTool.baseUrl || "-"}</span>
       </div>
 
       {isCreate && (
-        <p className="text-xs text-orange-700">
-          This tool does not exist yet: each successful test is sent to the API again when you
-          create the tool, to record its verification. Avoid testing operations that create, change
-          or delete data here, or test them after the tool is created.
+        <p className="flex gap-2 rounded-md bg-warn/10 px-3.5 py-2.5 text-[12.5px] leading-5 text-warn ring-1 ring-warn/20">
+          <WarningIcon className="mt-0.5 size-4 shrink-0" />
+          <span>
+            This tool doesn’t exist yet, so each successful test runs again when you create it, to
+            record its verification. Avoid testing operations that create, change or delete data
+            until the tool is created.
+          </span>
         </p>
       )}
 
-      {operations.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No operations found. Add at least one method in Step 1.
-        </p>
-      ) : (
-        <div className="space-y-1.5">
-          {operations.map((operation) => {
-            const result = results[operation.operationId];
-            const verified = result ? isVerifiedResult(result) : operation.isVerified === true;
-            const isSelected = selectedIds.includes(operation.operationId);
-            const label = operation.summary || operation.operationId;
-            return (
-              <label
-                key={operation.operationId}
-                className={`flex w-full cursor-pointer items-center gap-2 rounded border p-2 text-left text-sm transition-colors ${
-                  isSelected ? "border-primary bg-accent" : "hover:bg-muted/50"
-                }`}
+      <section aria-labelledby={operationsId}>
+        <div className="mb-1.5 flex items-baseline justify-between gap-3">
+          <h3 id={operationsId} className="text-[12.5px] font-semibold text-ink-2">
+            Operations
+          </h3>
+          {operations.length > 0 && (
+            <div className="flex shrink-0 items-center gap-3 text-[12px]">
+              <button
+                type="button"
+                onClick={() => setSelectedIds(operations.map((operation) => operation.operationId))}
+                className="font-medium text-primary-text outline-none hover:underline focus-visible:underline"
               >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelection(operation.operationId)}
-                  className="h-4 w-4 shrink-0 accent-primary"
-                />
-                <span className="truncate font-medium">{label}</span>
-                <span className="truncate font-mono text-xs text-muted-foreground">
-                  {operation.method} {operation.path}
-                </span>
-                <span className="ml-auto">
-                  {verified ? (
-                    <Badge
-                      variant="outline"
-                      className="border-green-200 bg-green-50 text-green-700"
-                    >
-                      Verified
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="border-orange-200 bg-orange-50 text-orange-700"
-                    >
-                      Unverified
-                    </Badge>
-                  )}
-                </span>
-              </label>
-            );
-          })}
+                Select all
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                disabled={selectedIds.length === 0}
+                className="text-muted-foreground outline-none hover:text-ink-2 focus-visible:underline disabled:opacity-50"
+              >
+                Clear
+              </button>
+            </div>
+          )}
         </div>
-      )}
+
+        {operations.length === 0 ? (
+          <p className="rounded-md border border-dashed border-line px-3.5 py-6 text-center text-[13px] text-muted-foreground">
+            No operations yet. Add at least one method in step 1.
+          </p>
+        ) : (
+          <ul className="space-y-1.5">
+            {operations.map((operation) => {
+              const result = results[operation.operationId];
+              const verified = result ? isVerifiedResult(result) : operation.isVerified === true;
+              const isSelected = selectedIds.includes(operation.operationId);
+              const label = operation.summary || operation.operationId;
+              return (
+                <li key={operation.operationId}>
+                  <label
+                    className={cn(
+                      "flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-left ring-1 transition-colors",
+                      isSelected ? "bg-selected ring-primary" : "ring-line hover:bg-muted",
+                    )}
+                  >
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => toggleSelection(operation.operationId)}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-semibold text-ink">
+                        {label}
+                      </span>
+                      <span className="block truncate font-mono text-[11.5px] text-muted-foreground">
+                        {operation.method} {operation.path}
+                      </span>
+                    </span>
+                    {verified ? (
+                      <Badge variant="completed">Verified</Badge>
+                    ) : (
+                      <Badge variant="draft">Unverified</Badge>
+                    )}
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <FieldHint>
+          An operation is verified only when the server records a successful HTTP 2xx test.
+        </FieldHint>
+      </section>
 
       {selectedSingle && (
-        <div className="space-y-2 rounded border p-3">
-          <p className="text-xs font-medium">
-            Parameters for {selectedSingle.summary || selectedSingle.operationId}
-          </p>
-          <FieldLabel
-            label="Parameters (JSON)"
-            description="The JSON payload to send for the operation, e.g. a key/value pair object."
-          />
-          <JsonEditor
-            value={parametersByOperation[selectedSingle.operationId] ?? "{}"}
-            onChange={(value) => updateParameters(selectedSingle.operationId, value)}
-            placeholder='{"key": "value"}'
-            className="min-h-[6rem]"
-          />
-        </div>
+        <FormField
+          htmlFor={parametersId}
+          label={`Parameters for ${selectedSingle.summary || selectedSingle.operationId}`}
+          hint={
+            <FieldHint>JSON sent with the test call, for example a key/value object.</FieldHint>
+          }
+        >
+          <div id={parametersId}>
+            <JsonEditor
+              value={parametersByOperation[selectedSingle.operationId] ?? "{}"}
+              onChange={(value) => updateParameters(selectedSingle.operationId, value)}
+              placeholder='{"key": "value"}'
+              className={cn(crudDialogFieldClasses.jsonEditor, "min-h-[6rem]")}
+            />
+          </div>
+        </FormField>
       )}
 
       <div className="flex justify-end">
-        <Button
+        <CardDialogButton
           onClick={() => void handleTestSelected()}
           disabled={isTesting || selectedIds.length === 0}
-          type="button"
-          size="sm"
+          isBusy={isTesting}
+          className="ring-1 ring-border"
         >
+          {!isTesting && <PlayIcon className="size-4" />}
           {isTesting
-            ? "Testing..."
+            ? "Testing"
             : selectedIds.length > 1
               ? `Test selected (${selectedIds.length})`
               : "Test operation"}
-        </Button>
+        </CardDialogButton>
       </div>
 
       {lastTestedId && lastTestedResponse && (
-        <div className="rounded border p-3">
-          <p className="text-sm font-medium">{lastTestedLabel}</p>
-          <p className="text-sm">
-            Verification: {isVerifiedResult(lastTestedResponse) ? "Verified" : "Unverified"}
-          </p>
-          {lastTestedResponse.status === "tested" && lastTestedResponse.response.status_code && (
-            <p className="text-sm">Status: {lastTestedResponse.response.status_code}</p>
-          )}
-          {lastTestedResponse.status === "tested" && lastTestedResponse.response.duration_ms && (
-            <p className="text-sm">Duration: {lastTestedResponse.response.duration_ms}ms</p>
-          )}
+        <section className="space-y-2.5 rounded-md bg-sunken/80 p-3.5 ring-1 ring-line">
+          <div className="flex min-w-0 items-center gap-3">
+            <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">
+              {lastTestedLabel}
+            </p>
+            {lastTestedResponse.status === "tested" && (
+              <span className="flex shrink-0 items-center gap-3 text-[12px] tabular-nums text-muted-foreground">
+                {lastTestedResponse.response.status_code && (
+                  <span>HTTP {lastTestedResponse.response.status_code}</span>
+                )}
+                {lastTestedResponse.response.duration_ms && (
+                  <span>{lastTestedResponse.response.duration_ms} ms</span>
+                )}
+              </span>
+            )}
+            {isVerifiedResult(lastTestedResponse) ? (
+              <Badge variant="completed">Verified</Badge>
+            ) : (
+              <Badge variant="draft">Unverified</Badge>
+            )}
+          </div>
           {lastTestedResponse.status === "failed" && (
-            <p className="text-sm text-destructive">{lastTestedResponse.message}</p>
+            <p className="flex items-start gap-1.5 text-[12.5px] text-bad">
+              <WarningCircleIcon className="mt-0.5 size-3.5 shrink-0" />
+              {lastTestedResponse.message}
+            </p>
           )}
           {lastTestedResponse.status === "tested" &&
             lastTestedResponse.response.body !== undefined &&
@@ -362,10 +385,10 @@ export const StepPlayground = ({ crudAction }: StepPlaygroundProps) => {
               <JsonViewer
                 jsonData={serializeResponseBody(lastTestedResponse.response.body)}
                 enableValueClipboard
-                className="mt-2 max-h-48 overflow-auto rounded bg-muted p-2 text-xs"
+                className="max-h-48 overflow-auto rounded-md bg-popover p-2.5 text-xs ring-1 ring-line"
               />
             )}
-        </div>
+        </section>
       )}
     </div>
   );

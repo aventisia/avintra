@@ -26,6 +26,7 @@ type CrudEntityKey =
   | "job"
   | "flow"
   | "folder"
+  | "uiBuilder"
   | "queue"
   | "configstore"
   | "knowledgeBase"

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { TabsTrigger } from "@avplatform/ui/tabs";
+import { SEGMENTED_TABS_TRIGGER_CLASS, TabsTrigger } from "@avplatform/ui/tabs";
 
 export const DCPTabsTrigger = ({
   tabValue,
@@ -15,10 +15,7 @@ export const DCPTabsTrigger = ({
   return (
     <TabsTrigger
       value={tabValue}
-      className={cn(
-        "rounded-full py-1.5 text-xs font-medium leading-3 outline-none data-[state=active]:text-primary data-[state=active]:shadow-sm",
-        className,
-      )}
+      className={cn(SEGMENTED_TABS_TRIGGER_CLASS, className)}
       onClick={handleClick}
     >
       {children}

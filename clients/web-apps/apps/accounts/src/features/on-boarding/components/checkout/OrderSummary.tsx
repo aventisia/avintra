@@ -1,6 +1,6 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { ArrowRight, Lock } from "lucide-react";
+import { ArrowRightIcon, LockIcon } from "@phosphor-icons/react";
 
 import { formatCurrency } from "../../constants/currency-symbol-map";
 import type { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
@@ -76,7 +76,7 @@ export const OrderSummary = ({
         ) : (
           <>
             {ctaLabel}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRightIcon className="ml-2 h-4 w-4" />
           </>
         )}
       </Button>
@@ -86,7 +86,7 @@ export const OrderSummary = ({
           "Upgrade any time from your workspace billing settings."
         ) : (
           <>
-            <Lock className="h-3.5 w-3.5" />
+            <LockIcon className="h-3.5 w-3.5" />
             Payments are processed securely by Razorpay.
           </>
         )}

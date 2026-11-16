@@ -57,7 +57,7 @@ export const PwdLoginForm = () => {
 
       {/* Submit form */}
       <SubmitButton
-        className="!mt-5 h-11 w-full text-md"
+        className="!mt-5 h-control-lg w-full"
         primaryText="Login"
         isPending={isSubmitting || isAuthPending}
       />

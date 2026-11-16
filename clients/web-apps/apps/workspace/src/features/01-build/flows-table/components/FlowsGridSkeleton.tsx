@@ -1,5 +1,4 @@
 import { Skeleton } from "@avplatform/ui";
-import { Card, CardContent, CardHeader } from "@avplatform/ui/cards";
 
 interface FlowsGridSkeletonProps {
   count?: number;
@@ -13,37 +12,23 @@ export const FlowsGridSkeleton = ({ count = 8 }: FlowsGridSkeletonProps) => {
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 2xl:grid-cols-4 2xl:gap-6">
       {new Array(count).fill(null).map((_, index) => (
-        <Card
-          key={index}
-          className="relative flex h-[13rem] flex-col overflow-hidden rounded-lg border border-slate-200 shadow-sm"
-        >
-          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 px-3.5 pb-2 pt-2.5">
-            <Skeleton className="h-8 w-8 rounded-lg bg-accent" />
-            <div className="flex items-center gap-1">
-              <Skeleton className="h-5 w-16 rounded-full" />
-              <Skeleton className="h-5 w-10 rounded-full" />
+        <div key={index} className="flex flex-col rounded-md border border-line bg-surface">
+          <div className="flex items-start gap-3 p-4 pb-0">
+            <Skeleton className="size-9 rounded-md" />
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Skeleton className="h-4 w-2/3" />
+              <Skeleton className="h-3 w-1/3" />
             </div>
-          </CardHeader>
-          <CardContent className="flex-1 space-y-2.5 px-3.5 pb-1.5 pt-2">
-            <div className="flex items-center gap-1.5">
-              <Skeleton className="h-5 flex-1" />
-              <Skeleton className="h-5 w-8 shrink-0 rounded-full" />
-            </div>
-            <div className="space-y-1">
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-2/3" />
-            </div>
-            <div className="flex flex-wrap items-center gap-1">
-              <Skeleton className="h-5 w-20 rounded-full" />
-              <Skeleton className="h-5 w-16 rounded-full" />
-            </div>
-          </CardContent>
-          {/* Queues + actions row */}
-          <div className="flex items-center justify-between gap-2 px-3.5 pb-2 pt-1">
-            <Skeleton className="h-5 w-24 rounded-full" />
-            <Skeleton className="h-7 w-7 rounded-md" />
           </div>
-        </Card>
+          <div className="mx-4 mb-4 mt-3 flex h-10 flex-col justify-center gap-1.5">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-3/4" />
+          </div>
+          <div className="flex h-10 items-center gap-3 border-t border-line px-4">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-3 w-12" />
+          </div>
+        </div>
       ))}
     </div>
   );

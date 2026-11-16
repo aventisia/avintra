@@ -22,7 +22,7 @@ export const WorkItemsTableCellLink = ({ rowId, children }: WorkItemsTableCellLi
       title={typeof children === "string" ? children : rowId}
       className={cn(
         buttonVariants({ variant: "link" }),
-        "!h-8 w-auto cursor-pointer truncate font-medium text-foreground hover:text-primary",
+        "!h-8 w-auto cursor-pointer truncate font-mono font-medium tabular-nums text-foreground hover:text-primary-text",
       )}
     >
       {children}

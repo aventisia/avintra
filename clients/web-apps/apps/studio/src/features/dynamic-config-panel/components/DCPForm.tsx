@@ -1,7 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Form } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
-import { FlaskConical, InfoIcon, PlayIcon, SearchCodeIcon } from "lucide-react";
+import { FlaskIcon, InfoIcon, MagnifyingGlassIcon, PlayIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -78,6 +78,16 @@ export const DCPForm = () => {
     [nodeConfig?.fields, selectedTab, watchedValues],
   );
 
+  // Test tab: the standard screen is a dev-only preview, the LLM screen is available everywhere
+  // except the prod build's current-version view.
+  const testScreenType = nodeConfig?.testScreenType;
+  const isTestTabVisible = isAgentHistory
+    ? testScreenType == "llmGenerateRequest"
+    : import.meta.env.MODE !== "production"
+      ? testScreenType == "standard" || testScreenType == "llmGenerateRequest"
+      : testScreenType == "llmGenerateRequest";
+  const TestIcon = testScreenType == "standard" ? PlayIcon : FlaskIcon;
+
   // Return the form
   return (
     <>
@@ -87,7 +97,7 @@ export const DCPForm = () => {
         </div>
       ) : !isFormReady ? (
         <div className="flex h-full items-center justify-center gap-2 text-sm">
-          <SearchCodeIcon className="text-icon h-5 w-5" />
+          <MagnifyingGlassIcon className="text-icon h-5 w-5" />
           Configuration not found for this node.
         </div>
       ) : (
@@ -95,58 +105,17 @@ export const DCPForm = () => {
           <DCPTabsListWrapper>
             <DCPTabsList>
               {tabKeys?.map((key) => (
-                <DCPTabsTrigger tabValue={key} children={key.replace(/([a-z])([A-Z])/g, "$1 $2")} />
+                <DCPTabsTrigger key={key} tabValue={key}>
+                  {key.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                </DCPTabsTrigger>
               ))}
+              {isTestTabVisible && (
+                <DCPTabsTrigger tabValue="Test" handleClick={() => void flushNow()}>
+                  <TestIcon className="size-3.5" />
+                  Test
+                </DCPTabsTrigger>
+              )}
             </DCPTabsList>
-            {!isAgentHistory ? (
-              import.meta.env.MODE !== "production" ? (
-                <>
-                  {nodeConfig.testScreenType == "standard" && (
-                    <DCPTabsList>
-                      <DCPTabsTrigger
-                        tabValue="Test"
-                        className="flex items-center gap-1 text-primary hover:text-primary"
-                        handleClick={() => {
-                          void flushNow();
-                        }}
-                      >
-                        <PlayIcon className="h-3 w-3" />
-                        <span> Test</span>
-                      </DCPTabsTrigger>
-                    </DCPTabsList>
-                  )}
-                  {nodeConfig.testScreenType == "llmGenerateRequest" && (
-                    <DCPTabsList>
-                      <DCPTabsTrigger
-                        tabValue="Test"
-                        className="flex items-center gap-1 text-primary hover:text-primary"
-                        handleClick={() => {
-                          void flushNow();
-                        }}
-                      >
-                        <FlaskConical className="h-3.5 w-3.5" />
-                        <span> Test</span>
-                      </DCPTabsTrigger>
-                    </DCPTabsList>
-                  )}
-                </>
-              ) : (
-                nodeConfig.testScreenType == "llmGenerateRequest" && (
-                  <DCPTabsList>
-                    <DCPTabsTrigger
-                      tabValue="Test"
-                      className="flex items-center gap-1 text-primary hover:text-primary"
-                      handleClick={() => {
-                        flushNow();
-                      }}
-                    >
-                      <FlaskConical className="h-3.5 w-3.5" />
-                      <span> Test</span>
-                    </DCPTabsTrigger>
-                  </DCPTabsList>
-                )
-              )
-            ) : null}
           </DCPTabsListWrapper>
 
           <Form
@@ -195,13 +164,13 @@ export const DCPForm = () => {
                       )}
                     >
                       <div className="absolute -top-3">
-                        <span className="rounded-full bg-indigo-100 px-1.5 py-1 text-xs font-medium text-indigo-600">
+                        <span className="rounded-full bg-fill px-1.5 py-1 text-xs font-medium text-ink-2">
                           Outputs
                         </span>
                       </div>
                     </h3>
 
-                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
+                    <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-sunken px-3.5 py-3">
                       {nodeConfig?.fields?.map((field) => {
                         // Check if the field should be rendered based on direction and renderIf conditions
                         if (!shouldRenderField("Output", field, watchedValues)) {

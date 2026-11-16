@@ -1,5 +1,5 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { EditIcon } from "lucide-react";
+import { NotePencilIcon } from "@phosphor-icons/react";
 
 import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
 import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";
@@ -18,6 +18,11 @@ export const CanEditAction = ({ item }: CanEditActionProps) => {
   };
   // Return the component
   return (
-    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can Edit" Icon={EditIcon} />
+    <SimpleDDMenuItem
+      onClick={() => handleClick()}
+      size="sm"
+      content="Can edit"
+      Icon={NotePencilIcon}
+    />
   );
 };

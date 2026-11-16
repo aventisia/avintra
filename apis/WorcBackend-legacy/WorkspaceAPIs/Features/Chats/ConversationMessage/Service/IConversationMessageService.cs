@@ -21,6 +21,13 @@ public interface IConversationMessageService
     Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetMessagesAsync(Guid conversationId);
 
     /// <summary>
+    /// Retrieves all messages of a shared conversation by its read-only token.
+    /// </summary>
+    /// <param name="shareToken">The read-only share token.</param>
+    /// <returns> A service response containing an ordered list of messages for the shared conversation. </returns>
+    Task<ServiceResponse<IEnumerable<ConversationMessageDto>>> GetSharedMessagesAsync(string shareToken);
+
+    /// <summary>
     /// Retrieves the most recent messages from a conversation. Useful for limiting context size when interacting with an LLM.
     /// </summary>
     /// <param name="conversationId">The unique identifier of the conversation.</param>
@@ -34,4 +41,12 @@ public interface IConversationMessageService
     /// <param name="query">The search keyword or phrase.</param>
     /// <returns> A service response containing messages that match the search criteria. </returns>
     Task<ServiceResponse<IEnumerable<SearchConversationMessageDto>>> SearchMessagesAsync(string query);
+
+    /// <summary>
+    /// Stores the current user's rating on the reply to one user turn of their conversation.
+    /// </summary>
+    /// <param name="conversationId">The unique identifier of the conversation.</param>
+    /// <param name="feedback">The user turn and its rating.</param>
+    /// <returns> A service response that is true once the rating is stored. </returns>
+    Task<ServiceResponse<bool>> SetFeedbackAsync(Guid conversationId, MessageFeedbackDto feedback);
 }

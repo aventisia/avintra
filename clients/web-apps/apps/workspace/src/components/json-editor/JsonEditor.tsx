@@ -1,4 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
+import { useThemeStore } from "@avplatform/ui/stores";
 import { json } from "@codemirror/lang-json";
 import CodeMirror from "@uiw/react-codemirror";
 import React, { useEffect, useRef } from "react";
@@ -19,6 +20,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   className,
 }) => {
   const formattedOnLoad = useRef(false);
+  const isDark = useThemeStore((state) => state.isDark);
 
   // json formatter
   const formatJson = (raw?: string) => {
@@ -61,14 +63,14 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         bracketMatching: true,
       }}
       placeholder={placeholder}
-      theme="light"
+      theme={isDark ? "dark" : "light"}
       onBlur={() => {
         // Format on blur
         const formatted = formatJson(value);
         if (formatted) onChange?.(formatted);
       }}
       className={cn(
-        "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
+        "flex min-h-20 w-full overflow-hidden rounded-md [&>.cm-editor]:flex-1 border border-input bg-background text-sm ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
         disabled && "cursor-not-allowed opacity-80 focus-within:border-0 focus-within:ring-0",
         className,
       )}

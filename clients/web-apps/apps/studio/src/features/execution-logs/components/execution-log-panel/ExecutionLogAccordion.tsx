@@ -1,5 +1,4 @@
-import { Accordion } from "@avplatform/ui/accordion";
-import { useEffect, useState } from "react";
+import { DayTimeline } from "@/components/day-timeline";
 
 import { DaySection } from "../../types/log-list-type";
 import ExecutionAccordionSection from "./ExecutionAccordionSection";
@@ -11,33 +10,18 @@ interface Props {
 }
 
 export default function ExecutionLogAccordion({ data, selectedEntry, onSelect }: Props) {
-  const [openItems, setOpenItems] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!selectedEntry) return;
-
-    const section = data.find((day) => day.entries.some((entry) => entry.id === selectedEntry));
-
-    if (section) {
-      setOpenItems([section.date]); // open that section
-    }
-  }, [selectedEntry, data]);
-
   return (
-    <Accordion
-      type="multiple"
-      className="relative space-y-1"
-      value={openItems}
-      onValueChange={setOpenItems}
-    >
-      {data.map((section) => (
+    <DayTimeline days={data} selectedId={selectedEntry}>
+      {data.map((section, index) => (
         <ExecutionAccordionSection
           key={section.date}
           section={section}
+          isFirst={index === 0}
+          isLast={index === data.length - 1}
           selectedEntry={selectedEntry}
           onSelect={onSelect}
         />
       ))}
-    </Accordion>
+    </DayTimeline>
   );
 }

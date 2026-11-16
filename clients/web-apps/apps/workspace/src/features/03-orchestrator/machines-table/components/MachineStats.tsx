@@ -1,8 +1,8 @@
 import { StatsCard } from "@avplatform/ui/cards";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
+import { MonitorIcon } from "@phosphor-icons/react";
 import Enumerable from "linq";
-import { Monitor, MonitorCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
@@ -57,22 +57,22 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   const statusParts = [
     stats && stats.idle > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.idle}</span> idle
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.idle}</span> idle
       </>
     ),
     stats && stats.online > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.online}</span> online
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.online}</span> online
       </>
     ),
     stats && stats.offline > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.offline}</span> Offline
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.offline}</span> Offline
       </>
     ),
     stats && stats.running > 0 && (
       <>
-        <span className="font-medium text-xs">{stats.running}</span> Running
+        <span className="font-mono text-xs font-medium tabular-nums">{stats.running}</span> Running
       </>
     ),
   ].filter(Boolean) as JSX.Element[];
@@ -94,17 +94,18 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
   return (
     <div className="mb-2 grid grid-cols-2 gap-4">
       <StatsCard
-        icon={<Monitor className="size-7" />}
+        icon={<MonitorIcon className="size-7" />}
         title="Machines"
         content={data?.length}
         footer={
           <>
-            <span className="font-medium text-xs">{stats?.agents}</span> Agents
+            <span className="font-mono text-xs font-medium tabular-nums">{stats?.agents}</span>{" "}
+            Agents
           </>
         }
       />
       <StatsCard
-        icon={<MonitorCheck className="size-7" />}
+        icon={<MonitorIcon className="size-7" />}
         title="Statuses"
         content={stats?.distinctStatuses ?? 0} // Display distinct statuses count
         footer={statusDescription}

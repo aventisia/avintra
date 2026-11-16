@@ -1,19 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assistant-ui/react";
 
-import { streamApprovalDecisions, streamChatCompletion } from "../apis/streaming-chat-apis";
+import {
+  type ChatDestination,
+  streamApprovalDecisions,
+  streamChatCompletion,
+} from "../apis/streaming-chat-apis";
 import { isPendingApprovalPart } from "../lib/approval-parts";
 import { createContentPartsBuilder } from "../lib/content-parts";
 import { LLMMessageType } from "../types/llm-message.type";
 
 export type CreateAssistantUIModelAdapterParams = {
-  flowVersionId: string;
+  flowVersionId?: string;
   // Accepts the lazy getter instead of a static string
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
   onSuggestionsUpdate?: (actions: string[]) => void;
   /** Called for every streamed text delta so observers can synthesize speech incrementally. */
   onTextDelta?: (delta: string) => void;
+  /** Called once with the turn's full assistant text when a fresh run finishes streaming. */
+  onTextComplete?: (text: string) => void;
   /** Called once per run when streaming settles (success, error, or abort). */
   onRunFinished?: () => void;
   /** When true, the conversation is kept in-memory only (Studio test panel). */
@@ -23,6 +29,24 @@ export type CreateAssistantUIModelAdapterParams = {
    * headers). Workspace omits this; Studio passes its space-header getter.
    */
   getExtraHeaders?: () => Record<string, string>;
+  /** The model picked for this turn; absent falls back to the flow's node config. */
+  getModelSelection?: () => ChatModelSelection | null;
+  /** Pages the landing chat may send the user to, read on every send. */
+  getDestinations?: () => readonly ChatDestination[];
+  /**
+   * Given the user turns before this run, returns how many stored turns the
+   * server keeps; less than it holds means a regenerate or edit replaces the rest.
+   */
+  getKeepUserTurns?: (priorUserTurns: number) => number | undefined;
+};
+
+/** The model picked for a turn. Credentials are resolved server-side. */
+export type ChatModelSelection = {
+  provider: string;
+  model: string;
+  credentialName?: string;
+  isByokEnabled?: boolean;
+  reasoningEffort?: "low" | "medium" | "high";
 };
 
 /**
@@ -66,18 +90,23 @@ function mapThreadToLLMMessages(messages: readonly ThreadMessage[]): LLMMessageT
 }
 
 /**
- * Extracts file references (data URLs / http(s) URLs) from a user message's
- * attachments so they can be forwarded to the LLM pipeline.
+ * Extracts file references (data URLs) from a user message's image/file parts
+ * so they can be forwarded to the LLM pipeline. Attachments travel on the
+ * message as content parts (and under `attachments` after send), not as URL
+ * fields, so both shapes are read.
  */
 function extractFilesFromMessage(message: ThreadMessage | undefined): string[] {
   if (!message) return [];
   const files: string[] = [];
-  const attachments = (message as any).attachments as any[] | undefined;
-  if (Array.isArray(attachments)) {
-    for (const att of attachments) {
-      const src = att?.src || att?.url || att?.file?.src;
-      if (typeof src === "string" && src) files.push(src);
-    }
+  const pushFilePart = (part: any) => {
+    if (part?.type === "image" && typeof part.image === "string" && part.image)
+      files.push(part.image);
+    else if (part?.type === "file" && typeof part.data === "string" && part.data)
+      files.push(part.data);
+  };
+  for (const part of (message as any).content ?? []) pushFilePart(part);
+  for (const attachment of (message as any).attachments ?? []) {
+    for (const part of attachment?.content ?? []) pushFilePart(part);
   }
   return files;
 }
@@ -133,9 +162,13 @@ export const createAssistantUIModelAdapter = ({
   onRequestComplete,
   onSuggestionsUpdate,
   onTextDelta,
+  onTextComplete,
   onRunFinished,
   isTempChat = false,
   getExtraHeaders,
+  getModelSelection,
+  getDestinations,
+  getKeepUserTurns,
 }: CreateAssistantUIModelAdapterParams): ChatModelAdapter => {
   // Last conversation id observed in a frame. Temporary chats never allocate
   // one client-side, so this is the only handle that can resume their approvals.
@@ -271,7 +304,7 @@ export const createAssistantUIModelAdapter = ({
           yield* processFrames(
             streamApprovalDecisions(
               {
-                flowVersionId,
+                flowVersionId: flowVersionId ?? "",
                 conversationId: conversationId ?? "",
                 isTempChat,
                 decisions: approvalDecisions,
@@ -281,6 +314,7 @@ export const createAssistantUIModelAdapter = ({
             ),
           );
         } else {
+          const modelSelection = getModelSelection?.();
           yield* processFrames(
             streamChatCompletion(
               {
@@ -290,11 +324,25 @@ export const createAssistantUIModelAdapter = ({
                 userInput: userInputText,
                 files: files.length > 0 ? files : undefined,
                 isTempChat,
+                modelProvider: modelSelection?.provider,
+                modelId: modelSelection?.model,
+                credentialName: modelSelection?.credentialName,
+                isByokEnabled: modelSelection?.isByokEnabled,
+                reasoningEffort: modelSelection?.reasoningEffort,
+                destinations: getDestinations?.(),
+                keepUserTurns: getKeepUserTurns?.(
+                  options.messages.filter((message) => message.role === "user").length - 1,
+                ),
               },
               options.abortSignal,
               getExtraHeaders?.(),
             ),
           );
+          const fullText = builder.parts
+            .filter((part) => (part as { type?: string }).type === "text")
+            .map((part) => (part as { text?: string }).text ?? "")
+            .join("");
+          onTextComplete?.(fullText);
         }
 
         // Ensure at least a placeholder is rendered.

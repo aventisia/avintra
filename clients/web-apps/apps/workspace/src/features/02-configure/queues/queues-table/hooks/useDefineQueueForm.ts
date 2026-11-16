@@ -1,4 +1,4 @@
-import { useCrudDialogDirty } from "@avplatform/ui/data-table";
+import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { ISelectOption } from "@avplatform/ui/types";
@@ -63,7 +63,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     {
       name: "submittedOn",
       description: "Date the request was submitted",
-      label: "Submitted On",
+      label: "Submitted on",
       type: "Date",
       isRequired: false,
       isUsedForUniqueIdentifier: false,
@@ -184,7 +184,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     form.reset({
       crudAction: CrudActionTypeConverter(crudAction),
       id: rowId,
-      name: queueData?.name,
+      name: queueData?.name ?? "",
       description: queueData?.description,
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],

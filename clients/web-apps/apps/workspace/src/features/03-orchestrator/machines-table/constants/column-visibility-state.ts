@@ -1,6 +1,6 @@
 /** Column visibility initial state for the machines table. */
 export const columnVisibilityState = {
-  selectRow: false,
+  select: false,
   name: true,
   status: true,
   flowVersionCount: true,

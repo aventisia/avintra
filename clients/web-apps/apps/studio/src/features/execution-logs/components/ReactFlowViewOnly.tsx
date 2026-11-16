@@ -5,6 +5,7 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { LEFT_DOCK_CANVAS_CLASS } from "@/components/panel/left-dock-panel.constant";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { PANEL_TRANSITION_DURATION, ZOOM_ANIMATION_DURATION } from "@/constants";
 import { ReadOnlyEdgeTypeObj } from "@/constants/custom-edge-type-obj";
@@ -106,7 +107,8 @@ export const ReactFlowViewOnly = () => {
 
       <div
         className={cn(
-          "relative ml-[21.5rem] h-full w-[calc(100%-21.5rem)]",
+          "relative h-full",
+          LEFT_DOCK_CANVAS_CLASS,
           isNodeDetailPanelOpen && "mr-[30.5rem] w-[calc(100%-21.5rem-30.5rem)]",
         )}
       >

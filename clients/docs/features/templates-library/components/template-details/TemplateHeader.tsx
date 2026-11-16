@@ -2,7 +2,12 @@
 import { DotSeparator, Separator } from "@/app/_components/ui";
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/buttons";
-import { Clock, Download, Tag, User2 } from "lucide-react";
+import {
+  ClockIcon,
+  DownloadSimpleIcon,
+  TagIcon,
+  UserIcon,
+} from "@phosphor-icons/react/ssr";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { dateFormatter } from "@/utils";
@@ -27,7 +32,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-1 text-xs sm:text-sm text-muted-foreground">
               {/* Usage count */}
               <div className="flex items-center gap-1">
-                <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <DownloadSimpleIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="leading-4">
                   {template?.usageCount?.toLocaleString() ?? 0} uses
                 </span>
@@ -37,7 +42,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
 
               {/* Last updated */}
               <div className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <ClockIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="leading-4 break-words">
                   Updated on{" "}
                   {dateFormatter(template?.lastModifiedOn || new Date())}
@@ -48,7 +53,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
 
               {/* Created by */}
               <div className="flex items-center gap-1 min-w-0">
-                <User2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                 <span className="leading-4 capitalize truncate">
                   {template.createdBy || "Unknown"}
                 </span>
@@ -73,7 +78,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
                     variant="outline"
                     className="flex text-2xs sm:text-xs border-border capitalize items-center gap-1 bg-slate-100 dark:bg-background"
                   >
-                    <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                    <TagIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     {tag}
                   </Badge>
                 ))}

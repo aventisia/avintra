@@ -1,5 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -48,14 +48,14 @@ export const OAuthCallbackPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border bg-card p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-line bg-surface p-8">
         <div className="flex flex-col items-center gap-4 text-center">
           {success ? (
-            <CheckCircle2 className="h-12 w-12 text-green-600" />
+            <CheckCircleIcon className="h-12 w-12 text-ok" />
           ) : (
-            <XCircle className="h-12 w-12 text-red-600" />
+            <XCircleIcon className="h-12 w-12 text-bad" />
           )}
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-heading">
             {success ? "Connection successful" : "Connection failed"}
           </h1>
           <p className="text-muted-foreground text-sm">{message}</p>

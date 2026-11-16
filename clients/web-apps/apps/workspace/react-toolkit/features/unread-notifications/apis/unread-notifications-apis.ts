@@ -24,6 +24,9 @@ interface NotificationHistoryParams {
   /** (optional): Filter by notification type */
   type?: string;
 
+  /** (optional): Filter by the backend `NotificationSourceEnum` value */
+  sourceType?: string;
+
   /** (optional): Filter by read/unread status */
   isRead?: boolean;
 

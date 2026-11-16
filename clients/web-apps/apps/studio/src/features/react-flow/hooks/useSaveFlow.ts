@@ -106,10 +106,6 @@ export const useSaveFlow = () => {
       queryClient.invalidateQueries({
         queryKey: ["AGENT_HISTORY", persisted.versionId],
       });
-
-      toast.success("Flow saved successfully", {
-        className: "sonner-toaster-sm",
-      });
     },
     onError: (error) => {
       toast.error(error.toString());
@@ -142,7 +138,7 @@ export const useSaveFlow = () => {
     });
 
     if (currentFlow?.accessType === "View" && pending) {
-      toast.info("You are in View-only mode. Changes will not be saved.");
+      toast.info("You are in view-only mode. Changes will not be saved.");
       return false;
     }
 

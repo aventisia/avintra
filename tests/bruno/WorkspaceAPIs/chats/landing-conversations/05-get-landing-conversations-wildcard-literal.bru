@@ -1,0 +1,23 @@
+meta {
+  name: Get landing conversations wildcard literal
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/list?search=100_%25&take=100
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("% and _ in the search are matched literally", function() {
+    expect(res.getStatus()).to.equal(200);
+    const ids = res.getBody().data.map((c) => c.id);
+    expect(ids).to.not.include(bru.getVar("LANDING_CONVERSATION_ID"));
+  });
+}

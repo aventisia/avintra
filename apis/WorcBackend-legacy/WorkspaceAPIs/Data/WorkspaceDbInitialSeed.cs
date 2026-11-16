@@ -32,6 +32,8 @@ public static class WorkspaceDbInitialSeed
 
             await SeedEnabledModelsAsync(_workspaceDbContext, _logger);
 
+            await SeedGeminiBuilderModelAsync(_workspaceDbContext, _tenantDbContext, _logger);
+
             var platformAdmin = await ResolvePlatformAdminUserAsync(
                 _workspaceDbContext,
                 _tenantDbContext,
@@ -128,6 +130,132 @@ public static class WorkspaceDbInitialSeed
             "Updated MaximumRetryAttempts to {DefaultMaximumRetryAttempts} for {QueueCount} existing queues.",
             DefaultMaximumRetryAttempts,
             queuesToUpdate.Count);
+    }
+
+    private static async Task SeedGeminiBuilderModelAsync(
+        WorkspaceDbContext workspaceDbContext,
+        TenantDbContext tenantDbContext,
+        ILogger logger)
+    {
+        // IMPORTANT NOTE: The Gemini builder model backfill is merge-only: existing provider rows keep their disabled state, credentials, and model casing.
+        try
+        {
+            const string GeminiBuilderModelId = "gemini-3.1-flash-lite";
+
+            var catalogTenantIds = await tenantDbContext.ReadOnlyTenants
+                .Select(tenant => tenant.Id)
+                .ToListAsync();
+
+            var providerTenantIds = await workspaceDbContext.TenantModelProviders
+                .IgnoreQueryFilters()
+                .Select(provider => provider.TenantId)
+                .Distinct()
+                .ToListAsync();
+
+            var tenantIds = catalogTenantIds
+                .Union(providerTenantIds)
+                .ToList();
+
+            var geminiProviders = await workspaceDbContext.TenantModelProviders
+                .IgnoreQueryFilters()
+                .Where(provider => provider.ProviderType == LLMProviderTypesEnum.Gemini)
+                .ToListAsync();
+
+            var insertedCount = 0;
+            var mergedCount = 0;
+            var skippedCount = 0;
+
+            foreach (var tenantId in tenantIds)
+            {
+                var tenantProviders = geminiProviders
+                    .Where(provider => provider.TenantId == tenantId)
+                    .ToList();
+
+                if (tenantProviders.Count == 0)
+                {
+                    var attributionUserId = await workspaceDbContext.Users
+                        .IgnoreQueryFilters()
+                        .Where(user => user.TenantId == tenantId)
+                        .Select(user => (Guid?)user.Id)
+                        .FirstOrDefaultAsync();
+
+                    if (attributionUserId is null)
+                    {
+                        skippedCount++;
+                        logger.LogWarning(
+                            "Skipped Gemini builder model seeding for tenant {TenantId}: no workspace user available for attribution.",
+                            tenantId);
+                        continue;
+                    }
+
+                    var now = DateTimeOffset.UtcNow;
+
+                    await workspaceDbContext.TenantModelProviders.AddAsync(new TenantModelProvider
+                    {
+                        Id = Guid.NewGuid(),
+                        TenantId = tenantId,
+                        ProviderType = LLMProviderTypesEnum.Gemini,
+                        CredentialId = null,
+                        ProviderUrl = null,
+                        IsDisabled = false,
+                        EnabledModelIds = new List<string> { GeminiBuilderModelId },
+                        EnabledModels = new List<EnabledModel>
+                        {
+                            new EnabledModel
+                            {
+                                ModelId = GeminiBuilderModelId,
+                                Capability = ModelCapabilityEnum.Text.ToString(),
+                            },
+                        },
+                        CreatedByUserId = attributionUserId.Value,
+                        LastModifiedByUserId = attributionUserId.Value,
+                        CreatedOn = now,
+                        LastModifiedOn = now,
+                    });
+
+                    insertedCount++;
+                    continue;
+                }
+
+                foreach (var provider in tenantProviders)
+                {
+                    if (provider.IsDisabled)
+                        continue;
+
+                    var hasModel = provider.EnabledModels
+                        .Any(model => string.Equals(
+                            model.ModelId?.Trim(),
+                            GeminiBuilderModelId,
+                            StringComparison.OrdinalIgnoreCase));
+
+                    if (hasModel)
+                        continue;
+
+                    provider.EnabledModels = provider.EnabledModels
+                        .Append(new EnabledModel
+                        {
+                            ModelId = GeminiBuilderModelId,
+                            Capability = ModelCapabilityEnum.Text.ToString(),
+                        })
+                        .ToList();
+
+                    mergedCount++;
+                }
+            }
+
+            await workspaceDbContext.SaveChangesAsync();
+
+            logger.LogInformation(
+                "Gemini builder model seeding checked {TenantCount} tenants: inserted {InsertedCount}, merged {MergedCount}, skipped {SkippedCount}.",
+                tenantIds.Count,
+                insertedCount,
+                mergedCount,
+                skippedCount);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error seeding the Gemini builder model. Continuing startup.");
+        }
     }
 
     private static async Task<(Guid UserId, Guid TenantId)?> ResolvePlatformAdminUserAsync(

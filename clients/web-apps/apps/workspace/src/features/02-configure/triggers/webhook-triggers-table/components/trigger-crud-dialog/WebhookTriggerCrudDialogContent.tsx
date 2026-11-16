@@ -1,6 +1,7 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
 import { TriggerCrudForm } from "./TriggerCrudForm";
+import { WebhookTriggerView } from "./WebhookTriggerView";
 
 interface WebhookTriggerCrudDialogContentProps {
   crudAction: DialogCrudAction;
@@ -11,5 +12,7 @@ export const WebhookTriggerCrudDialogContent = ({
   crudAction,
   rowId,
 }: WebhookTriggerCrudDialogContentProps) => {
-  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update" | "read"} />;
+  if (crudAction === "read") return <WebhookTriggerView rowId={rowId} />;
+
+  return <TriggerCrudForm rowId={rowId} crudAction={crudAction as "create" | "update"} />;
 };

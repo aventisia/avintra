@@ -28,7 +28,7 @@ export const ADD_ON_PRICING = {
       monthly: 5 / 30, // $5 = 30 days, convert to daily rate
       yearly: 5 / 30,
     },
-    label: "Insights and History",
+    label: "Insights and history",
     note: {
       monthly: "$5 = 30 days",
       yearly: "$5 = 30 days",

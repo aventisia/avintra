@@ -8,10 +8,10 @@ import {
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
-import { DTPagination, DataTable } from "@avplatform/ui/data-table";
-import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { TableCN, useTableCN } from "@avplatform/ui/table-cn";
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { PlusIcon, Trash2Icon } from "lucide-react";
 
 import { SelectOption } from "../constants/dropdown-options";
 import { AgentRiskIssueDto } from "../dtos/agent-risk-issue-dto";
@@ -23,11 +23,11 @@ const ISSUE_STATUS_OPTIONS: SelectOption[] = [
   { value: "open", label: "Open" },
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
-  { value: "wont-fix", label: "Won't Fix" },
+  { value: "wont-fix", label: "Won't fix" },
 ];
 
 const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
-  { value: "model-output", label: "Model Output" },
+  { value: "model-output", label: "Model output" },
   { value: "data", label: "Data" },
   { value: "security", label: "Security" },
   { value: "compliance", label: "Compliance" },
@@ -36,15 +36,15 @@ const ISSUE_CATEGORY_OPTIONS: SelectOption[] = [
 ];
 
 const severityBadgeClass: Record<string, string> = {
-  low: "bg-emerald-500/15 text-emerald-600",
-  medium: "bg-amber-500/15 text-amber-600",
-  high: "bg-red-500/15 text-red-600",
-  critical: "bg-red-600/20 text-red-700",
+  low: "border-ok/35 text-ok",
+  medium: "border-warn/35 text-warn",
+  high: "border-bad/35 text-bad",
+  critical: "border-bad bg-bad/10 text-bad",
 };
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -76,7 +76,7 @@ const createEmptyIssue = (flowVersionId: string): AgentRiskIssueDto => ({
  * "Add Issue" button at the top.
  */
 export const IssuesTable = () => {
-  useDocumentTitle("Issues & Violations");
+  useDocumentTitle("Issues & violations");
 
   const selectedAgentId = useAiGovernanceStore((state) => state.selectedAgentId);
   const updateAssessment = useAiGovernanceStore((state) => state.updateAssessment);
@@ -117,7 +117,7 @@ export const IssuesTable = () => {
         const index = row.index;
         return (
           <input
-            className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm"
+            className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
             placeholder="Issue title"
             value={String(getValue() ?? "")}
             onChange={(e) => updateIssue(index, { title: e.target.value })}
@@ -152,7 +152,7 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "detectedOn",
-      header: "Detected On",
+      header: "Detected on",
       cell: ({ row, getValue }) => (
         <DateInput
           value={String(getValue() ?? "")}
@@ -165,7 +165,7 @@ export const IssuesTable = () => {
       header: "Description",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-border bg-background p-2 text-sm"
+          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
           placeholder="Describe the issue"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { description: e.target.value })}
@@ -174,10 +174,10 @@ export const IssuesTable = () => {
     },
     {
       accessorKey: "resolutionNotes",
-      header: "Resolution Notes",
+      header: "Resolution notes",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-border bg-background p-2 text-sm"
+          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
           placeholder="Resolution notes"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { resolutionNotes: e.target.value })}
@@ -191,16 +191,20 @@ export const IssuesTable = () => {
         <button
           type="button"
           onClick={() => removeIssue(row.index)}
-          className="text-muted-foreground hover:text-destructive"
+          className="rounded p-1 text-muted-foreground hover:bg-bad/10 hover:text-bad"
           aria-label="Remove issue"
         >
-          <Trash2Icon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </button>
       ),
     },
   ];
 
-  const table = useDataTable(columns, issues, {}, undefined, false);
+  const { table } = useTableCN({
+    data: issues,
+    columns,
+    queryKeys: { page: "issuesPage", perPage: "issuesPerPage", sort: "issuesSort" },
+  });
 
   if (!assessment || !selectedAgentId) {
     return null;
@@ -214,7 +218,7 @@ export const IssuesTable = () => {
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <button type="button" onClick={goToTable} className="text-muted-foreground">
-                  Agent Risk Registry
+                  Agent risk registry
                 </button>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -224,22 +228,18 @@ export const IssuesTable = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Issues & Violations</BreadcrumbPage>
+              <BreadcrumbPage>Issues & violations</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
-        <Button variant="outline" onClick={addIssue}>
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Add Issue
+        <Button className="gap-2 text-sm tracking-wide" onClick={addIssue}>
+          <PlusIcon className="h-4 w-4" />
+          Add issue
         </Button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <DataTable table={table} columnsLength={columns.length} />
-      </div>
-
-      <DTPagination table={table} />
+      <TableCN table={table} label="Issues" emptyMessage="No issues recorded." />
     </div>
   );
 };

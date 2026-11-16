@@ -1,4 +1,4 @@
-import { DTCrudDialogWrapper } from "@avplatform/ui/data-table";
+import { CrudDialogWrapper } from "@avplatform/ui/crud-dialog";
 import { DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
@@ -27,18 +27,18 @@ export const FlowCrudDialog = ({ children }: React.PropsWithChildren) => {
 
   // Return dialog
   return (
-    <DTCrudDialogWrapper>
+    <CrudDialogWrapper>
       {children}
-      <DialogContent side={"right"} className="!max-w-[32rem]">
+      <DialogContent className="!max-w-[32rem]">
         <DialogDefaultHeader
           className="px-3.5 py-3 text-lg tracking-wide"
           heading={dialogHeaderOptions.heading}
           description={dialogHeaderOptions.description}
         />
-        <ScrollArea className="h-[calc(100vh-3.8rem)] px-2.5 pb-0 pt-4">
+        <ScrollArea className="px-2.5 pb-0 pt-4" viewportClassName="max-h-[calc(85vh-5rem)]">
           <FlowCrudForm />
         </ScrollArea>
       </DialogContent>
-    </DTCrudDialogWrapper>
+    </CrudDialogWrapper>
   );
 };

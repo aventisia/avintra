@@ -1,8 +1,8 @@
 import { type DeploymentType, type IconProps } from "@/ui/types";
 
-type SidebarMenuSectionType = {
+type SidebarMenuSectionType<THub extends string = string> = {
   sectionName: string;
-  menuItems: SidebarMenuItemType[];
+  menuItems: SidebarMenuItemType<THub>[];
   /**
    * Optional component rendered on the same line as the section header, aligned
    * to the right. Typically used for per-section controls (e.g. an environment
@@ -12,7 +12,7 @@ type SidebarMenuSectionType = {
   sectionHeaderAction?: React.ComponentType;
 };
 
-type SidebarMenuItemType = {
+type SidebarMenuItemType<THub extends string = string> = {
   permissions?: string[];
   Icon: React.ComponentType<IconProps>;
   name: string;
@@ -21,10 +21,10 @@ type SidebarMenuItemType = {
   subMenuItems?: SidebarSubMenuItemType[];
   type?: DeploymentType[];
   /**
-   * When true, the item is hidden once the user has completed the Get Started
-   * onboarding guide. Used for the Tenant Admin "Get Started" menu item.
+   * Id of the hub that holds the item: the sidebar shows one entry for the hub instead of
+   * the item, and the hub's pages list its items in their own menu.
    */
-  hideWhenOnboardingComplete?: boolean;
+  hub?: THub;
 };
 
 type SidebarSubMenuItemType = {

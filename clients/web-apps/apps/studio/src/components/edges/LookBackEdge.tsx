@@ -86,14 +86,19 @@ export const LoopBackEdge = memo(
 
     return (
       <>
-        {markerEnd ? <ChevronMarkerEnd edgeId={id} stroke="1" /> : null}
+        {markerEnd ? (
+          <ChevronMarkerEnd
+            edgeId={id}
+            stroke={isLiveEdgeActive ? "var(--ok)" : "var(--line-strong)"}
+          />
+        ) : null}
         <BaseEdge
           id={id}
           path={path}
           markerEnd={markerEnd}
           className={isLiveEdgeActive ? "edge-success" : ""}
           style={{
-            stroke: isLiveEdgeActive ? "#22c55e" : "#94a3b8",
+            stroke: isLiveEdgeActive ? "var(--ok)" : "var(--line-strong)",
             strokeWidth: 1,
             opacity: 0.8, // slightly softer
             fill: "none",

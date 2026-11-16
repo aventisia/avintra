@@ -35,7 +35,7 @@ export const description = "An interactive line chart";
 
 // const chartConfig = {
 //   views: {
-//     label: "Page Views",
+//     label: "Page views",
 //   },
 //   value: {
 //     label: "Value",
@@ -75,7 +75,7 @@ export function ChartLineInteractive({
     <Card className={cn("py-4 sm:py-0", className)}>
       <CardHeader className="!px-8 !pb-0 !pt-4">
         <CardDescription>{title}</CardDescription>
-        <CardTitle>
+        <CardTitle className="font-mono tabular-nums">
           {total.toLocaleString("en-US", {
             maximumFractionDigits: 2,
           })}
