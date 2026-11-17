@@ -79,7 +79,7 @@ public class EmailConnectorsService : IEmailConnectorsService
         }
         catch (AuthenticationException ex)
         {
-            _logger.LogWarning(ex, "The mail server rejected Email credential {CredentialName}.", cloudConnectorReqDto.CredentialName);
+            _logger.LogWarning(ex, "The mail server rejected Email credential {CredentialName}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName));
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = CredentialResolution.ToLogMessage(
                 CredentialResolutionReason.RejectedUpstream,
@@ -113,7 +113,7 @@ public class EmailConnectorsService : IEmailConnectorsService
             !credentialData.TryGetValue("Password", out var passwordValue))
         {
             var missingField = credentialData == null || !credentialData.ContainsKey("Username") ? "Username" : "Password";
-            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, credentialName);
+            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, missingField));
         }
 
@@ -122,13 +122,13 @@ public class EmailConnectorsService : IEmailConnectorsService
 
         if (string.IsNullOrWhiteSpace(username))
         {
-            _logger.LogWarning("Username is null or whitespace for credential Name: {CredentialName}", credentialName);
+            _logger.LogWarning("Username is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "Username"));
         }
 
         if (string.IsNullOrWhiteSpace(password))
         {
-            _logger.LogWarning("Password is null or whitespace for credential Name: {CredentialName}", credentialName);
+            _logger.LogWarning("Password is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "Password"));
         }
 

@@ -271,7 +271,7 @@ public class CamelConnectorService : ICamelConnectorService
 
         if ((int)response.StatusCode is 401 or 403)
         {
-            _logger.LogWarning("Camel harness rejected credential {CredentialName} with status {Status}.", credentialName, (int)response.StatusCode);
+            _logger.LogWarning("Camel harness rejected credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(credentialName), (int)response.StatusCode);
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = CredentialResolution.ToLogMessage(
                 CredentialResolutionReason.RejectedUpstream,

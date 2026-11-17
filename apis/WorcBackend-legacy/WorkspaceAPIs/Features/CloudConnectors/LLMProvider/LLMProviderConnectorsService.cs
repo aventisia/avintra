@@ -174,7 +174,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             {
                 if ((int)response.StatusCode is 401 or 403)
                 {
-                    _logger.LogError("LLM pipeline rejected credential {CredentialName} with status {StatusCode}.", cloudConnectorReqDto.CredentialName, response.StatusCode);
+                    _logger.LogError("LLM pipeline rejected credential {CredentialName} with status {StatusCode}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName), response.StatusCode);
                     serviceResponse.StatusCode = 400;
                     serviceResponse.Message = CredentialResolution.ToLogMessage(
                         CredentialResolutionReason.RejectedUpstream,
@@ -249,7 +249,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             !resolution.Credential.Data.TryGetValue("ApiKey", out var apiKeyValue) ||
             string.IsNullOrWhiteSpace(apiKeyValue?.ToString()))
         {
-            _logger.LogWarning("No 'ApiKey' value in vault credential Data for Name: {CredentialName}", credentialName);
+            _logger.LogWarning("No 'ApiKey' value in vault credential Data for Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "ApiKey"));
         }
 
