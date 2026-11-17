@@ -1,9 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
-import type { SocialProvidersDto } from "@avplatform/ui/dtos";
 
 interface SocialButtonsProps {
   /** The providers this installation offers */
-  providers: SocialProvidersDto;
+  providers: { google: boolean; gitHub: boolean };
 
   /** Called with the client-facing provider name when a button is pressed */
   onProviderClick: (provider: string) => void;

@@ -54,8 +54,13 @@ succeeded, and the session is issued in the controller after that.
   the same single-replica or sticky-session topology applies.
 - **The return path is judged before it is stored.** A `redirect` that is not a site-relative path is
   refused with `400 The redirect URL is not allowed.` after being decoded once, so an absolute URL, a
-  protocol-relative path, a backslash form or a control character never reaches the state; this is the
-  same rule the accounts app applies after decoding.
+  protocol-relative path, a backslash form or a control character never reaches the state; the accounts
+  app reduces a same-origin absolute URL to its path before calling, then the same rule applies.
+- **A linked provider is offered before the password.** `tenant-info` returns `socialLoginProvider`
+  whenever the account has a Google/GitHub login and the deployment offers and configures it, even when
+  the account also has a password; `hasPassword` tells the client to keep the password form as the
+  fallback. Setting a first password is limited to linked accounts, so a single sign-on account cannot
+  gain one.
 - **Single sign-on wins.** When the person's domain belongs to a tenant that is offered single sign-on,
   the callback returns that tenant's Entra URL and nothing is created or linked. Community deployments
   never take that branch.

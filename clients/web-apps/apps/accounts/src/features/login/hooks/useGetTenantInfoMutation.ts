@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
 
 import { hasPlanIntent } from "@/constants/post-login-destination";
+import { getSameOriginRedirectPath } from "@/features/sso-redirect/utils/same-origin-redirect.util";
 
 import { useLoginStore } from "../stores/login-store";
 
@@ -28,11 +29,12 @@ const isMicrosoftLoginUrl = (url: string) => {
 
 export const useGetTenantInfoMutation = () => {
   // Get store state and actions
-  const { setStepNo, setLoginData, setSocialLoginProvider } = useLoginStore(
+  const { setStepNo, setLoginData, setSocialLoginProvider, setHasPassword } = useLoginStore(
     useShallow((state) => ({
       setStepNo: state.setStepNo,
       setLoginData: state.setLoginData,
       setSocialLoginProvider: state.setSocialLoginProvider,
+      setHasPassword: state.setHasPassword,
     })),
   );
 
@@ -55,14 +57,14 @@ export const useGetTenantInfoMutation = () => {
       // Fallback to the existing tenant-info contract when the domain has no active single sign-on
       const tenantInfo = await getTenantInfo(postObj);
 
-      // A passwordless account skips the password step: resolve its provider URL here
+      // An account without a password can only use its provider: resolve that URL here
       const socialProvider = tenantInfo?.data?.socialLoginProvider ?? null;
-      if (socialProvider) {
+      if (socialProvider && !tenantInfo?.data?.hasPassword) {
         try {
           const redirect = new URLSearchParams(window.location.search).get("redirect");
           const loginUrlResponse = await getSocialLoginUrl(
             socialProvider,
-            redirect,
+            getSameOriginRedirectPath(redirect, window.location.origin),
             hasPlanIntent(),
           );
           return {
@@ -113,10 +115,11 @@ export const useGetTenantInfoMutation = () => {
           pwd: "",
         });
 
-        // A passwordless account can only continue with the provider it is linked to
+        // A linked provider is offered before the password; without a password it is the only way in
         setSocialLoginProvider(tenantInfo.data.socialLoginProvider ?? null);
+        setHasPassword(tenantInfo.data.hasPassword ?? false);
 
-        // Skip the password step and go straight to the provider; fall back to it only when the URL could not be resolved
+        // A passwordless account goes straight to its provider; fall back to it only when the URL could not be resolved
         if (socialLoginUrl) {
           window.location.assign(socialLoginUrl);
           return;
