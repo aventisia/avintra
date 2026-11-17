@@ -184,7 +184,8 @@ LIVEKIT_API_KEY=devkey
 LIVEKIT_API_SECRET=secret
 LIVEKIT_AGENT_NAME=avintra-voice-agent
 
-# Direct local APIs (the default builds https://<APP_BASE_URL>/api instead)
+# Direct local APIs (the default builds https://<APP_BASE_URL>/workspace/api instead;
+# local bypasses nginx, so the path is /api, not /workspace/api)
 WORKSPACE_API_URL=https://localhost:4001/api
 ```
 
@@ -218,7 +219,7 @@ in production.
 | `LIVEKIT_WS_URL` | llmpipeline, worker | WebSocket URL returned to the caller and used by the worker; derived from `LIVEKIT_HTTP_URL` when unset. |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | llmpipeline, worker | LiveKit API credentials. Never expose these to the browser. |
 | `LIVEKIT_AGENT_NAME` | llmpipeline, worker | Dispatch/registration name; defaults to `avintra-voice-agent`. |
-| `WORKSPACE_API_URL` | worker | WorkspaceAPIs base including `/api`; defaults to `https://<APP_BASE_URL>/api`. |
+| `WORKSPACE_API_URL` | worker | WorkspaceAPIs base including `/workspace/api`; defaults to `https://<APP_BASE_URL>/workspace/api`. |
 | `APP_BASE_URL` | llmpipeline, worker | Default WorkspaceAPIs host and worker-token issuer/audience. |
 | `JWT_SECRET_KEY` | llmpipeline, worker | Signs the short-lived worker credential. |
 | `SSL_VERIFY` | worker | Set `false` only for a local self-signed WorkspaceAPIs certificate. |

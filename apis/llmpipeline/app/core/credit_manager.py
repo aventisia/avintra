@@ -2,12 +2,12 @@ import json
 import uuid
 import requests
 from app.core.logger import logger
-from app.core.config import settings
+from app.core.config import accounts_api_url, settings
 
 class CreditManagerService:
     # Constructor: To initialize API URL and key (if any)
-    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/accounts/api/credit-usage"):
-        self.api_url = api_url
+    def __init__(self, api_url: str | None = None):
+        self.api_url = api_url or f"{accounts_api_url()}/credit-usage"
 
     # Check if user has sufficient credits
     def has_sufficient_credits(self, task: str, jwt: str) -> dict:
