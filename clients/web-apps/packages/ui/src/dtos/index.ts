@@ -13,7 +13,6 @@ export * from "./response/created-verification-code-dto";
 export * from "./response/branding-dto";
 export * from "./response/record-inserted-dto";
 export * from "./response/social-callback-dto";
-export * from "./response/social-providers-dto";
 export * from "./response/sso-discover-dto";
 export * from "./response/tenant-info-dto";
 export * from "./response/true-false-result-dto";
