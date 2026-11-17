@@ -17,6 +17,7 @@ import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.
 
 import { getVaultCredentialType } from "./integration-catalog.js";
 import { getNodeFieldMapping } from "./node-field-mappings/index.js";
+import { PLUGIN_DESCRIPTIONS } from "../plugin-descriptions.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -706,11 +707,12 @@ export function toPluginMetadata(
   const providerName = PLUGIN_DISPLAY_NAMES[id]
     ?? raw.oauthConfig?.providerName
     ?? titleCase(id);
-  const pkgDescription = readPackageDescription(id);
+  const pkgDescription = PLUGIN_DESCRIPTIONS[id] ? undefined : readPackageDescription(id);
   const description =
-    pkgDescription && pkgDescription.trim().length > 0
+    PLUGIN_DESCRIPTIONS[id]
+    ?? (pkgDescription && pkgDescription.trim().length > 0
       ? pkgDescription
-      : `Work with ${providerName} services via Corsair.`;
+      : `Work with ${providerName} services via Corsair.`);
 
   const actionDescriptions: Record<string, string> = {};
   for (const [action, meta] of Object.entries(raw.endpointMeta ?? {})) {
