@@ -1,9 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
-import type { SocialProvidersDto } from "@avplatform/ui/dtos";
 
 interface SocialButtonsProps {
   /** The providers this installation offers */
-  providers: SocialProvidersDto;
+  providers: { google: boolean; gitHub: boolean };
 
   /** Called with the client-facing provider name when a button is pressed */
   onProviderClick: (provider: string) => void;
@@ -14,7 +13,7 @@ interface SocialButtonsProps {
 const SocialButtons = ({ providers, onProviderClick, disabled }: SocialButtonsProps) => {
   return (
     <div className="flex w-full flex-col gap-3 xs:flex-row">
-<      {providers.google && (
+      {providers.google && (
         <Button
           className="text-md h-11 flex-grow"
           variant="outline"

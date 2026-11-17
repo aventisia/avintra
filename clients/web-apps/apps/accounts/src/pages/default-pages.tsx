@@ -15,8 +15,13 @@ const NotFoundWithLayoutPage = () => (
   <BaseNotFoundWithLayoutPage appLogo={appLogo} minimalFooter={minimalFooter} />
 );
 
-const RedirectPage = ({ className }: { className?: string }) => (
-  <BaseRedirectPage appLogo={appLogo} minimalFooter={minimalFooter} className={className} />
+const RedirectPage = ({ className, message }: { className?: string; message?: string }) => (
+  <BaseRedirectPage
+    appLogo={appLogo}
+    minimalFooter={minimalFooter}
+    className={className}
+    message={message}
+  />
 );
 
 export { ErrorPage, NotFoundWithLayoutPage, RedirectPage };

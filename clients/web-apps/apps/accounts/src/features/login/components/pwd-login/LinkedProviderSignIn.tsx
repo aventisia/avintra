@@ -6,9 +6,10 @@ import { useSocialSignInMutation } from "@/features/social-sign-in";
 import { useLoginStore } from "../../stores/login-store";
 
 /**
- * Step two of a passwordless account: it can only sign in with the provider it is linked to.
+ * Offers the provider a social account is linked to. It is the only way in when the account has no
+ * password, and sits above the password form when it has one.
  */
-export const SocialOnlySignIn = () => {
+export const LinkedProviderSignIn = () => {
   const { socialLoginProvider } = useLoginStore(
     useShallow((state) => ({
       socialLoginProvider: state.socialLoginProvider,

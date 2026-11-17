@@ -54,8 +54,13 @@ succeeded, and the session is issued in the controller after that.
   the same single-replica or sticky-session topology applies.
 - **The return path is judged before it is stored.** A `redirect` that is not a site-relative path is
   refused with `400 The redirect URL is not allowed.` after being decoded once, so an absolute URL, a
-  protocol-relative path, a backslash form or a control character never reaches the state; this is the
-  same rule the accounts app applies after decoding.
+  protocol-relative path, a backslash form or a control character never reaches the state; the accounts
+  app reduces a same-origin absolute URL to its path before calling, then the same rule applies.
+- **A linked provider is offered before the password.** `tenant-info` returns `socialLoginProvider`
+  whenever the account has a Google/GitHub login and the deployment offers and configures it, even when
+  the account also has a password; `hasPassword` tells the client to keep the password form as the
+  fallback. Setting a first password is limited to linked accounts, so a single sign-on account cannot
+  gain one.
 - **Single sign-on wins.** When the person's domain belongs to a tenant that is offered single sign-on,
   the callback returns that tenant's Entra URL and nothing is created or linked. Community deployments
   never take that branch.
@@ -147,5 +152,17 @@ succeeded, and the session is issued in the controller after that.
 - OAuth app registration, scopes, publishing, and troubleshooting:
   [Google](GOOGLE_OAUTH_APP_REGISTRATION.md) and
   [GitHub](GITHUB_OAUTH_APP_REGISTRATION.md).
+- Social sign-in is configured per provider with `GOOGLE_OAUTH_CLIENT_ID` /
+  `GOOGLE_OAUTH_CLIENT_SECRET` and `GITHUB_OAUTH_CLIENT_ID` /
+  `GITHUB_OAUTH_CLIENT_SECRET` (see `AccountsAPIs/.env.example`). Set only the
+  pair whose button should work; an unset pair answers
+  `400 Social sign-in is not configured.` from the login-url and callback
+  endpoints, and with both unset the flow is off. The buttons render regardless;
+  the backend is the gate.
+- On Enterprise on-prem installs social sign-in is refused: the login-url,
+  callback, link and resend endpoints answer `400`, so the company-domain
+  emailed-code signup rule is unchanged. The desktop app hides the buttons.
+- The binding cookie is `Secure` with `SameSite=None`, so the accounts app must
+  be served over HTTPS, otherwise every callback fails binding validation.
 - No tenant credential is stored, so there is no key material or tenant secret to persist, rotate or back up.
   The DataProtection key directory used only for tenant secrets was removed together with the BYO path.

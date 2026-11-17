@@ -41,7 +41,7 @@ public partial class LoginWithExternalAuthService
 
         var providerName = SocialAuthHelpers.GetProviderName(provider);
         // IMPORTANT NOTE: explicit allowlist mirrors GetProviderName so CodeQL sees only Google/GitHub reach the URL builders below.
-        if (providerName == null || (provider != ExternalAuthProviderEnum.Google && provider != ExternalAuthProviderEnum.GitHub) || !IsSocialOffered())
+        if (providerName == null || (provider != ExternalAuthProviderEnum.Google && provider != ExternalAuthProviderEnum.GitHub) || !SocialAuthHelpers.IsSocialOffered(_environmentConfig))
         {
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = "Unsupported authentication provider.";
@@ -55,7 +55,7 @@ public partial class LoginWithExternalAuthService
             return serviceResponse;
         }
 
-        if (!IsSocialConfigured(provider))
+        if (!SocialAuthHelpers.IsSocialConfigured(_environmentConfig, provider))
         {
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = SocialAuthHelpers.NotConfiguredMessage;
@@ -124,10 +124,10 @@ public partial class LoginWithExternalAuthService
             return ServiceResponse<SocialSignInResultDto>.Create("Invalid or expired sign-in attempt.", 400);
 
         var provider = SocialAuthHelpers.ParseProvider(authState.Provider);
-        if (provider == null || !IsSocialOffered())
+        if (provider == null || !SocialAuthHelpers.IsSocialOffered(_environmentConfig))
             return ServiceResponse<SocialSignInResultDto>.Create("Invalid or expired sign-in attempt.", 400);
 
-        if (!IsSocialConfigured(provider.Value))
+        if (!SocialAuthHelpers.IsSocialConfigured(_environmentConfig, provider))
             return ServiceResponse<SocialSignInResultDto>.Create(SocialAuthHelpers.NotConfiguredMessage, 400);
 
         if (!IsBindingValid(authState, state!))
@@ -154,7 +154,7 @@ public partial class LoginWithExternalAuthService
         if (_environmentConfig.OnPremLoginDisabled)
             return ServiceResponse<SocialSignInResultDto>.Create(SocialAuthHelpers.LoginDisabledMessage, 403);
 
-        if (!IsSocialOffered())
+        if (!SocialAuthHelpers.IsSocialOffered(_environmentConfig))
             return ServiceResponse<SocialSignInResultDto>.Create("Invalid or expired sign-in attempt.", 400);
 
         var pendingLink = await GetSocialLinkChallengeAsync(socialLinkVerifyDto.VerificationCodeId);
@@ -219,7 +219,7 @@ public partial class LoginWithExternalAuthService
         if (_environmentConfig.OnPremLoginDisabled)
             return ServiceResponse<SocialSignInResultDto>.Create(SocialAuthHelpers.LoginDisabledMessage, 403);
 
-        if (!IsSocialOffered())
+        if (!SocialAuthHelpers.IsSocialOffered(_environmentConfig))
             return ServiceResponse<SocialSignInResultDto>.Create("Invalid or expired sign-in attempt.", 400);
 
         var parsedProvider = SocialAuthHelpers.ParseProvider(provider);
@@ -698,21 +698,6 @@ public partial class LoginWithExternalAuthService
     }
 
     private string BuildSocialRedirectUrl() => $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
-
-    private bool IsSocialOffered() =>
-        !_environmentConfig.OnPremLoginDisabled
-        && _environmentConfig.OnPremTenantType != OnPremTenantTypesEnum.Enterprise.ToString();
-
-    private bool IsSocialConfigured(ExternalAuthProviderEnum provider) => provider switch
-    {
-        ExternalAuthProviderEnum.Google =>
-            !string.IsNullOrWhiteSpace(_environmentConfig.GoogleOAuthClientId)
-            && !string.IsNullOrWhiteSpace(_environmentConfig.GoogleOAuthClientSecret),
-        ExternalAuthProviderEnum.GitHub =>
-            !string.IsNullOrWhiteSpace(_environmentConfig.GitHubOAuthClientId)
-            && !string.IsNullOrWhiteSpace(_environmentConfig.GitHubOAuthClientSecret),
-        _ => false
-    };
 
     private bool IsBindingValid(SsoAuthStateDto authState, string state)
     {

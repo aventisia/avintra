@@ -8,6 +8,7 @@ interface RedirectPageProps {
   appLogo: React.ReactNode;
   minimalFooter: React.ReactNode;
   className?: string;
+  message?: string;
 }
 
 /**
@@ -18,6 +19,7 @@ interface RedirectPageProps {
  * @param {React.ReactNode} props.appLogo - The logo to display at the top of the page.
  * @param {React.ReactNode} props.minimalFooter - The footer to display at the bottom of the page.
  * @param {string} [props.className] - Additional CSS class names to apply to the root container.
+ * @param {string} [props.message] - Loading or wait message; overrides the `msg` query parameter.
  *
  * @returns {JSX.Element} A JSX element representing the redirect page.
  *
@@ -36,10 +38,10 @@ interface RedirectPageProps {
  * />
  * ```
  */
-const RedirectPage = ({ appLogo, minimalFooter, className }: RedirectPageProps) => {
+const RedirectPage = ({ appLogo, minimalFooter, className, message }: RedirectPageProps) => {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url");
-  const message = searchParams.get("msg"); // loading or wait message
+  const text = message ?? searchParams.get("msg"); // loading or wait message
 
   useEffect(() => {
     if (url) {
@@ -69,7 +71,7 @@ const RedirectPage = ({ appLogo, minimalFooter, className }: RedirectPageProps) 
       </div>
       <div className="-mt-4 flex items-center gap-3 text-body text-ink-2">
         <LoadingSpinner className="size-6 text-primary-text" />
-        {message}
+        {text}
       </div>
       {minimalFooter}
     </div>

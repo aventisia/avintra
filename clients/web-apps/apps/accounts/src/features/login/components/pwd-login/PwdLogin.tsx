@@ -1,3 +1,4 @@
+import { SeparatorWithText } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useShallow } from "zustand/react/shallow";
 
@@ -5,33 +6,40 @@ import { ContentContainer } from "@/components/ui/ContentContainer";
 
 import { useLoginStore } from "../../stores/login-store";
 import { GoToResetPwd } from "./GoToResetPwd";
+import { LinkedProviderSignIn } from "./LinkedProviderSignIn";
 import { PwdLoginForm } from "./PwdLoginForm";
 import { PwdLoginHeader } from "./PwdLoginHeader";
-import { SocialOnlySignIn } from "./SocialOnlySignIn";
 
 export const PwdLogin = () => {
   // Set dcoument title
   useDocumentTitle("Login");
 
-  // A passwordless account signs in with its provider instead of a password
-  const { socialLoginProvider } = useLoginStore(
+  // A linked provider is offered first; a passwordless account has nothing else
+  const { socialLoginProvider, hasPassword } = useLoginStore(
     useShallow((state) => ({
       socialLoginProvider: state.socialLoginProvider,
+      hasPassword: state.hasPassword,
     })),
   );
+
+  const isSocialOnly = Boolean(socialLoginProvider) && !hasPassword;
 
   // Return component
   return (
     <ContentContainer className="fadeInRTL">
       {/* Back to Get Tenant Info + Email + Heading */}
       <PwdLoginHeader
-        heading={socialLoginProvider ? `This account uses ${socialLoginProvider}` : undefined}
+        heading={isSocialOnly ? `This account uses ${socialLoginProvider}` : undefined}
       />
 
-      {socialLoginProvider ? (
-        /* Social-only account */
-        <SocialOnlySignIn />
-      ) : (
+      {socialLoginProvider && (
+        <>
+          <LinkedProviderSignIn />
+          {hasPassword && <SeparatorWithText width="98%" overlayText="or continue with password" />}
+        </>
+      )}
+
+      {(!socialLoginProvider || hasPassword) && (
         <>
           {/* Pwd login */}
           <PwdLoginForm />
