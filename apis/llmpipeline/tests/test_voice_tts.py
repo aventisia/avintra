@@ -117,7 +117,6 @@ def test_tts_request_carries_voice_byok_pronunciations_and_credit_references():
     assert request.ref_id == str(FLOW_ID)
     assert request.ref_name == "Support Agent"
     assert request.action == "AgentExecution"
-    assert request.agent_name == "Support Agent"
     assert request.input == ""
 
 

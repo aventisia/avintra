@@ -205,6 +205,8 @@ def test_byok_streamed_seconds_post_one_usage_entry(monkeypatch):
     assert entry["UnitType"] == "Seconds"
     assert entry["CredentialName"] == "caller-stt-key"
     assert entry["RefId"] == str(FLOW_ID)
+    assert entry["RefName"] == "Support Agent"
+    assert entry["TriggeredByAgent"] == "Support Agent"
 
 
 def test_a_posting_failure_does_not_escape_the_flush(monkeypatch):

@@ -64,7 +64,6 @@ def _request(
         ref_id=str(FLOW_ID),
         ref_name="Support Agent",
         action="AgentExecution",
-        agent_name="Support Agent",
     )
 
 

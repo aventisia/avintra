@@ -117,7 +117,6 @@ def build_voice_llm_request(
         ref_id=str(claims.flow_id),
         ref_name=agent_name,
         action="AgentExecution",
-        agent_name=agent_name or None,
     )
 
 
