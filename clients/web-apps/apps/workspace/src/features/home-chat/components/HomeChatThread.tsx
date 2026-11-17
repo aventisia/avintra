@@ -63,7 +63,6 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         provider: selectedModel.provider,
         model: selectedModel.modelId,
         credentialName: selectedModel.credentialName ?? undefined,
-        isByokEnabled: selectedModel.isByokEnabled,
         reasoningEffort: (selectedModel.supportsEffort && effort) || undefined,
       }
     : null;

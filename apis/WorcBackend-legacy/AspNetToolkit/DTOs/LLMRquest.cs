@@ -42,11 +42,6 @@ public class LLMRequest
     public int? MaxOutputTokens { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether BYOK (Bring Your Own Key) is enabled for this request.
-    /// </summary>
-    public bool IsBYOKEnabled { get; set; } = false;
-
-    /// <summary>
     /// Gets or sets the credential NAME associated with BYOK (Bring Your Own Key) support.
     /// </summary>
     public string? CredentialName { get; set; }

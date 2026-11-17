@@ -111,7 +111,6 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             bool isJsonOutput = root.TryGetProperty("is_json_output", out var jsonOutProp) ? jsonOutProp.GetBoolean() : false;
             string? jsonSchema = root.TryGetProperty("json_schema", out var schemaProp) ? schemaProp.GetString() : null;
             int? maxOutputTokens = root.TryGetProperty("max_output_tokens", out var maxTokensProp) ? maxTokensProp.GetInt32() : null;
-            bool isByokEnabled = root.TryGetProperty("is_byok_enabled", out var byokProp) ? byokProp.GetBoolean() : false;
             float temperature = root.TryGetProperty("temperature", out var tempProp) ? tempProp.GetSingle() : 1.0f;
             float topP = root.TryGetProperty("top_p", out var topPProp) ? topPProp.GetSingle() : 1.0f;
             bool stream = root.TryGetProperty("stream", out var streamProp) ? streamProp.GetBoolean() : false;
@@ -131,7 +130,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             }
 
             // credential_name (if passed in payload, override or echo back) - now carries the credential NAME
-            string? payloadCredentialName = ReadCredentialName(root) ?? cloudConnectorReqDto.CredentialName;
+            string? payloadCredentialName = CredentialReferenceUtil.Resolve(root) ?? cloudConnectorReqDto.CredentialName;
 
             // Build FINAL Payload for Internal LLM Pipeline API
             var llmPipelinePayload = new Dictionary<string, object?>
@@ -143,7 +142,6 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 ["is_json_output"] = isJsonOutput,
                 ["json_schema"] = jsonSchema,
                 ["max_output_tokens"] = maxOutputTokens,
-                ["is_byok_enabled"] = isByokEnabled,
                 ["credential_name"] = payloadCredentialName ?? string.Empty,
                 ["temperature"] = temperature,
                 ["top_p"] = topP,
@@ -251,15 +249,4 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
         return (apiKey, organization);
     }
 
-    // Reads a credential reference from a JSON payload. Accepts the canonical
-    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
-    private static string? ReadCredentialName(JsonElement root)
-    {
-        if (root.TryGetProperty("credential_name", out var nameProp))
-        {
-            var name = nameProp.GetString();
-            if (!string.IsNullOrWhiteSpace(name)) return name;
-        }
-        return null;
-    }
 }

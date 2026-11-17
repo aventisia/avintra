@@ -113,32 +113,24 @@ def _pipeline_configuration_problems(
             "speech-to-text",
             stt_request.provider,
             stt_request.model,
-            stt_request.is_byok_enabled,
-            stt_request.credential_name,
         ),
         (
             "language model",
             llm_settings.get("provider"),
             llm_settings.get("model"),
-            bool(llm_settings.get("isByokEnabled")),
-            llm_settings.get("credentialName"),
         ),
         (
             "text-to-speech",
             tts_request.provider,
             tts_request.model,
-            tts_request.is_byok_enabled,
-            tts_request.credential_name,
         ),
     )
 
     problems: list[tuple[str, str]] = []
-    for label, provider, model, is_byok_enabled, credential_name in components:
+    for label, provider, model in components:
         code = configuration_error_code(
             provider=provider,
             model=model,
-            is_byok_enabled=is_byok_enabled,
-            credential_name=credential_name,
         )
         if code is not None:
             problems.append((code, f"voice agent {label} is not configured"))

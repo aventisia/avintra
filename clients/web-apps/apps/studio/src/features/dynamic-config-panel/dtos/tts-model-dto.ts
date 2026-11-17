@@ -16,7 +16,6 @@ export interface TTSRequestDto {
   stream: boolean;
 
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
 
   ref_type: string;
   ref_id: string;
@@ -37,7 +36,6 @@ export interface TTSResponseDto {
   stream: boolean;
 
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
 
   ref_id?: string | null;
   ref_type?: string | null;

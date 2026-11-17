@@ -14,7 +14,11 @@ from livekit.plugins import google, openai
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
-from app.features.litellm.core.credentials import CredentialResolution, resolve_credentials
+from app.features.litellm.core.credentials import (
+    CredentialResolution,
+    is_byok,
+    resolve_credentials,
+)
 
 from .contracts import (
     ERROR_CODE_CREDENTIALS_UNAVAILABLE,
@@ -84,19 +88,20 @@ def build_realtime_model(agent_settings: dict, user: User) -> llm.RealtimeModel:
             code=ERROR_CODE_UNSUPPORTED_PROVIDER,
         )
 
-    code = configuration_error_code(
-        provider=provider,
-        model=model,
-        is_byok_enabled=bool(realtime_settings.get("isByokEnabled")),
-        credential_name=realtime_settings.get("credentialName"),
-    )
+    code = configuration_error_code(provider=provider, model=model)
     if code is not None:
-        message = (
-            "Realtime voice provider and model are required."
-            if code == ERROR_CODE_INVALID_CONFIG
-            else "Realtime voice requires a BYOK credential."
+        raise RealtimeConfigurationError(
+            "Realtime voice provider and model are required.",
+            code=code,
         )
-        raise RealtimeConfigurationError(message, code=code)
+
+    # IMPORTANT NOTE: realtime is BYOK-only (see VoiceAgentGraphHelpers.ValidateRealtimeEngine);
+    # a blank credential must fail closed instead of falling back to the platform key.
+    if not is_byok(realtime_settings.get("credentialName")):
+        raise RealtimeConfigurationError(
+            "Realtime voice requires a BYOK credential.",
+            code=ERROR_CODE_CREDENTIALS_UNAVAILABLE,
+        )
 
     credentials = _resolve_credentials(provider, realtime_settings, user)
     voice_settings = agent_settings.get("ttsVoice") or {}
@@ -130,7 +135,6 @@ def _resolve_credentials(
     try:
         credentials = resolve_credentials(
             provider,
-            bool(realtime_settings.get("isByokEnabled")),
             realtime_settings.get("credentialName") or None,
             user,
         )

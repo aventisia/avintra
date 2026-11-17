@@ -13,6 +13,9 @@ from datetime import datetime
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
 from fastapi import HTTPException
 from app.utils.file_converter_utils import file_to_base64
 
@@ -26,8 +29,7 @@ class OllamaProvider(BaseLLMProvider):
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to Ollama provider with model: {llm_request.model}")
     
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
@@ -93,7 +95,15 @@ class OllamaProvider(BaseLLMProvider):
                     output = response_data.get("message", {}).get("content", "")
                     
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, response_data)
+                return self._create_final_llm_response(
+                    llm_request,
+                    default_llm_response_obj,
+                    start_time,
+                    output,
+                    user.access_token,
+                    response_data,
+                    user.space_id,
+                )
                 
         except Exception as e:
             log_exception(logger, e, "Ollama llm transactional request error: ", response_data.get('error', '')) # TODO: response_data may not have 'error' key. Not clearly documented in Ollama API docs.
@@ -104,8 +114,7 @@ class OllamaProvider(BaseLLMProvider):
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.info(f"[STREAMING] Prompt sent to Ollama provider with model: {llm_request.model}")
         
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
@@ -186,7 +195,15 @@ class OllamaProvider(BaseLLMProvider):
                             # Break if done and yield the final llm response
                             if is_done:
                                 output = extract_json_from_llm_response(buffer_output) if llm_request.is_json_output else ""
-                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, chunk)
+                                final_llm_response = self._create_final_llm_response(
+                                    llm_request,
+                                    default_llm_response_obj,
+                                    start_time,
+                                    output,
+                                    user.access_token,
+                                    chunk,
+                                    user.space_id,
+                                )
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
                             
@@ -297,13 +314,12 @@ class OllamaProvider(BaseLLMProvider):
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
-            is_byok_enabled=llm_request.is_byok_enabled,
             credential_name=llm_request.credential_name,
             error=None
         )
      
     # Helper: Create final llm_response object with actual values
-    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data, space_id: str = None) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -327,8 +343,100 @@ class OllamaProvider(BaseLLMProvider):
         llm_response.output_tokens = response_data.get("eval_count", 0)
         llm_response.output_reasoning_tokens = 0 # Ollama does not provide reasoning tokens info
 
+        if not is_byok(llm_request.credential_name):
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.debug(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
+
+            # Prepare the credit usage data
+            credit_usage_data = []
+            if (llm_response.input_tokens or 0) > 0:
+                credit_usage_data.append({
+                    "ServiceType": "CustomInputService",
+                    "ConsumedUnit": llm_response.input_tokens,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.ref_name,
+                    "SpaceId": space_id
+                })
+            if (llm_response.output_tokens or 0) > 0:
+                credit_usage_data.append({
+                    "ServiceType": "CustomOutputService",
+                    "ConsumedUnit": llm_response.output_tokens,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.ref_name,
+                    "SpaceId": space_id
+                })
+
+            if not credit_usage_data:
+                logger.debug(f"No credit usage to post for request ID {llm_request.ref_id}.")
+                return llm_response
+
+            # Initialize the CreditManagerService
+            credit_manager = CreditManagerService()
+
+            # Post the credit usage data
+            try:
+                credit_manager.post_credit_usage(task="ollama", request=credit_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+
+        else:
+            try:
+                byok_usage_data = self._build_ollama_byok_usage(llm_request, llm_response, space_id, jwt)
+
+                if not byok_usage_data:
+                    logger.debug(f"No BYOK usage to post for request ID {llm_request.ref_id}.")
+                    return llm_response
+
+                byok_manager = ByokUsageManager()
+
+                byok_manager.post_byok_usage(task="ollama", request=byok_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted BYOK usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post BYOK usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+
         # Return the final llm_response
         return llm_response
+
+    def _build_ollama_byok_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None, jwt: str = None):
+        input_tokens = max(llm_response.input_tokens or 0, 0)
+        output_tokens = max(llm_response.output_tokens or 0, 0)
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(llm_request.credential_name, jwt=jwt)
+
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "Provider": llm_request.provider,
+                "Model": llm_request.model,
+                "ConsumedUnit": tokens,
+                "UnitType": "Tokens",
+                "CredentialName": credential_name,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.ref_name,
+                "SpaceId": space_id,
+            }
+
+        entries = []
+        if input_tokens > 0:
+            entries.append(build_entry("CustomInputService", input_tokens))
+        if output_tokens > 0:
+            entries.append(build_entry("CustomOutputService", output_tokens))
+
+        return entries
 
     # Helper: Map Ollama done_reason to LLMResponse status
     def _map_ollama_done_reason_to_status(self, done_reason: str) -> str:
@@ -352,7 +460,7 @@ class OllamaProvider(BaseLLMProvider):
         logger.info(f"[EMBEDDING] Request sent to Ollama with model: {embedding_request.model}")
 
         # Handle BYOK or credits (same as LLM)
-        if embedding_request.is_byok_enabled and embedding_request.credential_name:
+        if is_byok(embedding_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
             credential = vault_credential_manager.get_vault_credential_secret_by_name(
                 credential=embedding_request.credential_name,
@@ -412,13 +520,12 @@ class OllamaProvider(BaseLLMProvider):
                     created_on=datetime.now(timezone.utc),
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=estimated_tokens,
-                    is_byok_enabled=embedding_request.is_byok_enabled,
                     credential_name=embedding_request.credential_name,
                     status="completed"
                 )
 
                 # Credit usage
-                if not embedding_request.is_byok_enabled and not embedding_request.credential_name:
+                if not is_byok(embedding_request.credential_name):
                     credit_usage = self._build_ollama_embedding_credit_usage(
                         embedding_request,
                         embedding_response,
@@ -431,6 +538,26 @@ class OllamaProvider(BaseLLMProvider):
                         request=credit_usage,
                         jwt=user.access_token
                     )
+
+                else:
+                    byok_usage = self._build_ollama_embedding_byok_usage(
+                        embedding_request,
+                        embedding_response,
+                        user.space_id,
+                        user.access_token
+                    )
+
+                    byok_manager = ByokUsageManager()
+                    try:
+                        if byok_usage:
+                            byok_manager.post_byok_usage(
+                                task="ollama",
+                                request=byok_usage,
+                                jwt=user.access_token
+                            )
+                            logger.debug("Embedding BYOK usage posted successfully.")
+                    except Exception as e:
+                        logger.error(f"Failed to post embedding BYOK usage: {str(e)}")
 
                 return embedding_response
 
@@ -470,6 +597,50 @@ class OllamaProvider(BaseLLMProvider):
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": "embedding",
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
+        }]
+
+    def _build_ollama_embedding_byok_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
+        jwt: str = None,
+    ):
+        model_name = (embedding_request.model or "").strip().lower()
+
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        if input_tokens <= 0:
+            return []
+
+        # Map models (customize as needed)
+        MODEL_MAP = {
+            "nomic-embed-text": "OllamaNomicEmbedding",
+            "mxbai-embed-large": "OllamaMxbaiEmbedding",
+        }
+
+        service_type = MODEL_MAP.get(model_name)
+
+        if not service_type:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_type = f"{normalized}Embedding"
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(embedding_request.credential_name, jwt=jwt)
+
+        return [{
+            "ServiceType": service_type,
+            "Provider": embedding_request.provider,
+            "Model": embedding_request.model,
+            "ConsumedUnit": input_tokens,
+            "UnitType": "Tokens",
+            "CredentialName": credential_name,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,

@@ -1,12 +1,15 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Literal, Dict, Any
 from datetime import datetime
 
+from app.features.litellm.core.legacy_byok import LegacyByokWarningModel
+
 # Request and response schemas for TTS providers
-class TTSProviderRequest(BaseModel):
+class TTSProviderRequest(LegacyByokWarningModel):
     """
     Standard request schema for all TTS providers.
     """
+    model_config = ConfigDict(extra="ignore")
 
     provider: str
     input: str
@@ -16,7 +19,6 @@ class TTSProviderRequest(BaseModel):
     speed: Optional[float] = 1.0
     stream: bool = Field(False)
     credential_name: Optional[str] = Field(None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: Optional[bool] = Field(False)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str # Identifier to link back to Agent/Workflow
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
@@ -33,7 +35,6 @@ class TTSProviderResponse(BaseModel):
     output: Optional[str] = Field(None)
     stream: bool = Field(False)
     credential_name: Optional[str] = Field(None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: Optional[bool] = Field(False)
     ref_id: Optional[str] = Field(None)
     ref_type: Optional[str] = Field(None)
     ref_name: Optional[str] = Field(None)

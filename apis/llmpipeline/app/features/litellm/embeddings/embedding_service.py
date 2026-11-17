@@ -17,6 +17,7 @@ from ..core.credit_utils import (
     post_platform_credit_usage,
     should_record_byok,
 )
+from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
 from ..core.schemas import EmbeddingRequest, EmbeddingResponse
@@ -40,10 +41,10 @@ class EmbeddingService:
         self._litellm = litellm_service
 
     async def embed(self, req: EmbeddingRequest, user: User) -> EmbeddingResponse:
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
+        validate_provider(req.provider, req.credential_name)
+        validate_model(req.provider, req.model, req.credential_name)
 
-        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
+        check_sufficient_credits(req.credential_name, req.provider, user.access_token)
         texts = _normalize_input(req.input)
         start = time.perf_counter()
 
@@ -80,7 +81,6 @@ class EmbeddingService:
             embeddings=embeddings,
             time_taken=round(time.perf_counter() - start, 2),
             input_tokens=input_tokens,
-            is_byok_enabled=req.is_byok_enabled,
             credential_name=req.credential_name,
             status="completed",
         )
@@ -90,8 +90,7 @@ class EmbeddingService:
         return response
 
     def _post_credit_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
-        # Only post usage for platform (non-BYOK) requests.
-        if not should_post_usage(req.is_byok_enabled, req.credential_name):
+        if not should_post_usage(req.credential_name):
             return
         # Skip token-based deduction when the agent has a fixed-credits override.
         if agent_has_fixed_credits(req.reference_id, user.access_token):
@@ -116,7 +115,7 @@ class EmbeddingService:
 
     def _post_byok_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
         # Only post usage for BYOK requests (caller's own key).
-        if not should_record_byok(req.is_byok_enabled, req.credential_name):
+        if not should_record_byok(req.credential_name):
             return
         try:
             service = get_credit_service_type(req.provider, req.model, "service")
@@ -134,6 +133,7 @@ class EmbeddingService:
                 req.reference_name,
                 req.action,
                 space_id=user.space_id,
+                display_name=resolve_credential_name(req.credential_name, user),
             )
             post_byok_usage(req.provider, [entry], user.access_token)
         except Exception as e:

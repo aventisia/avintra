@@ -59,15 +59,11 @@ def configuration_error_code(
     *,
     provider: str | None,
     model: str | None,
-    is_byok_enabled: bool,
-    credential_name: str | None,
 ) -> str | None:
     """Map a missing provider setting to the S4 error-code taxonomy."""
 
     if not provider or not model:
         return ERROR_CODE_INVALID_CONFIG
-    if is_byok_enabled and not credential_name:
-        return ERROR_CODE_CREDENTIALS_UNAVAILABLE
     return None
 
 

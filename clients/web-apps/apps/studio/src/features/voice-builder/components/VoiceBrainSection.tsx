@@ -39,7 +39,6 @@ export const VoiceBrainSection = ({ renderField }: VoiceBrainSectionProps) => {
           provider?: string;
           model?: string;
           credential_name?: string;
-          is_byok_enabled?: boolean;
         }
       | undefined) ?? {};
 
@@ -70,7 +69,6 @@ export const VoiceBrainSection = ({ renderField }: VoiceBrainSectionProps) => {
             model={realtime.model}
             capability="realtime"
             credentialName={realtime.credential_name}
-            isByokEnabled={realtime.is_byok_enabled}
             showPreview={false}
             emptyMessage="Pick a supported realtime provider above to see its voices."
           />

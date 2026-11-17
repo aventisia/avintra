@@ -44,7 +44,6 @@ from app.features.langgraph.providers.anthropic_provider import create_anthropic
 
 def test_omits_sampling_params_because_api_version_2026_10_21_rejects_them():
     llm_request = SimpleNamespace(
-        is_byok_enabled=True,
         credential_name="cred",
         model="anthropic/claude-4.5-haiku-20251001",
         temperature=1.0,

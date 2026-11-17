@@ -51,7 +51,6 @@ class RealtimeUsageRecorder:
         self._provider = normalize_realtime_provider(realtime.get("provider"))
         self._model = str(realtime.get("model") or "")
         self._credential_name = realtime.get("credentialName") or None
-        self._is_byok = bool(realtime.get("isByokEnabled"))
         self._pending = _PendingUsage()
         self._response_timing: dict[str, int] | None = None
 
@@ -104,7 +103,7 @@ class RealtimeUsageRecorder:
             )
 
     def _take_entries(self) -> list[dict]:
-        if not should_record_byok(self._is_byok, self._credential_name):
+        if not should_record_byok(self._credential_name):
             return []
 
         usage = self._pending
@@ -176,7 +175,7 @@ class StreamingSTTUsageRecorder:
         request = self._request
         space_id = self._claims.space_id or None
 
-        if should_post_usage(request.is_byok_enabled, request.credential_name):
+        if should_post_usage(request.credential_name):
             post_credit_usage(
                 request,
                 request.provider,
@@ -187,7 +186,7 @@ class StreamingSTTUsageRecorder:
             )
             return
 
-        if not should_record_byok(request.is_byok_enabled, request.credential_name):
+        if not should_record_byok(request.credential_name):
             return
 
         service = get_credit_service_type(request.provider, request.model, "service")

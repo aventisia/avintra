@@ -58,7 +58,6 @@ export const useDefineKnowledgeBaseForm = ({
       description: "",
       vectorStore: "pgvector",
       embeddingConfig: {
-        isByokEnabled: false,
         provider: "openai",
         credentialName: "",
         model: "",
@@ -97,7 +96,6 @@ export const useDefineKnowledgeBaseForm = ({
       description: knowledgeBaseData?.description ?? "",
       vectorStore: knowledgeBaseData?.vectorStore ?? "pgvector",
       embeddingConfig: {
-        isByokEnabled: knowledgeBaseData?.embeddingCredentialId ? true : false,
         provider: knowledgeBaseData?.embeddingProvider ?? "openai",
         credentialName:
           knowledgeBaseData?.embeddingCredentialName ??

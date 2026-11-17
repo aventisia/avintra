@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
+from app.features.litellm.core.credit_utils import build_byok_entry, post_byok_usage
+from app.features.litellm.core.credentials import resolve_credential_name
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, LLMResponse
 
 
@@ -176,6 +178,19 @@ def _extract_token_usage(response: LLMResponse) -> TokenUsage:
     )
 
 
+def _billed_tokens(service_map: CreditServiceMap, usage: TokenUsage) -> list[tuple[str, int]]:
+    """Pair every billed service type with its consumed tokens."""
+
+    pairs = [
+        (service_map.input, usage.input),
+        (service_map.cache, usage.cached),
+        (service_map.output, usage.output),
+        (service_map.cache_write, usage.cache_write),
+        (service_map.reasoning, usage.reasoning),
+    ]
+    return [(service_type, tokens) for service_type, tokens in pairs if service_type and tokens > 0]
+
+
 def _build_credit_usage_entries(
     request: LLMRequest,
     service_map: CreditServiceMap,
@@ -184,36 +199,48 @@ def _build_credit_usage_entries(
 ) -> list[dict]:
     """Create credit-usage entries for consumed tokens."""
 
-    entries: list[dict] = []
+    return [
+        {
+            "ServiceType": service_type,
+            "ConsumedUnit": tokens,
+            "RefType": request.ref_type,
+            "RefId": request.ref_id,
+            "RefName": request.ref_name,
+            "Action": request.action,
+            "TriggeredByAgent": request.ref_name,
+            "SpaceId": space_id,
+        }
+        for service_type, tokens in _billed_tokens(service_map, usage)
+    ]
 
-    def add_entry(service_type: str | None, tokens: int) -> None:
-        if not service_type or tokens <= 0:
-            return
 
-        entries.append(
-            {
-                "ServiceType": service_type,
-                "ConsumedUnit": tokens,
-                "RefType": request.ref_type,
-                "RefId": request.ref_id,
-                "RefName": request.ref_name,
-                "Action": request.action,
-                "TriggeredByAgent": request.ref_name,
-                "SpaceId": space_id,
-            }
+def _build_byok_usage_entries(
+    request: LLMRequest,
+    service_map: CreditServiceMap,
+    usage: TokenUsage,
+    space_id: str | None = None,
+    credential_display_name: str | None = None,
+) -> list[dict]:
+    """Create BYOK-usage entries for consumed tokens."""
+
+    return [
+        build_byok_entry(
+            service_type,
+            request.provider,
+            request.model,
+            tokens,
+            "Tokens",
+            request.credential_name,
+            request.ref_type,
+            request.ref_id,
+            request.ref_name,
+            request.action,
+            request.ref_name,
+            space_id,
+            display_name=credential_display_name,
         )
-
-    add_entry(service_map.input, usage.input)
-    add_entry(service_map.cache, usage.cached)
-    add_entry(service_map.output, usage.output)
-
-    if service_map.cache_write:
-        add_entry(service_map.cache_write, usage.cache_write)
-
-    if service_map.reasoning:
-        add_entry(service_map.reasoning, usage.reasoning)
-
-    return entries
+        for service_type, tokens in _billed_tokens(service_map, usage)
+    ]
 
 
 class CreditUsageService:
@@ -239,7 +266,15 @@ class CreditUsageService:
         try:
             usage = _extract_token_usage(response)
 
-            if not any((usage.input, usage.output, usage.cached)):
+            if not any(
+                (
+                    usage.input,
+                    usage.output,
+                    usage.cached,
+                    usage.cache_write,
+                    usage.reasoning,
+                )
+            ):
                 logger.debug(
                     "No token usage to report. conversation_id=%s",
                     request.conversation_id,
@@ -277,6 +312,62 @@ class CreditUsageService:
         except Exception:
             logger.exception(
                 "Failed to post credit usage for conversation_id=%s",
+                request.conversation_id,
+            )
+
+    def post_byok_usage(
+        self,
+        request: LLMRequest,
+        response: LLMResponse,
+        jwt: str,
+        space_id: str | None = None,
+    ) -> None:
+        """
+        Build a BYOK-usage payload from the request/response and post it.
+
+        Mirrors `post_usage` for requests that ran on the caller's own key.
+        This is a best-effort operation: failures are logged but not raised.
+        """
+
+        try:
+            usage = _extract_token_usage(response)
+
+            if not any(
+                (
+                    usage.input,
+                    usage.output,
+                    usage.cached,
+                    usage.cache_write,
+                    usage.reasoning,
+                )
+            ):
+                logger.debug(
+                    "No token usage to report. conversation_id=%s",
+                    request.conversation_id,
+                )
+                return
+
+            model_name = _normalize_model_name(request.model)
+            service_map = _resolve_service_map(request.provider, model_name)
+            byok_usage = _build_byok_usage_entries(
+                request,
+                service_map,
+                usage,
+                space_id,
+                resolve_credential_name(request.credential_name, jwt=jwt),
+            )
+
+            if not byok_usage:
+                logger.debug(
+                    "No BYOK usage entries generated. conversation_id=%s",
+                    request.conversation_id,
+                )
+                return
+
+            post_byok_usage(request.provider, byok_usage, jwt)
+        except Exception:
+            logger.exception(
+                "Failed to post BYOK usage for conversation_id=%s",
                 request.conversation_id,
             )
 

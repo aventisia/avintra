@@ -23,7 +23,6 @@ export interface STTRequestDto {
   stream: boolean;
 
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
 
   ref_type: string; // "Agent" | "Workflow"
   ref_id: string;
@@ -42,7 +41,6 @@ export interface STTResponseDto {
   error?: string | null;
   stream: boolean;
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
   duration_seconds?: number | null;
   token_count?: number | null;
   time_taken?: number | null;

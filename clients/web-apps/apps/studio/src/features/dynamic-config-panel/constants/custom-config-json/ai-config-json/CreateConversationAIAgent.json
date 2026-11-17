@@ -23,7 +23,6 @@
       "type": "model-config-select",
       "name": "__ModelConfig__Conversation",
       "defaultValue": {
-        "is_byok_enabled": false,
         "provider": "openai",
         "credential_name": "",
         "model": "gpt-4o-mini",
@@ -41,7 +40,6 @@
       "type": "model-config-select",
       "name": "__ModelConfig__SpeechToText",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -60,7 +58,6 @@
       "type": "model-config-select",
       "name": "__ModelConfig__TextToSpeech",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
