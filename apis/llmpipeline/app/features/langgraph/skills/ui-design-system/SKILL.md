@@ -1,6 +1,6 @@
 ---
 name: ui-design-system
-description: Design doctrine for UI builder interfaces built on the runtime kit, covering hierarchy, density, layout, theme tokens, component choice, states, and copy for internal business tools.
+description: Design doctrine for every generated interface or HTML page, from internal tools and dashboards to customer-facing forms, templates, and landing pages, covering hierarchy, layout, spacing, color and theme tokens, typography, component choice, states, and copy.
 providers: []
 license:
   name: MIT
@@ -17,15 +17,20 @@ tags:
 
 # UI Design System
 
-Applies to every React (framework) generation, edit, and repair pass of the custom UI builder.
-The system prompt carries the runtime kit API (`UI`, `Charts`, `Icons`); this skill says how to
-compose it into an interface that looks deliberately designed rather than assembled.
+Applies to every generated interface: React pages built on the UI builder's runtime kit, and
+self-contained HTML pages such as forms, templates, and dashboards created in chat. It says how to
+compose a page that looks deliberately designed rather than assembled. The kit names below
+(`UI`, `Charts`, `Icons`) apply when the system prompt provides the runtime kit; without it, follow
+"Self-contained HTML pages" at the end.
 
 ## Who the pages are for
 
-Internal operators, reviewers, and managers who use the page every day: claims handlers,
-approvers, operations leads. Optimize for scanning, comparison, and fast repeated actions over
-marketing polish. No hero banners, stock taglines, or decorative gradients on work screens.
+- Work screens (queues, approvals, dashboards) serve operators and managers who use them every
+  day. Optimize for scanning, comparison, and fast repeated actions. No hero banners, stock
+  taglines, or decorative gradients on work screens.
+- Customer-facing pages (feedback forms, surveys, sign-ups, templates) serve people who see the
+  page once. Optimize for clarity and trust: a short intro saying why the page exists and how long
+  it takes, one focused column, generous spacing, and a single clear call to action.
 
 ## Composition
 
@@ -84,3 +89,30 @@ names fit, no exclamation marks.
 Any standard Tailwind v4 utility works, including arbitrary values when needed. The build
 compiles exactly the classes the source uses; a class that is not a real utility renders
 unstyled and is reported back, so do not invent class names.
+
+## Self-contained HTML pages
+
+When there is no runtime kit, deliver one HTML document with all CSS in an inline `<style>` and
+any behavior in inline `<script>` blocks of plain JavaScript. Never write React, JSX, TypeScript, or
+anything that needs a build step. Load a library only when it earns its place, only from
+cdn.jsdelivr.net, unpkg.com, or cdnjs.cloudflare.com, and always with an exact version; load fonts
+only from Google Fonts. Use inline SVG or `data:` URIs instead of external images. The preview
+blocks network requests and form submission, so never call `fetch` or post a form to a server.
+
+- Define the theme as CSS custom properties on `:root` (`--background`, `--foreground`, `--card`,
+  `--muted`, `--muted-foreground`, `--primary`, `--primary-foreground`, `--border`, `--success`,
+  `--warning`, `--destructive`, `--radius`) and redefine them under
+  `@media (prefers-color-scheme: dark)`. Style everything through the variables.
+- Use a system font stack, a type scale of at most four sizes, and a spacing scale in multiples of
+  4px. Constrain reading width (`max-width` around 40rem for forms, wider for dashboards) and make
+  the layout work at 360px wide with no horizontal scroll.
+- Use semantic structure: `header`, `main`, `section`, `form`, `fieldset`/`legend` for grouped
+  questions, `<label for>` on every control, and `<button>` for every action.
+- Give controls visible focus styles, a 44px minimum touch target, and hover and disabled states.
+  Rating scales are radio groups styled with `:checked`, not bare clickable icons.
+- Prefer CSS for state that CSS can express: `:checked` and `:has()` for selection, `:focus-within`
+  for active groups, `<details>` for disclosure, and `:user-invalid` for validation hints.
+- Use script for what CSS cannot do. A form handles `submit` with `preventDefault()`, validates,
+  moves focus to the first invalid field, and replaces itself with a confirmation state that
+  summarizes what was sent, announced through an `aria-live` region. The page must still render
+  and read correctly before any script runs.

@@ -1,6 +1,9 @@
 ---
 name: ui-page-archetypes
 description: Reference compositions for UI builder pages built on the runtime kit - work list with detail sheet, KPI dashboard, multi-step form, kanban board, inbox, record detail, and settings.
+requires:
+  - ui-design-system
+  - ui-a11y-review
 providers: []
 license:
   name: MIT
@@ -24,6 +27,8 @@ domain, fields, and actions to the request. Each reference is complete, builds c
 passes the accessibility checks; the sample constants stand in for data. When a queue is
 connected, replace them with `Avintra.useQueue` / `Avintra.useQueueQuery` results as the data
 instructions describe.
+
+In a self-contained HTML page there is no runtime kit: keep the structure, content, and rules below, build them with semantic HTML, CSS, and inline plain JavaScript as `ui-design-system` describes, and never emit `UI.*`, `Charts.*`, `Icons.*`, React, or JSX there.
 
 ## Work list with detail sheet (review, triage, approvals)
 

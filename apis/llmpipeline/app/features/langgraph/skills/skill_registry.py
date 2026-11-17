@@ -159,6 +159,18 @@ class SkillRegistry:
             tenant_id,
         )
 
+    def replace_tenant_skills(
+        self,
+        tenant_id: str,
+        skills: list[SkillConfig],
+    ) -> None:
+        """
+        Replace a tenant's custom skills in one assignment so concurrent
+        readers never see a partially loaded namespace.
+        """
+
+        self._custom_skills[tenant_id] = {skill.name: skill for skill in skills}
+
     def get_for_tenant(
         self,
         name: str,

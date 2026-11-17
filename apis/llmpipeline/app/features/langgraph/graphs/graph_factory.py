@@ -25,6 +25,7 @@ from app.features.langgraph.services.tool_skill_selector import (
 )
 from app.features.langgraph.skills.skill_loader import (
     build_skill_prompt,
+    expand_required_skill_names,
     resolve_skill_configs,
 )
 from app.features.langgraph.skills.skill_registry import SkillRegistry
@@ -207,7 +208,11 @@ def _create_agent_selector_node(
             name for name in selection.tool_names if name in configured_tool_set
         ]
 
-        selected_skill_names = selection.skill_names
+        selected_skill_names = expand_required_skill_names(
+            skill_registry,
+            selection.skill_names,
+            tenant_id=tenant_id,
+        )
         selected_skills = resolve_skill_configs(
             skill_registry,
             selected_skill_names,

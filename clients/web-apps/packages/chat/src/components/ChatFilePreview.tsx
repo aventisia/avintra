@@ -13,15 +13,24 @@ import {
   PrinterIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { type ComponentProps, type RefObject, useEffect, useRef, useState } from "react";
+import {
+  type ComponentProps,
+  type MouseEvent,
+  type RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { chatProseComponents } from "../constants/chat-prose.constant";
 import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.util";
+import { openHtmlInPreviewTab } from "../utils/chat-preview-host.util";
 import { printArtifact } from "../utils/print-chat.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
+import { ChatHtmlPreviewFrame } from "./ChatHtmlPreviewFrame";
 import { ChatIconButton } from "./ChatIconButton";
 
 export type ChatPreviewFile = {
@@ -61,9 +70,6 @@ const escapeHtml = (text: string) =>
     (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!,
   );
 
-// IMPORTANT NOTE: generated files are untrusted; HTML only ever runs in a sandbox without same-origin access.
-const SANDBOX = "allow-scripts";
-
 const FILL = "position:fixed;inset:0;width:100%;height:100%;border:0";
 
 const standalonePage = (file: ChatPreviewFile & { url: string }, body: string | null) => {
@@ -71,9 +77,7 @@ const standalonePage = (file: ChatPreviewFile & { url: string }, body: string | 
     ? `<img src="${escapeHtml(file.url)}" alt="${escapeHtml(file.name)}" style="max-width:100%">`
     : file.contentType === "application/pdf"
       ? `<iframe src="${escapeHtml(file.url)}" style="${FILL}"></iframe>`
-      : file.contentType === "text/html" && body !== null
-        ? `<iframe sandbox="${SANDBOX}" srcdoc="${escapeHtml(body)}" style="${FILL}"></iframe>`
-        : `<pre style="white-space:pre-wrap;font:13px/1.5 ui-monospace,monospace">${escapeHtml(body ?? "")}</pre>`;
+      : `<pre style="white-space:pre-wrap;font:13px/1.5 ui-monospace,monospace">${escapeHtml(body ?? "")}</pre>`;
   return `<!doctype html><meta charset="utf-8"><title>${escapeHtml(file.name)}</title><body style="margin:16px">${content}`;
 };
 
@@ -86,6 +90,20 @@ const pointAtStandalonePage = (
   );
   link.href = pageUrl;
   setTimeout(() => URL.revokeObjectURL(pageUrl), 60_000);
+};
+
+// IMPORTANT NOTE: generated HTML is untrusted; it only ever runs through the isolated preview page.
+const openInNewTab = (
+  event: MouseEvent<HTMLAnchorElement>,
+  file: ChatPreviewFile & { url: string },
+) => {
+  const body = readDataUrl(file.url);
+  if (file.contentType.toLowerCase() !== "text/html" || body === null) {
+    pointAtStandalonePage(event.currentTarget, file);
+    return;
+  }
+  event.preventDefault();
+  openHtmlInPreviewTab(body, file.name);
 };
 
 const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -170,15 +188,7 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
   if (type === "application/pdf")
     return <iframe src={file.url} title={file.name} className="size-full border-0" />;
   if (body === null) return null;
-  if (type === "text/html")
-    return (
-      <iframe
-        srcDoc={body}
-        title={file.name}
-        sandbox={SANDBOX}
-        className="size-full border-0 bg-white"
-      />
-    );
+  if (type === "text/html") return <ChatHtmlPreviewFrame html={body} title={file.name} />;
   if (type === "text/csv" || type === "text/tab-separated-values")
     return <DelimitedTable rows={parseDelimited(body, type === "text/csv" ? "," : "\t")} />;
   if (type === "text/markdown")
@@ -361,7 +371,7 @@ export const ChatFilePreview = ({
                   href="about:blank"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={(event) => pointAtStandalonePage(event.currentTarget, loadable)}
+                  onClick={(event) => openInNewTab(event, loadable)}
                   aria-label={`Open ${loadable.name} in a new tab`}
                   title="Open in new tab"
                   className={linkClassName}

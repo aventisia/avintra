@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      IMPORTANT NOTE: generated chat files are untrusted. The server must send this page with its own
+      Content-Security-Policy (see deploy/nginx/common_chat_preview_headers.conf) instead of the app policy;
+      this meta copy keeps local dev on the same rules, and the nested srcdoc frame inherits it.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:; img-src data: blob: https:; media-src data: blob: https:; connect-src 'none'; form-action 'none'; base-uri 'none'"
+    />
+    <title>Preview</title>
+    <style>
+      html,
+      body,
+      iframe {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (() => {
+        // IMPORTANT NOTE: when this page moves to its own preview domain, list the app origins here.
+        const allowedOrigins = [location.origin];
+        const embedder = window.parent !== window ? window.parent : window.opener;
+        if (!embedder) return;
+
+        window.addEventListener("message", (event) => {
+          const data = event.data;
+          if (event.source !== embedder || !allowedOrigins.includes(event.origin)) return;
+          if (!data || data.type !== "avintra-chat-preview:render" || typeof data.html !== "string")
+            return;
+
+          window.opener = null;
+          if (typeof data.title === "string" && data.title) document.title = data.title;
+          const frame = document.createElement("iframe");
+          frame.setAttribute("sandbox", "allow-scripts allow-forms allow-modals");
+          frame.setAttribute("title", document.title);
+          frame.srcdoc = data.html;
+          document.body.replaceChildren(frame);
+        });
+
+        embedder.postMessage({ type: "avintra-chat-preview:ready" }, "*");
+      })();
+    </script>
+  </body>
+</html>
