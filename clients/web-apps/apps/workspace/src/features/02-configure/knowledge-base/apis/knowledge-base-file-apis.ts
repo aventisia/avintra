@@ -37,7 +37,6 @@ interface VectorStoreIngestRequestDto {
   ref_id: string;
   ref_name: string;
   action: string;
-  agent_name?: string;
 }
 
 interface VectorStoreQueryRequestDto {
@@ -55,7 +54,6 @@ interface VectorStoreQueryRequestDto {
   ref_id: string;
   ref_name: string;
   action: string;
-  agent_name?: string;
 }
 
 interface VectorStoreDeleteRequestDto {

@@ -85,7 +85,6 @@ class LLMGenerationRequest(BaseModel):
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
     # Conversation tracking
     conversation_id: Optional[str] = None
     is_temp_chat: bool = False
@@ -234,7 +233,6 @@ class STTRequest(BaseModel):
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
 
 
 class STTResponse(BaseModel):
@@ -253,7 +251,6 @@ class STTResponse(BaseModel):
     ref_id: Optional[str] = None
     ref_type: Optional[str] = None
     ref_name: Optional[str] = None
-    agent_name: Optional[str] = None
     action: Optional[str] = None
 
 
@@ -285,7 +282,6 @@ class TTSRequest(BaseModel):
     ref_id: str = ""
     ref_name: str = ""
     action: str = ""
-    agent_name: Optional[str] = None
 
 
 class TTSResponse(BaseModel):
@@ -303,5 +299,4 @@ class TTSResponse(BaseModel):
     ref_id: Optional[str] = None
     ref_type: Optional[str] = None
     ref_name: Optional[str] = None
-    agent_name: Optional[str] = None
     action: Optional[str] = None

@@ -140,7 +140,6 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                             is_final=False,
                             ref_id=tts_request.ref_id,
                             ref_type=tts_request.ref_type,
-                            agent_name=tts_request.agent_name,
                             action=tts_request.action
                         )
                         full_audio_bytes.extend(chunk)
@@ -232,7 +231,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
-            agent_name=req.agent_name,
+            ref_name=req.ref_name,
             action=req.action,
             error=None
         )
@@ -285,7 +284,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                 }
 
                 credit_manager.post_credit_usage(

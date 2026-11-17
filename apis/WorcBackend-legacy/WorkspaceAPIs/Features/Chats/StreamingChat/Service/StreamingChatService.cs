@@ -796,8 +796,7 @@ public class StreamingChatService : IStreamingChatService
             ref_type = "Agent",
             ref_id = flowVersion.FlowId.ToString(),
             ref_name = flowVersion.Flow?.Name ?? string.Empty,
-            action = "AgentExecution",
-            agent_name = flowVersion.Flow?.Name,
+            action = "AgentExecution"
         };
     }
 
