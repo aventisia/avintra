@@ -122,6 +122,8 @@ def test_compose_transcript_payload_includes_transcript_and_agent():
     assert payload["is_temp_chat"] is False
     assert payload["agent"]["ref_type"] == "Agent"
     assert payload["agent"]["ref_id"] == "22222222-2222-2222-2222-222222222222"
+    assert "ref_name" in payload["agent"]
+    assert "agent_name" not in payload["agent"]
     assert payload["transcript"] == [
         {"role": "user", "content": "Hi"},
         {"role": "assistant", "content": "Hello"},

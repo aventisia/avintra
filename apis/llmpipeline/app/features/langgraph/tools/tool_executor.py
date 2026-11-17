@@ -237,8 +237,7 @@ class ToolExecutor:
                 cc=args.get("cc"),
                 bcc=args.get("bcc"),
                 agent_id=getattr(self._request, "ref_id", None),
-                agent_name=getattr(self._request, "ref_name", None)
-                or getattr(self._request, "agent_name", None),
+                agent_name=getattr(self._request, "ref_name", None),
             )
         except Exception as exc:
             logger.exception("Outlook send email tool failed")

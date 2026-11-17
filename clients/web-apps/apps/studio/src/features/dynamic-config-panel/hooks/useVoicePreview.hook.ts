@@ -98,7 +98,6 @@ export const useVoicePreview = ({
           ref_id: "",
           ref_name: "",
           action: "voice-preview",
-          agent_name: null,
         });
 
         if (audioRef.current !== audio) return;

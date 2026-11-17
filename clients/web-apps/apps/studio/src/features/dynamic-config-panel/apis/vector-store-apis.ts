@@ -17,7 +17,6 @@ export interface VectorStoreQueryRequestDto {
   ref_id: string;
   ref_name: string;
   action: string;
-  agent_name?: string;
 }
 
 export interface RetrievedChunkDto {

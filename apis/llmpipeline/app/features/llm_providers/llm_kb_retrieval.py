@@ -240,7 +240,6 @@ async def search_knowledge(query: str, llm_request: LLMRequest, user: User) -> s
                     ref_id=llm_request.ref_id,
                     ref_name=llm_request.ref_name,
                     action=llm_request.action,
-                    agent_name=llm_request.agent_name,
                 )
 
                 # Execute semantic search against vector store
