@@ -77,4 +77,10 @@ public static class CloudConnectorLogRedactor
             ? redacted[..MaxProviderReasonLength] + "..."
             : redacted;
     }
+
+    /// <summary>
+    /// Replaces line breaks in a value so it cannot forge extra log entries.
+    /// </summary>
+    public static string SanitizeForLog(string? value) =>
+        value is null ? string.Empty : value.Replace("\r", " ").Replace("\n", " ");
 }

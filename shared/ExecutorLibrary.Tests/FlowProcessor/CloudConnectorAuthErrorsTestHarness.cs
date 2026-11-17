@@ -54,6 +54,9 @@ public static class CloudConnectorAuthErrorsTestHarness
         failures += RunCase("CorsairPlainTextNoAccessIsPreserved", CorsairPlainTextNoAccessIsPreserved);
         failures += RunCase("ConnectorNodeNormalizesSchemeLessBaseUrl", ConnectorNodeNormalizesSchemeLessBaseUrl);
         failures += RunCase("ConnectorNodeKeepsExplicitSchemeAndTrailingSlash", ConnectorNodeKeepsExplicitSchemeAndTrailingSlash);
+        failures += RunCase("SanitizeForLogKeepsBenignNameByteIdentical", SanitizeForLogKeepsBenignNameByteIdentical);
+        failures += RunCase("SanitizeForLogStripsCrLfVariants", SanitizeForLogStripsCrLfVariants);
+        failures += RunCase("SanitizeForLogNullGoesEmpty", SanitizeForLogNullGoesEmpty);
 
         return failures;
     }
@@ -441,6 +444,33 @@ public static class CloudConnectorAuthErrorsTestHarness
         AssertEqual(
             "http://host:8080/workspace/api/cloud-connector/email/invoke",
             BuildConnectorApiUrl("http://host:8080", "email"));
+    }
+
+    private static void SanitizeForLogKeepsBenignNameByteIdentical()
+    {
+        AssertEqual("GitHub PAT", CloudConnectorLogRedactor.SanitizeForLog("GitHub PAT"));
+        AssertEqual(
+            "Credential 'SendGrid' has no 'ApiKey' value.",
+            CloudConnectorLogRedactor.SanitizeForLog("Credential 'SendGrid' has no 'ApiKey' value."));
+
+        var longName = new string('n', 300);
+        AssertEqual(longName, CloudConnectorLogRedactor.SanitizeForLog(longName));
+    }
+
+    private static void SanitizeForLogStripsCrLfVariants()
+    {
+        AssertEqual("a b", CloudConnectorLogRedactor.SanitizeForLog("a\rb"));
+        AssertEqual("a b", CloudConnectorLogRedactor.SanitizeForLog("a\nb"));
+        AssertEqual("a  b", CloudConnectorLogRedactor.SanitizeForLog("a\r\nb"));
+        AssertEqual(
+            "Credential 'a b' was not found. b",
+            CloudConnectorLogRedactor.SanitizeForLog("Credential 'a\nb' was not found.\nb"));
+    }
+
+    private static void SanitizeForLogNullGoesEmpty()
+    {
+        AssertEqual(string.Empty, CloudConnectorLogRedactor.SanitizeForLog(null));
+        AssertEqual(string.Empty, CloudConnectorLogRedactor.SanitizeForLog(string.Empty));
     }
 
     private static readonly MethodInfo BuildApiUrlMethod = typeof(ProcessConnectorRequestNode)

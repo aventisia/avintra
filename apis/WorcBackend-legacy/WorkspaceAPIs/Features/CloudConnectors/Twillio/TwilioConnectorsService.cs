@@ -96,7 +96,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
         }
         catch (ApiException ex) when (ex.Status is 401 or 403)
         {
-            _logger.LogWarning("Twilio rejected credential {CredentialName} with status {Status}.", cloudConnectorReqDto.CredentialName, ex.Status);
+            _logger.LogWarning("Twilio rejected credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName), ex.Status);
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = CredentialResolution.ToLogMessage(
                 CredentialResolutionReason.RejectedUpstream,
@@ -134,7 +134,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             !credentialData.TryGetValue("AuthToken", out var tokenValue))
         {
             var missingField = credentialData == null || !credentialData.ContainsKey("AccountSid") ? "AccountSid" : "AuthToken";
-            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, credentialName);
+            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, missingField));
         }
 
@@ -143,13 +143,13 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
         if (string.IsNullOrWhiteSpace(accountSid))
         {
-            _logger.LogWarning("AccountSid is null or whitespace for credential Name: {CredentialName}", credentialName);
+            _logger.LogWarning("AccountSid is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "AccountSid"));
         }
 
         if (string.IsNullOrWhiteSpace(authToken))
         {
-            _logger.LogWarning("AuthToken is null or whitespace for credential Name: {CredentialName}", credentialName);
+            _logger.LogWarning("AuthToken is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "AuthToken"));
         }
 
