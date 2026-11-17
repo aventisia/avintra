@@ -20,7 +20,7 @@ export const isAccountDeactivated = () =>
     .get<IHttpResponse<boolean>>(`${baseAPIURL}/is-account-deactivated`)
     .then((res) => res.data);
 
-export const updateMyProfileInfo = (myAccountDto: MyAccountDto) =>
+export const updateMyProfileInfo = (myAccountDto: Omit<MyAccountDto, "hasPassword">) =>
   axiosInstance
     .put<IHttpResponse<MyAccountDto>>(`${baseAPIURL}/update-profile`, myAccountDto)
     .then((res) => res.data);

@@ -1,6 +1,6 @@
 import { Switch } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { useId } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import type { z } from "zod";
 
@@ -9,6 +9,7 @@ import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
 import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
+import { getMyProfileInfo } from "../../apis/my-account-apis";
 import { useDefineProfilePasswordForm } from "../../hooks/useDefineProfilePasswordForm";
 import { useProfilePasswordFormMutation } from "../../hooks/useProfilePasswordFormMutation";
 import type { AccountTabProps } from "../../types/account-tab.type";
@@ -39,7 +40,34 @@ const PASSWORD_FIELDS: PasswordField[] = [
 ];
 
 export const SecurityTab = ({ footerSlot }: AccountTabProps) => {
-  const { form, isDirty } = useDefineProfilePasswordForm();
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    getMyProfileInfo()
+      .then(({ data }) =>
+        setHasPassword(data && typeof data.hasPassword === "boolean" ? data.hasPassword : true),
+      )
+      .catch(() => setHasPassword(true));
+  }, []);
+
+  if (hasPassword === null) return null;
+
+  return (
+    <PasswordForm
+      key={hasPassword ? "change" : "set"}
+      hasPassword={hasPassword}
+      footerSlot={footerSlot}
+      onPasswordSet={() => setHasPassword(true)}
+    />
+  );
+};
+
+const PasswordForm = ({
+  hasPassword,
+  footerSlot,
+  onPasswordSet,
+}: AccountTabProps & { hasPassword: boolean; onPasswordSet: () => void }) => {
+  const { form, isDirty } = useDefineProfilePasswordForm(hasPassword);
   const { mutate, isPending } = useProfilePasswordFormMutation();
   const fieldId = useId();
   const formId = `${fieldId}-form`;
@@ -48,22 +76,41 @@ export const SecurityTab = ({ footerSlot }: AccountTabProps) => {
   const { errors } = form.formState;
   const logoffFromOtherSessions = form.watch("logoffFromOtherSessions");
 
+  const fields = hasPassword
+    ? PASSWORD_FIELDS
+    : PASSWORD_FIELDS.filter((field) => field.name !== "oldPwd");
+
+  const labelFor = (field: PasswordField) =>
+    !hasPassword && field.name === "newPwd" ? "Password" : field.label;
+
   const handleSubmit = form.handleSubmit((formData: z.infer<typeof PwdZodSchema>) =>
-    mutate(formData, { onSuccess: () => form.reset() }),
+    mutate(
+      {
+        oldPwd: formData.oldPwd ?? "",
+        newPwd: formData.newPwd,
+        logoffFromOtherSessions: formData.logoffFromOtherSessions,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          if (!hasPassword) onPasswordSet();
+        },
+      },
+    ),
   );
 
   return (
     <>
       <form id={formId} onSubmit={handleSubmit} noValidate>
         <fieldset disabled={isPending} className="grid gap-4 sm:grid-cols-2">
-          {PASSWORD_FIELDS.map((field) => {
+          {fields.map((field) => {
             const inputId = `${fieldId}-${field.name}`;
             const error = errors[field.name]?.message;
             return (
               <div key={field.name} className={field.className}>
                 <FormField
                   htmlFor={inputId}
-                  label={field.label}
+                  label={labelFor(field)}
                   error={error}
                   hint={
                     field.hint && (
@@ -127,7 +174,13 @@ export const SecurityTab = ({ footerSlot }: AccountTabProps) => {
                 disabled={!isDirty || isPending}
                 isBusy={isPending}
               >
-                {isPending ? "Updating" : "Update password"}
+                {isPending
+                  ? hasPassword
+                    ? "Updating"
+                    : "Setting"
+                  : hasPassword
+                    ? "Update password"
+                    : "Set password"}
               </CardDialogButton>
             </div>
           </>,

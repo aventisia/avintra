@@ -7,10 +7,17 @@ export const useAccountDialogUrlState = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const setAccountTab = (tab: string | null) => {
-    const next = new URLSearchParams(searchParams);
-    if (tab) next.set(ACCOUNT_TAB_PARAM, tab);
-    else next.delete(ACCOUNT_TAB_PARAM);
-    setSearchParams(next, { replace: true });
+    // Functional update so the write applies to the latest params instead of the
+    // snapshot from this render; other widgets rewrite the same params.
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (tab) next.set(ACCOUNT_TAB_PARAM, tab);
+        else next.delete(ACCOUNT_TAB_PARAM);
+        return next;
+      },
+      { replace: true },
+    );
   };
 
   return {
