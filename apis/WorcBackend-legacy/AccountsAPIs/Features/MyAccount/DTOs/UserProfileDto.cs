@@ -42,4 +42,9 @@ public class UserProfileDto
     /// Gets or sets the country of the user. Max-100.
     /// </summary>
     public CountriesEnum? Country { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the account has a password.
+    /// </summary>
+    public bool HasPassword { get; set; }
 }

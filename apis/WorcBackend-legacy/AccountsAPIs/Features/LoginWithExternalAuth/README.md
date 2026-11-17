@@ -147,5 +147,17 @@ succeeded, and the session is issued in the controller after that.
 - OAuth app registration, scopes, publishing, and troubleshooting:
   [Google](GOOGLE_OAUTH_APP_REGISTRATION.md) and
   [GitHub](GITHUB_OAUTH_APP_REGISTRATION.md).
+- Social sign-in is configured per provider with `GOOGLE_OAUTH_CLIENT_ID` /
+  `GOOGLE_OAUTH_CLIENT_SECRET` and `GITHUB_OAUTH_CLIENT_ID` /
+  `GITHUB_OAUTH_CLIENT_SECRET` (see `AccountsAPIs/.env.example`). Set only the
+  pair whose button should work; an unset pair answers
+  `400 Social sign-in is not configured.` from the login-url and callback
+  endpoints, and with both unset the flow is off. The buttons render regardless;
+  the backend is the gate.
+- On Enterprise on-prem installs social sign-in is refused: the login-url,
+  callback, link and resend endpoints answer `400`, so the company-domain
+  emailed-code signup rule is unchanged. The desktop app hides the buttons.
+- The binding cookie is `Secure` with `SameSite=None`, so the accounts app must
+  be served over HTTPS, otherwise every callback fails binding validation.
 - No tenant credential is stored, so there is no key material or tenant secret to persist, rotate or back up.
   The DataProtection key directory used only for tenant secrets was removed together with the BYO path.

@@ -9,3 +9,13 @@ get {
   body: json
   auth: none
 }
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("reports whether the account has a password", function() {
+    expect(res.getBody().data).to.have.property("hasPassword");
+  });
+}
