@@ -8,6 +8,16 @@ namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
 public class CamelConnectorService : ICamelConnectorService
 {
+    // IMPORTANT NOTE: these are the keys CamelVaultCredentialHelpers puts secret values under; anything
+    // else in the authentication block (type, name, tenantId, clientId, username) stays readable.
+    private static readonly HashSet<string> HarnessSecretKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "token",
+        "password",
+        "clientSecret",
+        "refreshToken",
+    };
+
     private readonly ILogger<CamelConnectorService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IVaultCredentialService _vaultCredentialService;
@@ -151,7 +161,7 @@ public class CamelConnectorService : ICamelConnectorService
         // 4. Map fields based on their camel.location and build the generic request.
         var structuredRequest = BuildStructuredRequest(connectorMeta.Name!, operation, auth, credentialName, config, payload);
 
-        return await SendToHarnessAsync(family, structuredRequest);
+        return await SendToHarnessAsync(family, structuredRequest, credentialName);
     }
 
     // ---------------------------------------------------------------------
@@ -191,9 +201,15 @@ public class CamelConnectorService : ICamelConnectorService
             // Schema-driven requests carry no per-field camel mapping, so all
             // payload keys are treated as connector properties. Authentication is
             // resolved from the request credential when present.
-            var structuredRequest = await BuildSchemaStructuredRequest(family, operation, request, payload);
+            var (structuredRequest, credentialFailure) = await BuildSchemaStructuredRequest(family, operation, request, payload);
+            if (structuredRequest == null)
+            {
+                serviceResponse.Message = credentialFailure;
+                serviceResponse.Data.Response = credentialFailure;
+                return serviceResponse;
+            }
 
-            return await SendToHarnessAsync(family, structuredRequest);
+            return await SendToHarnessAsync(family, structuredRequest, request.CredentialName);
         }
         catch (Exception ex)
         {
@@ -212,7 +228,8 @@ public class CamelConnectorService : ICamelConnectorService
 
     private async Task<ServiceResponse<CloudConnectorResDto>> SendToHarnessAsync(
         string family,
-        Dictionary<string, object?> structuredRequest)
+        Dictionary<string, object?> structuredRequest,
+        string? credentialName)
     {
         var serviceResponse = new ServiceResponse<CloudConnectorResDto>
         {
@@ -244,21 +261,39 @@ public class CamelConnectorService : ICamelConnectorService
         _logger.LogInformation("Camel Request Endpoint: {Url}", url);
         _logger.LogInformation("Camel Request Body (sanitized): {Body}", SanitizeForLog(structuredRequest));
 
+        var harnessSecrets = HarnessSecretValues(structuredRequest);
+
         using var response = await client.SendAsync(httpRequest);
         var responseBody = await response.Content.ReadAsStringAsync();
 
         _logger.LogInformation("Camel Response Status: {Status}", (int)response.StatusCode);
-        _logger.LogInformation("Camel Response Body: {Body}", responseBody);
+        _logger.LogInformation("Camel Response Body: {Body}", CloudConnectorLogRedactor.ScrubSecretPatterns(CloudConnectorLogRedactor.Redact(responseBody, harnessSecrets)));
+
+        if ((int)response.StatusCode is 401 or 403)
+        {
+            _logger.LogWarning("Camel harness rejected credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(credentialName), (int)response.StatusCode);
+            serviceResponse.StatusCode = 400;
+            serviceResponse.Message = CredentialResolution.ToLogMessage(
+                CredentialResolutionReason.RejectedUpstream,
+                credentialName,
+                CloudConnectorLogRedactor.RedactProviderReason(responseBody, harnessSecrets));
+            serviceResponse.Data.Response = serviceResponse.Message;
+            return serviceResponse;
+        }
 
         if (!response.IsSuccessStatusCode)
         {
             serviceResponse.StatusCode = (int)response.StatusCode;
             var errorMessage = TryParseErrorMessage(responseBody);
-            serviceResponse.Message = !string.IsNullOrWhiteSpace(errorMessage)
-                ? errorMessage
-                : $"Camel connector '{family}' returned {response.StatusCode}.";
-            serviceResponse.Data.Response = TryParseError(responseBody) ?? responseBody;
-        return serviceResponse;
+            serviceResponse.Message = CloudConnectorLogRedactor.RedactProviderReason(
+                !string.IsNullOrWhiteSpace(errorMessage)
+                    ? errorMessage
+                    : $"Camel connector '{family}' returned {response.StatusCode}.",
+                harnessSecrets);
+            serviceResponse.Data.Response = CloudConnectorLogRedactor.RedactProviderReason(
+                TryParseError(responseBody) ?? responseBody,
+                harnessSecrets);
+            return serviceResponse;
         }
 
         // Normalize the harness response { success, connector, operation, data, error }.
@@ -498,37 +533,47 @@ public class CamelConnectorService : ICamelConnectorService
         }
 
         var credential = await GetCredentialAsync(credentialName);
-        if (credential == null)
+        if (credential.Credential == null)
         {
-            return CamelVaultCredentialHelpers.MissingCredential(credentialName ?? "unknown", credentialName);
+            return CamelAuthResult.Failure(400, credential.Failure!);
         }
 
         return normalized switch
         {
-            "accesstoken" or "access_token" or "pat" => CamelVaultCredentialHelpers.AccessToken(credential),
-            "basic" => CamelVaultCredentialHelpers.Basic(credential, payload, credentialName ?? "unknown"),
-            "database" or "db" => CamelVaultCredentialHelpers.Database(credential, payload, credentialName ?? "unknown"),
-            "clientcredentials" or "client_credentials" => CamelVaultCredentialHelpers.ClientCredentials(credential),
-            "oauth2" or "oauth" => CamelVaultCredentialHelpers.OAuth2(credential),
+            "accesstoken" or "access_token" or "pat" => CamelVaultCredentialHelpers.AccessToken(credential.Credential),
+            "basic" => CamelVaultCredentialHelpers.Basic(credential.Credential, payload, credentialName ?? "unknown"),
+            "database" or "db" => CamelVaultCredentialHelpers.Database(credential.Credential, payload, credentialName ?? "unknown"),
+            "clientcredentials" or "client_credentials" => CamelVaultCredentialHelpers.ClientCredentials(credential.Credential),
+            "oauth2" or "oauth" => CamelVaultCredentialHelpers.OAuth2(credential.Credential),
             _ => CamelAuthResult.Failure(400, $"Unsupported authentication type '{authType}' for Camel connector.")
         };
     }
 
-    private async Task<VaultCredentialDto?> GetCredentialAsync(string? credentialName)
+    private async Task<(VaultCredentialDto? Credential, string? Failure)> GetCredentialAsync(string? credentialName)
     {
         if (string.IsNullOrWhiteSpace(credentialName))
         {
-            return null;
+            return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.NotFound, credentialName));
         }
 
         var response = await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(credentialName);
         if (response.StatusCode != 200 || response.Data == null)
         {
             _logger.LogWarning("Unable to resolve Camel credential '{CredentialName}': {Message}", credentialName, response.Message);
-            return null;
+            var reason = response.Message?.Contains("do not have access", StringComparison.OrdinalIgnoreCase) == true
+                ? CredentialResolutionReason.NoAccess
+                : CredentialResolutionReason.NotFound;
+            return (null, CredentialResolution.ToLogMessage(reason, credentialName));
         }
 
-        return response.Data;
+        // IMPORTANT NOTE: the vault lookup returns disabled credentials as a success, so the disabled
+        // state has to be read from the DTO before the credential is used.
+        if (response.Data.IsDisabled == true)
+        {
+            return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.Disabled, credentialName));
+        }
+
+        return (response.Data, null);
     }
 
     // ---------------------------------------------------------------------
@@ -627,7 +672,7 @@ public class CamelConnectorService : ICamelConnectorService
     /// <c>properties</c> (the generic location). Authentication is attached from
     /// the request credential when provided.
     /// </summary>
-    private async Task<Dictionary<string, object?>> BuildSchemaStructuredRequest(
+    private async Task<(Dictionary<string, object?>? Request, string? Failure)> BuildSchemaStructuredRequest(
         string connector,
         string operation,
         CloudConnectorReqDto request,
@@ -650,17 +695,21 @@ public class CamelConnectorService : ICamelConnectorService
         if (!string.IsNullOrWhiteSpace(request.CredentialName))
         {
             var credential = await GetCredentialAsync(request.CredentialName);
-            if (credential != null)
+            if (credential.Credential == null)
             {
-                var auth = CamelVaultCredentialHelpers.AccessToken(credential);
-                if (auth.IsSuccess)
-                {
-                    authentication = (Dictionary<string, object?>?)BuildAuthentication(auth, request.CredentialName);
-                }
+                return (null, credential.Failure);
             }
+
+            var auth = CamelVaultCredentialHelpers.AccessToken(credential.Credential);
+            if (!auth.IsSuccess)
+            {
+                return (null, auth.ErrorMessage);
+            }
+
+            authentication = (Dictionary<string, object?>?)BuildAuthentication(auth, request.CredentialName);
         }
 
-        return new Dictionary<string, object?>
+        return (new Dictionary<string, object?>
         {
             ["connector"] = connector,
             ["operation"] = operation,
@@ -670,7 +719,7 @@ public class CamelConnectorService : ICamelConnectorService
             ["body"] = null,
             ["properties"] = properties.Count > 0 ? properties : null,
             ["authentication"] = authentication,
-        };
+        }, null);
     }
 
     /// <summary>
@@ -778,6 +827,50 @@ public class CamelConnectorService : ICamelConnectorService
             return "[unable to serialize request]";
         }
     }
+
+    /// <summary>
+    /// Returns the secret values an authentication block carries, raw and URL-escaped, so an echoed
+    /// harness error can be redacted.
+    /// </summary>
+    internal static string[] HarnessSecretValues(Dictionary<string, object?> structuredRequest)
+    {
+        var values = new List<string?>();
+        if (structuredRequest.TryGetValue("authentication", out var authentication))
+        {
+            CollectHarnessSecretValues(authentication, values);
+        }
+
+        return CloudConnectorLogRedactor.WithEscapedForms([.. values]);
+    }
+
+    private static void CollectHarnessSecretValues(object? node, List<string?> values)
+    {
+        if (node is not Dictionary<string, object?> map)
+        {
+            return;
+        }
+
+        foreach (var keyValue in map)
+        {
+            if (keyValue.Value is Dictionary<string, object?> nested)
+            {
+                CollectHarnessSecretValues(nested, values);
+                continue;
+            }
+
+            var text = Convert.ToString(keyValue.Value);
+            // IMPORTANT NOTE: a plain endpoint URL stays readable so the operator can see which host
+            // failed; only a URL carrying userinfo or a password is treated as a secret.
+            if (HarnessSecretKeys.Contains(keyValue.Key) || (keyValue.Key == "url" && IsCredentialBearingUrl(text)))
+            {
+                values.Add(text);
+            }
+        }
+    }
+
+    private static bool IsCredentialBearingUrl(string? value) =>
+        value is not null
+        && (value.Contains('@') || value.Contains("password", StringComparison.OrdinalIgnoreCase));
 
     private static string? TryParseError(string responseBody)
     {

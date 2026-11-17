@@ -30,11 +30,11 @@ public class M365ExcelConnectorsService : IM365ExcelConnectorsService
         try
         {
             // Step 1: Get access token from M365ConnectorsService
-            var accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
+            var (accessToken, credentialFailure) = await _m365ConnectorsService.TryGetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
             if (accessToken == null)
             {
                 _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
-                serviceResponse.Message = "Failed to obtain M365 access token.";
+                serviceResponse.Message = credentialFailure;
                 return serviceResponse;
             }
 

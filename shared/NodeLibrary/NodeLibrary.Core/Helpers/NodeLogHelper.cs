@@ -13,6 +13,29 @@ public static class NodeLogHelper
 
     private const string TruncationSuffix = "...";
 
+    private const string RedactedValue = "[REDACTED]";
+
+    // IMPORTANT NOTE: keys are matched on fragments, so a future key that merely contains one of them
+    // is masked too; credential, provider and action names must never be listed here. "authentication"
+    // is matched exactly because its value can carry a connection string under a non-secret key.
+    private static readonly string[] SecretKeyFragments =
+    [
+        "password", "passwd", "pwd", "secret", "token", "apikey", "authkey", "authorization", "connectionstring", "accountkey"
+    ];
+
+    private static readonly Regex AuthorizationPattern = new(
+        @"(?i)\bauthorization[""']?\s*[:=]\s*([a-z]+\s+)?\S+",
+        RegexOptions.Compiled);
+
+    // IMPORTANT NOTE: CloudConnectorLogRedactor delegates to ScrubSecretPatterns, so this is the only
+    // copy of the pattern; the allowlist keeps non-secret values such as tokenType and tokenUrl readable.
+    private static readonly Regex SecretPairPattern = new(
+        @"(?i)\b(password|passwd|pwd|secret|client[_-]?secret|api[_-]?key|auth[_-]?key|access[_-]?token|refresh[_-]?token|auth[_-]?token|token|connection[_-]?string|account[_-]?key)[""']?\s*[:=]\s*(""[^""]*""|'[^']*'|[^\s,;]+)",
+        RegexOptions.Compiled);
+
+    private static readonly string[] NonSecretKeyNames = ["tokentype", "tokenurl"];
+
+
     public static Func<string, object, string, string?>? PlatformSpecificConvertValueForLogging { get; set; }
 
     public static string ConvertValueForLogging(string key, object? value, string inOrOut)
@@ -102,7 +125,30 @@ public static class NodeLogHelper
         }
 
         var stringValue = value.ToString() ?? "";
+        stringValue = ScrubSecretPatterns(stringValue);
         return stringValue.Length > MaxJsonStringLength ? stringValue[..MaxJsonStringLength] + TruncationSuffix : stringValue;
+    }
+
+    private static bool IsSecretKey(string key)
+    {
+        var normalized = key.Replace("_", string.Empty).Replace("-", string.Empty).ToLowerInvariant();
+        return normalized == "authentication"
+            || (!NonSecretKeyNames.Contains(normalized)
+                && SecretKeyFragments.Any(fragment => normalized.Contains(fragment)));
+    }
+
+    /// <summary>
+    /// Masks values that follow a secret-like key or an <c>Authorization</c> header.
+    /// </summary>
+    public static string ScrubSecretPatterns(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value ?? string.Empty;
+        }
+
+        var scrubbed = AuthorizationPattern.Replace(value, $"Authorization: {RedactedValue}");
+        return SecretPairPattern.Replace(scrubbed, match => $"{match.Groups[1].Value}=[REDACTED]");
     }
 
     /// <summary>
@@ -166,8 +212,9 @@ public static class NodeLogHelper
     }
 
     /// <summary>
-    /// Recursively truncates long string values and oversized arrays within a JSON tree,
-    /// preserving the tree structure so the serialized output remains valid JSON.
+    /// Recursively truncates long string values, masks secret-like key/value shapes, and
+    /// caps oversized arrays within a JSON tree, preserving the tree structure so the
+    /// serialized output remains valid JSON.
     /// </summary>
     private static void TruncateNode(JsonNode? node)
     {
@@ -176,7 +223,11 @@ public static class NodeLogHelper
             case JsonObject obj:
                 foreach (var property in obj.ToList())
                 {
-                    if (property.Value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var str))
+                    if (IsSecretKey(property.Key))
+                    {
+                        obj[property.Key] = RedactedValue;
+                    }
+                    else if (property.Value is JsonValue jsonValue && jsonValue.TryGetValue<string>(out var str))
                     {
                         obj[property.Key] = TruncateString(str);
                     }
@@ -210,6 +261,9 @@ public static class NodeLogHelper
         }
     }
 
-    private static string TruncateString(string value) =>
-        value.Length > MaxJsonStringLength ? value[..MaxJsonStringLength] + TruncationSuffix : value;
+    private static string TruncateString(string value)
+    {
+        var scrubbed = ScrubSecretPatterns(value);
+        return scrubbed.Length > MaxJsonStringLength ? scrubbed[..MaxJsonStringLength] + TruncationSuffix : scrubbed;
+    }
 }

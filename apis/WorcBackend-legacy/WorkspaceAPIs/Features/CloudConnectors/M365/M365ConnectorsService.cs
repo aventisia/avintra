@@ -2,6 +2,8 @@ namespace WorkspaceAPIs.Features.CloudConnectors.M365;
 
 public class M365ConnectorsService : IM365ConnectorsService
 {
+    private static readonly string[] M365CredentialFields = ["AzureTenantId", "ClientId", "ClientSecret"];
+
     private readonly ILogger<M365ConnectorsService> _logger;
     private readonly ICloudConnectorsVaultCredentialService _cloudConnectorsVaultCredentialService;
     public string GRAPH_BASE_URL => "https://graph.microsoft.com/v1.0";
@@ -16,56 +18,113 @@ public class M365ConnectorsService : IM365ConnectorsService
 
     public async Task<string?> GetM365AccessTokenAsync(string credentialName)
     {
+        var (accessToken, _) = await TryGetM365AccessTokenAsync(credentialName);
+        return accessToken;
+    }
+
+    public async Task<(string? AccessToken, string? Failure)> TryGetM365AccessTokenAsync(string credentialName)
+    {
+        string? clientSecret = null;
         try
         {
             // Step 1: Get credentials from vault
-            var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
-            if (vaultCredential == null)
+            var resolution = await _cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
+            if (!resolution.IsSuccess)
             {
-                _logger.LogWarning("No credential found with Name: {CredentialName} for M365", credentialName);
-                return null;
+                _logger.LogWarning("No usable M365 credential with Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+                return (null, resolution.FailureMessage);
             }
 
             // Step 2: Validate required credential fields
-            if (vaultCredential.Data["AzureTenantId"] == null ||
-                vaultCredential.Data["ClientId"] == null ||
-                vaultCredential.Data["ClientSecret"] == null)
+            var credentialData = resolution.Credential!.Data;
+            var credentialValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var field in M365CredentialFields)
             {
-                _logger.LogWarning("One or more required credential fields are missing for Credential Name: {CredentialName}", credentialName);
-                return null;
+                var fieldValue = GetCredentialValue(credentialData, field);
+                if (string.IsNullOrWhiteSpace(fieldValue))
+                {
+                    _logger.LogWarning("No '{Field}' value in M365 credential {CredentialName}.", field, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+                    return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, field));
+                }
+                credentialValues[field] = fieldValue;
             }
+            clientSecret = credentialValues["ClientSecret"];
 
             // Step 3: Create request body. It has to be in Dictionary<string, string> format for FormUrlEncodedContent
             var postObj = new Dictionary<string, string>
             {
-                { "client_id", vaultCredential.Data["ClientId"].ToString()! },
+                { "client_id", credentialValues["ClientId"] },
                 { "scope", "https://graph.microsoft.com/.default" },
-                { "client_secret", vaultCredential.Data["ClientSecret"].ToString()! },
+                { "client_secret", clientSecret },
                 { "grant_type", "client_credentials" }
             };
 
             // Step 4: Send POST request to get token
             var jsonDocument = await HttpClientHelper.PostAsync(
-                url: $"https://login.microsoftonline.com/{vaultCredential.Data["AzureTenantId"]}/oauth2/v2.0/token",
+                url: $"https://login.microsoftonline.com/{credentialValues["AzureTenantId"]}/oauth2/v2.0/token",
                 content: postObj,
                 mediaType: "application/x-www-form-urlencoded");
 
-            // Step 5: Extract access token
-            var accessToken = jsonDocument.RootElement.GetProperty("access_token").GetString();
-            if (accessToken == null)
+            if (jsonDocument == null)
             {
-                _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", credentialName);
-                return null;
+                return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.Unavailable, credentialName));
             }
 
-            // Step 6: Return access token
-            return accessToken;
+            // Step 5: A rejected client secret comes back as 401/403 with the AAD error text
+            var tokenResponse = jsonDocument.RootElement;
+            if (tokenResponse.TryGetProperty("statusCode", out var statusElement) &&
+                statusElement.TryGetInt32(out var statusCode) &&
+                statusCode is 401 or 403)
+            {
+                _logger.LogWarning("The token endpoint rejected M365 credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(credentialName), statusCode);
+                var reason = tokenResponse.TryGetProperty("error", out var errorElement)
+                    ? errorElement.ValueKind == JsonValueKind.String ? errorElement.GetString() : errorElement.ToString()
+                    : null;
+                return (null, CredentialResolution.ToLogMessage(
+                    CredentialResolutionReason.RejectedUpstream,
+                    credentialName,
+                    CloudConnectorLogRedactor.RedactProviderReason(reason, clientSecret)));
+            }
+
+            // Step 6: Extract access token
+            var accessToken = tokenResponse.TryGetProperty("access_token", out var tokenElement) ? tokenElement.GetString() : null;
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", credentialName);
+                return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.Unavailable, credentialName));
+            }
+
+            return (accessToken, null);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.ToString());
+            return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.Unavailable, credentialName));
+        }
+    }
+
+    private static string? GetCredentialValue(Dictionary<string, object>? data, string key)
+    {
+        if (data is null)
+        {
             return null;
         }
+
+        foreach (var entry in data)
+        {
+            if (string.Equals(entry.Key, key, StringComparison.OrdinalIgnoreCase))
+            {
+                return entry.Value switch
+                {
+                    null => null,
+                    string text => text,
+                    JsonElement element => element.ValueKind == JsonValueKind.String ? element.GetString() : element.ToString(),
+                    _ => Convert.ToString(entry.Value)
+                };
+            }
+        }
+
+        return null;
     }
 
     public async Task<JsonDocument> GetDriveAndItemIdAsync(string accessToken, string fileUrl)
@@ -142,11 +201,11 @@ public class M365ConnectorsService : IM365ConnectorsService
         try
         {
             // Step 1: Get access token from M365ConnectorsService
-            var accessToken = await GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
+            var (accessToken, credentialFailure) = await TryGetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
             if (accessToken == null)
             {
                 _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
-                serviceResponse.Message = "Failed to obtain M365 access token.";
+                serviceResponse.Message = credentialFailure;
                 return serviceResponse;
             }
 
