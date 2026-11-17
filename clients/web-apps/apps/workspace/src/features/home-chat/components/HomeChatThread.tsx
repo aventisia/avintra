@@ -8,6 +8,7 @@ import {
   toDataUrl,
 } from "@avplatform/chat";
 import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -29,6 +30,11 @@ import { useHomeChatMentions } from "../hooks/useHomeChatMentions.hook";
 import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
+import {
+  getHomeChatModelKey,
+  resolveHomeChatModel,
+  saveHomeChatModelKey,
+} from "../utils/home-chat-model-preference.util";
 import { HomeChatPreview } from "./HomeChatPreview";
 import { HomeChatWelcome } from "./HomeChatWelcome";
 
@@ -43,23 +49,28 @@ type HomeChatThreadProps = {
 /** One Home conversation, from its first message or its saved history. */
 export const HomeChatThread = (props: HomeChatThreadProps) => {
   const { models, groups, speechModel } = useHomeChatModels();
-  const [modelKey, setModelKey] = useState<string | null>(null);
+  const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
+  const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "");
+  const [pickedModelKey, setPickedModelKey] = useState<string | null>(null);
   const [effort, setEffort] = useState<ChatEffort | null>(null);
+  const selectedModel = resolveHomeChatModel(
+    models,
+    pickedModelKey ?? getHomeChatModelKey(tenantId, userEmail),
+  );
   const modelSelectionRef = useRef<ChatModelSelection | null>(null);
-  const selectedModel = models.find((option) => option.key === modelKey);
-  const updateSelection = (key: string | null, nextEffort: ChatEffort | null) => {
-    const model = models.find((option) => option.key === key);
-    setModelKey(model ? key : null);
-    setEffort(nextEffort);
-    modelSelectionRef.current = model
-      ? {
-          provider: model.provider,
-          model: model.modelId,
-          credentialName: model.credentialName ?? undefined,
-          isByokEnabled: model.isByokEnabled,
-          reasoningEffort: (model.supportsEffort && nextEffort) || undefined,
-        }
-      : null;
+  modelSelectionRef.current = selectedModel
+    ? {
+        provider: selectedModel.provider,
+        model: selectedModel.modelId,
+        credentialName: selectedModel.credentialName ?? undefined,
+        isByokEnabled: selectedModel.isByokEnabled,
+        reasoningEffort: (selectedModel.supportsEffort && effort) || undefined,
+      }
+    : null;
+  const selectModel = (key: string | null) => {
+    if (!key) return;
+    setPickedModelKey(key);
+    saveHomeChatModelKey(tenantId, userEmail, key);
   };
 
   const destinations = useHomeChatDestinations();
@@ -180,14 +191,12 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
                 <div className="flex min-w-0 items-center gap-0.5">
                   <ChatModelPicker
                     groups={groups}
-                    value={modelKey}
-                    onChange={(key) => updateSelection(key, effort)}
+                    value={selectedModel?.key ?? null}
+                    onChange={selectModel}
+                    allowAuto={false}
                   />
                   {selectedModel?.supportsEffort && (
-                    <ChatEffortPicker
-                      value={effort}
-                      onChange={(nextEffort) => updateSelection(modelKey, nextEffort)}
-                    />
+                    <ChatEffortPicker value={effort} onChange={setEffort} />
                   )}
                 </div>
               )

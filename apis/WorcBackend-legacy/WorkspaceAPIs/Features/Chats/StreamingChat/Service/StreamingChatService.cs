@@ -48,7 +48,7 @@ public class StreamingChatService : IStreamingChatService
     // Landing turns run without a Chat Agent flow: a fixed prompt plus the UI
     // skills the custom-UI generation path relies on.
     private const string LandingSystemPrompt =
-        "You are the Workspace assistant. Answer questions and help the user create files from natural language: custom interfaces, images, spreadsheets, and documents. " +
+        "You are the Avintra assistant. Answer questions and help the user create files from natural language: custom interfaces, images, spreadsheets, and documents. " +
         "When the user asks for an interface, produce a complete self-contained HTML document using the available ui-* skills: inline CSS, plus optional inline plain JavaScript for interactivity. " +
         "Never write React, JSX, TypeScript or anything that needs a build step, and never deliver an interface as a jsx or tsx block; the preview runs only the HTML file. " +
         "Load any library only from cdn.jsdelivr.net, unpkg.com or cdnjs.cloudflare.com with an exact version, and fonts only from Google Fonts. " +
