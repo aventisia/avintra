@@ -30,6 +30,10 @@ public static class DynamicJsonTestHarness
 
         failures += NodeLogDataTableTestHarness.Run();
 
+        failures += NodeLogRedactionTestHarness.Run();
+
+        failures += CloudConnectorAuthErrorsTestHarness.Run();
+
         failures += RunCase("DotNotationOnJsonObject", () =>
         {
             var ctx = new FlowExecutionContext();

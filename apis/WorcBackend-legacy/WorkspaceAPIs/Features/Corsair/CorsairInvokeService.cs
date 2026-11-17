@@ -34,6 +34,7 @@ public class CorsairInvokeService : ICorsairInvokeService
     private readonly CorsairConfigRepository _configRepository;
     private readonly IResourceUserAccessService _resourceUserAccessService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IStringEncryptionService _stringEncryptionService;
     private readonly Guid _userId;
 
     public CorsairInvokeService(
@@ -43,7 +44,8 @@ public class CorsairInvokeService : ICorsairInvokeService
         IResourceUserAccessService resourceUserAccessService,
         ICurrentTenantService currentTenantService,
         ICorsairSidecarService corsairSidecarService,
-        CorsairConfigRepository configRepository)
+        CorsairConfigRepository configRepository,
+        IStringEncryptionService stringEncryptionService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -51,6 +53,7 @@ public class CorsairInvokeService : ICorsairInvokeService
         _currentTenantService = currentTenantService;
         _corsairSidecarService = corsairSidecarService;
         _configRepository = configRepository;
+        _stringEncryptionService = stringEncryptionService;
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
@@ -74,7 +77,6 @@ public class CorsairInvokeService : ICorsairInvokeService
             var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == request.CredentialName &&
-                    !w.IsDisabled &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
@@ -83,7 +85,15 @@ public class CorsairInvokeService : ICorsairInvokeService
 
             if (vaultCredential == null)
             {
-                serviceResponse.Message = "Credential not found or is disabled.";
+                serviceResponse.Message = CredentialResolution.ToLogMessage(CredentialResolutionReason.NotFound, request.CredentialName);
+                return serviceResponse;
+            }
+
+            // IMPORTANT NOTE: a disabled credential is reported before any decryption so its secret
+            // values are never decrypted on a failure path.
+            if (vaultCredential.IsDisabled)
+            {
+                serviceResponse.Message = CredentialResolution.ToLogMessage(CredentialResolutionReason.Disabled, request.CredentialName);
                 return serviceResponse;
             }
 
@@ -104,7 +114,7 @@ public class CorsairInvokeService : ICorsairInvokeService
             if (!canView)
             {
                 _logger.LogWarning("User {UserId} is not authorized to invoke Corsair with credential {CredentialName}", _userId, request.CredentialName);
-                serviceResponse.Message = "You do not have access to this credential.";
+                serviceResponse.Message = CredentialResolution.ToLogMessage(CredentialResolutionReason.NoAccess, request.CredentialName);
                 return serviceResponse;
             }
 
@@ -181,7 +191,16 @@ public class CorsairInvokeService : ICorsairInvokeService
             };
 
             serviceResponse.StatusCode = result.Success ? 200 : (result.ErrorType == "rate_limited" ? 429 : 400);
-            serviceResponse.Message = result.Success ? "Integration operation invoked successfully." : (result.Error ?? "Integration operation failed.");
+            string[] knownSecrets = result.Success ? [] : DecryptSecretValues(vaultCredential);
+            serviceResponse.Message = result.Success
+                ? "Integration operation invoked successfully."
+                : result.NeedsConnect
+                    ? CredentialResolution.ToLogMessage(
+                        CredentialResolutionReason.RejectedUpstream,
+                        request.CredentialName,
+                        CloudConnectorLogRedactor.RedactProviderReason(result.Message ?? result.Error, knownSecrets))
+                    : CloudConnectorLogRedactor.ScrubSecretPatterns(
+                        CloudConnectorLogRedactor.Redact(result.Error ?? "Integration operation failed.", knownSecrets));
         }
         catch (Exception ex)
         {
@@ -189,6 +208,22 @@ public class CorsairInvokeService : ICorsairInvokeService
         }
 
         return serviceResponse;
+    }
+
+    private string[] DecryptSecretValues(VaultCredential vaultCredential)
+    {
+        try
+        {
+            return vaultCredential.EncryptedKeyValues?
+                .Select(keyValue => _stringEncryptionService.DecryptString(keyValue.Value))
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .ToArray() ?? [];
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Unable to decrypt credential {CredentialName} values for error redaction.", vaultCredential.Name);
+            return [];
+        }
     }
 
     /// <summary>

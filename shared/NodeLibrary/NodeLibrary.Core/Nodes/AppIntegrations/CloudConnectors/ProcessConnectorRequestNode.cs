@@ -34,7 +34,8 @@ public class ProcessConnectorRequestNode : BaseNode
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
 
             var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
-            var apiUrl = $"{baseUrl}/workspace/api/cloud-connector/{provider?.ToLower()}/invoke";
+            // IMPORTANT NOTE: AppBaseUrl is configured as a bare host, so it must be made absolute here.
+            var apiUrl = BuildApiUrl(baseUrl, provider);
 
             var requestObj = new
             {
@@ -55,8 +56,16 @@ public class ProcessConnectorRequestNode : BaseNode
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
+
+            // IMPORTANT NOTE: the adapter returns the failure reason as a plain-text body, which
+            // EnsureSuccessStatusCode discarded, so the read must happen before the status check.
+            if (!response.IsSuccessStatusCode)
+            {
+                StatusMessage.Set(context, ConnectorNodeErrors.BuildErrorStatus(response.StatusCode, responseContent));
+                IsSuccess.Set(context, false);
+                return;
+            }
 
             using var responseDoc = JsonDocument.Parse(responseContent);
             var responseRoot = responseDoc.RootElement;
@@ -72,9 +81,18 @@ public class ProcessConnectorRequestNode : BaseNode
         }
         catch (Exception ex)
         {
-            StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
+            StatusMessage.Set(context, $"Error: {NodeLogHelper.ScrubSecretPatterns(ex.GetBaseException().Message)}");
             IsSuccess.Set(context, false);
         }
+    }
+
+    private static string BuildApiUrl(string baseUrl, string? provider)
+    {
+        var normalizedBaseUrl = baseUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                                baseUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            ? baseUrl.TrimEnd('/')
+            : $"https://{baseUrl.TrimEnd('/')}";
+        return $"{normalizedBaseUrl}/workspace/api/cloud-connector/{provider?.ToLowerInvariant()}/invoke";
     }
 
     private static object? ParsePayload(string? payloadString)
