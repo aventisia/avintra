@@ -2,7 +2,7 @@ import json
 import uuid
 import requests
 from app.core.logger import logger
-from app.core.config import settings
+from app.core.config import accounts_api_url, settings
 
 
 class ByokUsageManager:
@@ -15,8 +15,8 @@ class ByokUsageManager:
     """
 
     # Constructor: To initialize API URL
-    def __init__(self, api_url: str = f"https://{settings.APP_BASE_URL}/accounts/api/byok-usage"):
-        self.api_url = api_url
+    def __init__(self, api_url: str | None = None):
+        self.api_url = api_url or f"{accounts_api_url()}/byok-usage"
 
     # Post BYOK usage
     def post_byok_usage(self, task: str, request: list[dict], jwt: str):
