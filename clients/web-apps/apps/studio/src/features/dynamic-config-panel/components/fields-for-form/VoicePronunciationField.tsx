@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { Check, CircleOffIcon, Pencil, Plus, X } from "lucide-react";
+import { CheckIcon, PencilSimpleIcon, PlusIcon, ProhibitIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -300,13 +300,13 @@ export const VoicePronunciationField = ({
                 fieldSize={size}
               />
               <Button type="button" size="icon7" onClick={tryAdd} disabled={addDisabled}>
-                <Plus className="h-3.5 w-3.5" />
+                <PlusIcon className="size-3.5" />
               </Button>
             </div>
 
-            {notice ? <p className="text-xs text-destructive mb-1">{notice}</p> : null}
+            {notice ? <p className="text-hint text-bad mb-1">{notice}</p> : null}
             {invalidText !== null ? (
-              <p className="text-xs text-destructive mb-1">{INVALID_MESSAGE}</p>
+              <p className="text-hint text-bad mb-1">{INVALID_MESSAGE}</p>
             ) : null}
 
             <FormMessage size={size} />
@@ -319,7 +319,7 @@ export const VoicePronunciationField = ({
           <EmptyState
             primaryMessage="No terms added"
             secondaryMessage="Add a term and how it should be spoken."
-            Icon={CircleOffIcon}
+            Icon={ProhibitIcon}
             className="mx-1"
           />
         ) : (
@@ -328,11 +328,11 @@ export const VoicePronunciationField = ({
               key={row.index}
               className={cn(
                 "flex items-center gap-2 px-3 py-2",
-                "bg-muted/50 border border-border rounded-md",
+                "rounded-md border border-line bg-fill",
                 "animate-in fade-in slide-in-from-top-1 duration-150",
               )}
             >
-              <span className="text-xs text-muted-foreground w-4 tabular-nums shrink-0">
+              <span className="text-hint text-muted-foreground w-4 tabular-nums shrink-0">
                 {displayIndex + 1}
               </span>
               {editingIndex === row.index ? (
@@ -360,7 +360,7 @@ export const VoicePronunciationField = ({
                     disabled={saveEditDisabled}
                     aria-label="Save pronunciation"
                   >
-                    <Check className="h-3.5 w-3.5" />
+                    <CheckIcon className="size-3.5" />
                   </Button>
                   <Button
                     type="button"
@@ -369,12 +369,12 @@ export const VoicePronunciationField = ({
                     size={"icon5"}
                     aria-label="Cancel edit"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <XIcon className="size-3.5" />
                   </Button>
                 </>
               ) : (
                 <>
-                  <span className="flex-1 text-sm text-wrap">
+                  <span className="flex-1 text-body-sm text-wrap">
                     <span className="font-medium">{row.term}</span>
                     <span className="text-muted-foreground"> = {row.pronunciation}</span>
                   </span>
@@ -386,7 +386,7 @@ export const VoicePronunciationField = ({
                     disabled={disabled}
                     aria-label={`Edit ${row.term}`}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <PencilSimpleIcon className="size-3.5" />
                   </Button>
                   <Button
                     type="button"
@@ -396,7 +396,7 @@ export const VoicePronunciationField = ({
                     disabled={disabled}
                     aria-label={`Delete ${row.term}`}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <XIcon className="size-3.5" />
                   </Button>
                 </>
               )}

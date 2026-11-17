@@ -1,11 +1,14 @@
 import { VOICE_FIELDS } from "../constants/voice-builder.constant";
-import type { VoiceBuilderSectionId, VoiceReadinessCheck } from "../types/voice-builder.type";
+import type {
+  VoiceEngineStepId,
+  VoicePromptStageId,
+  VoiceReadinessCheck,
+  VoiceStageMark,
+} from "../types/voice-builder.type";
 
 type FormValues = Record<string, unknown>;
 
 const VARIABLE_PATTERN = /\{\{\s*([\w.-]+)\s*\}\}/g;
-
-export const getVoiceSectionElementId = (id: VoiceBuilderSectionId) => `voice-section-${id}`;
 
 const hasText = (value: unknown) => typeof value === "string" && value.trim().length > 0;
 
@@ -44,42 +47,85 @@ export const isPersonaEmpty = (values: FormValues) =>
 const hasProviderModel = (value: unknown) =>
   hasText(readKey(value, "provider")) && hasText(readKey(value, "model"));
 
-const getBrainReadiness = (values: FormValues): Pick<VoiceReadinessCheck, "hint" | "isReady"> => {
-  if (values[VOICE_FIELDS.engineMode] === "realtime")
-    return {
-      hint: "Pick a realtime provider, a model, and the credential it uses.",
-      isReady:
-        hasProviderModel(values[VOICE_FIELDS.realtimeModel]) &&
-        hasText(readKey(values[VOICE_FIELDS.realtimeModel], "credential_name")),
-    };
+/** Whether each pipeline step (hear, think, speak) has the models it needs. */
+export const getEngineStepReadiness = (values: FormValues): Record<VoiceEngineStepId, boolean> => ({
+  speechToText: hasText(readKey(values[VOICE_FIELDS.speechToText], "model")),
+  languageModel: hasProviderModel(values[VOICE_FIELDS.languageModel]),
+  voice:
+    hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
+    hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
+});
+
+/** Each Prompt stage's mark: to do when it blocks the tab, ready when filled, idle when optional and empty. */
+export const getPromptStageMarks = (
+  values: FormValues,
+): Record<VoicePromptStageId, VoiceStageMark> => {
+  const hasGoal = hasText(values[VOICE_FIELDS.goal]);
+  const hasInstructions = hasText(values[VOICE_FIELDS.instructions]);
+  const isBlocked = !hasGoal && !hasInstructions;
+  const hasRoleOrGoal = hasGoal || hasText(values[VOICE_FIELDS.role]);
+  const needsIntroduction =
+    values[VOICE_FIELDS.firstSpeaker] === "ai" && !hasText(values[VOICE_FIELDS.introduction]);
+
+  const getVariablesMark = (): VoiceStageMark => {
+    if (getUndefinedVariables(values).length > 0) return "todo";
+    return getDefinedVariables(values).length > 0 ? "ready" : "idle";
+  };
 
   return {
-    hint: "Pick a language model, speech-to-text and text-to-speech models, and a voice.",
-    isReady:
-      hasProviderModel(values[VOICE_FIELDS.languageModel]) &&
-      hasText(readKey(values[VOICE_FIELDS.speechToText], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
-      hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
+    persona: isBlocked ? "todo" : hasRoleOrGoal ? "ready" : "idle",
+    instructions: isBlocked ? "todo" : hasInstructions ? "ready" : "idle",
+    opening: needsIntroduction ? "todo" : "ready",
+    variables: getVariablesMark(),
   };
 };
 
-export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => [
-  {
-    section: "persona",
-    label: "Persona",
-    hint: "Add a goal or instructions.",
-    isReady: hasText(values[VOICE_FIELDS.goal]) || hasText(values[VOICE_FIELDS.instructions]),
-  },
-  {
-    section: "opening",
-    label: "Opening",
-    hint: "Write what the agent says first.",
-    isReady:
-      values[VOICE_FIELDS.firstSpeaker] !== "ai" || hasText(values[VOICE_FIELDS.introduction]),
-  },
-  {
-    section: "brain",
-    label: "Brain",
-    ...getBrainReadiness(values),
-  },
-];
+/** Whether the realtime model has a provider, a model, and the credential it uses. */
+export const isRealtimeReady = (values: FormValues) =>
+  hasProviderModel(values[VOICE_FIELDS.realtimeModel]) &&
+  hasText(readKey(values[VOICE_FIELDS.realtimeModel], "credential_name"));
+
+const getEngineReadiness = (values: FormValues) => {
+  if (values[VOICE_FIELDS.engineMode] === "realtime")
+    return {
+      hint: "Pick a realtime provider, a model, and the credential it uses.",
+      isReady: isRealtimeReady(values),
+    };
+
+  const steps = getEngineStepReadiness(values);
+  if (!steps.languageModel) return { hint: "Pick a language model.", isReady: false };
+  if (!steps.speechToText || !steps.voice)
+    return {
+      hint: "Pick speech-to-text and text-to-speech models, and a voice.",
+      isReady: false,
+    };
+  return { hint: "", isReady: true };
+};
+
+const getPromptReadiness = (values: FormValues) => {
+  if (!hasText(values[VOICE_FIELDS.goal]) && !hasText(values[VOICE_FIELDS.instructions]))
+    return { hint: "Add a goal or instructions.", isReady: false };
+  if (values[VOICE_FIELDS.firstSpeaker] === "ai" && !hasText(values[VOICE_FIELDS.introduction]))
+    return { hint: "Write what the agent says first.", isReady: false };
+  return { hint: "", isReady: true };
+};
+
+/** Every required setup check in tab order, each with the hint for its first unmet step. */
+export const getVoiceReadiness = (values: FormValues): VoiceReadinessCheck[] => {
+  return [
+    { section: "prompt", label: "Prompt", ...getPromptReadiness(values) },
+    { section: "engine", label: "Engine", ...getEngineReadiness(values) },
+  ];
+};
+
+/** Required checks the settings still fail, in tab order. */
+export const getPendingVoiceChecks = (values: FormValues): VoiceReadinessCheck[] =>
+  getVoiceReadiness(values).filter((check) => !check.isReady);
+
+/** Readable list of sections, e.g. "Prompt and Engine". */
+export const formatPendingSections = (checks: VoiceReadinessCheck[]) => {
+  const labels = checks.map((check) => check.label);
+  return labels.length > 1
+    ? `${labels.slice(0, -1).join(", ")} and ${labels[labels.length - 1]}`
+    : (labels[0] ?? "");
+};

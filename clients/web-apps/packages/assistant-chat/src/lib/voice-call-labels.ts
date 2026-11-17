@@ -7,5 +7,5 @@ export const VOICE_CALL_STATE_LABELS: Record<VoiceCallState, string> = {
   thinking: "Processing…",
   speaking: "Agent speaking…",
   ended: "Call ended",
-  error: "Something went wrong",
+  error: "Call failed",
 };

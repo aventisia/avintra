@@ -11,7 +11,7 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { CircleOffIcon, Plus, X } from "lucide-react";
+import { PlusIcon, ProhibitIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -208,13 +208,13 @@ export const VoiceVariablesField = ({
                 fieldSize={size}
               />
               <Button type="button" size="icon7" onClick={tryAdd} disabled={addDisabled}>
-                <Plus className="h-3.5 w-3.5" />
+                <PlusIcon className="size-3.5" />
               </Button>
             </div>
 
-            {notice ? <p className="text-xs text-destructive mb-1">{notice}</p> : null}
+            {notice ? <p className="text-hint text-bad mb-1">{notice}</p> : null}
             {invalidText !== null ? (
-              <p className="text-xs text-destructive mb-1">{INVALID_MESSAGE}</p>
+              <p className="text-hint text-bad mb-1">{INVALID_MESSAGE}</p>
             ) : null}
 
             <FormMessage size={size} />
@@ -227,7 +227,7 @@ export const VoiceVariablesField = ({
           <EmptyState
             primaryMessage="No variables added"
             secondaryMessage="Add a name and value pair to fill placeholders."
-            Icon={CircleOffIcon}
+            Icon={ProhibitIcon}
             className="mx-1"
           />
         ) : (
@@ -236,14 +236,14 @@ export const VoiceVariablesField = ({
               key={row.key}
               className={cn(
                 "flex items-center gap-2 px-3 py-2",
-                "bg-muted/50 border border-border rounded-md",
+                "rounded-md border border-line bg-fill",
                 "animate-in fade-in slide-in-from-top-1 duration-150",
               )}
             >
-              <span className="text-xs text-muted-foreground w-4 tabular-nums shrink-0">
+              <span className="text-hint text-muted-foreground w-4 tabular-nums shrink-0">
                 {index + 1}
               </span>
-              <span className="flex-1 text-sm text-wrap">
+              <span className="flex-1 text-body-sm text-wrap">
                 <span className="font-medium">{row.key}</span>
                 <span className="text-muted-foreground"> = {row.displayValue}</span>
               </span>
@@ -254,7 +254,7 @@ export const VoiceVariablesField = ({
                 size={"icon5"}
                 disabled={disabled}
               >
-                <X className="h-3.5 w-3.5" />
+                <XIcon className="size-3.5" />
               </Button>
             </div>
           ))

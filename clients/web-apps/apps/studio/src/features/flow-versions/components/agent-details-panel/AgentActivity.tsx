@@ -5,10 +5,12 @@ import { format, parseISO } from "date-fns";
 import { type KeyboardEvent, useEffect, useMemo, useState } from "react";
 
 import {
-  AgentRunActivityDayDto,
-  AgentRunActivityDto,
-} from "@/features/execution-logs/dtos/agent-run-activity.dto";
-import { useFetchAgentRunActivity } from "@/features/execution-logs/hooks/useFetchAgentRunActivity.hook";
+  AGENT_RUN_ACTIVITY_DAYS,
+  type AgentRunActivityDayDto,
+  type AgentRunActivityDto,
+  useFetchAgentRunActivity,
+} from "@/features/execution-logs";
+import { useVoiceCallActivity } from "@/features/voice-conversations";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 const RISE_STAGGER_MS = 22;
@@ -17,14 +19,55 @@ type DayRuns = AgentRunActivityDayDto & { day: Date };
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+type ActivityNoun = "run" | "call";
+
+const ACTIVITY_COPY: Record<
+  ActivityNoun,
+  { title: string; unavailable: string; emptyHint: string }
+> = {
+  run: {
+    title: "Run activity",
+    unavailable: "Run activity unavailable",
+    emptyHint: "Run the agent to see its activity here.",
+  },
+  call: {
+    title: "Call activity",
+    unavailable: "Call activity unavailable",
+    emptyHint: "Start a test call to see this version's activity here.",
+  },
+};
+
+const pluralize = (noun: ActivityNoun, count: number) => (count === 1 ? noun : `${noun}s`);
+
 /**
- * Run activity over the agent's last 14 local days, across all of its versions. Loads the
- * numbers from the run-activity API; shows a skeleton while loading and an empty state with no runs.
+ * Activity over the last 14 local days: runs across all versions, or for a voice agent the calls
+ * of the open version. Shows a skeleton while loading and an empty state with no activity.
  */
 export const AgentActivity = () => {
-  const flowId = useCurrentFlowStore((state) => state.currentFlow.id);
-  const { activity, isLoading, isError } = useFetchAgentRunActivity(flowId);
+  const isVoiceAgent = useCurrentFlowStore((state) => state.isVoiceAgent);
+  return isVoiceAgent ? <VoiceCallActivity /> : <RunActivity />;
+};
 
+const RunActivity = () => {
+  const flowId = useCurrentFlowStore((state) => state.currentFlow.id);
+  const runActivity = useFetchAgentRunActivity(flowId);
+  return <ActivityView noun="run" {...runActivity} />;
+};
+
+const VoiceCallActivity = () => {
+  const versionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
+  const callActivity = useVoiceCallActivity(versionId, AGENT_RUN_ACTIVITY_DAYS);
+  return <ActivityView noun="call" {...callActivity} />;
+};
+
+type ActivityViewProps = {
+  noun: ActivityNoun;
+  activity: AgentRunActivityDto | undefined;
+  isLoading: boolean;
+  isError: boolean;
+};
+
+const ActivityView = ({ noun, activity, isLoading, isError }: ActivityViewProps) => {
   if (isLoading) {
     return (
       <section className="px-4 pb-4 pt-0" aria-busy="true">
@@ -39,24 +82,25 @@ export const AgentActivity = () => {
         <div className="flex h-36 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line-strong/50 text-center">
           <ChartBarIcon className="size-5 text-muted-foreground" aria-hidden="true" />
           <p className="text-body-sm font-medium text-ink-2">
-            {isError ? "Run activity unavailable" : "No runs in the last 14 days"}
+            {isError ? ACTIVITY_COPY[noun].unavailable : `No ${noun}s in the last 14 days`}
           </p>
           <p className="text-hint text-muted-foreground">
-            {isError ? "Try again in a moment." : "Run the agent to see its activity here."}
+            {isError ? "Try again in a moment." : ACTIVITY_COPY[noun].emptyHint}
           </p>
         </div>
       </section>
     );
   }
 
-  return <RunActivityChart activity={activity} />;
+  return <RunActivityChart activity={activity} noun={noun} />;
 };
 
 interface RunActivityChartProps {
   activity: AgentRunActivityDto;
+  noun: ActivityNoun;
 }
 
-const RunActivityChart = ({ activity }: RunActivityChartProps) => {
+const RunActivityChart = ({ activity, noun }: RunActivityChartProps) => {
   const days = useMemo<DayRuns[]>(
     () => activity.days.map((day) => ({ ...day, day: parseISO(day.date) })),
     [activity.days],
@@ -85,7 +129,7 @@ const RunActivityChart = ({ activity }: RunActivityChartProps) => {
   };
 
   return (
-    <section aria-label="Run activity" className="px-4 pb-4 pt-1">
+    <section aria-label={ACTIVITY_COPY[noun].title} className="px-4 pb-4 pt-1">
       <div aria-live="polite" className="min-h-[3.75rem]">
         <p className="flex min-w-0 items-baseline gap-1.5">
           <span className="text-title tabular-nums text-ink">
@@ -93,8 +137,8 @@ const RunActivityChart = ({ activity }: RunActivityChartProps) => {
           </span>
           <span className="truncate text-body text-muted-foreground">
             {activeDay
-              ? `${activeDay.runs === 1 ? "run" : "runs"} on ${format(activeDay.day, "EEE, MMM d")}`
-              : "runs in the last 14 days"}
+              ? `${pluralize(noun, activeDay.runs)} on ${format(activeDay.day, "EEE, MMM d")}`
+              : `${noun}s in the last 14 days`}
           </span>
         </p>
         <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-hint text-muted-foreground">
@@ -118,7 +162,7 @@ const RunActivityChart = ({ activity }: RunActivityChartProps) => {
               {activity.averageDurationSeconds !== null ? (
                 <RunStat
                   value={`${activity.averageDurationSeconds.toFixed(1)}s`}
-                  label="average run"
+                  label={`average ${noun}`}
                 />
               ) : null}
             </>
@@ -129,7 +173,7 @@ const RunActivityChart = ({ activity }: RunActivityChartProps) => {
       <div
         role="group"
         tabIndex={0}
-        aria-label="Daily runs. Use the left and right arrow keys to inspect a day."
+        aria-label={`Daily ${noun}s. Use the left and right arrow keys to inspect a day.`}
         onKeyDown={handleKeyDown}
         onFocus={() => setActiveIndex((index) => index ?? lastIndex)}
         onBlur={() => setActiveIndex(null)}
@@ -149,7 +193,7 @@ const RunActivityChart = ({ activity }: RunActivityChartProps) => {
             />
           ))}
         </div>
-        <div className="mt-1.5 flex justify-between text-[11px] leading-4 tabular-nums text-muted-foreground">
+        <div className="mt-1.5 flex justify-between text-2xs tabular-nums text-muted-foreground">
           <span>{format(days[0].day, "MMM d")}</span>
           <span>Today</span>
         </div>

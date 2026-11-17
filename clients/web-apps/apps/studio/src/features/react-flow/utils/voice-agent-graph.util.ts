@@ -401,12 +401,15 @@ export const normalizeVoiceAgentGraph = (nodes: Node[], edges: Edge[]): VoiceAge
   };
 };
 
-const getVoiceNodeInputs = (nodes: Node[]): NodeInputType[] => {
+/** The Voice AI node's saved inputs, or undefined when the graph has none. */
+export const findVoiceAgentInputs = (nodes: Node[]): NodeInputType[] | undefined => {
   const voiceNode = nodes.find(
     (node) => node.type === "aiNode" && node.data?.name === VOICE_AGENT_NODE_NAME,
   );
-  return ((voiceNode?.data as NodeDataType | undefined)?.inputs ?? []) as NodeInputType[];
+  return (voiceNode?.data as NodeDataType | undefined)?.inputs;
 };
+
+const getVoiceNodeInputs = (nodes: Node[]): NodeInputType[] => findVoiceAgentInputs(nodes) ?? [];
 
 /** Reads the Voice AI node's engine mode from a graph. */
 export const getVoiceAgentEngineMode = (nodes: Node[]): "pipeline" | "realtime" => {
