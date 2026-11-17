@@ -12,17 +12,19 @@ public static class CustomToolCredentialHelpers
         ICloudConnectorsVaultCredentialService cloudConnectorsVaultCredentialService,
         string credentialName)
     {
-        var vaultCredential = await cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
-        if (vaultCredential is null)
+        var resolution = await cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
+        if (!resolution.IsSuccess)
         {
-            return CustomToolAuthResult.Failure($"Credential '{credentialName}' was not found or is disabled.");
+            return CustomToolAuthResult.Failure(resolution.FailureMessage!);
         }
 
+        var vaultCredential = resolution.Credential!;
         var parameters = GetCredentialParameters(vaultCredential.Data);
         var authType = ResolveAuthType(vaultCredential.Data);
 
         var headers = new Dictionary<string, string>();
         string? query = null;
+        string[] secrets = [];
         switch (authType)
         {
             case ToolAuthenticationTypeEnum.Bearer:
@@ -30,10 +32,11 @@ public static class CustomToolCredentialHelpers
                     var token = GetString(parameters, "token");
                     if (string.IsNullOrWhiteSpace(token))
                     {
-                        return CustomToolAuthResult.Failure($"Credential '{credentialName}' has no 'token' value.");
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "token"));
                     }
 
                     headers["Authorization"] = $"Bearer {token}";
+                    secrets = CloudConnectorLogRedactor.WithEscapedForms(token);
                     break;
                 }
 
@@ -43,11 +46,14 @@ public static class CustomToolCredentialHelpers
                     var password = GetString(parameters, "password");
                     if (string.IsNullOrWhiteSpace(username))
                     {
-                        return CustomToolAuthResult.Failure($"Credential '{credentialName}' has no 'username' value.");
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "username"));
                     }
 
                     var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
                     headers["Authorization"] = $"Basic {encoded}";
+                    // IMPORTANT NOTE: an upstream may echo the encoded pair without the "Basic " prefix,
+                    // so both the raw password and the encoded value must be known secrets.
+                    secrets = CloudConnectorLogRedactor.WithEscapedForms(password, encoded);
                     break;
                 }
 
@@ -55,12 +61,18 @@ public static class CustomToolCredentialHelpers
                 {
                     var headerName = GetString(parameters, "headerName");
                     var apiKey = GetString(parameters, "apiKey");
-                    if (string.IsNullOrWhiteSpace(headerName) || string.IsNullOrWhiteSpace(apiKey))
+                    if (string.IsNullOrWhiteSpace(headerName))
                     {
-                        return CustomToolAuthResult.Failure($"Credential '{credentialName}' has no 'headerName'/'apiKey' values.");
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "headerName"));
+                    }
+
+                    if (string.IsNullOrWhiteSpace(apiKey))
+                    {
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "apiKey"));
                     }
 
                     headers[headerName] = apiKey!;
+                    secrets = CloudConnectorLogRedactor.WithEscapedForms(apiKey);
                     break;
                 }
 
@@ -68,12 +80,20 @@ public static class CustomToolCredentialHelpers
                 {
                     var parameterName = GetString(parameters, "parameterName");
                     var apiKey = GetString(parameters, "apiKey");
-                    if (string.IsNullOrWhiteSpace(parameterName) || string.IsNullOrWhiteSpace(apiKey))
+                    if (string.IsNullOrWhiteSpace(parameterName))
                     {
-                        return CustomToolAuthResult.Failure($"Credential '{credentialName}' has no 'parameterName'/'apiKey' values.");
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "parameterName"));
+                    }
+
+                    if (string.IsNullOrWhiteSpace(apiKey))
+                    {
+                        return CustomToolAuthResult.Failure(CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "apiKey"));
                     }
 
                     query = $"{Uri.EscapeDataString(parameterName!)}={Uri.EscapeDataString(apiKey!)}";
+                    // IMPORTANT NOTE: the query travels URL-escaped and under a caller-chosen parameter name,
+                    // so both forms must be known secrets for an upstream that echoes the request URL.
+                    secrets = CloudConnectorLogRedactor.WithEscapedForms(apiKey);
                     break;
                 }
 
@@ -84,7 +104,7 @@ public static class CustomToolCredentialHelpers
                 }
         }
 
-        return CustomToolAuthResult.Succeeded(headers, query);
+        return CustomToolAuthResult.Succeeded(headers, query, secrets);
     }
 
     private static Dictionary<string, string> GetCredentialParameters(Dictionary<string, object> data)
@@ -153,11 +173,17 @@ public sealed class CustomToolAuthResult
     public Dictionary<string, string> Headers { get; private init; } = [];
     public string? Query { get; private init; }
 
-    public static CustomToolAuthResult Succeeded(Dictionary<string, string> headers, string? query) => new()
+    /// <summary>
+    /// Secret values carried by this authentication, in the forms an upstream may echo.
+    /// </summary>
+    public string[] Secrets { get; private init; } = [];
+
+    public static CustomToolAuthResult Succeeded(Dictionary<string, string> headers, string? query, string[] secrets) => new()
     {
         IsSuccess = true,
         Headers = headers,
         Query = query,
+        Secrets = secrets,
     };
 
     public static CustomToolAuthResult Failure(string errorMessage) => new()

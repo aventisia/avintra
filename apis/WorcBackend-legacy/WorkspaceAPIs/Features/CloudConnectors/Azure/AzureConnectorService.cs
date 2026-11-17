@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -33,13 +34,16 @@ public class AzureConnectorsService : IAzureConnectorsService
             },
             StatusCode = 400
         };
+        string? azureConnectionString = null;
         try
         {
-            var azureconnectionstring = await GetBlobConnectionStringAsync(cloudConnectorReqDto.CredentialName);
-            if (azureconnectionstring == null)
+            var (connectionString, credentialFailure) = await GetBlobConnectionStringAsync(cloudConnectorReqDto.CredentialName);
+            azureConnectionString = connectionString;
+            if (azureConnectionString == null)
             {
                 serviceResponse.StatusCode = 400;
-                serviceResponse.Data.Response = "Unable to retrieve connection string.";
+                serviceResponse.Message = credentialFailure;
+                serviceResponse.Data.Response = credentialFailure;
                 return serviceResponse;
             }
             // Convert string action to enum
@@ -50,8 +54,8 @@ public class AzureConnectorsService : IAzureConnectorsService
                 return serviceResponse;
             }
             // Create Azure client
-            var blobServiceClient = new BlobServiceClient(azureconnectionstring);
-            var azureResponse = await TakeAzureBlobStorageAsync(azureAction, cloudConnectorReqDto.Payload, blobServiceClient);
+            var blobServiceClient = new BlobServiceClient(azureConnectionString);
+            var azureResponse = await TakeAzureBlobStorageAsync(azureAction, cloudConnectorReqDto.Payload, blobServiceClient, azureConnectionString);
 
             if (azureResponse == null)
             {
@@ -65,43 +69,47 @@ public class AzureConnectorsService : IAzureConnectorsService
             serviceResponse.Message = "Azure connector invoked successfully.";
 
         }
+        catch (RequestFailedException ex) when (ex.Status is 401 or 403)
+        {
+            _logger.LogWarning("Azure rejected credential {CredentialName} with status {Status}.", cloudConnectorReqDto.CredentialName, ex.Status);
+            serviceResponse.StatusCode = 400;
+            serviceResponse.Message = CredentialResolution.ToLogMessage(
+                CredentialResolutionReason.RejectedUpstream,
+                cloudConnectorReqDto.CredentialName,
+                CloudConnectorLogRedactor.RedactProviderReason(ex.Message, CloudConnectorLogRedactor.WithEscapedForms(azureConnectionString)));
+            serviceResponse.Data.Response = serviceResponse.Message;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while invoking Azure connector.");
+            var message = $"Error: {CloudConnectorLogRedactor.RedactProviderReason(ex.Message, CloudConnectorLogRedactor.WithEscapedForms(azureConnectionString))}";
             serviceResponse.StatusCode = 500;
-            serviceResponse.Message = $"Error: {ex.Message}";
-            serviceResponse.Data.Response = $"Error: {ex.Message}";
+            serviceResponse.Message = message;
+            serviceResponse.Data.Response = message;
         }
         return serviceResponse;
     }
 
-    private async Task<string?> GetBlobConnectionStringAsync(string credentialName)
+    private async Task<(string? ConnectionString, string? Failure)> GetBlobConnectionStringAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
-        if (vaultCredential == null)
+        var resolution = await _cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
+        if (!resolution.IsSuccess)
         {
-            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
-            return null;
-        }
-        if (vaultCredential.Data == null ||
-            !vaultCredential.Data.TryGetValue("ConnectionString", out var blobConnectionString) ||
-            blobConnectionString == null)
-        {
-            _logger.LogWarning("No 'ConnectionString' found in vault credential Data for Name: {CredentialName}", credentialName);
-            return null;
-        }
-        string? connectionString = blobConnectionString.ToString();
-
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            _logger.LogWarning("Connection string is null or whitespace for credential Name: {CredentialName}", credentialName);
-            return null;
+            return (null, resolution.FailureMessage);
         }
 
-        return connectionString;
+        if (resolution.Credential!.Data == null ||
+            !resolution.Credential.Data.TryGetValue("ConnectionString", out var blobConnectionString) ||
+            string.IsNullOrWhiteSpace(blobConnectionString?.ToString()))
+        {
+            _logger.LogWarning("No 'ConnectionString' value in vault credential Data for Name: {CredentialName}", credentialName);
+            return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "ConnectionString"));
+        }
+
+        return (blobConnectionString!.ToString(), null);
     }
 
-    private async Task<object?> TakeAzureBlobStorageAsync(AzureActionEnum azureAction, object payload, BlobServiceClient blobServiceClient)
+    private async Task<object?> TakeAzureBlobStorageAsync(AzureActionEnum azureAction, object payload, BlobServiceClient blobServiceClient, string? connectionString)
 
     {
         try
@@ -311,10 +319,16 @@ public class AzureConnectorsService : IAzureConnectorsService
                     return new { Error = "Invalid Azure action." };
             }
         }
+        catch (RequestFailedException ex) when (ex.Status is 401 or 403)
+        {
+            // IMPORTANT NOTE: a rejected credential must reach the invoke path, which alone knows the
+            // credential name needed for the execution-log message.
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Azure operation failed");
-            return new { Error = ex.Message };
+            return new { Error = CloudConnectorLogRedactor.RedactProviderReason(ex.Message, connectionString) };
         }
     }
 }

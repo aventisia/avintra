@@ -22,14 +22,13 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
         _resourceUserAccessService = resourceUserAccessService;
     }
 
-    public async Task<VaultCredentialObj?> GetVaultCredentialAsync(string credentialName)
+    public async Task<CredentialResolution> ResolveVaultCredentialAsync(string credentialName)
     {
         try
         {
                 var vaultCredential = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.Name == credentialName &&
-                    !w.IsDisabled &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
@@ -37,7 +36,18 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
-            if (vaultCredential == null) return null;
+            if (vaultCredential == null)
+            {
+                return CredentialResolution.Failure(CredentialResolutionReason.NotFound, credentialName);
+            }
+
+            // IMPORTANT NOTE: a disabled credential is reported before any decryption so its secret
+            // values are never decrypted on a failure path.
+            if (vaultCredential.IsDisabled)
+            {
+                _logger.LogWarning("Vault credential {CredentialName} is disabled.", credentialName);
+                return CredentialResolution.Failure(CredentialResolutionReason.Disabled, credentialName);
+            }
 
             var currentUserId = _currentTenantService.CurrentUserId;
             if (!await CanUseCredentialAsync(vaultCredential, currentUserId))
@@ -46,7 +56,7 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
                     "Denied vault access to credential {CredentialName} for user {UserId}.",
                     credentialName,
                     currentUserId);
-                return null;
+                return CredentialResolution.Failure(CredentialResolutionReason.NoAccess, credentialName);
             }
 
             var decryptedData = new Dictionary<string, string>();
@@ -80,19 +90,19 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
             var dataDict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dataNode.ToJsonString())
                 ?? new Dictionary<string, object>();
 
-            return new VaultCredentialObj
+            return CredentialResolution.Succeeded(new VaultCredentialObj
             {
                 Name = vaultCredential.Name,
                 Type = vaultCredential.Type,
                 Data = dataDict
-            };
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving Credential with Name: {CredentialName}", credentialName);
         }
 
-        return null;
+        return CredentialResolution.Failure(CredentialResolutionReason.Unavailable, credentialName);
     }
 
     private async Task<bool> CanUseCredentialAsync(VaultCredential credential, Guid currentUserId)

@@ -20,14 +20,6 @@ public static class CamelVaultCredentialHelpers
     /// <summary>Unauthenticated request.</summary>
     public static CamelAuthResult None() => CamelAuthResult.None();
 
-    /// <summary>Credential was required but could not be resolved.</summary>
-    public static CamelAuthResult MissingCredential(string family, string? credentialName)
-    {
-        return CamelAuthResult.Failure(
-            400,
-            $"Credential '{credentialName}' was not found for Camel connector '{family}'.");
-    }
-
     /// <summary>
     /// Access-token authentication (e.g. GitHub PATs). Reads the <c>AccessToken</c>
     /// key from the credential data.
@@ -37,7 +29,7 @@ public static class CamelVaultCredentialHelpers
         var token = GetString(credential, "AccessToken");
         if (string.IsNullOrWhiteSpace(token))
         {
-            return CamelAuthResult.Failure(400, $"Credential '{credential.Name}' has no 'AccessToken' value.");
+            return CamelAuthResult.Failure(400, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "AccessToken"));
         }
 
         return CamelAuthResult.Success(new Dictionary<string, object?>
@@ -61,7 +53,7 @@ public static class CamelVaultCredentialHelpers
         var username = GetString(credential, "Username");
         if (string.IsNullOrWhiteSpace(username))
         {
-            return CamelAuthResult.Failure(400, $"Credential '{credential.Name}' has no 'Username' value.");
+            return CamelAuthResult.Failure(400, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "Username"));
         }
 
         var auth = new Dictionary<string, object?>
@@ -114,7 +106,7 @@ public static class CamelVaultCredentialHelpers
         {
             return CamelAuthResult.Failure(
                 400,
-                $"Credential '{credential.Name}' has no 'ConnectionString'/'Url' value.");
+                CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "ConnectionString or Url"));
         }
 
         var properties = new Dictionary<string, object?>
@@ -234,12 +226,19 @@ public static class CamelVaultCredentialHelpers
         var clientId = GetString(credential, "ClientId");
         var clientSecret = GetString(credential, "ClientSecret");
 
-        if (string.IsNullOrWhiteSpace(tenantId) || string.IsNullOrWhiteSpace(clientId)
-            || string.IsNullOrWhiteSpace(clientSecret))
+        if (string.IsNullOrWhiteSpace(tenantId))
         {
-            return CamelAuthResult.Failure(
-                400,
-                $"Credential '{credential.Name}' must contain 'AzureTenantId', 'ClientId' and 'ClientSecret'.");
+            return CamelAuthResult.Failure(400, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "AzureTenantId"));
+        }
+
+        if (string.IsNullOrWhiteSpace(clientId))
+        {
+            return CamelAuthResult.Failure(400, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "ClientId"));
+        }
+
+        if (string.IsNullOrWhiteSpace(clientSecret))
+        {
+            return CamelAuthResult.Failure(400, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credential.Name, "ClientSecret"));
         }
 
         return CamelAuthResult.Success(new Dictionary<string, object?>

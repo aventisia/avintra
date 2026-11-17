@@ -45,13 +45,13 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             }
 
             // Get Access Token
-            var accessToken = await _m365ConnectorsService
-                    .GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
+            var (accessToken, credentialFailure) = await _m365ConnectorsService
+                    .TryGetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
 
             if (string.IsNullOrWhiteSpace(accessToken))
             {
                 _logger.LogWarning("Access token retrieval failed.");
-                serviceResponse.Message = "Failed to obtain M365 access token.";
+                serviceResponse.Message = credentialFailure;
                 return serviceResponse;
             }
 

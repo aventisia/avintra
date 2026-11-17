@@ -113,10 +113,12 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             var credentialHeaders = new Dictionary<string, string>();
             var requestHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             string? credentialQuery = null;
+            string? credentialName = null;
+            string[] credentialSecrets = [];
             var hasCredential = !string.IsNullOrWhiteSpace(request.CredentialName) || !string.IsNullOrWhiteSpace(tool.CredentialName);
             if (hasCredential)
             {
-                var credentialName = string.IsNullOrWhiteSpace(request.CredentialName)
+                credentialName = string.IsNullOrWhiteSpace(request.CredentialName)
                     ? tool.CredentialName!
                     : request.CredentialName!;
 
@@ -129,6 +131,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
 
                 credentialHeaders = auth.Headers;
                 credentialQuery = auth.Query;
+                credentialSecrets = auth.Secrets;
             }
 
             var (requestUrl, remainingPayload, requestError) = CustomToolRequestHelpers.BuildRequestUrl(
@@ -145,9 +148,25 @@ public class CustomToolConnectorService : ICustomToolConnectorService
 
             var (statusCode, responseText, responseError) = await CustomToolTransportHelpers.SendAsync(
                 _httpClientFactory, _logger, operation.Method, requestUrl, requestHeaders, content, contentType, cancellationToken);
+            var redactionSecrets = credentialHeaders.Values.Concat(credentialSecrets).ToArray();
+            if (statusCode is 401 or 403)
+            {
+                _logger.LogWarning(
+                    "Custom tool '{ToolName}' rejected credential '{CredentialName}' with status {StatusCode}.",
+                    tool.Name, credentialName, statusCode);
+                return serviceResponse.Update(
+                    CredentialResolution.ToLogMessage(
+                        CredentialResolutionReason.RejectedUpstream,
+                        credentialName,
+                        CloudConnectorLogRedactor.RedactProviderReason(responseError ?? responseText, redactionSecrets)),
+                    400);
+            }
+
             if (responseError is not null)
             {
-                return serviceResponse.Update(responseError, statusCode >= 400 ? statusCode : 502);
+                return serviceResponse.Update(
+                    CloudConnectorLogRedactor.RedactProviderReason(responseError, redactionSecrets),
+                    statusCode >= 400 ? statusCode : 502);
             }
 
             _logger.LogInformation(
