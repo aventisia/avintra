@@ -3,6 +3,20 @@
 The Studio VoiceAgent editor. The builder writes into the single Voice AI node;
 the saved graph is the only source of runtime settings.
 
+## Layout and gating
+
+`VoiceBuilderForm` binds the node config form to the voice node and shows its
+settings in tabs: Prompt, Engine, Context, Tools, and Pronunciation
+(`VOICE_BUILDER_SECTION_META`). A tab that fails a required readiness check
+carries a dot.
+
+Publish (`PublishFlow`) and the test console (`VoiceTestConsole`) both read
+`useVoicePendingChecks`. While the builder form is mounted it publishes its live
+pending checks to `voice-builder.store`, because the form commits into the
+canvas only at panel boundaries; otherwise, the hook computes the checks from
+the voice node saved in the canvas store. The store resets when the form
+unmounts.
+
 ## Engine modes
 
 | `__EngineMode__Voice` | Builder fields                                                                                                                                                                | Runtime                                                   |
@@ -17,7 +31,7 @@ reuses one voice configuration instead of duplicating it. Realtime preview is
 hidden because the preview route synthesizes through a TTS model, not a realtime
 model.
 
-Realtime readiness requires a provider, a model, and a credential (name or id). The
+Realtime readiness requires a provider, a model, and a credential name. The
 provider allowlist is mirrored in three places: `EXECUTABLE_REALTIME_PROVIDERS`
 (`dynamic-config-panel/constants/model-providers.ts`), `AllowedRealtimeProviders`
 (WorkspaceAPIs `VoiceAgentGraphHelpers`), and `realtime_adapters.py`. Change all

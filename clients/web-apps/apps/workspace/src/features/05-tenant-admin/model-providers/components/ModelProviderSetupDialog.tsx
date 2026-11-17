@@ -160,14 +160,21 @@ export const ModelProviderSetupDialog = () => {
 
     if (!credentialName && !credentialId) return;
 
-    const sendEnabledModels = config?.enabledModels != null || enabledModels.length > 0;
+    const enabledModelsToSave = enabledModelIds.map((modelId): EnabledModelDto => {
+      const storedCapability = enabledModels.find((m) => m.modelId === modelId)?.capability;
+      const catalogCapability = providerModels.find((m) => m.id === modelId)?.capability;
+      return {
+        modelId,
+        capability: storedCapability ?? toModelCapability(catalogCapability),
+      };
+    });
 
     upsertMutation.mutate({
       providerType: provider.value,
       credentialName,
       credentialId,
       enabledModelIds,
-      enabledModels: sendEnabledModels ? enabledModels : undefined,
+      enabledModels: enabledModelsToSave,
       isDisabled,
     });
   };

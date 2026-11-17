@@ -14,6 +14,10 @@ export * from "./components/fields-for-form/ConfigPanelAutosizeTextareaField";
 export * from "./components/fields-for-form/GroupedFieldsWrapper";
 export * from "./components/fields-for-form/ModelConfigField";
 export * from "./components/fields-for-form/ConfigPanelOuputField";
+export { PromptConfigFieldV2 } from "./components/fields-for-form/prompt-field/PromptConfigFieldV2";
+export { VoiceAgentPromptAction } from "./components/fields-for-form/prompt-field/VoiceAgentPromptAction";
+export { VoicePronunciationTab } from "./components/fields-for-form/VoicePronunciationTab";
+export { VoiceVariablesField } from "./components/fields-for-form/VoiceVariablesField";
 export * from "./components/RenderField";
 
 // constants

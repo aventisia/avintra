@@ -1,6 +1,5 @@
 import { useFormContext } from "react-hook-form";
 
-import { GroupedFieldsWrapper } from "@/features/dynamic-config-panel/components/fields-for-form/GroupedFieldsWrapper";
 import { ModelConfigField } from "@/features/dynamic-config-panel/components/fields-for-form/ModelConfigField";
 
 import { VOICE_FIELDS } from "../constants/voice-builder.constant";
@@ -15,7 +14,7 @@ export const VoiceTtsSection = () => {
   const { watch } = useFormContext();
 
   return (
-    <GroupedFieldsWrapper groupName="Text-to-Speech (TTS)">
+    <div className="space-y-3">
       <ModelConfigField
         name={VOICE_FIELDS.textToSpeech}
         specialty="tts"
@@ -23,6 +22,7 @@ export const VoiceTtsSection = () => {
         hideByok
         hideVoiceConfig
         hideGroup
+        inline
       />
       <VoiceOutputFields
         provider={watch(PROVIDER) as string | undefined}
@@ -30,8 +30,8 @@ export const VoiceTtsSection = () => {
         capability="tts"
         credentialName={watch(CREDENTIAL) as string | undefined}
         isByokEnabled={watch(IS_BYOK) as boolean | undefined}
-        emptyMessage="Pick a text-to-speech provider above to see its voices."
+        emptyMessage="Pick a text-to-speech model above to see its voices."
       />
-    </GroupedFieldsWrapper>
+    </div>
   );
 };

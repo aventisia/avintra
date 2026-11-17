@@ -1,4 +1,3 @@
-import { Badge } from "@avplatform/ui/badge";
 import { useEffect, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -8,7 +7,7 @@ import { getCachedNodeConfig, getNodeConfig } from "../../apis/get-node-config";
 import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 import { DCPFieldSchemaType } from "../../types/dcp-field-schema-type";
 import { isTtsPreviewSupported } from "../../utils/voice-preview.util";
-import { VoiceFeatureCard } from "./VoiceFeatureCard";
+import { VoiceFeatureCard, VoiceFeatureStatusBadge } from "./VoiceFeatureCard";
 import { VoicePronunciationField } from "./VoicePronunciationField";
 
 const VOICE_PRONUNCIATION_CATEGORY = "Pronunciation";
@@ -21,16 +20,6 @@ type CachedNodeConfig = DCPFieldSchemaType[] | { fields?: DCPFieldSchemaType[] }
 
 const normalizeFields = (config: CachedNodeConfig | undefined): DCPFieldSchemaType[] =>
   Array.isArray(config) ? config : (config?.fields ?? []);
-
-const statusBadge = (enabled: boolean, configured: boolean) => {
-  if (!enabled) return <Badge variant="outline">Off</Badge>;
-
-  return configured ? (
-    <Badge variant="secondary">Configured</Badge>
-  ) : (
-    <Badge variant="outline">Not configured</Badge>
-  );
-};
 
 /** Renders the Voice Agent Pronunciation tab as a persisted feature card. */
 export const VoicePronunciationTab = () => {
@@ -91,10 +80,14 @@ export const VoicePronunciationTab = () => {
         title="Pronunciation"
         description="Speak names, terms, and acronyms the way you want when the agent speaks."
         toggleName={PRONUNCIATION_TOGGLE_NAME}
-        toggleLabel={pronunciationToggle?.label}
         toggleDescription={pronunciationToggle?.description}
         fieldNames={[PRONUNCIATION_FIELD_NAME, PRONUNCIATION_TOGGLE_NAME]}
-        badge={statusBadge(pronunciationEnabled, hasArrayEntries(pronunciationValue))}
+        badge={
+          <VoiceFeatureStatusBadge
+            enabled={pronunciationEnabled}
+            configured={hasArrayEntries(pronunciationValue)}
+          />
+        }
       >
         <VoicePronunciationField
           name={PRONUNCIATION_FIELD_NAME}

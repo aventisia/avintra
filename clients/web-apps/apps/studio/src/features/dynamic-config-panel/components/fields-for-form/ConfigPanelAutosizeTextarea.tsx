@@ -5,7 +5,7 @@ import * as React from "react";
 import { useEffect, useImperativeHandle, useState } from "react";
 
 interface UseAutosizeTextAreaProps {
-  textAreaRef: HTMLTextAreaElement | null;
+  textAreaRef: React.RefObject<HTMLTextAreaElement | null>;
   minHeight?: number;
   maxHeight?: number;
   triggerAutoSize: string;
@@ -21,23 +21,24 @@ const useAutosizeTextarea = ({
   useEffect(() => {
     // We need to reset the height momentarily to get the correct scrollHeight for the textarea
     const offsetBorder = 2;
-    if (textAreaRef) {
+    const textArea = textAreaRef.current;
+    if (textArea) {
       if (init) {
-        textAreaRef.style.minHeight = `${minHeight + offsetBorder}px`;
+        textArea.style.minHeight = `${minHeight + offsetBorder}px`;
         if (maxHeight > minHeight) {
-          textAreaRef.style.maxHeight = `${maxHeight}px`;
+          textArea.style.maxHeight = `${maxHeight}px`;
         }
         setInit(false);
       }
-      textAreaRef.style.height = `${minHeight + offsetBorder}px`;
-      const scrollHeight = textAreaRef.scrollHeight;
+      textArea.style.height = `${minHeight + offsetBorder}px`;
+      const scrollHeight = textArea.scrollHeight;
       // We then set the height directly, outside of the render loop
       // Trying to set this with state or a ref will product an incorrect value.
-      if (scrollHeight > maxHeight) {
-        textAreaRef.style.height = `${maxHeight}px`;
-      } else {
-        textAreaRef.style.height = `${scrollHeight + offsetBorder}px`;
-      }
+      // IMPORTANT NOTE: scrollHeight rounds fractional line heights down, so a box sized to it can sit
+      // a sub-pixel short and show a scrollbar; only scroll once the content is capped.
+      const isCapped = scrollHeight + offsetBorder > maxHeight;
+      textArea.style.height = `${isCapped ? maxHeight : scrollHeight + offsetBorder}px`;
+      textArea.style.overflowY = isCapped ? "auto" : "hidden";
     }
   }, [init, maxHeight, minHeight, textAreaRef, triggerAutoSize]);
 };
@@ -78,7 +79,7 @@ const ConfigPanelAutosizeTextarea = React.forwardRef<
     const [triggerAutoSize, setTriggerAutoSize] = React.useState("");
 
     useAutosizeTextarea({
-      textAreaRef: textAreaRef.current,
+      textAreaRef,
       triggerAutoSize: triggerAutoSize,
       maxHeight,
       minHeight,

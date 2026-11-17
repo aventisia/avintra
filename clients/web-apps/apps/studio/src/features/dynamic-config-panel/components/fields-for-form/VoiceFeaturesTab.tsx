@@ -9,7 +9,7 @@ import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 import { DCPFieldSchemaType } from "../../types/dcp-field-schema-type";
 import { RenderField } from "../RenderField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
-import { VoiceFeatureCard } from "./VoiceFeatureCard";
+import { VoiceFeatureCard, VoiceFeatureStatusBadge } from "./VoiceFeatureCard";
 import { VoiceVariablesField } from "./VoiceVariablesField";
 import { VoiceWebhookField } from "./VoiceWebhookField";
 
@@ -130,26 +130,20 @@ export const VoiceFeaturesTab = () => {
     return <RenderField key={field.name} {...field} disabled={field.disabled || disabled} force />;
   };
 
-  const statusBadge = (enabled: boolean, configured: boolean) => {
-    if (!enabled) return <Badge variant="outline">Off</Badge>;
-
-    return configured ? (
-      <Badge variant="secondary">Configured</Badge>
-    ) : (
-      <Badge variant="outline">Not configured</Badge>
-    );
-  };
-
   return (
     <div className="space-y-3">
       <VoiceFeatureCard
         title="Dynamic Variables"
         description="Fill {{name}} placeholders during pipeline conversations. Realtime sessions do not resolve them."
         toggleName={TOGGLE_NAMES.variables}
-        toggleLabel={variablesToggle?.label}
         toggleDescription={variablesToggle?.description}
         fieldNames={[...CONFIG_FIELD_NAMES.variables, TOGGLE_NAMES.variables]}
-        badge={statusBadge(variablesEnabled, hasObjectEntries(variablesValue))}
+        badge={
+          <VoiceFeatureStatusBadge
+            enabled={variablesEnabled}
+            configured={hasObjectEntries(variablesValue)}
+          />
+        }
       >
         <VoiceVariablesField
           name="__Variables__Voice"
@@ -164,13 +158,16 @@ export const VoiceFeaturesTab = () => {
         title="Escalation"
         description="Store who a caller should reach and when."
         toggleName={TOGGLE_NAMES.escalation}
-        toggleLabel={escalationToggle?.label}
         toggleDescription={escalationToggle?.description}
         fieldNames={[...CONFIG_FIELD_NAMES.escalation, TOGGLE_NAMES.escalation]}
-        badge={statusBadge(
-          escalationEnabled,
-          isNonBlankString(escalationDestination) || isNonBlankString(escalationCondition),
-        )}
+        badge={
+          <VoiceFeatureStatusBadge
+            enabled={escalationEnabled}
+            configured={
+              isNonBlankString(escalationDestination) || isNonBlankString(escalationCondition)
+            }
+          />
+        }
       >
         {renderConfigField("__EscalationDestination__Voice", !escalationEnabled)}
         {renderConfigField("__EscalationCondition__Voice", !escalationEnabled)}
@@ -184,10 +181,11 @@ export const VoiceFeaturesTab = () => {
         title="Transcript Webhook"
         description="Send the transcript once a deployed voice conversation is archived."
         toggleName={TOGGLE_NAMES.transcriptWebhook}
-        toggleLabel={webhookToggle?.label}
         toggleDescription={webhookToggle?.description}
         fieldNames={[...CONFIG_FIELD_NAMES.transcriptWebhook, TOGGLE_NAMES.transcriptWebhook]}
-        badge={statusBadge(webhookEnabled, isHttpsUrl(webhookUrl))}
+        badge={
+          <VoiceFeatureStatusBadge enabled={webhookEnabled} configured={isHttpsUrl(webhookUrl)} />
+        }
       >
         <VoiceWebhookField
           disabled={!webhookEnabled}
@@ -208,7 +206,6 @@ export const VoiceFeaturesTab = () => {
         title="Sound Effects"
         description="Play browser sounds for tool calls and voice sessions."
         toggleName={TOGGLE_NAMES.sfx}
-        toggleLabel={sfxToggle?.label}
         toggleDescription={sfxToggle?.description}
         fieldNames={[
           ...CONFIG_FIELD_NAMES.sfx,
@@ -216,7 +213,12 @@ export const VoiceFeaturesTab = () => {
           TOGGLE_NAMES.sfxToolCallCue,
           TOGGLE_NAMES.sfxAmbience,
         ]}
-        badge={statusBadge(sfxEnabled, isNonBlankString(cueUrl) || isNonBlankString(ambienceUrl))}
+        badge={
+          <VoiceFeatureStatusBadge
+            enabled={sfxEnabled}
+            configured={isNonBlankString(cueUrl) || isNonBlankString(ambienceUrl)}
+          />
+        }
       >
         <GroupedFieldsWrapper groupName="Tool-call cue">
           {renderConfigField(TOGGLE_NAMES.sfxToolCallCue)}

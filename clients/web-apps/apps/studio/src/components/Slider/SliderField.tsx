@@ -2,6 +2,8 @@ import { FormControl, FormLabelExt } from "@avplatform/ui/form";
 import { FormField } from "@avplatform/ui/form";
 import { FormItem } from "@avplatform/ui/form";
 import { FormMessage } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
+import { type FormFieldSizeType } from "@avplatform/ui/types";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import * as React from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
@@ -23,6 +25,10 @@ interface SliderFieldProps extends Omit<
   isRequired?: boolean;
   thumbColor?: string;
   trackColor?: string;
+  /** Shows the current value beside the slider, formatted by this function, in place of the hover bubble. */
+  formatValue?: (value: number) => string;
+  /** "sm" matches the height of small selects so the slider can share a row with them. */
+  size?: FormFieldSizeType;
 }
 
 /**
@@ -38,6 +44,8 @@ const SliderField = ({
   max,
   description,
   isRequired,
+  formatValue,
+  size = "base",
   ...props
 }: SliderFieldProps) => {
   const { control } = useFormContext<FieldValues>();
@@ -46,37 +54,65 @@ const SliderField = ({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <div>
-            {label && (
-              <FormLabelExt label={label} description={description} isRequired={isRequired} />
-            )}
-            <div className="mt-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded-lg border p-2.5">
-              <span className="text-xs">{min}</span>
-
-              <FormControl>
-                <Slider
-                  disabled={disabled}
-                  // Convert RHF's number into Radix's number array
-                  value={[field.value ?? min ?? 0]}
-                  // Extract the first number from Radix's array for RHF
-                  onValueChange={(val) => field.onChange(val[0])}
-                  onValueCommit={field.onBlur}
-                  thumbColor={thumbColor}
-                  trackColor={trackColor}
-                  min={min}
-                  max={max}
-                  {...props}
+      render={({ field }) => {
+        const currentValue = Number(field.value ?? min ?? 0);
+        return (
+          <FormItem size={size}>
+            <div>
+              {label && (
+                <FormLabelExt
+                  size={size}
+                  label={label}
+                  description={description}
+                  isRequired={isRequired}
                 />
-              </FormControl>
-              <span className="text-xs">{max}</span>
-            </div>
-          </div>
+              )}
+              <div
+                className={cn(
+                  "grid items-center gap-2 rounded-lg border",
+                  formatValue ? "grid-cols-[auto_1fr_auto_auto]" : "grid-cols-[auto_1fr_auto]",
+                  size === "base" ? "mt-1 p-2.5" : "mt-1 h-8 px-2.5",
+                )}
+              >
+                <span
+                  className={cn(size === "base" ? "text-xs" : "text-2xs text-muted-foreground")}
+                >
+                  {min}
+                </span>
 
-          <FormMessage />
-        </FormItem>
-      )}
+                <FormControl>
+                  <Slider
+                    disabled={disabled}
+                    // Convert RHF's number into Radix's number array
+                    value={[currentValue]}
+                    // Extract the first number from Radix's array for RHF
+                    onValueChange={(val) => field.onChange(val[0])}
+                    onValueCommit={field.onBlur}
+                    thumbColor={thumbColor}
+                    trackColor={trackColor}
+                    showValueBubble={!formatValue}
+                    min={min}
+                    max={max}
+                    {...props}
+                  />
+                </FormControl>
+                <span
+                  className={cn(size === "base" ? "text-xs" : "text-2xs text-muted-foreground")}
+                >
+                  {max}
+                </span>
+                {formatValue && (
+                  <output className="min-w-10 border-l border-line pl-2 text-right font-mono text-hint tabular-nums text-ink">
+                    {formatValue(currentValue)}
+                  </output>
+                )}
+              </div>
+            </div>
+
+            <FormMessage size={size} />
+          </FormItem>
+        );
+      }}
     />
   );
 };

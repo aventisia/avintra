@@ -1,7 +1,16 @@
+import {
+  BookOpenTextIcon,
+  ChatTextIcon,
+  CpuIcon,
+  SpeakerHighIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
+
 import type {
   VoiceAgentTemplate,
   VoiceBuilderSectionId,
-  VoiceComingLaterGroup,
+  VoiceBuilderSectionMeta,
+  VoiceEngineMode,
 } from "../types/voice-builder.type";
 
 export const VOICE_FIELDS = {
@@ -30,31 +39,45 @@ export const VOICE_OUTPUT_FIELDS = {
   speed: `${VOICE_FIELDS.voiceConfig}.speed`,
 } as const;
 
-export const VOICE_BUILDER_SECTIONS: { id: VoiceBuilderSectionId; label: string }[] = [
-  { id: "persona", label: "Persona" },
-  { id: "opening", label: "Opening" },
-  { id: "brain", label: "Brain" },
-  { id: "knowledge", label: "Knowledge & tools" },
-  { id: "pronunciation", label: "Pronunciation & variables" },
-  { id: "later", label: "Coming soon" },
-];
+export const VOICE_ENGINE_LABELS: Record<VoiceEngineMode, string> = {
+  pipeline: "Pipeline",
+  realtime: "Realtime",
+};
 
-export const VOICE_COMING_LATER: VoiceComingLaterGroup[] = [
-  {
-    phase: "Phase 4",
-    items: [
-      "Escalation to a person",
-      "Transcript webhook",
-      "Phone and widget channels",
-      "Redaction",
-    ],
+export const VOICE_BUILDER_SECTION_META: Record<VoiceBuilderSectionId, VoiceBuilderSectionMeta> = {
+  prompt: {
+    id: "prompt",
+    label: "Prompt",
+    description: "Who the agent is, what it must achieve, and how it opens the call.",
+    icon: ChatTextIcon,
   },
-  { phase: "Phase 5", items: ["Preemptive generation", "Noise cancellation"] },
-  {
-    phase: "Phase 6",
-    items: ["Manager agent", "Call recording", "Custom sounds", "Avatar", "Screen share", "Camera"],
+  engine: {
+    id: "engine",
+    label: "Engine",
+    description: "The model that thinks, and the voice it hears and speaks with.",
+    icon: CpuIcon,
   },
-];
+  context: {
+    id: "context",
+    label: "Context",
+    description: "What the agent can look up during a call.",
+    icon: BookOpenTextIcon,
+  },
+  tools: {
+    id: "tools",
+    label: "Tools",
+    description: "Actions the agent can take during a call.",
+    icon: WrenchIcon,
+  },
+  pronunciation: {
+    id: "pronunciation",
+    label: "Pronunciation",
+    description: "Say names, terms, and acronyms the way you want.",
+    icon: SpeakerHighIcon,
+  },
+};
+
+export const VOICE_BUILDER_SECTIONS = Object.values(VOICE_BUILDER_SECTION_META);
 
 export const VOICE_AGENT_TEMPLATES: VoiceAgentTemplate[] = [
   {

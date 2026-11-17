@@ -33,20 +33,28 @@ const PromptActionButton = ({
     type="button"
     disabled={disabled || isPending}
     className={cn(
-      "flex w-36 items-center gap-2 rounded-full border-primary text-primary transition-all duration-200",
-      isPending ? "cursor-wait" : "hover:bg-primary hover:text-primary-foreground",
+      "group flex w-36 items-center gap-2 border-transparent text-ink transition-shadow duration-200",
+      "[background:linear-gradient(100deg,color-mix(in_srgb,var(--primary-base)_9%,var(--surface)),color-mix(in_srgb,var(--ai-magenta)_6%,var(--surface))_55%,color-mix(in_srgb,var(--ai-sky)_7%,var(--surface)))_padding-box,linear-gradient(100deg,color-mix(in_srgb,var(--primary-base)_55%,transparent),color-mix(in_srgb,var(--ai-magenta)_45%,transparent),color-mix(in_srgb,var(--ai-sky)_50%,transparent))_border-box]",
+      isPending
+        ? "cursor-wait"
+        : "hover:shadow-[0_0_0_3px_color-mix(in_srgb,var(--primary-base)_10%,transparent),0_4px_14px_-4px_color-mix(in_srgb,var(--ai-magenta)_40%,transparent)]",
     )}
     onClick={onClick}
   >
     {isPending ? (
       <>
-        <LoadingSpinner className="h-4 w-4 animate-spin" />
+        <LoadingSpinner className="size-4 animate-spin text-primary-text" />
         {loadingLabel}
       </>
     ) : (
       <>
-        <SparkleIcon className="h-4 w-4" />
-        {label}
+        <SparkleIcon
+          weight="duotone"
+          className="size-4 text-primary-text transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110 motion-reduce:transition-none"
+        />
+        <span className="bg-[linear-gradient(90deg,var(--primary-text),color-mix(in_srgb,var(--ai-magenta-text)_70%,var(--primary-text)))] bg-clip-text font-medium text-transparent">
+          {label}
+        </span>
       </>
     )}
   </Button>

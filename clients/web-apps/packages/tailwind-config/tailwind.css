@@ -49,6 +49,9 @@
     --indicator: #4f46e5;
     --focus: #4f46e5;
     --live: #4c3fd9;
+    --ai-magenta: #d946ef;
+    --ai-magenta-text: #c026d3;
+    --ai-sky: #0ea5e9;
     --ok: #0d7040;
     --warn: #9a5a00;
     --bad: #c42419;
@@ -92,6 +95,9 @@
     --indicator: #6765ec;
     --focus: #8486f1;
     --live: #8486f1;
+    --ai-magenta: #e879f9;
+    --ai-magenta-text: #f0abfc;
+    --ai-sky: #38bdf8;
     --ok: #3ccb7f;
     --warn: #f0b044;
     --bad: #ff6b63;

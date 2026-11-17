@@ -1,5 +1,5 @@
 import { EmptyState, LoadingSpinner } from "@avplatform/ui";
-import { AudioLines } from "lucide-react";
+import { WaveformIcon } from "@phosphor-icons/react";
 import { useEffect } from "react";
 
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
@@ -29,7 +29,7 @@ export const VoiceBuilder = () => {
   if (!voiceNodeId) {
     return (
       <EmptyState
-        Icon={AudioLines}
+        Icon={WaveformIcon}
         primaryMessage="No voice settings found"
         secondaryMessage="This agent has no voice node to configure."
       />
