@@ -81,7 +81,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             }
             else if (upstreamStatusCode is 401 or 403)
             {
-                _logger.LogWarning("SendGrid rejected credential {CredentialName} with status {StatusCode}.", cloudConnectorReqDto.CredentialName, upstreamStatusCode);
+                _logger.LogWarning("SendGrid rejected credential {CredentialName} with status {StatusCode}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName), upstreamStatusCode);
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = CredentialResolution.ToLogMessage(
                     CredentialResolutionReason.RejectedUpstream,
@@ -119,7 +119,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             !resolution.Credential.Data.TryGetValue("ApiKey", out var apiKeyValue) ||
             string.IsNullOrWhiteSpace(apiKeyValue?.ToString()))
         {
-            _logger.LogWarning("No 'ApiKey' value in vault credential Data for Name: {CredentialName}", credentialName);
+            _logger.LogWarning("No 'ApiKey' value in vault credential Data for Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "ApiKey"));
         }
 

@@ -71,7 +71,7 @@ public class AzureConnectorsService : IAzureConnectorsService
         }
         catch (RequestFailedException ex) when (ex.Status is 401 or 403)
         {
-            _logger.LogWarning("Azure rejected credential {CredentialName} with status {Status}.", cloudConnectorReqDto.CredentialName, ex.Status);
+            _logger.LogWarning("Azure rejected credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName), ex.Status);
             serviceResponse.StatusCode = 400;
             serviceResponse.Message = CredentialResolution.ToLogMessage(
                 CredentialResolutionReason.RejectedUpstream,
@@ -102,7 +102,7 @@ public class AzureConnectorsService : IAzureConnectorsService
             !resolution.Credential.Data.TryGetValue("ConnectionString", out var blobConnectionString) ||
             string.IsNullOrWhiteSpace(blobConnectionString?.ToString()))
         {
-            _logger.LogWarning("No 'ConnectionString' value in vault credential Data for Name: {CredentialName}", credentialName);
+            _logger.LogWarning("No 'ConnectionString' value in vault credential Data for Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
             return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "ConnectionString"));
         }
 

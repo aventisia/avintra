@@ -153,7 +153,7 @@ public class CustomToolConnectorService : ICustomToolConnectorService
             {
                 _logger.LogWarning(
                     "Custom tool '{ToolName}' rejected credential '{CredentialName}' with status {StatusCode}.",
-                    tool.Name, credentialName, statusCode);
+                    tool.Name, CloudConnectorLogRedactor.SanitizeForLog(credentialName), statusCode);
                 return serviceResponse.Update(
                     CredentialResolution.ToLogMessage(
                         CredentialResolutionReason.RejectedUpstream,

@@ -45,7 +45,7 @@ public class CloudConnectorsVaultCredentialService : ICloudConnectorsVaultCreden
             // values are never decrypted on a failure path.
             if (vaultCredential.IsDisabled)
             {
-                _logger.LogWarning("Vault credential {CredentialName} is disabled.", credentialName);
+                _logger.LogWarning("Vault credential {CredentialName} is disabled.", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
                 return CredentialResolution.Failure(CredentialResolutionReason.Disabled, credentialName);
             }
 

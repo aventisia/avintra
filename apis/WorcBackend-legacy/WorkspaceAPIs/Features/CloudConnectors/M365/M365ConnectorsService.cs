@@ -31,7 +31,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             var resolution = await _cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
             if (!resolution.IsSuccess)
             {
-                _logger.LogWarning("No usable M365 credential with Name: {CredentialName}", credentialName);
+                _logger.LogWarning("No usable M365 credential with Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
                 return (null, resolution.FailureMessage);
             }
 
@@ -43,7 +43,7 @@ public class M365ConnectorsService : IM365ConnectorsService
                 var fieldValue = GetCredentialValue(credentialData, field);
                 if (string.IsNullOrWhiteSpace(fieldValue))
                 {
-                    _logger.LogWarning("No '{Field}' value in M365 credential {CredentialName}.", field, credentialName);
+                    _logger.LogWarning("No '{Field}' value in M365 credential {CredentialName}.", field, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
                     return (null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, field));
                 }
                 credentialValues[field] = fieldValue;
@@ -76,7 +76,7 @@ public class M365ConnectorsService : IM365ConnectorsService
                 statusElement.TryGetInt32(out var statusCode) &&
                 statusCode is 401 or 403)
             {
-                _logger.LogWarning("The token endpoint rejected M365 credential {CredentialName} with status {Status}.", credentialName, statusCode);
+                _logger.LogWarning("The token endpoint rejected M365 credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(credentialName), statusCode);
                 var reason = tokenResponse.TryGetProperty("error", out var errorElement)
                     ? errorElement.ValueKind == JsonValueKind.String ? errorElement.GetString() : errorElement.ToString()
                     : null;
