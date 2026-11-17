@@ -303,10 +303,38 @@ public class FlowProcessor
                 return (branchEndEdge?.Id, branchEndNext, null);
 
             case "forLoopNode":
-                var (loopNext, loopLog) = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
+                var (loopNext, loopLog) = ProcessForLoopNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
                 var loopEdge = string.IsNullOrWhiteSpace(loopNext) ? null : FindNextEdge(flow, node.Id, loopNext);
                 CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, loopLog);
                 return (loopEdge?.Id, loopNext, null);
+
+            case "breakLoopNode":
+                var (breakNext, breakLog, breakLoopNodeId, breakLoopLog) = ProcessBreakLoopNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
+                var breakEdge = string.IsNullOrWhiteSpace(breakNext) ? null : FindNextEdge(flow, node.Id, breakNext);
+                var breakCaller = flowExecutionContext.CallerReferenceId;
+                var breakLoopRef = flowExecutionContext.LoopReferenceId;
+                var breakIter = flowExecutionContext.LoopIterationIndex;
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, breakLog,
+                    callerReferenceId: breakCaller, loopReferenceId: breakLoopRef, loopIterationIndex: breakIter);
+                if (breakLoopLog is not null && !string.IsNullOrWhiteSpace(breakLoopNodeId))
+                {
+                    var breakLoopNode = flow.Nodes.FirstOrDefault(n => n.Id == breakLoopNodeId);
+                    if (breakLoopNode is not null)
+                    {
+                        CompleteSupportNode(breakLoopNode, logs, flowExecutionContext, onNodeCompleted, breakLoopLog);
+                    }
+                }
+                return (breakEdge?.Id, breakNext, null);
+
+            case "continueLoopNode":
+                var (continueNext, continueLog) = ProcessContinueLoopNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
+                var continueEdge = string.IsNullOrWhiteSpace(continueNext) ? null : FindNextEdge(flow, node.Id, continueNext);
+                var continueCaller = flowExecutionContext.CallerReferenceId;
+                var continueLoopRef = flowExecutionContext.LoopReferenceId;
+                var continueIter = flowExecutionContext.LoopIterationIndex;
+                CompleteSupportNode(node, logs, flowExecutionContext, onNodeCompleted, continueLog,
+                    callerReferenceId: continueCaller, loopReferenceId: continueLoopRef, loopIterationIndex: continueIter);
+                return (continueEdge?.Id, continueNext, null);
 
             case "callAgentNode":
             case "blockNode":
@@ -579,45 +607,13 @@ public class FlowProcessor
             return Task.FromResult((FindNextEdgeTarget(flow, node.Id), passthroughLog));
         }
 
-        List<List<ResolvedConditionModel>>? conditionGroups = null;
-        string? rawConditionsJson = null;
-
-        if (conditionsInput.Value is JsonElement jsonElement)
-        {
-            rawConditionsJson = jsonElement.GetRawText();
-            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(rawConditionsJson, s_caseInsensitiveConditionOptions);
-        }
-        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
-        {
-            conditionGroups = typedGroups;
-        }
+        string? rawConditionsJson = conditionsInput.Value is JsonElement rawElement ? rawElement.GetRawText() : null;
+        var conditionGroups = ResolveConditionGroups(conditionsInput.Value, flowExecutionContext);
 
         if (conditionGroups is null || conditionGroups.Count == 0)
         {
             var passthroughLog = CreateBranchLog(node, null, rawConditionsJson);
             return Task.FromResult((FindNextEdgeTarget(flow, node.Id), passthroughLog));
-        }
-
-        // Resolve any template placeholders (e.g. {{ButtonPressed}}) in the condition values
-        // so comparisons are made against the actual runtime values rather than raw strings.
-        // For non-template literal strings, infer primitive types so numeric/boolean/date
-        // comparisons behave the same as the legacy Windows Workflow implementation.
-        foreach (var group in conditionGroups)
-        {
-            foreach (var condition in group)
-            {
-                var rawFirst = condition.FirstValue?.ToString();
-                var rawSecond = condition.SecondValue?.ToString();
-
-                condition.FirstValue = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
-                condition.SecondValue = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
-
-                if (condition.FirstValue is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
-                    condition.FirstValue = InferType(s1);
-
-                if (condition.SecondValue is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
-                    condition.SecondValue = InferType(s2);
-            }
         }
 
         var isTrue = ConditionEvaluator.Evaluate(conditionGroups);
@@ -994,10 +990,146 @@ public class FlowProcessor
         return (FindNextEdgeTarget(flow, node.Id), null);
     }
 
+    private (string NextNodeId, NodeExecutionLog NodeLog, string? LoopNodeId, NodeExecutionLog? LoopLog) ProcessBreakLoopNode(
+        ReactFlowNodeModel node,
+        ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
+        Dictionary<string, ConditionalBranchState> conditionalStates,
+        Dictionary<string, LoopState> loopStates)
+    {
+        var loopId = flowExecutionContext.LoopReferenceId;
+        if (string.IsNullOrWhiteSpace(loopId) || !loopStates.TryGetValue(loopId, out var loopState))
+        {
+            throw new InvalidOperationException($"Break node '{node.Id}' must be placed inside a loop body.");
+        }
+
+        var loopNode = flow.Nodes.FirstOrDefault(n => n.Id == loopId)
+            ?? throw new InvalidOperationException($"Loop node '{loopId}' not found for break node '{node.Id}'.");
+        if (string.IsNullOrWhiteSpace(loopState.MergeBranchesNodeId))
+        {
+            throw new InvalidOperationException($"Loop node '{loopId}' is missing merge node id.");
+        }
+
+        // Empty conditions mean "always break", mirroring a bare `break;`. Otherwise break
+        // out only while the conditions hold (`if (cond) break;`) and fall through to the
+        // next body node when they do not.
+        var conditionsValue = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase))?.Value;
+        var conditionGroups = conditionsValue is null
+            ? null
+            : ResolveConditionGroups(conditionsValue, flowExecutionContext);
+        if (conditionGroups is not null && conditionGroups.Count > 0
+            && !ConditionEvaluator.Evaluate(conditionGroups))
+        {
+            var branchEndId = flow.Nodes
+                .Where(n => string.Equals(n.Type, "branchEndNode", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(n.Data?.CustomParentId, loopId, StringComparison.OrdinalIgnoreCase))
+                .Select(n => n.Id)
+                .FirstOrDefault();
+            return (FindNextEdgeTarget(flow, node.Id) ?? branchEndId ?? loopState.MergeBranchesNodeId,
+                CreateBreakContinueLog(node, "passthrough", conditionsMet: false), null, null);
+        }
+
+        DiscardBranchStatesOpenedInsideLoop(loopState, conditionalStates);
+        loopState.IsCompleted = true;
+        var nodeLog = conditionGroups is null || conditionGroups.Count == 0
+            ? CreateBreakContinueLog(node, "break")
+            : CreateBreakContinueLog(node, "break", conditionsMet: true);
+        var loopLog = CreateLoopLog(loopNode, loopState, "exit", false);
+        return (loopState.MergeBranchesNodeId, nodeLog, loopId, loopLog);
+    }
+
+    private (string NextNodeId, NodeExecutionLog NodeLog) ProcessContinueLoopNode(
+        ReactFlowNodeModel node,
+        ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
+        Dictionary<string, ConditionalBranchState> conditionalStates,
+        Dictionary<string, LoopState> loopStates)
+    {
+        var loopId = flowExecutionContext.LoopReferenceId;
+        if (string.IsNullOrWhiteSpace(loopId) || !loopStates.TryGetValue(loopId, out var loopState))
+        {
+            throw new InvalidOperationException($"Continue node '{node.Id}' must be placed inside a loop body.");
+        }
+
+        var branchEndId = flow.Nodes
+            .Where(n => string.Equals(n.Type, "branchEndNode", StringComparison.OrdinalIgnoreCase)
+                && string.Equals(n.Data?.CustomParentId, loopId, StringComparison.OrdinalIgnoreCase))
+            .Select(n => n.Id)
+            .FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(branchEndId))
+        {
+            throw new InvalidOperationException($"Loop node '{loopId}' has no branch end node for continue node '{node.Id}'.");
+        }
+
+        // Empty conditions mean "always skip the rest of the iteration", mirroring a
+        // bare `continue;`. Otherwise skip only while the conditions hold (`if (cond) continue;`)
+        // and fall through to the next body node when they do not.
+        var conditionsValue = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase))?.Value;
+        var conditionGroups = conditionsValue is null
+            ? null
+            : ResolveConditionGroups(conditionsValue, flowExecutionContext);
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            DiscardBranchStatesOpenedInsideLoop(loopState, conditionalStates);
+            return (branchEndId, CreateBreakContinueLog(node, "continue"));
+        }
+
+        if (ConditionEvaluator.Evaluate(conditionGroups))
+        {
+            DiscardBranchStatesOpenedInsideLoop(loopState, conditionalStates);
+            return (branchEndId, CreateBreakContinueLog(node, "continue", conditionsMet: true));
+        }
+
+        return (FindNextEdgeTarget(flow, node.Id) ?? branchEndId,
+            CreateBreakContinueLog(node, "passthrough", conditionsMet: false));
+    }
+
+    private static NodeExecutionLog CreateBreakContinueLog(ReactFlowNodeModel node, string action, bool? conditionsMet = null)
+    {
+        var outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Action"] = action,
+        };
+        if (conditionsMet.HasValue)
+        {
+            outputs["ConditionsResult"] = conditionsMet.Value ? "True" : "False";
+        }
+
+        return new NodeExecutionLog
+        {
+            NodeId = node.Id,
+            NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label,
+            NodeUniqueName = string.IsNullOrWhiteSpace(node.Data?.Name) ? node.Type : node.Data.Name,
+            IsSuccess = true,
+            Duration = 0,
+            Inputs = node.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Outputs = outputs
+        };
+    }
+
+    // IMPORTANT NOTE: break/continue jump past the branch ends of every router opened inside the
+    // loop body, so their state has to be dropped or the next iteration reuses the previous
+    // branch selection instead of re-evaluating its conditions.
+    private static void DiscardBranchStatesOpenedInsideLoop(
+        LoopState loopState,
+        Dictionary<string, ConditionalBranchState> conditionalStates)
+    {
+        foreach (var stateId in conditionalStates.Keys
+            .Where(id => !loopState.EnclosingConditionalStateIds.Contains(id))
+            .ToList())
+        {
+            conditionalStates.Remove(stateId);
+        }
+    }
+
     private (string NextNodeId, NodeExecutionLog LoopLog) ProcessForLoopNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
+        Dictionary<string, ConditionalBranchState> conditionalStates,
         Dictionary<string, LoopState> loopStates)
     {
         if (loopStates.TryGetValue(node.Id, out var existing))
@@ -1020,6 +1152,9 @@ public class FlowProcessor
 
         var loopType = node.Data?.Inputs?.FirstOrDefault(i =>
             string.Equals(i.Key, "LoopType", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "ConditionalLoop";
+
+        var enclosingConditionalStateIds =
+            new HashSet<string>(conditionalStates.Keys, StringComparer.OrdinalIgnoreCase);
 
         if (string.Equals(loopType, "ForEachLoop", StringComparison.OrdinalIgnoreCase))
         {
@@ -1059,7 +1194,8 @@ public class FlowProcessor
                 ItemVariableName = itemVarName,
                 ItemIndexVariableName = indexVarName,
                 PreviousLoopReferenceId = flowExecutionContext.LoopReferenceId,
-                PreviousLoopIterationIndex = flowExecutionContext.LoopIterationIndex
+                PreviousLoopIterationIndex = flowExecutionContext.LoopIterationIndex,
+                EnclosingConditionalStateIds = enclosingConditionalStateIds
             };
             loopStates[node.Id] = forEachState;
 
@@ -1089,7 +1225,8 @@ public class FlowProcessor
             LoopBodyStartNodeId = bodyStartNodeId,
             CurrentIteration = 0,
             PreviousLoopReferenceId = flowExecutionContext.LoopReferenceId,
-            PreviousLoopIterationIndex = flowExecutionContext.LoopIterationIndex
+            PreviousLoopIterationIndex = flowExecutionContext.LoopIterationIndex,
+            EnclosingConditionalStateIds = enclosingConditionalStateIds
         };
         loopStates[node.Id] = whileState;
 
@@ -1185,23 +1322,14 @@ public class FlowProcessor
             return false;
         }
 
-        List<List<ResolvedConditionModel>>? conditionGroups = null;
-
-        if (conditionsInput.Value is JsonElement jsonElement)
+        List<List<ResolvedConditionModel>>? conditionGroups;
+        try
         {
-            try
-            {
-                conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(
-                    jsonElement.GetRawText(), s_caseInsensitiveConditionOptions);
-            }
-            catch
-            {
-                return false;
-            }
+            conditionGroups = ResolveConditionGroups(conditionsInput.Value, flowExecutionContext);
         }
-        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
+        catch
         {
-            conditionGroups = typedGroups;
+            return false;
         }
 
         if (conditionGroups is null || conditionGroups.Count == 0)
@@ -1209,31 +1337,78 @@ public class FlowProcessor
             return false;
         }
 
-        foreach (var group in conditionGroups)
+        return ConditionEvaluator.Evaluate(conditionGroups);
+    }
+
+    /// <summary>
+    /// Deserializes a "Conditions" input into condition groups and resolves template
+    /// placeholders against the live context. Non-template literal strings are type-inferred
+    /// so numeric, boolean, and date comparisons behave like the legacy executor.
+    /// Returns null when the input is absent or empty.
+    /// </summary>
+    private static List<List<ResolvedConditionModel>>? ResolveConditionGroups(
+        object? rawValue,
+        FlowExecutionContext flowExecutionContext)
+    {
+        List<List<ResolvedConditionModel>>? conditionGroups = null;
+
+        if (rawValue is JsonElement jsonElement)
         {
-            if (group is null)
-                continue;
-
-            foreach (var condition in group)
-            {
-                if (condition is null)
-                    continue;
-
-                var rawFirst = condition.FirstValue?.ToString();
-                var rawSecond = condition.SecondValue?.ToString();
-
-                condition.FirstValue = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
-                condition.SecondValue = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
-
-                if (condition.FirstValue is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
-                    condition.FirstValue = InferType(s1);
-
-                if (condition.SecondValue is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
-                    condition.SecondValue = InferType(s2);
-            }
+            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(
+                jsonElement.GetRawText(), s_caseInsensitiveConditionOptions);
+        }
+        else if (rawValue is List<List<ResolvedConditionModel>> typedGroups)
+        {
+            conditionGroups = typedGroups;
         }
 
-        return ConditionEvaluator.Evaluate(conditionGroups);
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            return null;
+        }
+
+        // Build a parallel resolved list instead of mutating the models in place: the node
+        // inputs live on the shared flow graph and are re-evaluated every iteration, so
+        // writing resolved values back would pin template placeholders such as
+        // {{CurrentItem}} to their first-iteration value for all later iterations.
+        var resolvedGroups = new List<List<ResolvedConditionModel>>();
+        foreach (var group in conditionGroups)
+        {
+            var resolvedGroup = new List<ResolvedConditionModel>();
+            if (group is not null)
+            {
+                foreach (var condition in group)
+                {
+                    if (condition is null)
+                    {
+                        resolvedGroup.Add(null!);
+                        continue;
+                    }
+
+                    var rawFirst = condition.FirstValue?.ToString();
+                    var rawSecond = condition.SecondValue?.ToString();
+
+                    var resolvedFirst = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
+                    var resolvedSecond = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
+
+                    if (resolvedFirst is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
+                        resolvedFirst = InferType(s1);
+
+                    if (resolvedSecond is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
+                        resolvedSecond = InferType(s2);
+
+                    resolvedGroup.Add(new ResolvedConditionModel
+                    {
+                        FirstValue = resolvedFirst,
+                        ComparisonOperator = condition.ComparisonOperator,
+                        SecondValue = resolvedSecond,
+                    });
+                }
+            }
+            resolvedGroups.Add(resolvedGroup);
+        }
+
+        return resolvedGroups;
     }
 
     /// <summary>
