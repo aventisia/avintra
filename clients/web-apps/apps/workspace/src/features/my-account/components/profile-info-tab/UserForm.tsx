@@ -27,7 +27,9 @@ export const UserForm = ({ footerSlot }: AccountTabProps) => {
   const lastName = form.watch("lastName");
 
   const handleSubmit = form.handleSubmit((formData: z.infer<typeof UserProfileZodSchema>) =>
-    mutate(formData as unknown as MyAccountDto, { onSuccess: () => form.reset(formData) }),
+    mutate(formData as unknown as Omit<MyAccountDto, "hasPassword">, {
+      onSuccess: () => form.reset(formData),
+    }),
   );
 
   const nameFields = [

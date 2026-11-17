@@ -1,7 +1,7 @@
 import { PersonAvatar } from "@avplatform/ui/avatar";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 
@@ -25,8 +25,30 @@ const ACCOUNT_TABS = [
 export const AccountDialog = () => {
   const { accountTab, setAccountTab } = useAccountDialogUrlState();
   const userSession = useUserSessionStore((state) => state.userSession);
+  // The URL owns open state and reload restore, but a click must switch instantly
+  // instead of waiting on router navigation, so selection lives in local state.
+  const [selectedTab, setSelectedTab] = useState<string | null>(null);
+  const lastAccountTabRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Follow the URL only when the dialog opens or closes. While open, tab
+    // switches stay local: other widgets rewrite the shared search params from
+    // stale snapshots, which would otherwise drag the tab back.
+    if (lastAccountTabRef.current === null && accountTab !== null) {
+      setSelectedTab(accountTab);
+    } else if (accountTab === null) {
+      setSelectedTab(null);
+    }
+    lastAccountTabRef.current = accountTab;
+  }, [accountTab]);
+
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+    setAccountTab(tab);
+  };
+
   const activeTab =
-    ACCOUNT_TABS.find(({ value }) => value === accountTab)?.value ?? ACCOUNT_TABS[0].value;
+    ACCOUNT_TABS.find(({ value }) => value === selectedTab)?.value ?? ACCOUNT_TABS[0].value;
   const [footerSlot, setFooterSlot] = useState<HTMLDivElement | null>(null);
 
   const fullName = [userSession?.firstName, userSession?.lastName].filter(Boolean).join(" ");
@@ -48,7 +70,7 @@ export const AccountDialog = () => {
         />
       }
     >
-      <Tabs value={activeTab} onValueChange={setAccountTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="sticky top-0 z-10 mb-5 flex w-full bg-popover">
           {ACCOUNT_TABS.map(({ value, label }) => (
             <TabsTrigger key={value} value={value}>
