@@ -98,14 +98,13 @@ def _apply_short_term_window(messages, max_short_term_turns: int | None) -> list
     Return a message list limited to the most recent ``max_short_term_turns`` turns.
 
     A turn starts at a user (``HumanMessage``) message. System messages are always
-    kept but de-duplicated by content, because the system prompt is re-sent on every
-    request and would otherwise accumulate in the checkpoint. Older turns are
-    dropped without summarization. ``None`` or ``0`` means no limit and the original
-    list is returned unchanged.
-    """
+    kept, de-duplicated by content, and moved to the front, with or without a limit.
+    Older turns are dropped without summarization. ``None`` or ``0`` means no limit.
 
-    if not max_short_term_turns or max_short_term_turns <= 0:
-        return messages
+    IMPORTANT NOTE: the system prompt is re-sent on every request and accumulates
+    mid-conversation in the checkpoint; Anthropic rejects system messages that follow
+    a user or assistant turn, so they are hoisted even when nothing is trimmed (#623).
+    """
 
     messages = list(messages)
 
@@ -129,8 +128,8 @@ def _apply_short_term_window(messages, max_short_term_turns: int | None) -> list
         index for index, message in enumerate(conversation) if isinstance(message, HumanMessage)
     ]
 
-    # Nothing to trim when the conversation already fits within the window.
-    if len(user_indices) <= max_short_term_turns:
+    # Nothing to trim without a limit or when the conversation already fits within the window.
+    if not max_short_term_turns or len(user_indices) <= max_short_term_turns:
         return system_messages + conversation
 
     start = user_indices[-max_short_term_turns]

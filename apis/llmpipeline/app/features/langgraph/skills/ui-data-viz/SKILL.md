@@ -1,6 +1,9 @@
 ---
 name: ui-data-viz
 description: Chart and KPI guidance for UI builder interfaces - choosing chart types, KPI tiles with deltas and formulas, date buckets, number formatting, and status colors with the runtime kit.
+requires:
+  - ui-design-system
+  - ui-a11y-review
 providers: []
 license:
   name: MIT
@@ -20,6 +23,8 @@ tags:
 
 Applied when an interface shows metrics or charts. Charts come from `Charts.*`, KPIs from
 `UI.Stat`, and numbers from `UI.format`.
+
+In a self-contained HTML page there is no runtime kit: keep the structure, content, and rules below, build them with semantic HTML, CSS, and inline plain JavaScript as `ui-design-system` describes, and never emit `UI.*`, `Charts.*`, `Icons.*`, React, or JSX there.
 
 ## Choosing the form
 

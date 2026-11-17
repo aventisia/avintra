@@ -109,6 +109,7 @@ def _build_skill_config(skill_module_name: str, metadata: dict[str, Any]) -> Ski
             "providers": metadata.get("providers") or [],
             "license": metadata.get("license") or {},
             "references": metadata.get("references") or [],
+            "requires": metadata.get("requires") or [],
         },
     )
 
@@ -312,6 +313,72 @@ def _build_custom_skill_config(skill: Skill) -> SkillConfig | None:
     )
 
 
+def expand_required_skill_names(
+    registry: SkillRegistry,
+    skill_names: list[str],
+    tenant_id: str | None = None,
+) -> list[str]:
+    """Add the skills each selected skill lists under ``requires``, transitively."""
+
+    expanded: list[str] = []
+    pending = list(skill_names)
+    while pending:
+        name = pending.pop(0)
+        if name in expanded:
+            continue
+        expanded.append(name)
+        skill = registry.get_for_tenant(name, tenant_id)
+        if skill is not None:
+            pending.extend(skill.metadata.get("requires") or [])
+    return expanded
+
+
+def attach_platform_skill_files(skill_configs: list[SkillConfig]) -> None:
+    """
+    Attach ``SKILL.md`` content to platform skill configs.
+
+    Platform skills are registered from their front-matter only, so their
+    instructions are read here before the prompt is built. Configs that already
+    carry file content (tenant custom skills) are left untouched.
+    """
+
+    for skill in skill_configs:
+        existing_files = skill.metadata.get("files") or []
+        if any(
+            file.get("content")
+            for file in existing_files
+            if isinstance(file, dict)
+        ):
+            continue
+
+        module_name = skill.metadata.get("module")
+        if not isinstance(module_name, str) or not module_name:
+            continue
+
+        try:
+            module = importlib.import_module(module_name)
+            module_file = getattr(module, "__file__", None)
+            if module_file is None:
+                continue
+
+            skill_md = Path(module_file).parent / "SKILL.md"
+            if not skill_md.is_file():
+                continue
+
+            skill.metadata["files"] = [
+                {
+                    "file_name": "SKILL.md",
+                    "content": skill_md.read_text(encoding="utf-8"),
+                }
+            ]
+        except Exception as exc:
+            logger.warning(
+                "Could not read SKILL.md for skill %s: %s",
+                skill.name,
+                exc,
+            )
+
+
 def resolve_skill_configs(
     registry: SkillRegistry,
     skill_names: list[str],
@@ -360,6 +427,8 @@ def build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
                 )
     if not normalized:
         return None
+
+    attach_platform_skill_files(normalized)
 
     lines = [
         "You have access to the following skills for this request:",
@@ -456,19 +525,13 @@ async def load_custom_skills(
         if config is None:
             continue
 
-        if registry.exists(config.name):
-            logger.warning(
-                "Custom skill %s (%s) conflicts with an existing skill; overwriting.",
-                config.name,
-                skill.id,
-            )
-
-        registry.register(config)
         loaded.append(config)
         logger.debug(
             "Loaded custom skill %s for tenant %s",
             config.name,
             tenant_id,
         )
+
+    registry.replace_tenant_skills(tenant_id, loaded)
 
     return loaded

@@ -22,6 +22,8 @@ export type ChatModelPickerProps = {
   /** Selected model key, or null for Auto (the workspace default). */
   value: string | null;
   onChange: (key: string | null) => void;
+  /** Offers the Auto option; defaults to true. */
+  allowAuto?: boolean;
 };
 
 const AUTO = "auto";
@@ -36,7 +38,12 @@ const AUTO_OPTION: Option = {
 };
 
 /** Composer chip that picks the model for the next message. */
-export const ChatModelPicker = ({ groups, value, onChange }: ChatModelPickerProps) => {
+export const ChatModelPicker = ({
+  groups,
+  value,
+  onChange,
+  allowAuto = true,
+}: ChatModelPickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeKey, setActiveKey] = useState<string>(value ?? AUTO);
@@ -54,12 +61,12 @@ export const ChatModelPicker = ({ groups, value, onChange }: ChatModelPickerProp
       model.label.toLowerCase().includes(needle) ||
       (model.detail?.toLowerCase().includes(needle) ?? false);
     return [
-      ...(needle ? [] : [AUTO_OPTION]),
+      ...(needle || !allowAuto ? [] : [AUTO_OPTION]),
       ...groups.flatMap((group) =>
         group.models.filter(matches).map((model) => ({ ...model, groupLabel: group.label })),
       ),
     ];
-  }, [groups, needle]);
+  }, [allowAuto, groups, needle]);
 
   const activeOption = options.find((option) => option.key === activeKey) ?? options[0];
   const optionId = (key: string) => `${listId}-${key.replace(/[^\w-]/g, "_")}`;
@@ -102,7 +109,7 @@ export const ChatModelPicker = ({ groups, value, onChange }: ChatModelPickerProp
     }
   };
 
-  const chipLabel = selected?.label ?? "Auto";
+  const chipLabel = selected?.label ?? (allowAuto ? "Auto" : "Select model");
 
   return (
     <Popover open={isOpen} onOpenChange={openChange}>
@@ -110,7 +117,9 @@ export const ChatModelPicker = ({ groups, value, onChange }: ChatModelPickerProp
         aria-label={`Model: ${chipLabel}`}
         className="inline-flex h-8 min-w-0 max-w-56 items-center gap-1.5 rounded-full px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
       >
-        {value === null && <SparkleIcon weight="fill" className="size-3.5 shrink-0 text-primary" />}
+        {value === null && allowAuto && (
+          <SparkleIcon weight="fill" className="size-3.5 shrink-0 text-primary" />
+        )}
         <span className="truncate">{chipLabel}</span>
         <CaretDownIcon weight="bold" className="size-3 shrink-0 opacity-70" />
       </PopoverTrigger>

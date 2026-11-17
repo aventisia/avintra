@@ -1,9 +1,6 @@
 # Skill retrieval utilities for augmenting direct LLM requests with skill context.
 # Kept separate from the LangGraph chat path so the direct /llm/generate route
 # can consume skills the same way it already consumes KB context.
-import importlib
-from pathlib import Path
-
 from app.core.config import settings
 from app.core.database import get_db_session_context
 from app.core.logger import logger
@@ -12,7 +9,6 @@ from app.features.langgraph.skills.skill_loader import (
     build_skill_prompt,
     resolve_skill_configs,
 )
-from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.skills.skill_loader import load_custom_skills, load_platform_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.llm_providers.llm_kb_retrieval import _inject_context_into_input
@@ -32,52 +28,6 @@ def _get_custom_skill_registry() -> SkillRegistry:
     if _custom_skill_registry is None:
         _custom_skill_registry = SkillRegistry()
     return _custom_skill_registry
-
-
-def _attach_platform_skill_files(skill_configs: list[SkillConfig]) -> None:
-    """
-    Attach ``SKILL.md`` content to resolved platform skill configs.
-
-    Platform skills are registered from their front-matter only, so their
-    instructions are read here before the prompt is built. Configs that already
-    carry file content (tenant custom skills) are left untouched.
-    """
-
-    for skill in skill_configs:
-        existing_files = skill.metadata.get("files") or []
-        if any(
-            file.get("content")
-            for file in existing_files
-            if isinstance(file, dict)
-        ):
-            continue
-
-        module_name = skill.metadata.get("module")
-        if not isinstance(module_name, str) or not module_name:
-            continue
-
-        try:
-            module = importlib.import_module(module_name)
-            module_file = getattr(module, "__file__", None)
-            if module_file is None:
-                continue
-
-            skill_md = Path(module_file).parent / "SKILL.md"
-            if not skill_md.is_file():
-                continue
-
-            skill.metadata["files"] = [
-                {
-                    "file_name": "SKILL.md",
-                    "content": skill_md.read_text(encoding="utf-8"),
-                }
-            ]
-        except Exception as exc:
-            logger.warning(
-                "[SKILL-INJECTION] Could not read SKILL.md for skill %s: %s",
-                skill.name,
-                exc,
-            )
 
 
 async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) -> None:
@@ -140,8 +90,6 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
                 tenant_id,
             )
             return
-
-        _attach_platform_skill_files(skill_configs)
 
         skill_prompt = build_skill_prompt(skill_configs)
         if not skill_prompt:

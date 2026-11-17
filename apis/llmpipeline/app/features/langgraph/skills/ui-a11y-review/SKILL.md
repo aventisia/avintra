@@ -20,6 +20,8 @@ tags:
 Applied to every framework generation and repair pass. The build renders the page in a sandbox and
 blocks a version when one of these checks fails, so get them right the first time.
 
+In a self-contained HTML page there is no runtime kit: keep the structure, content, and rules below, build them with semantic HTML, CSS, and inline plain JavaScript as `ui-design-system` describes, and never emit `UI.*`, `Charts.*`, `Icons.*`, React, or JSX there.
+
 ## Checklist
 
 - **Images.** Every `<img>` needs a non-empty `alt` describing the image.
