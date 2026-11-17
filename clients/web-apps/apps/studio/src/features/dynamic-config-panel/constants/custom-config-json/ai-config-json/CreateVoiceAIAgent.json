@@ -117,7 +117,6 @@
       "label": "Realtime Model",
       "description": "Model used when Engine Mode is Realtime. Realtime is bring-your-own-key only: pick the provider, its model, and the credential it uses.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -146,7 +145,6 @@
       "label": "LLM",
       "description": "Model used when Engine Mode is Pipeline.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -174,7 +172,6 @@
       "name": "__ModelConfig__SpeechToText",
       "description": "Speech-to-text model used when Engine Mode is Pipeline. ElevenLabs Scribe streams interim transcripts; other models transcribe each utterance.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -202,7 +199,6 @@
       "name": "__ModelConfig__TextToSpeech",
       "description": "Text-to-speech model used when Engine Mode is Pipeline.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",

@@ -62,7 +62,6 @@ def _realtime_settings(**overrides) -> dict:
         "realtime": {
             "provider": "openai",
             "model": "gpt-realtime",
-            "isByokEnabled": True,
             "credentialName": "voice-key",
         },
         "ttsVoice": {"language": "en-US", "voice": "Alloy", "speed": 1.1},
@@ -112,8 +111,8 @@ def fake_plugins(monkeypatch):
 def _resolver(monkeypatch, **credentials):
     calls: list[tuple] = []
 
-    def resolve(provider, is_byok, credential_name, user):
-        calls.append((provider, is_byok, credential_name, user))
+    def resolve(provider, credential_name, user):
+        calls.append((provider, credential_name, user))
         return realtime_adapters.CredentialResolution(
             kwargs=credentials,
             uses_platform_credentials=False,
@@ -143,7 +142,7 @@ def test_openai_realtime_model_uses_the_resolved_credentials(monkeypatch, fake_p
         "voice": "Alloy",
         "speed": 1.1,
     }
-    assert calls == [("openai", True, "voice-key", USER)]
+    assert calls == [("openai", "voice-key", USER)]
     assert model is built
 
 
@@ -160,7 +159,6 @@ def test_azure_realtime_model_uses_the_deployment_and_legacy_version(
         realtime={
             "provider": "azure",
             "model": "gpt-realtime",
-            "isByokEnabled": True,
             "credentialName": "azure-key",
         }
     )
@@ -185,7 +183,6 @@ def test_gemini_alias_builds_the_google_plugin(monkeypatch, fake_plugins):
         realtime={
             "provider": "googlegemini",
             "model": "gemini-live-2.5-flash-native-audio",
-            "isByokEnabled": True,
             "credentialName": "google-key",
         }
     )
@@ -209,7 +206,6 @@ def test_gemini_voice_is_capitalized_for_the_live_api(monkeypatch, fake_plugins)
         realtime={
             "provider": "googlegemini",
             "model": "gemini/gemini-3.1-flash-live-preview",
-            "isByokEnabled": True,
             "credentialName": "google-key",
         },
         ttsVoice={"language": "en", "voice": "journey", "speed": 1},
@@ -242,7 +238,6 @@ def test_litellm_model_prefixes_are_stripped_for_the_provider_plugin(
         realtime={
             "provider": provider,
             "model": stored,
-            "isByokEnabled": True,
             "credentialName": "provider-key",
         }
     )
@@ -272,7 +267,7 @@ def test_unknown_provider_is_rejected_before_any_credential_or_plugin(
 def test_missing_model_is_rejected_as_invalid_config(monkeypatch, fake_plugins):
     calls = _resolver(monkeypatch, api_key="unused")
     settings = _realtime_settings(
-        realtime={"provider": "openai", "model": "", "isByokEnabled": True,
+        realtime={"provider": "openai", "model": "",
                   "credentialName": "voice-key"}
     )
 
@@ -283,20 +278,19 @@ def test_missing_model_is_rejected_as_invalid_config(monkeypatch, fake_plugins):
     assert calls == []
 
 
-def test_missing_byok_credential_is_rejected_as_credentials_unavailable(
-    monkeypatch, fake_plugins
-):
-    calls = _resolver(monkeypatch, api_key="unused")
+def test_a_credential_less_setup_runs_on_the_platform_path(monkeypatch, fake_plugins):
+    calls = _resolver(monkeypatch, api_key="platform-key")
     settings = _realtime_settings(
         realtime={"provider": "openai", "model": "gpt-realtime",
-                  "isByokEnabled": True, "credentialName": None}
+                  "credentialName": None}
     )
 
-    with pytest.raises(RealtimeConfigurationError) as rejected:
-        build_realtime_model(settings, USER)
+    model = build_realtime_model(settings, USER)
 
-    assert rejected.value.code == ERROR_CODE_CREDENTIALS_UNAVAILABLE
-    assert calls == []
+    [built] = fake_plugins
+    assert built.options["api_key"] == "platform-key"
+    assert calls == [("openai", None, USER)]
+    assert model is built
 
 
 def test_unresolvable_credential_is_rejected_as_credentials_unavailable(
@@ -318,7 +312,7 @@ def test_azure_without_an_endpoint_is_rejected(monkeypatch, fake_plugins):
     _resolver(monkeypatch, api_key="azure-key")
     settings = _realtime_settings(
         realtime={"provider": "azure", "model": "gpt-realtime",
-                  "isByokEnabled": True, "credentialName": "azure-key"}
+                  "credentialName": "azure-key"}
     )
 
     with pytest.raises(RealtimeConfigurationError) as rejected:

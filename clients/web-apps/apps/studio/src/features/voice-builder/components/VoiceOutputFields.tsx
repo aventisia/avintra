@@ -132,7 +132,6 @@ type VoiceOutputFieldsProps = {
   model?: string;
   capability: VoiceCatalogCapability;
   credentialName?: string;
-  isByokEnabled?: boolean;
   showPreview?: boolean;
   emptyMessage: string;
 };
@@ -142,7 +141,6 @@ export const VoiceOutputFields = ({
   model,
   capability,
   credentialName,
-  isByokEnabled,
   showPreview = true,
   emptyMessage,
 }: VoiceOutputFieldsProps) => {
@@ -150,11 +148,13 @@ export const VoiceOutputFields = ({
   const language = watch(VOICE_OUTPUT_FIELDS.language) as string | undefined;
   const selectedVoice = watch(VOICE_OUTPUT_FIELDS.voice) as string | undefined;
   const pronunciations = watch("__Pronunciation__Voice") as unknown;
+  // IMPORTANT NOTE: the attached credential alone decides BYOK, so a blank or whitespace name is the platform path.
+  const activeCredential = String(credentialName ?? "").trim() || undefined;
   const { providerData, isLoading, isReady } = useVoiceCatalog({
     provider,
     model,
     capability,
-    credentialName: isByokEnabled ? credentialName : undefined,
+    credentialName: activeCredential,
   });
   const voices = providerData.voices;
 
@@ -163,8 +163,7 @@ export const VoiceOutputFields = ({
     model,
     language,
     speed: watch(VOICE_OUTPUT_FIELDS.speed) as number | undefined,
-    credentialName,
-    isByokEnabled,
+    credentialName: activeCredential,
     pronunciations:
       watch("__PronunciationEnabled__Voice") !== false && Array.isArray(pronunciations)
         ? pronunciations

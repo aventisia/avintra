@@ -24,7 +24,7 @@ from ..core.credit_utils import (
     post_credit_usage,
     should_record_byok,
 )
-from ..core.credentials import resolve_credential_name
+from ..core.credentials import is_byok, resolve_credential_name
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import (
     get_credit_service_type,
@@ -92,9 +92,9 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
     async def synthesize(self, tts_request: TTSRequest, user: User) -> TTSResponse:
         """Synthesize speech using BYOK or the platform's environment credentials.
 
-        When BYOK is enabled with a real credential id, those credentials are
-        fetched from the vault and used exclusively. Otherwise the request runs
-        on the platform's environment credentials and platform credits apply.
+        A real credential name means those credentials are fetched from the
+        vault and used exclusively. Otherwise the request runs on the platform's
+        environment credentials and platform credits apply.
         """
         start_time = time.perf_counter()
 
@@ -102,11 +102,10 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         # "googlegemini"; LiteLLM only accepts "gemini".
         tts_request.provider = normalize_provider(tts_request.provider)
         # Validate the provider/model with the request's credential mode.
-        validate_provider(tts_request.provider, tts_request.is_byok_enabled, tts_request.credential_name)
-        validate_model(tts_request.provider, tts_request.model, tts_request.is_byok_enabled, tts_request.credential_name)
+        validate_provider(tts_request.provider, tts_request.credential_name)
+        validate_model(tts_request.provider, tts_request.model, tts_request.credential_name)
 
-        # Platform credits apply only for non-BYOK requests.
-        if not tts_request.is_byok_enabled and tts_request.credential_name:
+        if not is_byok(tts_request.credential_name):
             self._check_credits(tts_request, user)
 
         try:
@@ -123,7 +122,6 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                 input=synthesis_input,
                 voice=canonical_voice(tts_request.provider, tts_request.voice_id or ""),
                 speed=tts_request.speed if tts_request.speed is not None else 1.0,
-                is_byok=tts_request.is_byok_enabled,
                 credential_name=tts_request.credential_name,
                 user=user,
             )
@@ -177,7 +175,6 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             status="completed",
             stream=False,
             credential_name=tts_request.credential_name,
-            is_byok_enabled=tts_request.is_byok_enabled,
             time_taken=round(time.perf_counter() - start_time, 2),
             token_count=len(tts_request.input),
             ref_id=tts_request.ref_id,
@@ -185,8 +182,8 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             ref_name=tts_request.ref_name,
             action=tts_request.action,
         )
-        # Post credit usage only for platform (non-BYOK) requests.
-        if should_post_usage(tts_request.is_byok_enabled, tts_request.credential_name):
+        # Post credit usage only for platform-keyed requests.
+        if should_post_usage(tts_request.credential_name):
             try:
                 # Bill based on the number of characters synthesized.
                 post_credit_usage(tts_request, tts_request.provider, "service", len(tts_request.input), user.access_token, user.space_id)
@@ -194,7 +191,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                 logger.error(f"Failed to post TTS credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")
         # Post BYOK usage for caller's own key requests.
-        if should_record_byok(tts_request.is_byok_enabled, tts_request.credential_name):
+        if should_record_byok(tts_request.credential_name):
             try:
                 # Resolve the vault credential name for attribution.
                 resolved_name = resolve_credential_name(tts_request.credential_name, user)

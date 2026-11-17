@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 def _utc_now() -> datetime:
@@ -56,6 +56,8 @@ class V2ChatMessage(BaseModel):
 
 
 class LLMGenerationRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     provider: str
     model: str
     input: Union[str, list[V2ChatMessage]]
@@ -73,7 +75,6 @@ class LLMGenerationRequest(BaseModel):
     # image_url content blocks; other files as input_file content blocks.
     files: Optional[list[str]] = None
     # BYOK
-    is_byok_enabled: Optional[bool] = False
     credential_name: Optional[str] = None
     # KB augmentation
     kb_names: Optional[list[str]] = None
@@ -118,7 +119,6 @@ class LLMGenerationResponse(BaseModel):
     output_tokens: Optional[int] = 0
     output_reasoning_tokens: Optional[int] = 0
     is_json_output: Optional[bool] = False
-    is_byok_enabled: Optional[bool] = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     error: Optional[str] = None
     conversation_id: Optional[str] = None
@@ -138,12 +138,13 @@ class LLMGenerationChunk(BaseModel):
 
 
 class EmbeddingRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
     provider: str
     model: str
     input: Union[str, list[str]]
     dimensions: Optional[int] = None
     encoding_format: Literal["float", "base64"] = "float"
-    is_byok_enabled: bool = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     # Credit / reference metadata
     reference_id: Optional[str] = None
@@ -159,7 +160,6 @@ class EmbeddingResponse(BaseModel):
     created_on: datetime = Field(default_factory=_utc_now)
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0
-    is_byok_enabled: Optional[bool] = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
@@ -222,13 +222,14 @@ class STTRequest(BaseModel):
     is intentionally defined here so the LiteLLM feature never imports from the
     ElevenLabs `stt_providers` schemas.
     """
+    model_config = ConfigDict(extra="ignore")
+
     provider: str
     model: str
     input: str  # URL, local path, or base64 data URI
     language: Optional[str] = None
     stream: bool = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: bool = False
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
@@ -243,7 +244,6 @@ class STTResponse(BaseModel):
     error: Optional[str] = None
     stream: bool = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: bool = False
     duration_seconds: Optional[float] = None
     token_count: Optional[float] = None
     time_taken: Optional[float] = None
@@ -268,6 +268,8 @@ class TTSRequest(BaseModel):
     is intentionally defined here so the LiteLLM feature never imports from the
     ElevenLabs `tts_providers` schemas.
     """
+    model_config = ConfigDict(extra="ignore")
+
     provider: str
     model: str
     input: str
@@ -277,7 +279,6 @@ class TTSRequest(BaseModel):
     stream: bool = False
     pronunciations: Optional[list[PronunciationEntry]] = None
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: bool = False
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
@@ -292,7 +293,6 @@ class TTSResponse(BaseModel):
     error: Optional[str] = None
     stream: bool = False
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
-    is_byok_enabled: bool = False
     token_count: Optional[float] = None
     time_taken: Optional[float] = None
     created_on: datetime = Field(default_factory=_utc_now)

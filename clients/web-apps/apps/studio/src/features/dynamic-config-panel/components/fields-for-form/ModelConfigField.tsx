@@ -1,3 +1,4 @@
+import { Switch } from "@avplatform/ui";
 import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -86,7 +87,6 @@ const ModelConfigField = ({
   const fieldNames = useMemo(
     () =>
       ({
-        is_byok_enabled: `${name}.is_byok_enabled`,
         credential_name: `${name}.credential_name`,
         provider: `${name}.provider`,
         model: `${name}.model`,
@@ -100,10 +100,6 @@ const ModelConfigField = ({
     [name],
   );
 
-  const { field: isByokField } = useController({
-    name: fieldNames.is_byok_enabled,
-    control,
-  });
   const { field: providerField } = useController({
     name: fieldNames.provider,
     control,
@@ -121,14 +117,20 @@ const ModelConfigField = ({
     control,
   });
 
-  const is_byok_enabled = Boolean(isByokField.value);
   const providerValue = providerField.value;
+
+  // IMPORTANT NOTE: The BYOK switch only shows or hides the credential picker. A non-blank credential
+  // keeps the picker visible so a saved setup reopens in BYOK view, and nodes that hide the switch
+  // (voice sub-configs) stay in BYOK view; requests are driven by the credential alone.
+  const credentialName = watch(fieldNames.credential_name);
+  const [byokView, setByokView] = useState(hideByok);
+  const showByok = byokView || Boolean(String(credentialName ?? "").trim());
 
   const {
     data: enabledModelsData,
     isLoading,
     isError,
-  } = useFetchTenantEnabledModels(configCapability, is_byok_enabled);
+  } = useFetchTenantEnabledModels(configCapability, showByok);
 
   const enabledModelIdsByProvider = useMemo(() => {
     const idsByBackendType: Record<string, string[]> = {};
@@ -149,10 +151,7 @@ const ModelConfigField = ({
     [enabledModelIdsByProvider],
   );
 
-  const prevValues = useRef({
-    is_byok_enabled,
-    providerValue,
-  });
+  const prevProvider = useRef(providerValue);
 
   const enableModelSetup = useMemo(
     () => ["__ModelConfig__Inferencing", "__ModelConfig__Conversation"].includes(name),
@@ -171,9 +170,9 @@ const ModelConfigField = ({
   }, [name, reasoningEffortValue, setValue, fieldNames]);
 
   const currentProviderHasEnabledModels = useMemo(() => {
-    if (!is_byok_enabled) return true;
+    if (!showByok) return true;
     return isProviderEnabled(providerValue);
-  }, [is_byok_enabled, isProviderEnabled, providerValue]);
+  }, [showByok, isProviderEnabled, providerValue]);
 
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = isRealtime
@@ -182,7 +181,7 @@ const ModelConfigField = ({
 
     if (isStt || isTts) {
       const speechProviders = isStt ? sttModelProviders : ttsModelProviders;
-      if (!is_byok_enabled) return speechProviders;
+      if (!showByok) return speechProviders;
 
       const speechProvidersByValue = new Map(speechProviders.map((p) => [p.value, p]));
       return Object.keys(enabledModelIdsByProvider).map(
@@ -195,10 +194,10 @@ const ModelConfigField = ({
       );
     }
     if (isEmbedding) {
-      if (!is_byok_enabled) return embeddingModelProviders;
+      if (!showByok) return embeddingModelProviders;
       return embeddingModelProviders.filter((p) => isProviderEnabled(p.value));
     }
-    if (isRealtime && is_byok_enabled) {
+    if (isRealtime && showByok) {
       const realtimeProvidersByValue = new Map(modelProviders.map((p) => [p.value, p]));
       return Object.keys(enabledModelIdsByProvider).map(
         (value): LLMProviderType =>
@@ -210,7 +209,7 @@ const ModelConfigField = ({
       );
     }
 
-    const providers = is_byok_enabled
+    const providers = showByok
       ? modelProviders.filter((p) => isProviderEnabled(p.value))
       : modelProviders.filter((p) => p.isEnabled !== false);
 
@@ -221,8 +220,7 @@ const ModelConfigField = ({
         return specialtyMatch && m.available;
       }),
     }));
-
-    return isRealtime && !is_byok_enabled
+    return isRealtime && !showByok
       ? providersWithModels.filter((p) => p.models.length > 0)
       : providersWithModels;
   }, [
@@ -230,7 +228,7 @@ const ModelConfigField = ({
     isTts,
     isEmbedding,
     isRealtime,
-    is_byok_enabled,
+    showByok,
     enabledModelIdsByProvider,
     isProviderEnabled,
     nodeKey,
@@ -242,26 +240,21 @@ const ModelConfigField = ({
 
   useEffect(() => {
     if (!isInitialized) return;
+    if (prevProvider.current === providerValue) return;
 
-    const byokChanged = prevValues.current.is_byok_enabled !== is_byok_enabled;
-    const providerChanged = prevValues.current.providerValue !== providerValue;
+    prevProvider.current = providerValue;
 
-    if (byokChanged || providerChanged) {
-      prevValues.current.is_byok_enabled = is_byok_enabled;
-      prevValues.current.providerValue = providerValue;
-
-      setValue(fieldNames.credential_name, "", { shouldDirty: true });
-      setValue(fieldNames.model, "", { shouldDirty: true });
-    }
-  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames]);
+    setValue(fieldNames.credential_name, "", { shouldDirty: true });
+    setValue(fieldNames.model, "", { shouldDirty: true });
+  }, [providerValue, isInitialized, setValue, fieldNames]);
 
   useEffect(() => {
-    if (!isInitialized || !is_byok_enabled || isLoading || isError) return;
+    if (!isInitialized || !showByok || isLoading || isError) return;
     if (isProviderEnabled(providerValue)) return;
     setValue(fieldNames.provider, "", { shouldDirty: true });
   }, [
     isInitialized,
-    is_byok_enabled,
+    showByok,
     isLoading,
     isError,
     isProviderEnabled,
@@ -271,7 +264,7 @@ const ModelConfigField = ({
   ]);
 
   const availableModels = useMemo(() => {
-    if (is_byok_enabled) {
+    if (showByok) {
       const enabledIds = enabledModelIdsByProvider[providerValue] ?? [];
       return uniqueAndNormalizeArray(
         enabledIds.map((id) => ({ value: id, label: id, available: true }) as Model),
@@ -283,12 +276,12 @@ const ModelConfigField = ({
         .find((p) => p.value === providerValue)
         ?.models?.filter((m) => m.available) || [],
     );
-  }, [is_byok_enabled, filteredProviders, providerValue, enabledModelIdsByProvider]);
+  }, [showByok, filteredProviders, providerValue, enabledModelIdsByProvider]);
 
   const hasEnabledSpeechModels = useMemo(() => {
-    if (!isSpeechSpecialty || !is_byok_enabled) return true;
+    if (!isSpeechSpecialty || !showByok) return true;
     return isProviderEnabled(providerValue);
-  }, [isSpeechSpecialty, is_byok_enabled, isProviderEnabled, providerValue]);
+  }, [isSpeechSpecialty, showByok, isProviderEnabled, providerValue]);
 
   const hasEnabledModelsForSpecialty = useMemo(
     () => Object.keys(enabledModelIdsByProvider).length > 0,
@@ -375,12 +368,23 @@ const ModelConfigField = ({
   const content = (
     <div className="w-full space-y-3.5">
       {!hideByok && (
-        <SwitchField
-          size="sm"
-          name={fieldNames.is_byok_enabled}
-          label="Bring your own API key"
-          description="Use your own provider API key instead of platform-hosted models."
-        />
+        <div className="flex flex-row items-center justify-between gap-8 rounded-lg border p-2.5 pt-1.5">
+          <div className="space-y-0.5">
+            <p className="text-xs font-medium leading-none">Bring your own API key</p>
+            <p className="text-2xs text-muted-foreground">
+              Use your own provider API key instead of platform-hosted models.
+            </p>
+          </div>
+          <Switch
+            size="sm"
+            checked={showByok}
+            onCheckedChange={(checked) => {
+              setByokView(checked);
+              setValue(fieldNames.credential_name, "", { shouldDirty: true });
+              setValue(fieldNames.model, "", { shouldDirty: true });
+            }}
+          />
+        </div>
       )}
 
       <div className="flex items-end gap-2">
@@ -393,16 +397,16 @@ const ModelConfigField = ({
             name={fieldNames.provider}
             selectOptions={filteredProviders}
             label="Model provider"
-            disabled={is_byok_enabled && isLoading}
+            disabled={showByok && isLoading}
           />
         </div>
       </div>
 
-      {is_byok_enabled && isLoading && (
+      {showByok && isLoading && (
         <p className="text-xs text-muted-foreground">Loading model providers...</p>
       )}
 
-      {is_byok_enabled && isError && (
+      {showByok && isError && (
         <p className="text-xs text-destructive">
           Could not load model providers. Please try again.
         </p>
@@ -420,7 +424,7 @@ const ModelConfigField = ({
         }
       />
 
-      {is_byok_enabled && currentProviderHasEnabledModels && (
+      {showByok && currentProviderHasEnabledModels && (
         <VaultCredentialSelectField
           name={fieldNames.credential_name}
           size="sm"
@@ -431,7 +435,7 @@ const ModelConfigField = ({
       )}
 
       {isSpeechSpecialty &&
-        is_byok_enabled &&
+        showByok &&
         isInitialized &&
         !isLoading &&
         !isError &&
@@ -443,7 +447,7 @@ const ModelConfigField = ({
         )}
 
       {isRealtime &&
-        is_byok_enabled &&
+        showByok &&
         isInitialized &&
         !isLoading &&
         !isError &&
@@ -455,7 +459,7 @@ const ModelConfigField = ({
         )}
 
       {isRealtime &&
-        is_byok_enabled &&
+        showByok &&
         isInitialized &&
         !!providerValue &&
         !isExecutableRealtimeProvider(providerValue) && (
@@ -481,7 +485,6 @@ const ModelConfigField = ({
           providerPath={fieldNames.provider}
           modelPath={fieldNames.model}
           credentialPath={fieldNames.credential_name}
-          isByokPath={fieldNames.is_byok_enabled}
           capability={isRealtime ? "realtime" : "tts"}
         />
       )}

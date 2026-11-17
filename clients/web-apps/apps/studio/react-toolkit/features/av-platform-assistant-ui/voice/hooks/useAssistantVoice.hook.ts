@@ -74,7 +74,6 @@ export const useAssistantVoice = ({
         speed: config.voiceConfig?.speed,
         stream: false,
         credential_name: config.ttsConfig.credential_name || null,
-        is_byok_enabled: config.ttsConfig.is_byok_enabled ?? false,
         ref_type: "Agent",
         ref_id: config.refId,
         ref_name: config.refName,

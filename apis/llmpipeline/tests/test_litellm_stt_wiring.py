@@ -79,7 +79,6 @@ def test_googlegemini_alias_is_normalized_for_gemini_stt(monkeypatch):
         input="audio.wav",
         language="en",
         credential_name="gemini-key",
-        is_byok_enabled=True,
     )
     response = asyncio.run(LiteLLMSTTProvider().transcribe(request, _user()))
 

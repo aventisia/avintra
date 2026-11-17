@@ -61,7 +61,6 @@ export function useSTTExecute(formData: Record<string, unknown>) {
       language: input.language?.trim() || null,
       stream: false,
       credential_name: modelConfig.credential_name || null,
-      is_byok_enabled: modelConfig.is_byok_enabled ?? false,
       ref_id: currentFlow.id,
       ref_name: currentFlow.name,
       ref_type: "Agent",

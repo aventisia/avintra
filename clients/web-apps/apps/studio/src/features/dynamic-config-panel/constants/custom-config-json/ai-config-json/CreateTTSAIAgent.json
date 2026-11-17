@@ -13,7 +13,6 @@
       "type": "model-config-select",
       "name": "__ModelConfig__TextToSpeech",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "elevenlabs",
         "credential_name": "",
         "model": "eleven_v3"

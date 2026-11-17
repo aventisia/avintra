@@ -51,7 +51,6 @@ export type ChatModelSelection = {
   provider: string;
   model: string;
   credentialName?: string;
-  isByokEnabled?: boolean;
   reasoningEffort?: "low" | "medium" | "high";
 };
 
@@ -347,7 +346,6 @@ export const createAssistantUIModelAdapter = ({
                 modelProvider: modelSelection?.provider,
                 modelId: modelSelection?.model,
                 credentialName: modelSelection?.credentialName,
-                isByokEnabled: modelSelection?.isByokEnabled,
                 reasoningEffort: modelSelection?.reasoningEffort,
                 destinations: getDestinations?.(),
                 keepUserTurns: getKeepUserTurns?.(

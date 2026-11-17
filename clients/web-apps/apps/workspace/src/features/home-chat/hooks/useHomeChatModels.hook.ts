@@ -39,21 +39,16 @@ export type HomeChatModel = {
   supportsEffort: boolean;
   /** Vault credential configured for the provider, or null when it runs on platform credits. */
   credentialName: string | null;
-  isByokEnabled: boolean;
 };
 
 /** The speech-to-text model Home dictation runs on. */
-export type HomeChatSpeechModel = Pick<
-  HomeChatModel,
-  "provider" | "modelId" | "credentialName" | "isByokEnabled"
->;
+export type HomeChatSpeechModel = Pick<HomeChatModel, "provider" | "modelId" | "credentialName">;
 
 /** Runs on platform credits when the tenant enables no speech-to-text model. */
 const PLATFORM_SPEECH_MODEL: HomeChatSpeechModel = {
   provider: "elevenlabs",
   modelId: "scribe_v2",
   credentialName: null,
-  isByokEnabled: false,
 };
 
 /** A provider group in the Home composer's model picker. */
@@ -89,7 +84,6 @@ const createModel = (
     label: modelDisplayName(modelId),
     supportsEffort: modelSupportsEffort(provider, modelId),
     credentialName,
-    isByokEnabled: Boolean(credentialName),
   };
 };
 
@@ -170,7 +164,6 @@ export const useHomeChatModels = () => {
         provider: pipelineProvider,
         modelId: toModelId(pipelineProvider, model.modelId),
         credentialName,
-        isByokEnabled: true,
       };
     }
     return PLATFORM_SPEECH_MODEL;

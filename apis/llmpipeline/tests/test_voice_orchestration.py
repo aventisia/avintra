@@ -582,14 +582,10 @@ def test_event_and_close_codes_preserve_the_realtime_taxonomy():
         return configuration_error_code(
             provider=kwargs.get("provider", "openai"),
             model=kwargs.get("model", "gpt-4o-mini"),
-            is_byok_enabled=kwargs.get("is_byok_enabled", False),
-            credential_name=kwargs.get("credential_name"),
         )
 
     assert code(provider=None) == ERROR_CODE_INVALID_CONFIG
     assert code(model=None) == ERROR_CODE_INVALID_CONFIG
-    assert code(is_byok_enabled=True) == ERROR_CODE_CREDENTIALS_UNAVAILABLE
-    assert code(is_byok_enabled=True, credential_name="voice-key") is None
     assert code() is None
     assert error_code_for_source(object()) == ERROR_CODE_UPSTREAM
 
@@ -758,18 +754,6 @@ def test_human_first_stays_silent_until_the_caller_speaks(
             ERROR_CODE_INVALID_CONFIG,
             WS_CLOSE_BAD_CONFIG,
         ),
-        (
-            {
-                "tts": {
-                    "provider": "openai",
-                    "model": "tts-1",
-                    "isByokEnabled": True,
-                    "credentialName": None,
-                }
-            },
-            ERROR_CODE_CREDENTIALS_UNAVAILABLE,
-            WS_CLOSE_FORBIDDEN,
-        ),
     ],
 )
 def test_configuration_problem_closes_before_connecting(
@@ -801,6 +785,33 @@ def test_configuration_problem_closes_before_connecting(
     assert events[-1] is closed
 
 
+def test_toggle_without_a_credential_runs_on_the_platform_path(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch, on_start=_disconnect_on_start(ctx))
+
+    asyncio.run(
+        run_session(
+            ctx,
+            _claims(),
+            _settings(
+                tts={
+                    "provider": "openai",
+                    "model": "tts-1",
+                    "isByokEnabled": True,
+                    "credentialName": None,
+                }
+            ),
+        )
+    )
+
+    [session] = fake_session.instances
+    assert session.calls == ["start", "say", "aclose"]
+    assert ctx.shutdowns == []
+    assert ctx.connected == [{"auto_subscribe": AutoSubscribe.AUDIO_ONLY}]
+
+
 def test_streaming_stt_credential_failure_closes_with_the_credentials_code(
     monkeypatch, voice_persistence
 ):
@@ -820,7 +831,6 @@ def test_streaming_stt_credential_failure_closes_with_the_credentials_code(
                 stt={
                     "provider": "elevenlabs",
                     "model": "scribe_v2_realtime",
-                    "isByokEnabled": True,
                     "credentialName": "caller-stt-key",
                 }
             ),

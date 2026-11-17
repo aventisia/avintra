@@ -34,36 +34,27 @@ class CredentialResolution:
     credential_name: str | None = None
 
 
-def resolve_credentials(provider: str, is_byok: bool, credential_name: str | None, user: User) -> CredentialResolution:
+def resolve_credentials(provider: str, credential_name: str | None, user: User) -> CredentialResolution:
     """
     Decide which credentials to use for a provider call.
 
-    - BYOK enabled with a valid credential name: fetch those credentials
-      from the vault credential and use them exclusively — never the env. The request is
-      a BYOK request, so no platform credits apply.
-    - BYOK disabled (or null/default credential): return an empty kwargs dict
-      so LiteLLM uses its own environment variables (e.g. OPENAI_API_KEY).
-      Platform credit tracking is enabled.
+    - A real credential name: fetch those credentials from the vault credential
+      and use them exclusively — never the env. The request is a BYOK request,
+      so no platform credits apply. An attached credential that cannot be
+      resolved fails loudly instead of falling back to the platform key.
+    - No credential name (null / empty / whitespace): return the platform
+      credentials from settings, so platform credit tracking applies.
 
     Returns a `CredentialResolution` carrying the provider-aware kwargs and a
     flag indicating whether platform (env) credentials are in use. This is the
     single source of truth for authentication and billing across text
     generation, streaming, STT and TTS.
     """
-    # Non-BYOK: use platform credentials from settings (platform credit tracking applies).
-    if not is_byok and not credential_name:
+    if not is_byok(credential_name):
         kwargs = _platform_credentials_kwargs(provider)
         return CredentialResolution(kwargs=kwargs, uses_platform_credentials=True)
 
-    # BYOK must always carry a real credential name; never fall back to the env.
-    if not _is_real_credential(credential_name):
-        logger.error(
-            f"[LLM-V2] BYOK enabled but no credential for provider {provider}"
-        )
-        raise HTTPException(
-            status_code=400, detail="A valid credential is required when BYOK is enabled."
-        )
-
+    credential_name = str(credential_name).strip()
     vault_credential = VaultCredentialManager()
     credential = vault_credential.get_vault_credential_secret_by_name(
         credential=credential_name,
@@ -162,9 +153,10 @@ def resolve_credential_name(
     Accepts either a `User` instance (from which the access token and tenant
     scoping are read) or a raw `jwt` keyword argument.
     """
-    if not _is_real_credential(credential_name):
+    if not is_byok(credential_name):
         return None
 
+    credential_name = str(credential_name).strip()
     access_token = jwt
     tenant_id = None
     space_id = None
@@ -203,8 +195,12 @@ def resolve_credential_name(
         return credential_name
 
 
-def _is_real_credential(credential_name: str | None) -> bool:
-    """True when a real (non-null / non-empty) credential name is supplied."""
+def is_byok(credential_name: str | None) -> bool:
+    """True when the caller supplied their own (BYOK) credentials.
+
+    A null, empty, or whitespace-only credential name counts as no credential,
+    so the request runs on the platform credentials.
+    """
     if not credential_name:
         return False
     cleaned = str(credential_name).strip()

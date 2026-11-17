@@ -76,7 +76,7 @@ public class StreamingChatService : IStreamingChatService
     private static readonly TimeSpan PipelineStreamIdleTimeout = TimeSpan.FromMinutes(5);
 
     /// <summary>A resolved model for one turn, with the tenant credential it uses.</summary>
-    private sealed record LlmModelSelection(string Provider, string Model, string? CredentialName, bool IsByokEnabled);
+    private sealed record LlmModelSelection(string Provider, string Model, string? CredentialName);
 
     public StreamingChatService(
         ILogger<StreamingChatService> logger,
@@ -751,9 +751,6 @@ public class StreamingChatService : IStreamingChatService
         var temperature = isVoiceAgent ? voiceSettings?.Llm.Temperature ?? 1 : GetDoubleProperty(modelConfig, "temperature") ?? 1;
         var topP = isVoiceAgent ? voiceSettings?.Llm.TopP ?? 1 : GetDoubleProperty(modelConfig, "top_p") ?? 1;
         var reasoningEffort = isVoiceAgent ? voiceSettings?.Llm.ReasoningEffort : GetStringProperty(modelConfig, "reasoning_effort");
-        var isByokEnabled = isVoiceAgent
-            ? voiceSettings?.Llm.IsByokEnabled == true
-            : GetBoolProperty(modelConfig, "is_byok_enabled") == true;
         var credentialName = isVoiceAgent ? voiceSettings?.Llm.CredentialName : ReadCredentialProperty(modelConfig);
 
         var modelSelection = isVoiceAgent ? null : await ResolveModelSelectionAsync(request);
@@ -778,7 +775,6 @@ public class StreamingChatService : IStreamingChatService
             temperature,
             top_p = topP,
             reasoning_effort = reasoningEffort,
-            is_byok_enabled = modelSelection?.IsByokEnabled ?? isByokEnabled,
             credential_name = modelSelection?.CredentialName ?? credentialName,
             max_output_tokens = maxOutputTokens,
             kb_names = kbNames,
@@ -854,7 +850,6 @@ public class StreamingChatService : IStreamingChatService
             temperature = 1.0,
             top_p = 1.0,
             reasoning_effort = NormalizeReasoningEffort(request.ReasoningEffort),
-            is_byok_enabled = selection.IsByokEnabled,
             credential_name = selection.CredentialName,
             skill_names = LandingSkillNames,
             tool_config = destinationsPrompt is null ? null : LandingNavigateToolConfig,
@@ -885,7 +880,7 @@ public class StreamingChatService : IStreamingChatService
 
         var modelId = ToModelId(provider, request.ModelId);
         return await ResolveTenantModelSelectionAsync(provider, modelId)
-            ?? new LlmModelSelection(provider, modelId, null, false);
+            ?? new LlmModelSelection(provider, modelId, null);
     }
 
     /// <summary>
@@ -914,7 +909,7 @@ public class StreamingChatService : IStreamingChatService
                 continue;
 
             var credentialName = await ResolveCredentialNameAsync(provider.CredentialId);
-            return new LlmModelSelection(pipelineProvider, ToModelId(pipelineProvider, modelId), credentialName, !string.IsNullOrEmpty(credentialName));
+            return new LlmModelSelection(pipelineProvider, ToModelId(pipelineProvider, modelId), credentialName);
         }
 
         return ResolvePlatformDefaultModelSelection();
@@ -923,10 +918,10 @@ public class StreamingChatService : IStreamingChatService
     private LlmModelSelection? ResolvePlatformDefaultModelSelection()
     {
         if (!string.IsNullOrWhiteSpace(_environmentConfig.OpenAiApiKey))
-            return new LlmModelSelection("openai", "gpt-4o-mini", null, false);
+            return new LlmModelSelection("openai", "gpt-4o-mini", null);
 
         if (!string.IsNullOrWhiteSpace(_environmentConfig.GeminiApiKey))
-            return new LlmModelSelection("googlegemini", "gemini-2.5-flash-lite", null, false);
+            return new LlmModelSelection("googlegemini", "gemini-2.5-flash-lite", null);
 
         return null;
     }
@@ -950,7 +945,7 @@ public class StreamingChatService : IStreamingChatService
             return null;
 
         var credentialName = await ResolveCredentialNameAsync(match.CredentialId);
-        return new LlmModelSelection(provider, modelId, credentialName, !string.IsNullOrEmpty(credentialName));
+        return new LlmModelSelection(provider, modelId, credentialName);
     }
 
     private async Task<string?> ResolveCredentialNameAsync(Guid? credentialId)

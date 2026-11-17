@@ -126,7 +126,6 @@ public static class VoiceAgentSettingsFactory
             Provider = GetString(config, "provider"),
             Model = GetString(config, "model"),
             CredentialName = ReadCredential(config),
-            IsByokEnabled = GetBool(config, "is_byok_enabled") == true,
             Temperature = GetDouble(config, "temperature") ?? 1,
             TopP = GetDouble(config, "top_p") ?? 1,
             MaxOutputTokens = GetInt(config, "max_output_tokens"),

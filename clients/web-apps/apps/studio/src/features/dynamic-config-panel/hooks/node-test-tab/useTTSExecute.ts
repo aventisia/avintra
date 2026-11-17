@@ -33,7 +33,6 @@ export function useTTSExecute(formData: Record<string, unknown>) {
       speed: voiceConfigData?.config.speed,
       stream: false,
       credential_name: modelConfigData.config.credential_name || null,
-      is_byok_enabled: modelConfigData.config.is_byok_enabled,
       ref_id: currentFlow.id,
       ref_name: currentFlow.name,
       ref_type: "Agent",

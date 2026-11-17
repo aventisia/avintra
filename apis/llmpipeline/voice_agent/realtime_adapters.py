@@ -84,19 +84,12 @@ def build_realtime_model(agent_settings: dict, user: User) -> llm.RealtimeModel:
             code=ERROR_CODE_UNSUPPORTED_PROVIDER,
         )
 
-    code = configuration_error_code(
-        provider=provider,
-        model=model,
-        is_byok_enabled=bool(realtime_settings.get("isByokEnabled")),
-        credential_name=realtime_settings.get("credentialName"),
-    )
+    code = configuration_error_code(provider=provider, model=model)
     if code is not None:
-        message = (
-            "Realtime voice provider and model are required."
-            if code == ERROR_CODE_INVALID_CONFIG
-            else "Realtime voice requires a BYOK credential."
+        raise RealtimeConfigurationError(
+            "Realtime voice provider and model are required.",
+            code=code,
         )
-        raise RealtimeConfigurationError(message, code=code)
 
     credentials = _resolve_credentials(provider, realtime_settings, user)
     voice_settings = agent_settings.get("ttsVoice") or {}
@@ -130,7 +123,6 @@ def _resolve_credentials(
     try:
         credentials = resolve_credentials(
             provider,
-            bool(realtime_settings.get("isByokEnabled")),
             realtime_settings.get("credentialName") or None,
             user,
         )

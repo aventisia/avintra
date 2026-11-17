@@ -88,11 +88,6 @@ public class LLMResponse
     public bool IsJsonOutput { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether BYOK (Bring Your Own Key) support is enabled.
-    /// </summary>
-    public bool IsByokEnabled { get; set; }
-
-    /// <summary>
     /// Gets or sets the credential NAME for BYOK (Bring Your Own Key) support.
     /// </summary>
     public string? CredentialName { get; set; }

@@ -25,7 +25,6 @@ export type UiBuilderLlmRequest = {
   input: { role: "system" | "user" | "assistant"; content: string }[];
   stream: boolean;
   is_json_output?: boolean;
-  is_byok_enabled: boolean;
   credential_name?: string | null;
   max_output_tokens?: number;
   temperature?: number;

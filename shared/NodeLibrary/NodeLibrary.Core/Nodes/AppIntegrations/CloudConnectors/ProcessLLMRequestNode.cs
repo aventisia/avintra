@@ -96,7 +96,6 @@ public class ProcessLLMRequestNode : BaseNode
                 is_json_output = GetBoolProperty(modelConfig, "is_json_output") ?? false,
                 json_schema = resolvedJsonSchema,
                 max_output_tokens = GetLongProperty(modelConfig, "max_output_tokens") ?? 0L,
-                is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
                 // Canonical key is credential_name; legacy flows may still carry a credential_id (back-compat).
                 credential_name = ReadCredentialProperty(modelConfig),
                 temperature = GetDoubleProperty(modelConfig, "temperature") ?? 1.0,

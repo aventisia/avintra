@@ -9,7 +9,6 @@ import { VoiceOutputFields } from "./VoiceOutputFields";
 const PROVIDER = `${VOICE_FIELDS.textToSpeech}.provider`;
 const MODEL = `${VOICE_FIELDS.textToSpeech}.model`;
 const CREDENTIAL = `${VOICE_FIELDS.textToSpeech}.credential_name`;
-const IS_BYOK = `${VOICE_FIELDS.textToSpeech}.is_byok_enabled`;
 
 export const VoiceTtsSection = () => {
   const { watch } = useFormContext();
@@ -29,7 +28,6 @@ export const VoiceTtsSection = () => {
         model={watch(MODEL) as string | undefined}
         capability="tts"
         credentialName={watch(CREDENTIAL) as string | undefined}
-        isByokEnabled={watch(IS_BYOK) as boolean | undefined}
         emptyMessage="Pick a text-to-speech provider above to see its voices."
       />
     </GroupedFieldsWrapper>
