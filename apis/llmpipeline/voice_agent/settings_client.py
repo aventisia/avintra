@@ -4,16 +4,10 @@ from __future__ import annotations
 
 import httpx
 
-from app.core.config import settings
+from app.core.config import settings, workspace_api_url
 from app.core.logger import logger
 
 from .metadata import VoiceJobClaims, VoiceSessionRejected
-
-
-def workspace_api_base_url() -> str:
-    """Return the WorkspaceAPIs base URL; ASP.NET serves everything under ``/api``."""
-
-    return settings.WORKSPACE_API_URL or f"https://{settings.APP_BASE_URL}/api"
 
 
 async def fetch_settings(claims: VoiceJobClaims) -> dict:
@@ -26,7 +20,7 @@ async def fetch_settings(claims: VoiceJobClaims) -> dict:
     if claims.space_id:
         headers["X-Space-Id"] = claims.space_id
 
-    url = f"{workspace_api_base_url()}/assist/voice/settings/{claims.flow_version_id}"
+    url = f"{workspace_api_url()}/assist/voice/settings/{claims.flow_version_id}"
 
     try:
         async with httpx.AsyncClient(timeout=15, verify=settings.SSL_VERIFY) as client:
