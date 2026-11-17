@@ -463,7 +463,7 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // A passwordless account sets its first password, so there is no old password to check
+            // A passwordless account sets its first password only when it signs in with a social provider
             if (user.PasswordHash != null)
             {
                 // Check if old password is correct
@@ -484,6 +484,11 @@ public class MyAccountService : IMyAccountService
                     serviceResponse.Message = "Old password is incorrect";
                     return serviceResponse;
                 }
+            }
+            else if (await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user) == null)
+            {
+                serviceResponse.Message = "This account signs in with your organization's provider, so it cannot set a password";
+                return serviceResponse;
             }
 
             // User is disabled

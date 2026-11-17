@@ -12,8 +12,11 @@ interface TenantInfoDto {
   /** Tenant's single sign-on config if there are any */
   ssoConfigJson: string;
 
-  /** Social provider a passwordless account signs in with, when it has one */
+  /** Social provider the account is linked to, when one applies */
   socialLoginProvider: string | null;
+
+  /** Whether the account has a password to sign in with */
+  hasPassword: boolean;
 }
 
 export { type TenantInfoDto };
