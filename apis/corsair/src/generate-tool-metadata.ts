@@ -11,6 +11,7 @@ import type { PluginMetadata } from "./dcp-generator/types.js";
 import { toPluginMetadataList } from "./dcp-generator/plugin-metadata.js";
 import { buildOpenApiSpec } from "./dcp-generator/build-openapi.js";
 import { DEFAULT_ICON_MAP } from "./dcp-generator/plugin-metadata.js";
+import { PLUGIN_DESCRIPTIONS } from "./plugin-descriptions.js";
 
 export interface GeneratedToolMetadata {
   id: string;
@@ -91,7 +92,7 @@ export async function generateToolMetadata(
       id: meta.id,
       pluginId: meta.id,
       name: meta.providerName,
-      description: `${meta.providerName} connector`,
+      description: PLUGIN_DESCRIPTIONS[meta.id] ?? `${meta.providerName} connector`,
       openApiSpec: JSON.stringify(openApiSpec),
     });
   }

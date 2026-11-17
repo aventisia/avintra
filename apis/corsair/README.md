@@ -262,9 +262,10 @@ npm run seed:tools         # seed the tools into the Workspace ai_PlatformTools 
 ### After onboarding
 
 1. **Run `npm install`** (with `--legacy-peer-deps`) if new deps were added.
-2. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
-3. **Run `npm run seed:tools`** to seed the tools into `ai_PlatformTools`.
-4. **Commit** the generated artifacts + the new plugin registration.
+2. **Add the plugin's curated description** from the Corsair explorer catalog (`explorer/data/catalog.json` in `corsairdev/corsair`) to `src/plugin-descriptions.ts`; without it the tool keeps today's generic fallback text. If the catalog text is still generic, list the id in `genericUpstreamDescriptionIds` in `src/dcp-generator/generator.test.ts` instead.
+3. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
+4. **Run `npm run seed:tools`** to seed the tools into `ai_PlatformTools`.
+5. **Commit** the generated artifacts + the new plugin registration.
 
 ## Verification
 

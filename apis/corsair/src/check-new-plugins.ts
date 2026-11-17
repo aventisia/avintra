@@ -219,9 +219,10 @@ async function onboard(ids: string[]): Promise<void> {
   console.log("\n✅ Onboarding complete.");
   console.log("Next steps:");
   console.log("  1. Run `npm install` (with --legacy-peer-deps) if new deps were added");
-  console.log("  2. Run `npm run generate:configs` to refresh configs/mapping/catalog/OpenAPI");
-  console.log("  3. Run `npm run seed:tools` to seed tools into ai_PlatformTools");
-  console.log("  4. Commit the generated artifacts + new plugin registration.");
+  console.log("  2. Add the curated description from the Corsair explorer catalog (explorer/data/catalog.json in corsairdev/corsair) to src/plugin-descriptions.ts, or list the id in genericUpstreamDescriptionIds in src/dcp-generator/generator.test.ts while its catalog text is still generic");
+  console.log("  3. Run `npm run generate:configs` to refresh configs/mapping/catalog/OpenAPI");
+  console.log("  4. Run `npm run seed:tools` to seed tools into ai_PlatformTools");
+  console.log("  5. Commit the generated artifacts + new plugin registration.");
 }
 
 async function main(): Promise<void> {
