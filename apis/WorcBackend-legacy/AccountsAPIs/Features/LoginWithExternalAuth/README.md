@@ -149,9 +149,6 @@ succeeded, and the session is issued in the controller after that.
 
 ## Operator notes
 
-- OAuth app registration, scopes, publishing, and troubleshooting:
-  [Google](GOOGLE_OAUTH_APP_REGISTRATION.md) and
-  [GitHub](GITHUB_OAUTH_APP_REGISTRATION.md).
 - Social sign-in is configured per provider with `GOOGLE_OAUTH_CLIENT_ID` /
   `GOOGLE_OAUTH_CLIENT_SECRET` and `GITHUB_OAUTH_CLIENT_ID` /
   `GITHUB_OAUTH_CLIENT_SECRET` (see `AccountsAPIs/.env.example`). Set only the
