@@ -31,7 +31,7 @@ export const PwdLoginHeader = ({ heading = "Enter password" }: PwdLoginHeaderPro
         </Button>
         <h2 className="ml-3 w-full truncate text-body text-ink-2">{loginData?.email}</h2>
       </div>
-<      <h1 className="text-3xl font-medium">{heading}</h1>
+      <h1 className="text-3xl font-medium">{heading}</h1>
     </div>
   );
 };

@@ -13,7 +13,7 @@ interface SocialButtonsProps {
 const SocialButtons = ({ providers, onProviderClick, disabled }: SocialButtonsProps) => {
   return (
     <div className="flex w-full flex-col gap-3 xs:flex-row">
-<      {providers.google && (
+      {providers.google && (
         <Button
           className="text-md h-11 flex-grow"
           variant="outline"
