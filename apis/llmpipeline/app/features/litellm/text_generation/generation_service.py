@@ -213,11 +213,17 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
         if (resp.input_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "input")
             if service:
-                entries.append(build_credit_entry(service, resp.input_tokens, req.ref_type, req.ref_id, req.ref_name, req.action, triggered_by_agent=req.ref_name, space_id=user.space_id))
+                entries.append(build_credit_entry(
+                    service, resp.input_tokens, req.ref_type, req.ref_id, req.ref_name,
+                    req.action, triggered_by_agent=req.ref_name, space_id=user.space_id,
+                ))
         if (resp.output_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "output")
             if service:
-                entries.append(build_credit_entry(service, resp.output_tokens, req.ref_type, req.ref_id, req.ref_name, req.action, triggered_by_agent=req.ref_name, space_id=user.space_id))
+                entries.append(build_credit_entry(
+                    service, resp.output_tokens, req.ref_type, req.ref_id, req.ref_name,
+                    req.action, triggered_by_agent=req.ref_name, space_id=user.space_id,
+                ))
         post_platform_credit_usage(req.provider, entries, user.access_token)
     except Exception as e:
         logger.warning(f"[LLM-V2] Failed to post credit usage: {e}")

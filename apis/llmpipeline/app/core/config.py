@@ -39,8 +39,13 @@ class Settings(BaseSettings):
     # In local/dev environments the backend may use a self-signed cert, so set this to false there.
     SSL_VERIFY: bool = True
 
-    # Internal WorkspaceAPIs URL used for cloud-connector tool execution.
-    # Defaults to https://{APP_BASE_URL}/api (the ASP.NET backend path base).
+    # Internal AccountsAPIs URL used for credit checks and usage postings.
+    # Defaults to https://{APP_BASE_URL}/accounts/api (the nginx prefix).
+    # Override for local dev when AccountsAPIs runs on a non-standard port.
+    ACCOUNTS_API_URL: str = ""
+
+    # Internal WorkspaceAPIs URL used for cloud-connector execution and voice settings.
+    # Defaults to https://{APP_BASE_URL}/workspace/api (the nginx prefix).
     # Override for local dev when WorkspaceAPIs runs on a non-standard port.
     WORKSPACE_API_URL: str = ""
 
@@ -101,6 +106,18 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
+
+
+def accounts_api_url() -> str:
+    """The AccountsAPIs base URL, including the nginx ``/accounts/api`` prefix."""
+
+    return settings.ACCOUNTS_API_URL.rstrip("/") or f"https://{settings.APP_BASE_URL}/accounts/api"
+
+
+def workspace_api_url() -> str:
+    """The WorkspaceAPIs base URL, including the nginx ``/workspace/api`` prefix."""
+
+    return settings.WORKSPACE_API_URL.rstrip("/") or f"https://{settings.APP_BASE_URL}/workspace/api"
 
 
 def livekit_http_url() -> str:

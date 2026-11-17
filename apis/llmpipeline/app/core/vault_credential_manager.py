@@ -4,12 +4,12 @@ from app.core.logger import logger
 from typing import Dict, Any
 from urllib.parse import quote
 import uuid
-from app.core.config import settings
+from app.core.config import settings, workspace_api_url
 
 class VaultCredentialManager:
     # Constructor: To initialize API URL and key (if any)
-    def __init__(self, api_url: str =  f"https://{settings.APP_BASE_URL}/workspace/api/vault-credential"):
-        self.api_url = api_url
+    def __init__(self, api_url: str | None = None):
+        self.api_url = api_url or f"{workspace_api_url()}/vault-credential"
 
     def get_vault_credential_secret_by_name(
         self,

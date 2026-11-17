@@ -114,7 +114,6 @@ def build_stt_request(claims: VoiceJobClaims, agent_settings: dict) -> STTReques
         ref_id=str(claims.flow_id),
         ref_name=agent_name,
         action="AgentExecution",
-        agent_name=agent_name or None,
     )
 
 

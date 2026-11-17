@@ -165,7 +165,6 @@ class TestRequestMapping:
         assert request.ref_id == str(FLOW_ID)
         assert request.ref_name == "Support Agent"
         assert request.action == "AgentExecution"
-        assert request.agent_name == "Support Agent"
 
         assert request.skill_names == ["demo-skill"]
         assert request.max_short_term_turns == 4

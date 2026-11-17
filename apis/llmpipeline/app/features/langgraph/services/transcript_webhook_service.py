@@ -79,7 +79,6 @@ def compose_transcript_payload(
             "ref_type": "Agent",
             "ref_id": str(conversation.flow_version_id),
             "ref_name": None,
-            "agent_name": None,
         },
         "message_count": len(messages),
         "is_temp_chat": False,

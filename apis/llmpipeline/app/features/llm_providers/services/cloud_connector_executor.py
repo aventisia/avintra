@@ -2,21 +2,7 @@ from app.features.auth.authenticated_user import User
 import httpx
 from typing import Dict, Any
 from app.core.logger import logger
-from app.core.config import settings
-
-
-def _workspace_api_base_url() -> str:
-    """Return the base URL for WorkspaceAPIs internal calls.
-
-    Defaults to ``https://{APP_BASE_URL}/api``. The ASP.NET backend uses a
-    ``/api`` path base, so internal callers should target ``/api`` directly
-    rather than the nginx-exposed ``/workspace/api`` prefix.
-
-    Can be overridden via the ``WORKSPACE_API_URL`` setting for local dev when
-    WorkspaceAPIs runs on a non-standard port (e.g. ``https://localhost:4001/api``).
-    """
-    default = f"https://{settings.APP_BASE_URL}/api"
-    return getattr(settings, "WORKSPACE_API_URL", None) or default
+from app.core.config import settings, workspace_api_url
 
 
 async def execute_agent(
@@ -55,7 +41,7 @@ async def execute_agent(
     if not endpoint:
         return {"status": "failed", "error": "No endpoint provided in agent data"}
 
-    base_url = _workspace_api_base_url()
+    base_url = workspace_api_url()
 
     try:
         logger.info(
