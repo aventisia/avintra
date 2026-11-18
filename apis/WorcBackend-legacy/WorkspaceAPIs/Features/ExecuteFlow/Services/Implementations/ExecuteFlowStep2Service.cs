@@ -61,7 +61,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 
             // Get the job from the database, including its flow version/type to decide whether to persist output data.
             var job = await unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId && w.TenantId == flowExecutionArgs.TenantId)
                 .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
@@ -124,26 +124,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 }
                 else if (job.TriggerType == TriggerTypesEnum.Flow)
                 {
-                    var parentJob = job.RefId.HasValue
-                        ? await unitOfWork.JobRepo
-                            .GetByConditionAsync(w => w.Id == job.RefId.Value)
-                            .IgnoreQueryFilters()
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync()
-                        : null;
-
-                    var parentAgent = parentJob == null
-                        ? null
-                        : await unitOfWork.FlowVersionRepo
-                            .GetByConditionAsync(w => w.Id == parentJob.FlowVersionId)
-                            .IgnoreQueryFilters()
-                            .Include(s => s.Flow)
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync();
-
-                    job.ExecutedBy = parentAgent?.Flow != null
-                        ? $"flow_{parentAgent.Flow.Name}_v{parentAgent.VersionNumber}"
-                        : "flow_Unknown";
+                    job.ExecutedBy = await JobsTableHelpers.ResolveFlowParentExecutedByAsync(unitOfWork, job.RefId, flowExecutionArgs.TenantId);
 
                     job.ExecutedOn = job.Machine != null
                         ? $"{job.Machine.Name}"
@@ -260,7 +241,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
             var job = await unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId && w.TenantId == flowExecutionArgs.TenantId)
                 .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
@@ -493,7 +474,8 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
             var job = await unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobId)
+                .GetByConditionAsync(w => w.Id == jobId && w.TenantId == tenantId)
+                .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
