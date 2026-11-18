@@ -64,6 +64,11 @@ const SIGN_IN_CANCELLED = "Sign-in was cancelled.";
  */
 const COUNTRY_LS_KEY = "country";
 
+/**
+ * Local storage key for how this browser last signed in: "email" or a provider name.
+ */
+const LAST_SIGN_IN_METHOD_LS_KEY = "lastSignInMethod";
+
 export {
   COUNTRY_LS_KEY,
   TWO_FA_ENABLED,
@@ -75,4 +80,5 @@ export {
   SOCIAL_STATE_PREFIX,
   SOCIAL_SIGN_IN_STATUS,
   SIGN_IN_CANCELLED,
+  LAST_SIGN_IN_METHOD_LS_KEY,
 };
