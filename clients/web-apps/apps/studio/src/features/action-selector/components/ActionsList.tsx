@@ -3,21 +3,21 @@ import { KeyboardEvent } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { NodeDataType } from "@/types/node-data-type";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
+import { ActionEntryType } from "../types/action-entry-type";
 import { ActionToSelect } from "./ActionToSelect";
 import { NoActionsMessage } from "./NoActionsMessage";
 
-interface ActionsListProps {
-  items: NodeDataType[] | undefined;
-  nodeSelectionHandler: (item: NodeDataType) => void;
+type ActionsListProps = {
+  items: ActionEntryType[] | undefined;
+  nodeSelectionHandler: (item: ActionEntryType) => void;
   rightRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
   firstItemRef?: React.MutableRefObject<HTMLButtonElement | null>;
   rightIndex: number;
-  handleRightPaneKeyDown: (e: KeyboardEvent, index: number, action: NodeDataType) => void;
+  handleRightPaneKeyDown: (e: KeyboardEvent, index: number, action: ActionEntryType) => void;
   isFocusedPane: boolean;
-}
+};
 
 const ActionsList = ({
   items,

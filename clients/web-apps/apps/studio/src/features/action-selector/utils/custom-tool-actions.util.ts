@@ -7,6 +7,7 @@ import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/compone
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
 import { CUSTOM_TOOLS_L1_LABEL, CUSTOM_TOOLS_L2_LABEL } from "../constants/custom-tools.constant";
+import { ActionEntryType } from "../types/action-entry-type";
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import {
   DEFAULT_TOOL_NODE_COLOR,
@@ -48,21 +49,7 @@ export function getToolName(tool: CustomToolLike): string {
 export function convertToolOperationsToActions(
   tool: CustomToolLike,
   operations?: UsableToolOperation[],
-): {
-  type: "cloudConnectorNode";
-  name: string;
-  label: string;
-  description: string;
-  icon?: string;
-  iconUrl?: string;
-  img?: string;
-  color?: string;
-  supportedPlatforms: string[];
-  inputs?: NodeInputType[];
-  outputs?: NodeOutputType[];
-  isVerified: boolean;
-  disabled: boolean;
-}[] {
+): ActionEntryType[] {
   if (!operations?.length) return [];
 
   const toolIcon = resolveToolIconKey(tool);

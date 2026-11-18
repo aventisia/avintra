@@ -18,20 +18,22 @@ const allowedNodeTypes: CustomNodeType[] = [
  * Extracts and simplifies relevant node data to be used in prompts.
  *
  * - Only includes nodes with specific types (from `allowedNodeTypes`)
+ * - Resolves each subtitle from the action catalog by the node's action name
  * - Omits any properties (label, description, inputs, outputs) that are:
  *   - Empty strings
  *   - null or undefined
  *   - Empty arrays
  *
  * @param nodes - Array of React Flow nodes
+ * @param descriptions - Action catalog subtitles keyed by action name
  * @returns Cleaned array of node data objects for prompts
  */
 export function getPromptDataFromNodes(
   nodes: Node<NodeDataType>[],
-  allowAllNodes: boolean = false,
+  descriptions: Map<string, string>,
 ) {
   return nodes
-    .filter((node) => allowAllNodes || allowedNodeTypes.includes(node?.data?.type)) // Filter only allowed node types
+    .filter((node) => allowedNodeTypes.includes(node?.data?.type)) // Filter only allowed node types
     .map((node) => {
       const data = node.data;
       const result: Record<string, unknown> = {};
@@ -42,8 +44,13 @@ export function getPromptDataFromNodes(
         result.label = label;
       }
 
-      // Include 'description' only if it's a non-empty trimmed string
-      const description = data?.description?.trim();
+      // Include 'description': AI nodes keep their own text exactly as before;
+      // every other node prefers the catalog subtitle, falling back to the
+      // node's own hardcoded text for nodes outside the catalog.
+      const description =
+        data?.type === "aiNode"
+          ? data?.description?.trim() || descriptions.get(data?.name)?.trim()
+          : descriptions.get(data?.name)?.trim() || data?.description?.trim();
       if (description) {
         result.description = description;
       }
@@ -53,7 +60,7 @@ export function getPromptDataFromNodes(
         ? data.inputs.map((input) => input.key).filter(Boolean)
         : [];
       if (inputKeys.length > 0) {
-        result.inputs = allowAllNodes ? data?.inputs : inputKeys;
+        result.inputs = inputKeys;
       }
 
       // Extract output keys if present and non-empty
@@ -61,11 +68,7 @@ export function getPromptDataFromNodes(
         ? data.outputs.map((output) => output.key).filter(Boolean)
         : [];
       if (outputKeys.length > 0) {
-        result.outputs = allowAllNodes ? data?.outputs : outputKeys;
-      }
-
-      if (allowAllNodes) {
-        result.type = node?.type;
+        result.outputs = outputKeys;
       }
 
       return result;

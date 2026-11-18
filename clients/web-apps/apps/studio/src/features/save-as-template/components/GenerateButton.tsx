@@ -4,11 +4,12 @@ import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { SparkleIcon } from "@phosphor-icons/react";
 import { Node } from "@xyflow/react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -24,6 +25,20 @@ const GenerateButton = ({
 }) => {
   // Get nodes from the react flow store
   const { nodes } = useReactFlowExtStore(useShallow((state) => ({ nodes: state.nodes })));
+
+  const actionSelectorData = useNodeSelectorStore((state) => state.actionSelectorData);
+
+  const actionDescriptions = useMemo(
+    () =>
+      new Map(
+        actionSelectorData.flatMap((primary) =>
+          primary.actionCategories.flatMap((category) =>
+            (category.actions ?? []).map((action) => [action.name, action.description] as const),
+          ),
+        ),
+      ),
+    [actionSelectorData],
+  );
 
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -69,7 +84,9 @@ const GenerateButton = ({
           refType: FlowTypesEnum.Agent, // Agent, ChatAgent, Block all comes under Agent umbrella
           refId: currentFlow.versionId,
           refName: currentFlow.name,
-          payload: JSON.stringify(getPromptDataFromNodes(nodes as Node<NodeDataType>[])),
+          payload: JSON.stringify(
+            getPromptDataFromNodes(nodes as Node<NodeDataType>[], actionDescriptions),
+          ),
         });
       }}
       className={cn(
