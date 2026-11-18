@@ -1,5 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { useEffect, useState } from "react";
 
 type UiBuilderEditTextDialogProps = {
@@ -48,7 +49,7 @@ export const UiBuilderEditTextDialog = ({
             setText(event.target.value);
             if (showBlankError) setShowBlankError(false);
           }}
-          className="h-24 w-full resize-none rounded-md border border-slate-200 bg-white p-2 text-sm"
+          className={cn(FIELD_SURFACE, "h-24 w-full resize-none p-2 text-sm")}
           disabled={isSaving}
         />
 

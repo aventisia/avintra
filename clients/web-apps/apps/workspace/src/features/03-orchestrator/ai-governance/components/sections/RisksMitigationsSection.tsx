@@ -1,6 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { FieldHelpPopover } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import {
@@ -39,7 +39,7 @@ const severityBadgeClass: Record<RiskSeverity, string> = {
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+    className={getFieldInputClassName(false, "compact")}
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -112,7 +112,7 @@ export const RisksMitigationsSection = () => {
           <div key={index} className="space-y-3 rounded-lg border border-line bg-sunken/20 p-4">
             <div className="flex items-start justify-between gap-3">
               <input
-                className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                className={getFieldInputClassName(false, "compact")}
                 placeholder="Risk name"
                 value={row.name}
                 onChange={(e) => updateRow(index, { name: e.target.value })}
@@ -173,7 +173,7 @@ export const RisksMitigationsSection = () => {
                   Owner
                 </InfoLabel>
                 <input
-                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                  className={getFieldInputClassName(false, "compact")}
                   placeholder="Owner"
                   value={row.owner}
                   onChange={(e) => updateRow(index, { owner: e.target.value })}
@@ -195,7 +195,7 @@ export const RisksMitigationsSection = () => {
               info="Describe the concrete actions taken or planned to reduce the likelihood and/or impact of this risk."
             >
               <textarea
-                className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                className={getFieldTextareaClassName(false)}
                 placeholder="Describe the mitigation plan for this risk."
                 value={row.mitigationPlan}
                 onChange={(e) => updateRow(index, { mitigationPlan: e.target.value })}

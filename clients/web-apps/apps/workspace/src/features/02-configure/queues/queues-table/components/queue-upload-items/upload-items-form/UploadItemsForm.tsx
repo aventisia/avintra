@@ -1,5 +1,5 @@
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FileArrowUpIcon, UploadSimpleIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,7 +11,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 import { pluralize } from "@/utils/pluralize.util";
 
@@ -222,7 +221,7 @@ export const UploadItemsForm = () => {
             value={remark}
             onChange={(e) => setRemark(e.target.value)}
             placeholder="e.g. March invoices batch"
-            className={cn(getFieldInputClassName(false), "block resize-none py-2.5 leading-5")}
+            className={getFieldTextareaClassName(false)}
           />
         </FormField>
       </div>

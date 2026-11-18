@@ -1,5 +1,5 @@
 import { crudDialogFieldClasses } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName } from "@avplatform/ui/lib";
 import {
   Select,
   SelectContent,
@@ -13,7 +13,6 @@ import { useId, useState } from "react";
 
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import {
@@ -122,7 +121,7 @@ export const MethodForm = ({
               disabled={initialOperation !== undefined}
               autoFocus
               aria-invalid={Boolean(nameError)}
-              className={cn(getFieldInputClassName(Boolean(nameError)), "h-9 disabled:bg-sunken")}
+              className={getFieldInputClassName(Boolean(nameError), "compact")}
             />
           </FormField>
 
@@ -132,7 +131,7 @@ export const MethodForm = ({
               value={operation.description ?? ""}
               onChange={(event) => updateOperation({ description: event.target.value })}
               placeholder="What this method does"
-              className={cn(getFieldInputClassName(false), "h-9")}
+              className={getFieldInputClassName(false, "compact")}
             />
           </FormField>
         </div>
@@ -167,7 +166,7 @@ export const MethodForm = ({
               onChange={(event) => updateOperation({ endpoint: event.target.value })}
               placeholder="/forecast"
               aria-invalid={Boolean(endpointError)}
-              className={cn(getFieldInputClassName(Boolean(endpointError)), "h-9 font-mono")}
+              className={cn(getFieldInputClassName(Boolean(endpointError), "compact"), "font-mono")}
             />
           </FormField>
         </div>
@@ -309,14 +308,14 @@ const KeyValueList = ({
               onChange={(event) => onChangeKey(index, event.target.value)}
               placeholder={keyPlaceholder}
               aria-label={keyPlaceholder}
-              className={cn(getFieldInputClassName(false), "h-9")}
+              className={getFieldInputClassName(false, "compact")}
             />
             <input
               value={row.description}
               onChange={(event) => onChangeDescription(index, event.target.value)}
               placeholder="Description"
               aria-label="Description"
-              className={cn(getFieldInputClassName(false), "h-9")}
+              className={getFieldInputClassName(false, "compact")}
             />
             <button
               type="button"

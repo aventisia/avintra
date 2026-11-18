@@ -1,5 +1,5 @@
 import { EmptyState } from "@avplatform/ui";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { ArrowRightIcon, FolderOpenIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "motion/react";
@@ -185,7 +185,7 @@ export const MoveAgentDialog = ({ isOpen, onClose, agent, summaries }: MoveAgent
         </>
       }
     >
-      <div className="relative flex h-control-lg items-center rounded-md bg-popover ring-1 ring-border transition-shadow focus-within:ring-focus">
+      <div className={cn(FIELD_CONTAINER, "relative flex h-control-lg items-center bg-popover")}>
         <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
         <input
           data-autofocus

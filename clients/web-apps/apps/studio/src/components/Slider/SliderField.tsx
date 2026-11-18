@@ -2,7 +2,7 @@ import { FormControl, FormLabelExt } from "@avplatform/ui/form";
 import { FormField } from "@avplatform/ui/form";
 import { FormItem } from "@avplatform/ui/form";
 import { FormMessage } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@avplatform/ui/lib";
 import { type FormFieldSizeType } from "@avplatform/ui/types";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import * as React from "react";
@@ -69,9 +69,11 @@ const SliderField = ({
               )}
               <div
                 className={cn(
-                  "grid items-center gap-2 rounded-lg border",
+                  FIELD_CONTAINER,
+                  "grid items-center gap-2",
                   formatValue ? "grid-cols-[auto_1fr_auto_auto]" : "grid-cols-[auto_1fr_auto]",
                   size === "base" ? "mt-1 p-2.5" : "mt-1 h-8 px-2.5",
+                  disabled && FIELD_CONTAINER_DISABLED,
                 )}
               >
                 <span

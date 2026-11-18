@@ -1,10 +1,9 @@
 import { Switch } from "@avplatform/ui";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName } from "@avplatform/ui/lib";
 import { useId } from "react";
 import { Controller, type UseFormReturn, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/card-dialog/FormField";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
 import { FieldCard } from "./FieldCard";
@@ -45,7 +44,7 @@ const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
           aria-invalid={Boolean(errors?.name)}
           aria-describedby={errors?.name ? `${ids.name}-error` : undefined}
           {...register(`inputs.${index}.name`)}
-          className={cn(getFieldInputClassName(Boolean(errors?.name)), "h-9 font-mono")}
+          className={cn(getFieldInputClassName(Boolean(errors?.name), "compact"), "font-mono")}
         />
       </FormField>
 
@@ -55,7 +54,7 @@ const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
           autoComplete="off"
           placeholder="Customer email"
           {...register(`inputs.${index}.label`)}
-          className={cn(getFieldInputClassName(false), "h-9")}
+          className={getFieldInputClassName(false, "compact")}
         />
       </FormField>
 
@@ -79,7 +78,7 @@ const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
               autoComplete="off"
               placeholder="Red; Green; Blue"
               {...register(`inputs.${index}.selectOptions`)}
-              className={cn(getFieldInputClassName(false), "h-9")}
+              className={getFieldInputClassName(false, "compact")}
             />
           </FormField>
         </div>
@@ -110,7 +109,7 @@ const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
             type={type === "password" ? "password" : "text"}
             autoComplete="off"
             {...register(`inputs.${index}.defaultValue`)}
-            className={cn(getFieldInputClassName(false), "h-9")}
+            className={getFieldInputClassName(false, "compact")}
           />
         </FormField>
       )}
@@ -140,7 +139,7 @@ const InputFields = ({ form, index, onRemove }: InputFieldsProps) => {
             autoComplete="off"
             placeholder="Helper text shown under the field"
             {...register(`inputs.${index}.description`)}
-            className={cn(getFieldInputClassName(false), "h-9")}
+            className={getFieldInputClassName(false, "compact")}
           />
         </FormField>
       </div>

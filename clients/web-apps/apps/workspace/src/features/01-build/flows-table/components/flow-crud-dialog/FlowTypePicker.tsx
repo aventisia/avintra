@@ -1,4 +1,10 @@
-import { cn } from "@avplatform/ui/lib";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS_WITHIN,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED,
+  cn,
+} from "@avplatform/ui/lib";
 import { LockIcon } from "@phosphor-icons/react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
@@ -39,11 +45,11 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
             <label
               key={value}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3.5 py-3 transition-[background-color,box-shadow] duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
+                OPTION_CARD,
+                OPTION_CARD_FOCUS_WITHIN,
+                "flex items-center gap-3 px-3.5 py-3",
                 isLocked ? "cursor-default" : "cursor-pointer",
-                isSelected
-                  ? "bg-focus/[0.06] ring-1 ring-focus"
-                  : "bg-popover ring-1 ring-border hover:bg-sunken/80 hover:ring-line-strong",
+                isSelected ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
               )}
             >
               <input type="radio" value={value} {...registration} className="peer sr-only" />
@@ -68,7 +74,7 @@ export const FlowTypePicker = ({ selectedType, registration, isLocked }: FlowTyp
                 <span
                   className={cn(
                     "grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-200",
-                    isSelected ? "bg-focus" : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
+                    isSelected ? "bg-focus" : "bg-popover ring-[1.5px] ring-inset ring-line-field",
                   )}
                 >
                   {isSelected && <span className="size-1.5 rounded-full bg-popover" />}

@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_OPEN, FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { FormFieldSizeType } from "@avplatform/ui/types";
 import { CaretDownIcon, CaretUpIcon, CheckIcon } from "@phosphor-icons/react";
 import * as SelectPrimitive from "@radix-ui/react-select";
@@ -19,7 +19,9 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex w-full items-center justify-between rounded-lg border border-input bg-background ring-offset-background transition-shadow placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-ring disabled:cursor-not-allowed disabled:opacity-80 [&>span]:line-clamp-1",
+      FIELD_SURFACE,
+      FIELD_OPEN,
+      "flex w-full items-center justify-between placeholder:text-muted-foreground [&>span]:line-clamp-1",
       size === "xs" && "h-7 pl-[0.45rem] pr-1 text-2xs",
       size === "sm" && "h-8 pl-[0.55rem] pr-1.5 text-xs",
       size === "base" && "h-10 pl-3 pr-2.5 text-sm",
