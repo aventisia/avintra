@@ -1,5 +1,5 @@
-import { ResetPwdMain } from "@/features/reset-pwd/components/ResetPwdMain";
+import { AuthMain } from "@/features/auth";
 
 export default function ResetPwdPage() {
-  return <ResetPwdMain />;
+  return <AuthMain intent="reset" />;
 }
