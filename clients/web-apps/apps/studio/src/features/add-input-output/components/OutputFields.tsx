@@ -1,9 +1,8 @@
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName } from "@avplatform/ui/lib";
 import { useId } from "react";
 import { type UseFormReturn, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/card-dialog/FormField";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { InputsOutputsFieldsFormType } from "../constants/inputs-outputs-zod-schema";
 import { FieldCard } from "./FieldCard";
@@ -32,7 +31,7 @@ const OutputFields = ({ form, index, onRemove }: OutputFieldsProps) => {
           aria-invalid={Boolean(errors?.name)}
           aria-describedby={errors?.name ? `${nameId}-error` : undefined}
           {...form.register(`outputs.${index}.name`)}
-          className={cn(getFieldInputClassName(Boolean(errors?.name)), "h-9 font-mono")}
+          className={cn(getFieldInputClassName(Boolean(errors?.name), "compact"), "font-mono")}
         />
       </FormField>
 
@@ -42,7 +41,7 @@ const OutputFields = ({ form, index, onRemove }: OutputFieldsProps) => {
           autoComplete="off"
           placeholder="What this output holds"
           {...form.register(`outputs.${index}.description`)}
-          className={cn(getFieldInputClassName(false), "h-9")}
+          className={getFieldInputClassName(false, "compact")}
         />
       </FormField>
     </FieldCard>

@@ -1,3 +1,4 @@
+import { AutosizeTextarea } from "@avplatform/ui";
 import {
   BaseFieldProps,
   FormControl,
@@ -10,10 +11,8 @@ import { cn } from "@avplatform/ui/lib";
 import { useRef } from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 
-import { ConfigPanelAutosizeTextarea } from "@/features/dynamic-config-panel";
-
 interface ConfigPanelAutosizeTextareaFieldProps
-  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>, BaseFieldProps {
+  extends React.ComponentPropsWithoutRef<typeof AutosizeTextarea>, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 }
@@ -57,7 +56,7 @@ const ConfigPanelAutosizeTextareaField = ({
             {label && <FormLabelExt {...{ label, disabled, isRequired, description }} />}
 
             <FormControl>
-              <ConfigPanelAutosizeTextarea
+              <AutosizeTextarea
                 size="sm"
                 minHeight={minHeight}
                 maxHeight={maxHeight}

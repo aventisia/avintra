@@ -1,5 +1,5 @@
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName } from "@avplatform/ui/lib";
 import { CoinsIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { TenantPublishedAgentDto } from "../../dtos/tenant-published-agent-dto.ee";
 import { TENANT_PUBLISHED_AGENTS_QUERY_KEY } from "../../hooks/useFetchTenantPublishedAgents.ee";
@@ -136,7 +135,7 @@ export const SetFixedCreditsDialog = () => {
           aria-invalid={isInvalid}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className={cn(getFieldInputClassName(isInvalid), "h-11")}
+          className={getFieldInputClassName(isInvalid)}
         />
       </FormField>
     </CardDialog>

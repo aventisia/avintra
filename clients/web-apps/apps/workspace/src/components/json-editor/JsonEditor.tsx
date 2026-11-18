@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@avplatform/ui/lib";
 import { useThemeStore } from "@avplatform/ui/stores";
 import { json } from "@codemirror/lang-json";
 import CodeMirror from "@uiw/react-codemirror";
@@ -70,8 +70,9 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
         if (formatted) onChange?.(formatted);
       }}
       className={cn(
-        "flex min-h-20 w-full overflow-hidden rounded-md [&>.cm-editor]:flex-1 border border-input bg-background text-sm ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
-        disabled && "cursor-not-allowed opacity-80 focus-within:border-0 focus-within:ring-0",
+        FIELD_CONTAINER,
+        "flex min-h-20 w-full overflow-hidden text-sm placeholder:text-muted-foreground [&>.cm-editor]:flex-1",
+        disabled && FIELD_CONTAINER_DISABLED,
         className,
       )}
     />

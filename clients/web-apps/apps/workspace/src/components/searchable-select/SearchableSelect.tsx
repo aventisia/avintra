@@ -73,16 +73,11 @@ export const SearchableSelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="field"
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn(
-            "w-full justify-between hover:bg-hover",
-            sizeClasses[size],
-            className,
-            triggerClassName,
-          )}
+          className={cn("w-full justify-between", sizeClasses[size], className, triggerClassName)}
         >
           <span className="line-clamp-1 text-ink font-normal">
             {selectedOption?.label ? (

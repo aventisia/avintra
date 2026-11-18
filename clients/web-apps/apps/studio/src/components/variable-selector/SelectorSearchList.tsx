@@ -1,4 +1,5 @@
 import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import type { Icon } from "@phosphor-icons/react";
 
@@ -26,7 +27,7 @@ export const SelectorSearchList = ({
 }: SelectorSearchListProps) => (
   <Command className="flex min-h-0 flex-1 flex-col bg-transparent">
     <div className="px-2 pt-2">
-      <div className="rounded-md bg-sunken ring-1 ring-line transition-shadow focus-within:ring-2 focus-within:ring-focus [&_[cmdk-input-wrapper]]:px-2.5">
+      <div className={cn(FIELD_CONTAINER, "[&_[cmdk-input-wrapper]]:px-2.5")}>
         <CommandInput className="h-8 text-[12.5px]" placeholder={placeholder} autoFocus />
       </div>
     </div>

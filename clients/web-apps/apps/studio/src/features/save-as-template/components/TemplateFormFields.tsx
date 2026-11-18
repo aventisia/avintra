@@ -1,12 +1,11 @@
 import { TagInput } from "@avplatform/ui";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName } from "@avplatform/ui/lib";
 import { WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useId } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import { FormField } from "@/components/card-dialog/FormField";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import MarkdownContainer from "@/components/markdown/MarkdownContainer";
 import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
 
@@ -76,7 +75,7 @@ export const TemplateFormFields = ({
           aria-invalid={Boolean(errors.name)}
           aria-describedby={errors.name ? `${nameId}-error` : undefined}
           {...form.register("name")}
-          className={cn(getFieldInputClassName(Boolean(errors.name)), "h-11")}
+          className={getFieldInputClassName(Boolean(errors.name))}
         />
       </FormField>
 

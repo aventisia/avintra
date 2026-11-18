@@ -1,5 +1,5 @@
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import {
   PopoverContent,
   PopoverDefaultHeader,
@@ -141,7 +141,7 @@ export const UiBuilderVersions = () => {
                         value={editing.label}
                         placeholder="e.g. Approved by ops"
                         onChange={(event) => setEditing({ ...editing, label: event.target.value })}
-                        className="h-6 min-w-0 flex-1 rounded border border-slate-200 px-1.5 text-2xs"
+                        className={cn(FIELD_SURFACE, "h-6 min-w-0 flex-1 px-1.5 text-2xs")}
                       />
                       <Button size="xs" type="submit" disabled={labelMutation.isPending}>
                         Save

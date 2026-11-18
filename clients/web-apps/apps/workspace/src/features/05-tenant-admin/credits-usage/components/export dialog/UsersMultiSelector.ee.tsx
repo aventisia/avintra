@@ -3,7 +3,7 @@ import { Input, LoadingSpinner } from "@avplatform/ui";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
+import { cn, FIELD_CONTAINER } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { CaretDownIcon, CaretUpIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
@@ -84,7 +84,7 @@ export const UsersMultiSelector: React.FC<UsersMultiSelectorProps> = ({
   return (
     <div ref={containerRef} className="relative w-full">
       {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <div className={cn(FIELD_CONTAINER, "flex min-h-10 items-center justify-between gap-2 px-3 py-2 text-sm")}>
         <ScrollArea
           onClick={() => {
             inputRef.current?.focus();

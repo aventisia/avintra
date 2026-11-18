@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { CircleNotchIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { Popover } from "radix-ui";
 import {
@@ -89,10 +89,7 @@ export const PickerShell = ({
   return (
     <Popover.Root open={isOpen} onOpenChange={onOpenChange}>
       <Popover.Anchor asChild>
-        <div
-          ref={anchorRef}
-          className="relative flex h-11 items-center rounded-md bg-surface ring-1 ring-line-strong transition-shadow focus-within:shadow-focus focus-within:ring-focus"
-        >
+        <div ref={anchorRef} className={cn(FIELD_CONTAINER, "relative flex h-11 items-center")}>
           <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
           <input
             data-autofocus

@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { FingerprintIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
 
 import { type UiBuilderQueueSchemaField } from "../dtos/ui-builder-dto";
@@ -11,8 +11,7 @@ type UiBuilderQueueSchemaEditorProps = {
   readOnly?: boolean;
 };
 
-const inputClass =
-  "h-7 w-full min-w-0 rounded-md border border-slate-200 bg-white px-2 text-2xs text-slate-800 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/15 disabled:bg-slate-50";
+const inputClass = cn(FIELD_SURFACE, "h-7 w-full min-w-0 px-2 text-2xs");
 
 /** Editable table of a queue's work item fields. */
 export const UiBuilderQueueSchemaEditor = ({

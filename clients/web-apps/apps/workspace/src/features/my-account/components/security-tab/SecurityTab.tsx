@@ -1,5 +1,5 @@
 import { Switch } from "@avplatform/ui";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName } from "@avplatform/ui/lib";
 import { useId } from "react";
 import { createPortal } from "react-dom";
 import type { z } from "zod";
@@ -7,7 +7,6 @@ import type { z } from "zod";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { useDefineProfilePasswordForm } from "../../hooks/useDefineProfilePasswordForm";
 import { useProfilePasswordFormMutation } from "../../hooks/useProfilePasswordFormMutation";
@@ -80,7 +79,7 @@ export const SecurityTab = ({ footerSlot }: AccountTabProps) => {
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? `${inputId}-error` : undefined}
                     {...form.register(field.name)}
-                    className={cn(getFieldInputClassName(Boolean(error)), "h-11")}
+                    className={getFieldInputClassName(Boolean(error))}
                   />
                 </FormField>
               </div>

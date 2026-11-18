@@ -74,7 +74,7 @@ export const DeactivationVerifyEmailForm = () => {
             isRequired={true}
             messageForInput="Please enter your password to continue."
           >
-            <InputField name="password" type="password" className="border-input" size={80} />
+            <InputField name="password" type="password" size={80} />
           </InputDivElement>
         </div>
         <div className="flex flex-wrap pt-5 md:justify-end">

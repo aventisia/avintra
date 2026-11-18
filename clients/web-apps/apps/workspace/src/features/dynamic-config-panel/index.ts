@@ -4,7 +4,6 @@ export * from "./apis/get-node-config";
 export * from "./components/DCPDialog";
 export * from "./components/DCPForm";
 export * from "./components/fields-for-form/ConfigPanelAutosizeInput";
-export * from "./components/fields-for-form/ConfigPanelAutosizeTextarea";
 export * from "./components/fields-for-form/ConfigPanelAutosizeTextareaField";
 export * from "./components/RenderField";
 

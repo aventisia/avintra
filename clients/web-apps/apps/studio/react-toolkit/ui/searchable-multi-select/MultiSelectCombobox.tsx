@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@avplatform/ui/command";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import {
   Select,
@@ -71,9 +71,9 @@ export function MultiSelectCombobox({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between rounded-lg border border-input bg-background ring-offset-background transition-shadow",
-        "focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
-        disabled && "cursor-not-allowed opacity-80",
+        FIELD_CONTAINER,
+        "flex w-full items-center justify-between",
+        disabled && FIELD_CONTAINER_DISABLED,
         fieldSize === "xs" && "min-h-7",
         fieldSize === "sm" && "min-h-8",
         fieldSize === "base" && "min-h-10",
@@ -165,7 +165,7 @@ export function MultiSelectCombobox({
 
       {/* RIGHT SIDE: Optional Inline Select */}
       {actionSelect && (
-        <div className="shrink-0 border-l border-input">
+        <div className="shrink-0 border-l border-line-field">
           <Select
             disabled={disabled}
             value={actionSelect.value}
