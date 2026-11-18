@@ -1,4 +1,4 @@
-import { IconTile } from "@avplatform/ui/icon-tile";
+import { IconTile, type IconTileTone } from "@avplatform/ui/icon-tile";
 import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, type Icon } from "@phosphor-icons/react";
 import { type ReactNode, useId } from "react";
@@ -13,6 +13,8 @@ const STATUS_LABELS: Record<VoiceStageMark, string> = {
 
 type VoiceStageProps = {
   Icon: Icon;
+  /** Hue of the stage's icon, so each stage reads apart on the rail. */
+  tone: IconTileTone;
   /** Short verb for what the stage does, such as "Hears". */
   role: string;
   title: string;
@@ -20,20 +22,18 @@ type VoiceStageProps = {
   /** Draws the wire down to the next stage. */
   hasNext?: boolean;
   mark: VoiceStageMark;
-  /** Control shown at the header's right, such as an on/off switch. */
-  aside?: ReactNode;
   children: ReactNode;
 };
 
 /** One stage on a tab's rail: a node on the wire beside a card of fields. */
 export const VoiceStage = ({
   Icon,
+  tone,
   role,
   title,
   description,
   hasNext = false,
   mark,
-  aside,
   children,
 }: VoiceStageProps) => {
   const titleId = useId();
@@ -45,7 +45,8 @@ export const VoiceStage = ({
         <span className="relative grid shrink-0">
           <IconTile
             Icon={Icon}
-            className="transition-[color,box-shadow] duration-150 group-focus-within/stage:text-primary-text group-focus-within/stage:ring-primary group-focus-within/stage:shadow-[0_0_0_4px_color-mix(in_srgb,var(--primary-base)_18%,transparent)]"
+            tone={tone}
+            className="transition-[box-shadow] duration-150 group-focus-within/stage:ring-current group-focus-within/stage:shadow-[0_0_0_4px_color-mix(in_srgb,currentColor_18%,transparent)]"
           />
           <span
             className={cn(
@@ -83,7 +84,6 @@ export const VoiceStage = ({
             </h3>
             <p className="mt-0.5 text-hint text-muted-foreground">{description}</p>
           </div>
-          {aside}
           {mark === "todo" && (
             <span
               aria-hidden="true"

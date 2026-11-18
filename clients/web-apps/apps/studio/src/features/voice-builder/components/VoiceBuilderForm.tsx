@@ -4,11 +4,11 @@ import { Tabs } from "@avplatform/ui/tabs";
 import { useEffect, useMemo } from "react";
 
 import {
+  ConfigPanelAutosizeTextareaField,
   ModelConfigField,
-  PromptConfigFieldV2,
   RenderField,
+  ToolsConfigField,
   VoicePronunciationTab,
-  VoiceVariablesField,
   useDefineDCPForm,
 } from "@/features/dynamic-config-panel";
 
@@ -17,9 +17,11 @@ import { useVoiceBuilderStore } from "../stores/voice-builder.store";
 import type { VoiceBuilderSectionId } from "../types/voice-builder.type";
 import { getPendingVoiceChecks, getVoiceReadiness } from "../utils/voice-builder.util";
 import { VoiceBuilderSection } from "./VoiceBuilderSection";
+import { VoiceContextSection } from "./VoiceContextSection";
 import { VoiceEngineSection } from "./VoiceEngineSection";
 import { VoicePromptSection } from "./VoicePromptSection";
 import { VoiceSectionTabs } from "./VoiceSectionTabs";
+import { VoiceTabHeading } from "./VoiceTabHeading";
 
 /** Voice agent settings in tabs like the node config panel, bound to the saved voice node through the node config form. */
 export const VoiceBuilderForm = () => {
@@ -61,10 +63,18 @@ export const VoiceBuilderForm = () => {
     return field ? <RenderField key={name} {...field} /> : null;
   };
 
-  const renderPromptEditor = (name: string) => {
+  const renderPromptField = (name: string) => {
     const field = fieldsByName.get(name);
     return field ? (
-      <PromptConfigFieldV2 key={name} name={field.name} disabled={field.disabled} height="16rem" />
+      <ConfigPanelAutosizeTextareaField
+        key={name}
+        name={field.name}
+        label={field.label}
+        description={field.description}
+        disabled={field.disabled}
+        minHeight={0}
+        hideVariablesTrigger
+      />
     ) : null;
   };
 
@@ -91,18 +101,6 @@ export const VoiceBuilderForm = () => {
     );
   }
 
-  const variablesConfig = fieldsByName.get(VOICE_FIELDS.variables);
-
-  const variablesField = (
-    <VoiceVariablesField
-      name={VOICE_FIELDS.variables}
-      disabled={values[VOICE_FIELDS.variablesEnabled] !== true}
-      label={variablesConfig?.label}
-      description={variablesConfig?.description}
-      size="sm"
-    />
-  );
-
   return (
     <Tabs
       value={activeSection}
@@ -119,19 +117,35 @@ export const VoiceBuilderForm = () => {
             void flushNow();
           }}
         >
-          <VoicePromptSection
-            renderField={renderField}
-            renderPromptEditor={renderPromptEditor}
-            variablesField={variablesField}
-          />
+          <VoicePromptSection renderField={renderField} renderPromptField={renderPromptField} />
           <VoiceEngineSection renderModelField={renderModelField} />
-          <VoiceBuilderSection id="context">
-            {renderField(VOICE_FIELDS.knowledgeBases)}
-            {renderField(VOICE_FIELDS.skills)}
-            {renderField(VOICE_FIELDS.memory)}
+          <VoiceContextSection hasField={(name) => fieldsByName.has(name)} />
+          <VoiceBuilderSection
+            id="tools"
+            intro={
+              <div className="space-y-1">
+                <VoiceTabHeading label="Tools" title="What the agent can do during a call" />
+                <p className="text-hint text-muted-foreground">
+                  Each tool connects to an app with a credential, limited to the actions you pick.
+                </p>
+              </div>
+            }
+          >
+            {fieldsByName.has(VOICE_FIELDS.tools) && (
+              <ToolsConfigField name={VOICE_FIELDS.tools} lockApprovalToAuto hideGroup />
+            )}
           </VoiceBuilderSection>
-          <VoiceBuilderSection id="tools">{renderField(VOICE_FIELDS.tools)}</VoiceBuilderSection>
-          <VoiceBuilderSection id="pronunciation">
+          <VoiceBuilderSection
+            id="pronunciation"
+            intro={
+              <div className="space-y-1">
+                <VoiceTabHeading label="Pronunciation" title="How the agent says tricky words" />
+                <p className="text-hint text-muted-foreground">
+                  Teach it product names, acronyms and jargon so it never stumbles on them.
+                </p>
+              </div>
+            }
+          >
             <VoicePronunciationTab />
           </VoiceBuilderSection>
         </Form>

@@ -1,3 +1,4 @@
+import { AutosizeTextarea } from "@avplatform/ui";
 import {
   BaseFieldProps,
   FormControl,
@@ -12,14 +13,15 @@ import { FieldPath, FieldValues, useController, useFormContext } from "react-hoo
 
 import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
 
-import { ConfigPanelAutosizeTextarea } from "../..";
 import { useVariableInsertion } from "../../hooks/useVariableInsertion.hook";
 import { VariablesTrigger } from "./VariablesTrigger";
 
 interface ConfigPanelAutosizeTextareaFieldProps
-  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>, BaseFieldProps {
+  extends React.ComponentPropsWithoutRef<typeof AutosizeTextarea>, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
+  /** Leaves out the Variables popover button, for fields that list their variables elsewhere. */
+  hideVariablesTrigger?: boolean;
 }
 
 /**
@@ -34,6 +36,7 @@ const ConfigPanelAutosizeTextareaField = ({
   description,
   className,
   disabled,
+  hideVariablesTrigger = false,
   ...props
 }: ConfigPanelAutosizeTextareaFieldProps) => {
   const caretRef = React.useRef<number>(0);
@@ -75,7 +78,9 @@ const ConfigPanelAutosizeTextareaField = ({
   return (
     <VariableSelectorWrapper inputUniqueName={name}>
       <div className="group relative">
-        <VariablesTrigger name={name} className={label ? "top-0" : "-top-5"} />
+        {!hideVariablesTrigger && (
+          <VariablesTrigger name={name} className={label ? "top-0" : "-top-5"} />
+        )}
         <FormField
           {...{ name, textareaField }}
           render={({ field }) => (
@@ -83,7 +88,7 @@ const ConfigPanelAutosizeTextareaField = ({
               {label && <FormLabelExt {...{ label, disabled, isRequired, description }} />}
 
               <FormControl>
-                <ConfigPanelAutosizeTextarea
+                <AutosizeTextarea
                   size="sm"
                   minHeight={minHeight}
                   maxHeight={maxHeight}
