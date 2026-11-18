@@ -14,6 +14,12 @@ interface AsyncSingleSelectFieldProps<TItem, TFilters = undefined>
 
   /** Size variant for label, message and control. */
   size?: FormFieldSizeType;
+
+  /** Overrides the form value as the selected item. */
+  selectedItem?: TItem | null;
+
+  /** Receives the selected item instead of writing it into the form value. */
+  onSelect?: (item: TItem | null) => void;
 }
 
 /**
@@ -27,6 +33,8 @@ export const AsyncSingleSelectField = <TItem, TFilters = undefined>({
   description,
   disabled,
   nonErrorMessage,
+  selectedItem,
+  onSelect,
   ...props
 }: AsyncSingleSelectFieldProps<TItem, TFilters>) => {
   const { control } = useFormContext<FieldValues>();
@@ -43,8 +51,12 @@ export const AsyncSingleSelectField = <TItem, TFilters = undefined>({
               {...props}
               size={size}
               disabled={disabled}
-              selectedItem={(field.value as TItem | null | undefined) ?? null}
-              onSelect={field.onChange}
+              selectedItem={
+                selectedItem !== undefined
+                  ? selectedItem
+                  : ((field.value as TItem | null | undefined) ?? null)
+              }
+              onSelect={onSelect ?? field.onChange}
             />
           </FormControl>
 

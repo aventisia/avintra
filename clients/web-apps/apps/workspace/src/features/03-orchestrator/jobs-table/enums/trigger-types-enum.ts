@@ -25,4 +25,7 @@ export enum TriggerTypesEnum {
 
   /** Triggered by an incoming message, such as from a messaging service. */
   Message = "Message",
+
+  /** Triggered by another flow creating this job through a Create Job step. */
+  Flow = "Flow",
 }

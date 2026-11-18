@@ -63,6 +63,11 @@ export interface SearchFlowVersionResDto {
   versionNumber?: number;
 
   /**
+   * Comma-separated platforms the flow version supports.
+   */
+  supportedPlatform?: string;
+
+  /**
    * Username of the user who last modified the flow version.
    */
   lastModifiedBy?: string | null;

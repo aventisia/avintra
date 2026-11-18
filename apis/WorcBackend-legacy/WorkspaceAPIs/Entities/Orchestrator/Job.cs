@@ -41,7 +41,7 @@ public class Job
     public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.None;
 
     /// <summary>
-    /// Gets or sets the unique identifier of the trigger that initiated the job. This is optional and may be null.
+    /// Gets or sets the unique identifier of the trigger that initiated the job, or of the parent job for flow-triggered jobs. This is optional and may be null.
     /// </summary>
     public Guid? RefId { get; set; }
 

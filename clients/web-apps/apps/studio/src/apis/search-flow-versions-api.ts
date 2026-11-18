@@ -20,13 +20,42 @@ const searchFlowVersions = (
   query: string = "",
   type: string = "Agent",
   includePublishedOnly: boolean = true,
+  headers: Record<string, string> = getStudioSpaceHeaders(),
 ) => {
   return axiosInstance
     .get<IHttpResponse<SearchFlowVersionResDto[]>>(
       `${baseAPIURL}/flow-version/search?query=${query}&type=${type}&includePublishedOnly=${includePublishedOnly}`,
-      { headers: getStudioSpaceHeaders() },
+      { headers },
     )
     .then((res) => res.data);
 };
 
-export { searchFlowVersions };
+/**
+ * Fetch agent flow versions for the flow selector, including unpublished versions.
+ *
+ * @param query - Optional search keyword to filter flow versions.
+ * @param spaceId - Space to scope the search to; omit to use the loaded flow's space.
+ * @returns A promise that resolves to the matching agent flow versions.
+ */
+const searchAgentFlowVersions = (query: string = "", spaceId?: string | null) => {
+  const headers: Record<string, string> =
+    spaceId === undefined ? getStudioSpaceHeaders() : spaceId ? { "X-Space-Id": spaceId } : {};
+
+  return searchFlowVersions(query, "Agent", true, headers).then((response) => response.data ?? []);
+};
+
+/**
+ * Fetch a flow version by its id.
+ *
+ * @param flowVersionId - Id of the flow version to retrieve.
+ * @returns A promise that resolves to the matching flow version wrapped in an HTTP response object.
+ */
+const getFlowVersion = (flowVersionId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<SearchFlowVersionResDto>>(`${baseAPIURL}/flow-version/${flowVersionId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+export { getFlowVersion, searchAgentFlowVersions, searchFlowVersions };

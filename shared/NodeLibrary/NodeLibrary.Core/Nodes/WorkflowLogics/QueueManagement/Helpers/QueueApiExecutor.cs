@@ -4,7 +4,7 @@ using NodeLibrary.Helpers;
 namespace NodeLibrary.QueueManagementNodes.Helpers;
 
 /// <summary>
-/// Utility class for executing HTTP requests against Queue Management APIs.
+/// Utility class for executing HTTP requests against the platform APIs.
 /// </summary>
 public static class QueueApiExecutor
 {
@@ -24,7 +24,8 @@ public static class QueueApiExecutor
         HttpMethod method,
         string accessToken,
         object? payload = null,
-        string? envType = null)
+        string? envType = null,
+        Guid? spaceId = null)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
@@ -41,6 +42,7 @@ public static class QueueApiExecutor
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         NodeHttpHeaders.ApplyEnvHeader(request, envType);
+        NodeHttpHeaders.ApplySpaceHeader(request, spaceId);
 
         if (method != HttpMethod.Get && method != HttpMethod.Delete && payload != null)
         {
@@ -92,9 +94,15 @@ public static class QueueApiExecutor
         if (statusCode < 200 || statusCode >= 300)
         {
             throw new HttpRequestException(
-                message ?? $"Request failed with status code {(int)response.StatusCode} ({(int)response.StatusCode}).",
+                message ?? $"Request failed with status code {statusCode}.",
                 null,
                 (HttpStatusCode)statusCode);
+        }
+
+        if (response.StatusCode == HttpStatusCode.NoContent || string.IsNullOrWhiteSpace(responseContent))
+        {
+            using var emptyDoc = JsonDocument.Parse("null");
+            return emptyDoc.RootElement.Clone();
         }
 
         using var doc = JsonDocument.Parse(responseContent);
