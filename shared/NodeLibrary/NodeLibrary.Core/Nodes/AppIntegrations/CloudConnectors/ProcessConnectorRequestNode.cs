@@ -26,9 +26,26 @@ public class ProcessConnectorRequestNode : BaseNode
     {
         try
         {
-            var provider = Provider.Get(context);
-            var action = Action.Get(context);
-            var credentialName = CredentialName.Get(context);
+            // IMPORTANT NOTE: the executor leaves an InArgument property null when the flow saved no
+            // value for it, so the property itself must be null-checked before reading its value.
+            var provider = Provider?.Get(context);
+            var action = Action?.Get(context);
+            var credentialName = CredentialName?.Get(context);
+
+            if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(action))
+            {
+                StatusMessage.Set(context, "Error: No connector provider or action is selected for this connector step.");
+                IsSuccess.Set(context, false);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(credentialName))
+            {
+                StatusMessage.Set(context, "Error: No credential is selected for this connector step.");
+                IsSuccess.Set(context, false);
+                return;
+            }
+
             var payload = Payload.Get(context);
             var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
