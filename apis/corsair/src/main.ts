@@ -23,6 +23,7 @@ import {
 } from "corsair";
 import { createIntegrationKeyManager } from "corsair/core";
 import { createCorsairDatabase } from "corsair/db";
+import { getConnectStatusForTenant } from "corsair/hub";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
 import {
   corsair,
@@ -238,6 +239,103 @@ app.post("/connect/status", async (req, res) => {
     const state = status[plugin] ?? "not_connected";
     res.json({
       plugin,
+      tenantId,
+      connectionId: tenantId,
+      state,
+      connected: state === "connected",
+    });
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ error: err?.code ?? "unknown", message: err?.message });
+  }
+});
+
+// --- Check whether a tenant has connected one plugin (Vault list path) ---
+// Same request/response contract as POST /connect/status, but evaluates only the
+// requested plugin. The first scoped answer per plugin after start is shadowed
+// once against the full status; a mismatch keeps that plugin on the full path.
+const scopedStatusVerdicts = new Map<string, Promise<boolean>>();
+let fullStatusInFlight:
+  | { tenantId: string; status: Promise<Record<string, string>> }
+  | undefined;
+
+function getFullConnectionStatus(
+  tenantId: string,
+): Promise<Record<string, string>> {
+  if (fullStatusInFlight?.tenantId === tenantId) {
+    return fullStatusInFlight.status;
+  }
+  const status = corsair.manage.connectionStatus
+    .get({ tenantId })
+    .then((result) => result as Record<string, string>)
+    .finally(() => {
+      if (fullStatusInFlight?.status === status) {
+        fullStatusInFlight = undefined;
+      }
+    });
+  fullStatusInFlight = { tenantId, status };
+  return status;
+}
+
+async function getScopedConnectionState(
+  tenantId: string,
+  pluginId: string,
+): Promise<string> {
+  const status = await getConnectStatusForTenant(corsair, tenantId, {
+    pluginIds: [pluginId],
+  });
+  const entry = status.plugins.find((candidate) => candidate.plugin === pluginId);
+  if (!entry) return "not_connected";
+  return entry.connected
+    ? "connected"
+    : entry.status === "missing_integration"
+      ? "missing_credentials"
+      : "not_connected";
+}
+
+function isScopedStatusTrusted(
+  tenantId: string,
+  pluginId: string,
+  scopedState: string,
+): Promise<boolean> {
+  let verdict = scopedStatusVerdicts.get(pluginId);
+  if (!verdict) {
+    verdict = (async () => {
+      const fullStatus = await getFullConnectionStatus(tenantId);
+      const fullState = fullStatus[pluginId] ?? "not_connected";
+      const matches = scopedState === fullState;
+      console.log(
+        `[corsair:connect-status] scoped shadow comparison plugin=${pluginId} scoped=${scopedState} full=${fullState} ${matches ? "trusted" : "mismatch, using full status"}`,
+      );
+      return matches;
+    })().catch((err) => {
+      scopedStatusVerdicts.delete(pluginId);
+      throw err;
+    });
+    scopedStatusVerdicts.set(pluginId, verdict);
+  }
+  return verdict;
+}
+
+app.post("/connect/status/scoped", async (req, res) => {
+  const { tenantId, plugin } = req.body ?? {};
+  if (!tenantId) return res.status(400).json({ error: "tenantId required" });
+  if (!plugin) return res.status(400).json({ error: "plugin required" });
+  const pluginId = String(plugin).toLowerCase();
+  if (!isOAuthPlugin(pluginId)) {
+    return res
+      .status(400)
+      .json({ error: `Plugin ${pluginId} does not support OAuth` });
+  }
+  try {
+    const scopedState = await getScopedConnectionState(tenantId, pluginId);
+    const state = (await isScopedStatusTrusted(tenantId, pluginId, scopedState))
+      ? scopedState
+      : ((await getFullConnectionStatus(tenantId))[pluginId] ??
+        "not_connected");
+    res.json({
+      plugin: pluginId,
       tenantId,
       connectionId: tenantId,
       state,
