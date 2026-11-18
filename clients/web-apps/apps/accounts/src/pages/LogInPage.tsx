@@ -1,5 +1,5 @@
-import { LoginMain } from "@/features/login/components/LoginMain";
+import { AuthMain } from "@/features/auth";
 
 export default function LoginPage() {
-  return <LoginMain />;
+  return <AuthMain intent="sign-in" />;
 }

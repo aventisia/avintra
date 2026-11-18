@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { useCompleteSocialSignIn } from "@/features/social-sign-in";
+import { useCompleteSocialSignIn } from "@/features/auth";
 
 import { validateSocialCallback } from "./sso-redirect-apis";
 

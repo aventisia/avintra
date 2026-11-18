@@ -1,18 +1,11 @@
-import { AppLogo } from "@avplatform/layout/logo";
-import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { HeaderContainer } from "@/components/layout/HeaderContainer";
-import { ContentContainer } from "@/components/ui/ContentContainer";
-import { ContentHeader } from "@/components/ui/ContentHeader";
-import { LeftContainer } from "@/components/ui/LeftContainer";
-import { PageContainer } from "@/components/ui/PageContainer";
-import { RightContainer } from "@/components/ui/RightContainer";
 import { SIGN_IN_CANCELLED, SOCIAL_STATE_PREFIX } from "@/constants/variables";
+import { AuthShell, AuthStepLayout } from "@/features/auth";
 
 import { useCompleteSsoAdminConsentMutation } from "./useCompleteSsoAdminConsentMutation";
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
@@ -71,49 +64,42 @@ export const SsoRedirectMain = () => {
   }, [code, state, error, adminConsent, grantedTenantId, isSocialAttempt]);
 
   const consentErrorMessage = consentError ? getConsentErrorMessage(consentError) : null;
-  const socialErrorMessage = socialCallbackError ? getSocialErrorMessage(socialCallbackError) : null;
+  const socialErrorMessage = socialCallbackError
+    ? getSocialErrorMessage(socialCallbackError)
+    : null;
 
   // Cancelling at the provider is neutral: the provider's own error text is never rendered
   const failureMessage = error ? SIGN_IN_CANCELLED : (consentErrorMessage ?? socialErrorMessage);
   const isFailed = Boolean(failureMessage);
-  const backHref = error
-    ? import.meta.env.VITE_ACCOUNTS_PATH + "login"
-    : import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview";
+  const backHref = consentErrorMessage
+    ? import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview"
+    : import.meta.env.VITE_ACCOUNTS_PATH + "login";
 
   return (
-    <PageContainer>
-      <LeftContainer>
-        <HeaderContainer>
-          <AppLogo showFullLogo={true} className="h-7" />
-        </HeaderContainer>
-        <ContentContainer>
-          {isFailed ? (
-            <>
-              <ContentHeader
-                biggerHeading={
-                  consentErrorMessage
-                    ? "We couldn't connect single sign-on"
-                    : "We couldn't sign you in"
-                }
-                smallerHeading={failureMessage ?? ""}
-              />
-              <a
-                className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
-                href={backHref}
-              >
-                {consentErrorMessage ? "Back to preferences" : "Back to sign in"}
-              </a>
-            </>
-          ) : (
-            <div role="status" className="flex items-center gap-3 text-body text-ink-2">
-              <LoadingSpinner className="size-5 text-live" />
-              Signing you in…
-            </div>
-          )}
-        </ContentContainer>
-        <MinimalFooter />
-      </LeftContainer>
-      <RightContainer />
-    </PageContainer>
+    <AuthShell>
+      {isFailed ? (
+        <AuthStepLayout
+          title={
+            consentErrorMessage ? "We couldn't connect single sign-on" : "We couldn't sign you in"
+          }
+          description={failureMessage}
+        >
+          <a
+            className={cn(buttonVariants({ variant: "default", size: "lg" }), "w-full")}
+            href={backHref}
+          >
+            {consentErrorMessage ? "Back to preferences" : "Back to sign in"}
+          </a>
+        </AuthStepLayout>
+      ) : (
+        <div
+          role="status"
+          className="flex w-full max-w-[360px] items-center gap-3 text-body text-ink-2"
+        >
+          <LoadingSpinner className="size-5 text-live" />
+          Signing you in…
+        </div>
+      )}
+    </AuthShell>
   );
 };
