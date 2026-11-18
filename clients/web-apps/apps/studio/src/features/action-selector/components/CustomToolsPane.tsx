@@ -12,9 +12,9 @@ import {
 import { KeyboardEvent, useMemo, useState } from "react";
 
 import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
-import { NodeDataType } from "@/types/node-data-type";
 
 import { useAddCustomTool } from "../hooks/useAddCustomTool.hook";
+import { ActionEntryType } from "../types/action-entry-type";
 import {
   convertToolOperationsToActions,
   getCustomTools,
@@ -28,10 +28,10 @@ type CustomToolsPaneProps = {
   backButtonRef: (el: HTMLButtonElement | null) => void;
   onBack: () => void;
   onBackKeyDown: (e: KeyboardEvent<HTMLButtonElement>) => void;
-  onSelectNode: (item: NodeDataType) => void;
+  onSelectNode: (item: ActionEntryType) => void;
   rightRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
   rightIndex: number;
-  onRightPaneKeyDown: (e: KeyboardEvent, index: number, action: NodeDataType) => void;
+  onRightPaneKeyDown: (e: KeyboardEvent, index: number, action: ActionEntryType) => void;
 };
 
 export const CustomToolsPane = ({

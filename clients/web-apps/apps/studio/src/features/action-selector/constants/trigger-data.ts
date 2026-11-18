@@ -1,12 +1,13 @@
 import { NodeTypeAndCategory } from "@/types/node-data-type";
-import { NodeDataType } from "@/types/node-data-type";
+
+import { ActionEntryType } from "../types/action-entry-type";
 
 const commonProps: NodeTypeAndCategory = {
   type: "triggerNode",
   category: "Triggers",
 };
 
-export const triggersList: NodeDataType[] = [
+export const triggersList: ActionEntryType[] = [
   {
     name: "manualTrigger",
     label: "Manual trigger",
