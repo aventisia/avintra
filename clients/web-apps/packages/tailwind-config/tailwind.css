@@ -36,6 +36,8 @@
     --selected: #e8e8fd;
     --line: #e5e5ea;
     --line-strong: #868594;
+    --line-field: #8a8997;
+    --line-field-hover: #6b6a7a;
     --ink: #12111f;
     --ink-2: #3a3946;
     --muted-ink: #62616e;
@@ -84,6 +86,8 @@
     --selected: #191832;
     --line: #22222b;
     --line-strong: #646472;
+    --line-field: #646472;
+    --line-field-hover: #81818f;
     --ink: #ededf2;
     --ink-2: #bdbdc8;
     --muted-ink: #8e8e99;
@@ -134,7 +138,7 @@
     --destructive: var(--bad);
     --destructive-foreground: var(--on-bad);
     --border: var(--line);
-    --input: var(--line-strong);
+    --input: var(--line-field);
     --ring: var(--focus);
   }
 }
