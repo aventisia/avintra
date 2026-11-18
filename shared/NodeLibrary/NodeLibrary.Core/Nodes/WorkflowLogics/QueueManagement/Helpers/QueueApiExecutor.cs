@@ -99,8 +99,11 @@ public static class QueueApiExecutor
                 (HttpStatusCode)statusCode);
         }
 
-        if (string.IsNullOrWhiteSpace(responseContent))
-            throw new HttpRequestException("Request failed with an empty response body.", null, (HttpStatusCode)statusCode);
+        if (response.StatusCode == HttpStatusCode.NoContent || string.IsNullOrWhiteSpace(responseContent))
+        {
+            using var emptyDoc = JsonDocument.Parse("null");
+            return emptyDoc.RootElement.Clone();
+        }
 
         using var doc = JsonDocument.Parse(responseContent);
         return doc.RootElement.TryGetProperty("data", out var dataEl)

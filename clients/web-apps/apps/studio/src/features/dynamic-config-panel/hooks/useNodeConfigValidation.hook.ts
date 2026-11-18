@@ -1,4 +1,4 @@
-import { uuidv4Regex } from "@avplatform/ui/utils";
+import { uuidRegex } from "@avplatform/ui/utils";
 import { useEffect } from "react";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 
@@ -52,7 +52,7 @@ const validateCreateJobNode: NodeConfigValidator = (form) => {
       message: "Job Input Data must be a valid JSON",
     });
 
-  if (existingJobId && !uuidv4Regex.test(existingJobId))
+  if (existingJobId && !uuidRegex.test(existingJobId))
     form.setError("ExistingJobId", {
       type: "validate",
       message: "Existing Job ID must be a valid UUID",
@@ -95,11 +95,9 @@ export const useNodeConfigValidation = (
     const validate = nodeConfigValidators[nodeUniqueName];
     if (!validate) return;
 
-    const run = () => {
-      if (form.formState.isDirty) validate(form);
-    };
+    validate(form);
 
-    const subscription = form.watch(run);
+    const subscription = form.watch(() => validate(form));
     return () => subscription.unsubscribe();
   }, [form, nodeUniqueName]);
 };

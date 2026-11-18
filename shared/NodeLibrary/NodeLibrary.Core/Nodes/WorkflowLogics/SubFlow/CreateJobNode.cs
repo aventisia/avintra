@@ -208,17 +208,21 @@ public class CreateJobNode : BaseNode
                 ? statusElement.GetString() ?? string.Empty
                 : string.Empty;
 
+            var outputDataJson = childJob.TryGetProperty("outputDataJson", out var outputElement)
+                ? outputElement.GetString()
+                : null;
+
             if (IsFailedStatus(status))
+            {
+                Status.Set(context, status);
+                OutputDataJson.Set(context, outputDataJson!);
                 return (false, status);
+            }
 
             if (IsCompletedStatus(status))
             {
-                var outputDataJson = childJob.TryGetProperty("outputDataJson", out var outputElement)
-                    ? outputElement.GetString()
-                    : null;
-
                 Status.Set(context, status);
-                OutputDataJson.Set(context, outputDataJson);
+                OutputDataJson.Set(context, outputDataJson!);
                 return (true, status);
             }
         }
@@ -231,6 +235,7 @@ public class CreateJobNode : BaseNode
 
     private static bool IsFailedStatus(string status)
         => string.Equals(status, "Failed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(status, "Abort", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Aborted", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Canceled", StringComparison.OrdinalIgnoreCase)
             || string.Equals(status, "Killed", StringComparison.OrdinalIgnoreCase);
