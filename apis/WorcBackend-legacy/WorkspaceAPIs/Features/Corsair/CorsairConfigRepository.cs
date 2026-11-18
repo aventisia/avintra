@@ -292,17 +292,20 @@ public class CorsairConfigRepository
 
         try
         {
-            var fileInfo = new FileInfo(catalogPath);
-            if (!fileInfo.Exists)
+            var beforeRead = new FileInfo(catalogPath);
+            if (!beforeRead.Exists)
             {
                 return null;
             }
 
+            var beforeReadLastWriteUtc = beforeRead.LastWriteTimeUtc;
+            var beforeReadLength = beforeRead.Length;
+
             lock (_gate)
             {
                 if (_catalogCache != null
-                    && _catalogCacheLastWriteUtc == fileInfo.LastWriteTimeUtc
-                    && _catalogCacheLength == fileInfo.Length)
+                    && _catalogCacheLastWriteUtc == beforeReadLastWriteUtc
+                    && _catalogCacheLength == beforeReadLength)
                 {
                     return _catalogCache;
                 }
@@ -319,12 +322,19 @@ public class CorsairConfigRepository
                 return null;
             }
 
-            fileInfo.Refresh();
-            lock (_gate)
+            // IMPORTANT NOTE: A rewrite between the read and this stat must not be cached as if
+            // it matched, so the parse is served uncached whenever the file changed mid-read.
+            var afterRead = new FileInfo(catalogPath);
+            if (afterRead.Exists
+                && afterRead.LastWriteTimeUtc == beforeReadLastWriteUtc
+                && afterRead.Length == beforeReadLength)
             {
-                _catalogCache = catalog;
-                _catalogCacheLastWriteUtc = fileInfo.LastWriteTimeUtc;
-                _catalogCacheLength = fileInfo.Length;
+                lock (_gate)
+                {
+                    _catalogCache = catalog;
+                    _catalogCacheLastWriteUtc = beforeReadLastWriteUtc;
+                    _catalogCacheLength = beforeReadLength;
+                }
             }
             return catalog;
         }
