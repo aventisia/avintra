@@ -1,6 +1,7 @@
 using System.Net;
 using System.Reflection;
 using NodeLibrary.CloudConnectorNodes;
+using NodeLibrary.Core;
 using WorkspaceAPIs.Features.CloudConnectors;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using static ExecutorLibrary.Tests.TestHarness;
@@ -54,6 +55,8 @@ public static class CloudConnectorAuthErrorsTestHarness
         failures += RunCase("CorsairPlainTextNoAccessIsPreserved", CorsairPlainTextNoAccessIsPreserved);
         failures += RunCase("ConnectorNodeNormalizesSchemeLessBaseUrl", ConnectorNodeNormalizesSchemeLessBaseUrl);
         failures += RunCase("ConnectorNodeKeepsExplicitSchemeAndTrailingSlash", ConnectorNodeKeepsExplicitSchemeAndTrailingSlash);
+        failures += RunCase("ConnectorNodeRejectsMissingCredential", ConnectorNodeRejectsMissingCredential);
+        failures += RunCase("ConnectorNodeRejectsMissingProviderOrAction", ConnectorNodeRejectsMissingProviderOrAction);
         failures += RunCase("SanitizeForLogKeepsBenignNameByteIdentical", SanitizeForLogKeepsBenignNameByteIdentical);
         failures += RunCase("SanitizeForLogStripsCrLfVariants", SanitizeForLogStripsCrLfVariants);
         failures += RunCase("SanitizeForLogNullGoesEmpty", SanitizeForLogNullGoesEmpty);
@@ -446,6 +449,55 @@ public static class CloudConnectorAuthErrorsTestHarness
             BuildConnectorApiUrl("http://host:8080", "email"));
     }
 
+    private static void ConnectorNodeRejectsMissingCredential()
+    {
+        var provider = new InArgument<string>("SendGrid");
+        var action = new InArgument<string>("SendEmailThroughSendGrid");
+        const string expected = "Error: No credential is selected for this connector step.";
+
+        AssertNodeRejects(provider, action, null, expected);
+        AssertNodeRejects(provider, action, new InArgument<string>(string.Empty), expected);
+        AssertNodeRejects(provider, action, new InArgument<string>("   "), expected);
+    }
+
+    private static void ConnectorNodeRejectsMissingProviderOrAction()
+    {
+        var credentialName = new InArgument<string>("SendGrid");
+        const string expected = "Error: No connector provider or action is selected for this connector step.";
+
+        AssertNodeRejects(null, new InArgument<string>("SendEmailThroughSendGrid"), credentialName, expected);
+        AssertNodeRejects(new InArgument<string>("SendGrid"), null, credentialName, expected);
+        AssertNodeRejects(new InArgument<string>("SendGrid"), new InArgument<string>("  "), credentialName, expected);
+    }
+
+    private static void AssertNodeRejects(
+        InArgument<string>? provider,
+        InArgument<string>? action,
+        InArgument<string>? credentialName,
+        string expectedStatus)
+    {
+        var node = new ProcessConnectorRequestNode
+        {
+            Provider = provider!,
+            Action = action!,
+            CredentialName = credentialName!,
+            Payload = new InArgument<string>("{}"),
+            FlowMetadata = new InArgument<FlowMetadata>(new FlowMetadata()),
+            JobContext = new InArgument<JobContext>(new JobContext()),
+            CallerContext = new InArgument<CallerContext>(new CallerContext()),
+            IsSuccess = new OutArgument<bool>(),
+            StatusMessage = new OutArgument<string>()
+        };
+
+        var context = new NodeContext();
+        if (InternalExecuteAsyncMethod.Invoke(node, new object[] { context }) is not Task task)
+            throw new InvalidOperationException("InternalExecuteAsync did not return a Task.");
+        task.GetAwaiter().GetResult();
+
+        AssertEqual(false, node.IsSuccess.Get(context));
+        AssertEqual(expectedStatus, node.StatusMessage.Get(context));
+    }
+
     private static void SanitizeForLogKeepsBenignNameByteIdentical()
     {
         AssertEqual("GitHub PAT", CloudConnectorLogRedactor.SanitizeForLog("GitHub PAT"));
@@ -476,6 +528,10 @@ public static class CloudConnectorAuthErrorsTestHarness
     private static readonly MethodInfo BuildApiUrlMethod = typeof(ProcessConnectorRequestNode)
         .GetMethod("BuildApiUrl", BindingFlags.NonPublic | BindingFlags.Static)
         ?? throw new InvalidOperationException("BuildApiUrl was not found on ProcessConnectorRequestNode.");
+
+    private static readonly MethodInfo InternalExecuteAsyncMethod = typeof(BaseNode)
+        .GetMethod("InternalExecuteAsync", BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException("InternalExecuteAsync was not found on BaseNode.");
 
     private static string BuildConnectorApiUrl(string baseUrl, string? provider) =>
         (string)BuildApiUrlMethod.Invoke(null, new object?[] { baseUrl, provider })!;
