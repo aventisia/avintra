@@ -349,6 +349,22 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
                 Connected = payload.Connected
             };
         }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning(
+                "Timed out getting scoped connection status for plugin {Plugin} tenant {ConnectionId} from Corsair sidecar; reporting Unknown.",
+                plugin,
+                connectionId);
+            return null;
+        }
+        catch (HttpRequestException)
+        {
+            _logger.LogWarning(
+                "Corsair sidecar unavailable for scoped connection status of plugin {Plugin} tenant {ConnectionId}; reporting Unknown.",
+                plugin,
+                connectionId);
+            return null;
+        }
         catch (Exception ex)
         {
             _logger.LogError(
