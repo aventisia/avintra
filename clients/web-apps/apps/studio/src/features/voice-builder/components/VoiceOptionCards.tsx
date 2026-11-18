@@ -1,5 +1,11 @@
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS_WITHIN,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED,
+  cn,
+} from "@avplatform/ui/lib";
 import type { Icon } from "@phosphor-icons/react";
 import { type ReactNode, useId } from "react";
 
@@ -39,10 +45,10 @@ export const VoiceOptionCards = ({
             <label
               key={optionValue}
               className={cn(
-                "flex cursor-pointer items-center gap-3 rounded-md border p-3 transition-colors duration-150 has-[:focus-visible]:[outline-style:solid] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
-                isSelected
-                  ? "border-primary bg-[color-mix(in_srgb,var(--primary-base)_5%,var(--surface))] shadow-[inset_0_0_0_1px_var(--primary-base)]"
-                  : "border-line-strong/40 bg-surface hover:bg-hover",
+                OPTION_CARD,
+                OPTION_CARD_FOCUS_WITHIN,
+                "flex cursor-pointer items-center gap-3 p-3",
+                isSelected ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
               )}
             >
               <input

@@ -1,5 +1,8 @@
+import { Switch } from "@avplatform/ui";
+import { cn } from "@avplatform/ui/lib";
+import { InfoIcon, SpeakerHighIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useController, useFormContext, useWatch } from "react-hook-form";
 
 import { VOICE_AGENT_NODE_NAME } from "@/features/react-flow/utils/voice-agent-graph.util";
 
@@ -7,21 +10,19 @@ import { getCachedNodeConfig, getNodeConfig } from "../../apis/get-node-config";
 import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
 import { DCPFieldSchemaType } from "../../types/dcp-field-schema-type";
 import { isTtsPreviewSupported } from "../../utils/voice-preview.util";
-import { VoiceFeatureCard, VoiceFeatureStatusBadge } from "./VoiceFeatureCard";
-import { VoicePronunciationField } from "./VoicePronunciationField";
+import { ConfigFieldCard } from "./ConfigFieldCard";
+import { VoicePronunciationField, toPronunciationRows } from "./VoicePronunciationField";
 
 const VOICE_PRONUNCIATION_CATEGORY = "Pronunciation";
 const PRONUNCIATION_TOGGLE_NAME = "__PronunciationEnabled__Voice";
 const PRONUNCIATION_FIELD_NAME = "__Pronunciation__Voice";
-
-const hasArrayEntries = (value: unknown): boolean => Array.isArray(value) && value.length > 0;
 
 type CachedNodeConfig = DCPFieldSchemaType[] | { fields?: DCPFieldSchemaType[] };
 
 const normalizeFields = (config: CachedNodeConfig | undefined): DCPFieldSchemaType[] =>
   Array.isArray(config) ? config : (config?.fields ?? []);
 
-/** Renders the Voice Agent Pronunciation tab as a persisted feature card. */
+/** Renders the Voice Agent Pronunciation tab as a switchable lexicon card. */
 export const VoicePronunciationTab = () => {
   const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
   const [fallbackFields, setFallbackFields] = useState<DCPFieldSchemaType[] | null>(null);
@@ -61,52 +62,106 @@ export const VoicePronunciationTab = () => {
     [pronunciationFields],
   );
 
-  const { watch } = useFormContext();
+  const { control, formState } = useFormContext();
+  const [pronunciationEnabled, pronunciationValue, engineMode, ttsProvider] = useWatch({
+    control,
+    name: [
+      PRONUNCIATION_TOGGLE_NAME,
+      PRONUNCIATION_FIELD_NAME,
+      "__EngineMode__Voice",
+      "__ModelConfig__TextToSpeech.provider",
+    ],
+  });
 
   if (!nodeName || nodeName !== VOICE_AGENT_NODE_NAME || pronunciationFields.length === 0) {
     return null;
   }
 
-  const pronunciationEnabled = watch(PRONUNCIATION_TOGGLE_NAME) === true;
-  const pronunciationValue = watch(PRONUNCIATION_FIELD_NAME);
-  const engineMode = watch("__EngineMode__Voice");
-  const ttsProvider = watch("__ModelConfig__TextToSpeech.provider");
-
+  const isEnabled = pronunciationEnabled === true;
+  const termCount = toPronunciationRows(pronunciationValue).rows.length;
+  const hasError = Boolean(
+    formState.errors[PRONUNCIATION_FIELD_NAME] || formState.errors[PRONUNCIATION_TOGGLE_NAME],
+  );
   const pronunciationToggle = fieldByName.get(PRONUNCIATION_TOGGLE_NAME);
+  const providerNote =
+    engineMode === "realtime"
+      ? "Realtime agents apply these terms through their spoken instructions."
+      : ttsProvider && !isTtsPreviewSupported(ttsProvider as string)
+        ? "This voice can't be previewed, but the terms still apply wherever it speaks."
+        : null;
+
+  // IMPORTANT NOTE: the field stays mounted while the switch is off so its saved value still reaches
+  // the flushed inputKeys; hidden is CSS-only.
+  return (
+    <ConfigFieldCard
+      Icon={SpeakerHighIcon}
+      tone="magenta"
+      label="Says"
+      title="Pronunciation"
+      description={
+        pronunciationToggle?.description ||
+        "Names, acronyms and jargon, spoken the way you want them."
+      }
+      aside={
+        <span className="flex shrink-0 items-center gap-2.5">
+          <PronunciationStatus isEnabled={isEnabled} termCount={termCount} hasError={hasError} />
+          <PronunciationToggle />
+        </span>
+      }
+    >
+      <div className={cn("space-y-2", !isEnabled && "hidden")}>
+        <VoicePronunciationField name={PRONUNCIATION_FIELD_NAME} disabled={!isEnabled} size="sm" />
+        {providerNote && (
+          <p className="flex items-center gap-1.5 text-hint text-muted-foreground">
+            <InfoIcon aria-hidden="true" className="size-3.5 shrink-0" />
+            {providerNote}
+          </p>
+        )}
+      </div>
+    </ConfigFieldCard>
+  );
+};
+
+const PronunciationToggle = () => {
+  const { field } = useController({ name: PRONUNCIATION_TOGGLE_NAME });
+  return (
+    <Switch
+      size="sm"
+      checked={field.value === true}
+      onCheckedChange={field.onChange}
+      aria-label="Use custom pronunciations"
+    />
+  );
+};
+
+const PronunciationStatus = ({
+  isEnabled,
+  termCount,
+  hasError,
+}: {
+  isEnabled: boolean;
+  termCount: number;
+  hasError: boolean;
+}) => {
+  const [text, toneClass] = hasError
+    ? ["Needs attention", "border-bad/40 text-bad"]
+    : !isEnabled
+      ? ["Off", "border-line text-muted-foreground"]
+      : termCount === 0
+        ? ["No terms", "border-warn/40 text-warn"]
+        : [
+            `${termCount} ${termCount === 1 ? "term" : "terms"}`,
+            "border-[color-mix(in_srgb,var(--primary-base)_30%,transparent)] text-primary-text",
+          ];
 
   return (
-    <div className="space-y-3">
-      <VoiceFeatureCard
-        title="Pronunciation"
-        description="Speak names, terms, and acronyms the way you want when the agent speaks."
-        toggleName={PRONUNCIATION_TOGGLE_NAME}
-        toggleDescription={pronunciationToggle?.description}
-        fieldNames={[PRONUNCIATION_FIELD_NAME, PRONUNCIATION_TOGGLE_NAME]}
-        badge={
-          <VoiceFeatureStatusBadge
-            enabled={pronunciationEnabled}
-            configured={hasArrayEntries(pronunciationValue)}
-          />
-        }
-      >
-        <VoicePronunciationField
-          name={PRONUNCIATION_FIELD_NAME}
-          disabled={!pronunciationEnabled}
-          label={fieldByName.get(PRONUNCIATION_FIELD_NAME)?.label}
-          description={fieldByName.get(PRONUNCIATION_FIELD_NAME)?.description}
-          size="sm"
-        />
-        {engineMode === "realtime" ? (
-          <p className="text-2xs text-muted-foreground">
-            Realtime agents apply these terms through their spoken instructions.
-          </p>
-        ) : ttsProvider && !isTtsPreviewSupported(ttsProvider as string) ? (
-          <p className="text-2xs text-muted-foreground">
-            Voice preview is not supported for this provider. Pronunciation aliases still apply
-            where speech synthesis is supported.
-          </p>
-        ) : null}
-      </VoiceFeatureCard>
-    </div>
+    <span
+      className={cn(
+        "flex h-6 items-center rounded-sm border px-2 font-mono text-label uppercase",
+        toneClass,
+      )}
+    >
+      {text}
+    </span>
   );
 };

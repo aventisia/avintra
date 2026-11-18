@@ -4,10 +4,15 @@ import { VOICE_FIELDS } from "../../constants/voice-builder.constant";
 import type { VoiceReadinessCheck } from "../../types/voice-builder.type";
 import {
   formatPendingSections,
+  getInstructionVariables,
   getPendingVoiceChecks,
+  getPersonaVariables,
   getPromptStageMarks,
+  getUndefinedVariables,
+  getUsedVariables,
   getVoiceReadiness,
   isRealtimeReady,
+  toVariableName,
 } from "../voice-builder.util";
 
 const READY_PIPELINE = {
@@ -61,21 +66,56 @@ describe("getPromptStageMarks", () => {
     ).toBe("ready");
   });
 
-  it("marks variables to do for undefined placeholders, even while switched off", () => {
+  it("marks variables to do for undefined placeholders and ready once each is defined", () => {
     expect(getPromptStageMarks({ [VOICE_FIELDS.goal]: "Help {{name}}" }).variables).toBe("todo");
     expect(
       getPromptStageMarks({
         [VOICE_FIELDS.goal]: "Help {{name}}",
-        [VOICE_FIELDS.variablesEnabled]: true,
         [VOICE_FIELDS.variables]: { name: "" },
       }).variables,
     ).toBe("ready");
-    expect(
-      getPromptStageMarks({
-        [VOICE_FIELDS.variablesEnabled]: true,
-        [VOICE_FIELDS.variables]: {},
-      }).variables,
-    ).toBe("idle");
+    expect(getPromptStageMarks({ [VOICE_FIELDS.variables]: {} }).variables).toBe("idle");
+  });
+});
+
+describe("getUsedVariables and getUndefinedVariables", () => {
+  const values = {
+    [VOICE_FIELDS.goal]: "Help {{ name }} at {{company}}",
+    [VOICE_FIELDS.introduction]: "Hi {{name}}",
+    [VOICE_FIELDS.variables]: { company: "Acme", unused: "x" },
+  };
+
+  it("lists each placeholder once across the prompt fields", () => {
+    expect(getUsedVariables(values)).toEqual(["name", "company"]);
+  });
+
+  it("lists only the placeholders no variable defines", () => {
+    expect(getUndefinedVariables(values)).toEqual(["name"]);
+  });
+});
+
+describe("getPersonaVariables and getInstructionVariables", () => {
+  const values = {
+    [VOICE_FIELDS.role]: "Greeter for {{business_name}}",
+    [VOICE_FIELDS.goal]: "Book for {{my_name}}",
+    [VOICE_FIELDS.instructions]: "Say hi to {{my_name}}",
+    [VOICE_FIELDS.introduction]: "Hi {{guest}}",
+  };
+
+  it("lists only the placeholders the persona fields use", () => {
+    expect(getPersonaVariables(values)).toEqual(["my_name", "business_name"]);
+  });
+
+  it("lists only the placeholders the instructions use", () => {
+    expect(getInstructionVariables(values)).toEqual(["my_name"]);
+  });
+});
+
+describe("toVariableName", () => {
+  it("keeps the characters the runtime resolves and joins words with underscores", () => {
+    expect(toVariableName("{{business name}}")).toBe("business_name");
+    expect(toVariableName("caller-id")).toBe("caller_id");
+    expect(toVariableName("order.total$")).toBe("order.total");
   });
 });
 

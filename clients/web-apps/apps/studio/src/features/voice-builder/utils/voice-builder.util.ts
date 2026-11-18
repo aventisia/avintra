@@ -15,29 +15,50 @@ const hasText = (value: unknown) => typeof value === "string" && value.trim().le
 const readKey = (value: unknown, key: string) =>
   typeof value === "object" && value !== null ? (value as FormValues)[key] : undefined;
 
-/** Names of the dynamic variables the agent can fill, or none while the feature is off. */
+/** Names of the dynamic variables the agent can fill. */
 export const getDefinedVariables = (values: FormValues): string[] => {
   const variables = values[VOICE_FIELDS.variables];
-  if (values[VOICE_FIELDS.variablesEnabled] !== true) return [];
   if (typeof variables !== "object" || variables === null || Array.isArray(variables)) return [];
   return Object.keys(variables);
 };
 
-/** `{{name}}` placeholders used in the persona and introduction that no variable defines. */
-export const getUndefinedVariables = (values: FormValues): string[] => {
-  const defined = new Set(getDefinedVariables(values));
-  const text = [
+const getPlaceholders = (values: FormValues, fields: string[]): string[] => {
+  const text = fields
+    .map((name) => values[name])
+    .filter(hasText)
+    .join("\n");
+  return [...new Set([...text.matchAll(VARIABLE_PATTERN)].map((match) => match[1]))];
+};
+
+/** Distinct `{{name}}` placeholders used in the persona, instructions, and introduction. */
+export const getUsedVariables = (values: FormValues): string[] =>
+  getPlaceholders(values, [
     VOICE_FIELDS.goal,
     VOICE_FIELDS.role,
     VOICE_FIELDS.instructions,
     VOICE_FIELDS.introduction,
-  ]
-    .map((name) => values[name])
-    .filter(hasText)
-    .join("\n");
-  const used = [...text.matchAll(VARIABLE_PATTERN)].map((match) => match[1]);
-  return [...new Set(used)].filter((name) => !defined.has(name));
+  ]);
+
+/** `{{name}}` placeholders the persona (goal and role) uses. */
+export const getPersonaVariables = (values: FormValues): string[] =>
+  getPlaceholders(values, [VOICE_FIELDS.goal, VOICE_FIELDS.role]);
+
+/** `{{name}}` placeholders the instructions use. */
+export const getInstructionVariables = (values: FormValues): string[] =>
+  getPlaceholders(values, [VOICE_FIELDS.instructions]);
+
+/** `{{name}}` placeholders used in the prompt that no variable defines. */
+export const getUndefinedVariables = (values: FormValues): string[] => {
+  const defined = new Set(getDefinedVariables(values));
+  return getUsedVariables(values).filter((name) => !defined.has(name));
 };
+
+/** Turns typed text into a placeholder name the runtime resolves: letters, digits, `_`, and `.`. */
+export const toVariableName = (text: string) =>
+  text
+    .replace(/[{}]/g, "")
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^\w.]/g, "");
 
 export const isPersonaEmpty = (values: FormValues) =>
   ![VOICE_FIELDS.goal, VOICE_FIELDS.role, VOICE_FIELDS.instructions].some((name) =>

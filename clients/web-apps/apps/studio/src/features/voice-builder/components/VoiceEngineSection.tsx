@@ -41,6 +41,7 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
         {engineMode === "realtime" ? (
           <VoiceStage
             Icon={LightningIcon}
+            tone="teal"
             role="All in one"
             title="Realtime model"
             description="One model listens, thinks, and speaks, so replies come back faster."
@@ -70,6 +71,7 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
           <>
             <VoiceStage
               Icon={EarIcon}
+              tone="sky"
               role="Hears"
               title="Speech-to-text"
               description="Turns what the caller says into text."
@@ -80,6 +82,7 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
             </VoiceStage>
             <VoiceStage
               Icon={BrainIcon}
+              tone="primary"
               role="Thinks"
               title="Language model"
               description="Reads the transcript and writes the reply."
@@ -90,6 +93,7 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
             </VoiceStage>
             <VoiceStage
               Icon={SpeakerHighIcon}
+              tone="magenta"
               role="Speaks"
               title="Text-to-speech"
               description="Reads the reply aloud in the voice you pick."

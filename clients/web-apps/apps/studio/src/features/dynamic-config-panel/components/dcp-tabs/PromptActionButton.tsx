@@ -33,7 +33,7 @@ const PromptActionButton = ({
     type="button"
     disabled={disabled || isPending}
     className={cn(
-      "group flex w-36 items-center gap-2 border-transparent text-ink transition-shadow duration-200",
+      "group flex items-center gap-2 border-transparent text-ink transition-shadow duration-200",
       "[background:linear-gradient(100deg,color-mix(in_srgb,var(--primary-base)_9%,var(--surface)),color-mix(in_srgb,var(--ai-magenta)_6%,var(--surface))_55%,color-mix(in_srgb,var(--ai-sky)_7%,var(--surface)))_padding-box,linear-gradient(100deg,color-mix(in_srgb,var(--primary-base)_55%,transparent),color-mix(in_srgb,var(--ai-magenta)_45%,transparent),color-mix(in_srgb,var(--ai-sky)_50%,transparent))_border-box]",
       isPending
         ? "cursor-wait"

@@ -1,4 +1,4 @@
-import { Button } from "@avplatform/ui/buttons";
+import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import {
   Command,
   CommandEmpty,
@@ -71,9 +71,11 @@ const VoicePreviewButton = ({
       onClick={toggle}
       onKeyDown={keepKeysLocal}
       className={cn(
-        "grid shrink-0 place-items-center rounded-md border border-line text-ink-2 transition-colors hover:bg-hover focus-visible:shadow-focus focus-visible:outline-none disabled:opacity-40",
-        player.isPreviewing && "border-primary/40 bg-selected text-primary-text",
-        player.error && "border-bad/50 text-bad",
+        buttonVariants({ variant: "outline", size: "icon" }),
+        "text-ink-2",
+        player.isPreviewing &&
+          "border-primary/40 bg-selected text-primary-text hover:border-primary/40 hover:bg-selected",
+        player.error && "border-bad/50 text-bad hover:border-bad/50",
         className,
       )}
     >
@@ -120,10 +122,10 @@ export const VoicePickerField = ({
                 <FormControl>
                   <PopoverTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="field"
                       role="combobox"
                       aria-expanded={open}
-                      className="h-8 min-w-0 flex-1 justify-between gap-2 px-2.5 text-xs hover:bg-background"
+                      className="h-8 min-w-0 flex-1 justify-between gap-2 px-2.5 text-xs"
                     >
                       <span className="flex min-w-0 items-center gap-2">
                         {selectedParts ? (
@@ -192,7 +194,7 @@ export const VoicePickerField = ({
                                 <VoicePreviewButton
                                   voice={voice}
                                   preview={preview}
-                                  className="size-6 border-transparent"
+                                  className="size-6 border-transparent bg-transparent hover:border-transparent"
                                 />
                               )}
                             </CommandItem>
@@ -203,9 +205,7 @@ export const VoicePickerField = ({
                   </Command>
                 </PopoverContent>
               </Popover>
-              {preview && selected && (
-                <VoicePreviewButton voice={selected} preview={preview} className="size-8" />
-              )}
+              {preview && selected && <VoicePreviewButton voice={selected} preview={preview} />}
             </div>
             <FormMessage size="sm" />
           </FormItem>
