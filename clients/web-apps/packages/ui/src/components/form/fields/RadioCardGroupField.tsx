@@ -7,7 +7,13 @@ import {
   FormMessage,
 } from "@avplatform/ui/form";
 import { Label } from "@avplatform/ui/label";
-import { cn } from "@avplatform/ui/lib";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS_WITHIN,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED_WHEN_CHECKED,
+  cn,
+} from "@avplatform/ui/lib";
 import { RadioGroup, RadioGroupItem } from "@avplatform/ui/radio-group";
 import { type FormFieldSizeType, type ISelectOption } from "@avplatform/ui/types";
 import * as React from "react";
@@ -88,12 +94,16 @@ export const RadioCardGroupField = ({
                 <div
                   key={item.value}
                   className={cn(
+                    OPTION_CARD,
+                    OPTION_CARD_IDLE,
+                    OPTION_CARD_FOCUS_WITHIN,
                     "flex items-center",
-                    disabled ? "bg-sunken" : "bg-surface",
+                    disabled && "bg-sunken hover:border-line-field hover:bg-sunken",
                     size === "xs" && "gap-1.5 p-1",
                     size === "sm" && "gap-1.5 p-2",
                     size === "base" && "gap-2.5 p-3",
-                    "relative w-full items-start rounded-lg border border-line-strong transition-colors duration-[120ms] ease-out has-[[data-state=checked]]:border-indicator has-[[data-state=checked]]:bg-selected",
+                    "relative w-full items-start",
+                    OPTION_CARD_SELECTED_WHEN_CHECKED,
                   )}
                 >
                   <div className="flex items-center gap-2">

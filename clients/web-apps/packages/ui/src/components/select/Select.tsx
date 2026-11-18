@@ -2,7 +2,7 @@ import { CaretDownIcon, CaretUpIcon, CheckIcon } from "@phosphor-icons/react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import * as React from "react";
 
-import { cn } from "@/ui/lib";
+import { FIELD_OPEN, FIELD_SURFACE, cn } from "@/ui/lib";
 import { type FormFieldSizeType } from "@/ui/types";
 
 const Select = SelectPrimitive.Root;
@@ -20,7 +20,9 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex w-full items-center justify-between gap-2 rounded-md border border-line-strong bg-surface text-left text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus:outline-none focus-visible:border-focus focus-visible:ring-[3px] focus-visible:ring-focus/[0.28] data-[state=open]:border-focus data-[state=open]:ring-[3px] data-[state=open]:ring-focus/[0.28] aria-[invalid=true]:border-bad data-[placeholder]:text-muted-foreground disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken disabled:text-muted-foreground motion-reduce:transition-none [&>span]:line-clamp-1",
+      FIELD_SURFACE,
+      FIELD_OPEN,
+      "flex w-full items-center justify-between gap-2 text-left data-[placeholder]:text-muted-foreground [&>span]:line-clamp-1",
       size === "xs" && "h-6 pl-2 pr-1 text-hint",
       size === "sm" && "h-7 pl-2.5 pr-1.5 text-body-sm",
       size === "base" && "h-8 pl-[11px] pr-2 text-body",

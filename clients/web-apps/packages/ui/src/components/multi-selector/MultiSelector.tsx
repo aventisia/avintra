@@ -11,7 +11,7 @@ import React, {
 
 import { Badge } from "@/ui/components/badge";
 import { Command, CommandEmpty, CommandItem, CommandList } from "@/ui/components/command";
-import { cn } from "@/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@/ui/lib";
 import { type FormFieldSizeType } from "@/ui/types";
 
 type MultiSelectorProps = {
@@ -164,12 +164,13 @@ const MultiSelectorTrigger = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "!mt-0 flex flex-wrap items-center gap-1.5 rounded-md border border-line-strong bg-surface text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28] motion-reduce:transition-none",
+        FIELD_CONTAINER,
+        "!mt-0 flex flex-wrap items-center gap-1.5",
         size === "xs" && "min-h-6 py-0.5 pl-1 pr-1 text-hint",
         size === "sm" && "min-h-7 py-0.5 pl-1 pr-1 text-body-sm",
         size === "base" && "min-h-8 py-1 pl-1 pr-1 text-body",
         className,
-        disabled ? "cursor-not-allowed border-line bg-sunken text-muted-foreground" : "cursor-auto",
+        disabled ? FIELD_CONTAINER_DISABLED : "cursor-auto",
       )}
       {...props}
     >

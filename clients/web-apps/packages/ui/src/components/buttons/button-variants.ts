@@ -1,5 +1,7 @@
 import { cva } from "class-variance-authority";
 
+import { FIELD_TRIGGER } from "@/ui/lib/field-styles";
+
 const MENU_ITEM =
   "relative cursor-default select-none !justify-start rounded-sm bg-transparent !px-2 py-1.5 text-body-sm font-normal hover:bg-hover focus-visible:bg-hover focus-visible:shadow-none active:translate-y-0 data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground disabled:bg-transparent disabled:text-muted-foreground";
 
@@ -11,7 +13,9 @@ export const buttonVariants = cva(
         default: "bg-primary text-primary-foreground hover:bg-primary-hover",
         caution: "bg-transparent text-bad hover:bg-bad/10 hover:text-bad",
         destructive: "bg-bad text-bad-foreground hover:bg-bad-hover",
-        outline: "border-line-strong bg-surface text-ink hover:bg-hover",
+        outline:
+          "border-line-field bg-surface text-ink hover:border-line-field-hover hover:bg-hover",
+        field: FIELD_TRIGGER,
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
         ghost: "bg-transparent text-ink-2 hover:bg-hover hover:text-ink",
         dropdownItem: [MENU_ITEM, "w-full text-ink"],
