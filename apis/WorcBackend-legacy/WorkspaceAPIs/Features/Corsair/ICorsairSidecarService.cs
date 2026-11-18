@@ -58,6 +58,15 @@ public interface ICorsairSidecarService
     Task<CorsairConnectionStatus?> GetConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Checks whether a tenant has connected one plugin, without evaluating the other plugins.
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Target plugin identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The connection status, or <c>null</c> on failure.</returns>
+    Task<CorsairConnectionStatus?> GetScopedConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Invokes a Corsair plugin operation using a stored credential.
     /// </summary>
     /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>

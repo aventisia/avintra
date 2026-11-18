@@ -307,6 +307,60 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
     }
 
     /// <inheritdoc />
+    public async Task<CorsairConnectionStatus?> GetScopedConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            return null;
+        }
+
+        // IMPORTANT NOTE: The Vault list calls this once per OAuth row, so a hung sidecar must
+        // fail that row to Unknown within the budget instead of holding the whole list open.
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(5));
+
+        try
+        {
+            var body = new
+            {
+                tenantId = connectionId.ToString(),
+                plugin = plugin.ToLowerInvariant()
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/status/scoped") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, timeout.Token);
+            response.EnsureSuccessStatusCode();
+
+            await using var stream = await response.Content.ReadAsStreamAsync(timeout.Token);
+            var payload = await System.Text.Json.JsonSerializer.DeserializeAsync<CorsairConnectionStatusResponse>(stream, JsonSerializerOptions.Web, timeout.Token);
+            if (payload is null)
+            {
+                return null;
+            }
+
+            return new CorsairConnectionStatus
+            {
+                Plugin = payload.Plugin,
+                ConnectionId = connectionId,
+                State = payload.State,
+                Connected = payload.Connected
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to get scoped connection status for plugin {Plugin} tenant {ConnectionId} from Corsair sidecar.",
+                plugin,
+                connectionId);
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
     public async Task<CorsairInvokeResult> InvokeAsync(Guid connectionId, string plugin, string action, object? payload, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(plugin) || string.IsNullOrWhiteSpace(action))
