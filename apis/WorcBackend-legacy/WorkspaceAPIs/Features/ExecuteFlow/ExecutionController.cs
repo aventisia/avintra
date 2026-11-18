@@ -72,7 +72,7 @@ public class ExecutionController : BaseApiController
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> CreateFlowJob([FromBody] JobInsertDto jobInsertDto)
     {
         if (!TryResolveFlowJobTenant(out var tenantId))
-            return PlainTextError(403, "Machine credentials are required.");
+            return PlainTextError(403, "Tenant credentials are required.");
 
         return ResultHelper(await _jobsTableService.CreateFlowJobAsync(jobInsertDto, tenantId));
     }
@@ -85,7 +85,7 @@ public class ExecutionController : BaseApiController
     public async Task<ActionResult<ServiceResponse<FlowJobStatusDto>>> GetFlowJobStatus(Guid jobId, [FromQuery] Guid? parentJobId)
     {
         if (!TryResolveFlowJobTenant(out var tenantId))
-            return PlainTextError(403, "Machine credentials are required.");
+            return PlainTextError(403, "Tenant credentials are required.");
 
         return ResultHelper(await _jobsTableService.GetFlowJobStatusAsync(jobId, tenantId, parentJobId));
     }

@@ -70,9 +70,12 @@ const ipv6Regex =
 /** Checks whether field contains valid username/hostname or not */
 const usernameRegex = /^[A-Za-z0-9_-]+$/;
 
-/** Checks whether field contains valid GUID/UUID or not */
+/** Checks whether field contains valid version-4 GUID/UUID or not */
 const uuidv4Regex =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+
+/** Checks whether field contains a GUID/UUID of any version, matching what .NET Guid.TryParse accepts */
+const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 export {
   emailRegex,
@@ -90,4 +93,5 @@ export {
   ipv6Regex,
   usernameRegex,
   uuidv4Regex,
+  uuidRegex,
 };
