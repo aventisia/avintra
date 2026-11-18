@@ -23,6 +23,7 @@ import {
 } from "corsair";
 import { createIntegrationKeyManager } from "corsair/core";
 import { createCorsairDatabase } from "corsair/db";
+import { getConnectStatusForTenant } from "corsair/hub";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
 import {
   corsair,
@@ -30,9 +31,14 @@ import {
   plugins,
   pool,
   isOAuthPlugin,
+  isOAuthTwoPlugin,
   getPluginMeta,
 } from "./corsair.js";
-import { validatePayload, normalizeInvokeError, describeError } from "./validation.js";
+import {
+  validatePayload,
+  normalizeInvokeError,
+  describeError,
+} from "./validation.js";
 
 // --- Variable selection precedence ---
 // Config is resolved in this order (highest wins):
@@ -240,6 +246,70 @@ app.post("/connect/status", async (req, res) => {
       plugin,
       tenantId,
       connectionId: tenantId,
+      state,
+      connected: state === "connected",
+    });
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ error: err?.code ?? "unknown", message: err?.message });
+  }
+});
+
+// --- Check whether a tenant has connected one plugin (Vault list path) ---
+// Same request/response contract as POST /connect/status, but evaluates only the
+// requested plugin. Parity with the full status is verified per credential against
+// this route, not on the request path; the full status stays the path used by the
+// connect, reconnect and test flows.
+async function getScopedConnectionState(
+  tenantId: string,
+  pluginId: string,
+): Promise<string> {
+  const status = await getConnectStatusForTenant(corsair, tenantId, {
+    pluginIds: [pluginId],
+  });
+  const entry = status.plugins.find(
+    (candidate) => candidate.plugin === pluginId,
+  );
+  if (!entry) return "not_connected";
+  return entry.connected
+    ? "connected"
+    : entry.status === "missing_integration"
+      ? "missing_credentials"
+      : "not_connected";
+}
+
+const SCOPED_PLUGIN_ID_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
+
+app.post("/connect/status/scoped", async (req, res) => {
+  const { tenantId, plugin } = req.body ?? {};
+  if (!tenantId) return res.status(400).json({ error: "tenantId required" });
+  if (!plugin) return res.status(400).json({ error: "plugin required" });
+  if (typeof tenantId !== "string" || typeof plugin !== "string") {
+    return res.status(400).json({ error: "Invalid request" });
+  }
+  const scopedTenantId = tenantId.trim();
+  if (!scopedTenantId)
+    return res.status(400).json({ error: "tenantId required" });
+  if (scopedTenantId.length > 128) {
+    return res.status(400).json({ error: "Invalid request" });
+  }
+  const pluginId = plugin.trim().toLowerCase();
+  if (!pluginId) return res.status(400).json({ error: "plugin required" });
+  if (pluginId.length > 64 || !SCOPED_PLUGIN_ID_PATTERN.test(pluginId)) {
+    return res.status(400).json({ error: "Invalid plugin" });
+  }
+  if (!isOAuthPlugin(pluginId) && !isOAuthTwoPlugin(pluginId)) {
+    return res
+      .status(400)
+      .json({ error: `Plugin ${pluginId} does not support OAuth` });
+  }
+  try {
+    const state = await getScopedConnectionState(scopedTenantId, pluginId);
+    res.json({
+      plugin: pluginId,
+      tenantId: scopedTenantId,
+      connectionId: scopedTenantId,
       state,
       connected: state === "connected",
     });
