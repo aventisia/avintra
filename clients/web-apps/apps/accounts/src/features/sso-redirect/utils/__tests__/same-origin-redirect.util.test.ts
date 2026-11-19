@@ -37,8 +37,18 @@ describe("getSameOriginRedirectPath", () => {
     expect(getSameOriginRedirectPath("%2F%2Fevil.example.com", ORIGIN)).toBeNull();
   });
 
+  it("reduces a same-origin absolute URL to its path", () => {
+    expect(
+      getSameOriginRedirectPath("https://app.example.com/workspace/jobs?tab=1#top", ORIGIN),
+    ).toBe("/workspace/jobs?tab=1#top");
+  });
+
   it("rejects absolute URLs", () => {
     expect(getSameOriginRedirectPath("https://evil.example.com/path", ORIGIN)).toBeNull();
+    expect(
+      getSameOriginRedirectPath("https://app.example.com.evil.example.com/path", ORIGIN),
+    ).toBeNull();
+    expect(getSameOriginRedirectPath("http://app.example.com/path", ORIGIN)).toBeNull();
     expect(getSameOriginRedirectPath("javascript:alert(1)", ORIGIN)).toBeNull();
     expect(getSameOriginRedirectPath("workspace/jobs", ORIGIN)).toBeNull();
   });

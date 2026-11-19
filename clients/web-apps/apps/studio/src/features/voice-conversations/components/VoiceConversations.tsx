@@ -4,9 +4,23 @@ import { EmptyState } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { PhoneCall } from "lucide-react";
-import { useState } from "react";
+import { ScrollArea } from "@avplatform/ui/scroll";
+import { PhoneCallIcon, WarningIcon } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
 
+import {
+  DayTimeline,
+  DayTimelineCount,
+  DayTimelineEntry,
+  DayTimelineItem,
+  DayTimelineSection,
+  DayTimelineSkeleton,
+} from "@/components/day-timeline";
+import { DetailPaneHeader } from "@/components/panel/components/DetailPaneHeader";
+import {
+  LEFT_DOCK_PANEL_WIDTH,
+  LEFT_DOCK_TITLE_CLASS,
+} from "@/components/panel/left-dock-panel.constant";
 import { useFetchFlowToLoad } from "@/features/react-flow/hooks/useFetchFlowToLoad";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
@@ -15,22 +29,46 @@ import {
   useVoiceConversations,
 } from "../hooks/useVoiceConversations.hook";
 import type {
+  VoiceConversationDay,
   VoiceConversationOutcome,
   VoiceConversationSummary,
 } from "../types/voice-conversation.type";
+import { groupConversationsByDay } from "../utils/voice-conversation.util";
 
 const OUTCOMES: Record<
   VoiceConversationOutcome,
-  { label: string; variant: "completed" | "queued" | "failed" }
+  { label: string; variant: "completed" | "running" | "failed"; text: string; marker: string }
 > = {
-  completed: { label: "Completed", variant: "completed" },
-  active: { label: "In progress", variant: "queued" },
-  error: { label: "Error", variant: "failed" },
+  completed: {
+    label: "Completed",
+    variant: "completed",
+    text: "text-ok",
+    marker: "rounded-full bg-current",
+  },
+  active: {
+    label: "In progress",
+    variant: "running",
+    text: "text-live",
+    marker: "size-2 rounded-full border-[1.5px] border-current",
+  },
+  error: {
+    label: "Error",
+    variant: "failed",
+    text: "text-bad",
+    marker: "rounded-[1px] bg-current",
+  },
 };
 
 const formatDuration = (ms: number) => {
   const totalSeconds = Math.round(ms / 1000);
   return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, "0")}`;
+};
+
+const formatTime = (iso: string) => {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime())
+    ? "-"
+    : date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 };
 
 const formatStartedAt = (iso: string) => {
@@ -52,42 +90,70 @@ const getAverageFirstAudio = (turns: VoiceCaptionTurn[]) => {
 const getToolCount = (turns: VoiceCaptionTurn[]) =>
   turns.reduce((count, turn) => count + (turn.toolCalls?.length ?? 0), 0);
 
-const ConversationRow = ({
-  conversation,
-  isSelected,
+const CallLog = ({
+  days,
+  selectedId,
   onSelect,
 }: {
-  conversation: VoiceConversationSummary;
-  isSelected: boolean;
-  onSelect: () => void;
-}) => (
-  <button
-    type="button"
-    aria-current={isSelected}
-    onClick={onSelect}
-    className={cn(
-      "flex w-full flex-col gap-1.5 border-b border-line px-4 py-3 text-left hover:bg-hover focus-visible:shadow-focus focus-visible:outline-none",
-      isSelected && "bg-selected hover:bg-selected",
-    )}
-  >
-    <div className="flex items-center justify-between gap-2">
-      <span className="truncate text-body font-semibold text-ink" title={conversation.title}>
-        {conversation.title}
-      </span>
-      <span className="shrink-0 font-mono text-[12px] tabular-nums text-muted-foreground">
-        {formatDuration(conversation.durationMs)}
-      </span>
-    </div>
-    <div className="flex items-center gap-1.5">
-      <Badge variant={OUTCOMES[conversation.outcome].variant}>
-        {OUTCOMES[conversation.outcome].label}
-      </Badge>
-      <span className="ml-auto text-hint text-muted-foreground">
-        {formatStartedAt(conversation.startedAt)}
-      </span>
-    </div>
-  </button>
-);
+  days: VoiceConversationDay[];
+  selectedId?: string;
+  onSelect: (id: string) => void;
+}) => {
+  return (
+    <DayTimeline days={days} selectedId={selectedId}>
+      {days.map((day, index) => {
+        const errorCount = day.entries.filter((entry) => entry.outcome === "error").length;
+        return (
+          <DayTimelineSection
+            key={day.date}
+            day={day.date}
+            startedAt={day.startedAt}
+            isFirst={index === 0}
+            isLast={index === days.length - 1}
+            meta={
+              <>
+                {errorCount > 0 ? (
+                  <span className="rounded-full bg-bad/10 px-1.5 py-px text-2xs font-medium tabular-nums text-bad">
+                    {errorCount} {errorCount === 1 ? "error" : "errors"}
+                  </span>
+                ) : null}
+                <DayTimelineCount count={day.entries.length} noun="call" />
+              </>
+            }
+          >
+            {day.entries.map((conversation) => {
+              const outcome = OUTCOMES[conversation.outcome];
+              return (
+                <DayTimelineItem key={conversation.id}>
+                  <DayTimelineEntry
+                    isSelected={conversation.id === selectedId}
+                    onSelect={() => onSelect(conversation.id)}
+                    markerClassName={cn(outcome.marker, outcome.text)}
+                    title={formatTime(conversation.startedAt)}
+                    aside={formatDuration(conversation.durationMs)}
+                    subtitle={
+                      <>
+                        <span className={cn("shrink-0 font-medium", outcome.text)}>
+                          {outcome.label}
+                        </span>
+                        <span aria-hidden="true" className="text-line-strong">
+                          ·
+                        </span>
+                        <span className="truncate text-muted-foreground" title={conversation.title}>
+                          {conversation.title}
+                        </span>
+                      </>
+                    }
+                  />
+                </DayTimelineItem>
+              );
+            })}
+          </DayTimelineSection>
+        );
+      })}
+    </DayTimeline>
+  );
+};
 
 const ConversationDetail = ({
   conversation,
@@ -102,6 +168,7 @@ const ConversationDetail = ({
   isTurnsError: boolean;
   agentName: string;
 }) => {
+  const outcome = OUTCOMES[conversation.outcome];
   const stats = [
     { label: "Duration", value: formatDuration(conversation.durationMs) },
     { label: "Turns", value: String(turns.length) },
@@ -111,34 +178,28 @@ const ConversationDetail = ({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-col gap-3 border-b border-line px-6 py-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="min-w-0 truncate text-heading text-ink" title={conversation.title}>
-            {conversation.title}
-          </h2>
-          <Badge variant={OUTCOMES[conversation.outcome].variant}>
-            {OUTCOMES[conversation.outcome].label}
-          </Badge>
-          <span className="ml-auto text-hint text-muted-foreground">
-            {formatStartedAt(conversation.startedAt)}
-          </span>
-        </div>
-        <dl className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="rounded-lg bg-sunken px-3 py-2">
-              <dt className="text-label uppercase text-muted-foreground">{stat.label}</dt>
-              <dd className="font-mono text-body tabular-nums text-ink">{stat.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+      <DetailPaneHeader
+        Icon={PhoneCallIcon}
+        eyebrow={formatStartedAt(conversation.startedAt)}
+        title={conversation.title}
+        aside={<Badge variant={outcome.variant}>{outcome.label}</Badge>}
+      />
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-        <div className="mx-auto flex max-w-2xl flex-col gap-4">
+      <dl className="grid shrink-0 grid-cols-2 border-b border-line md:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border-line px-6 py-3 [&:not(:last-child)]:md:border-r">
+            <dt className="font-mono text-label uppercase text-muted-foreground">{stat.label}</dt>
+            <dd className="font-mono text-body-sm tabular-nums text-ink">{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <ScrollArea className="min-h-0 flex-1">
+        <div className="mx-auto flex max-w-2xl flex-col gap-4 px-6 py-5">
           {isLoadingTurns ? (
             <p className="text-body-sm text-muted-foreground">Loading transcript…</p>
           ) : isTurnsError ? (
-            <p className="text-body-sm text-destructive">The transcript could not be loaded.</p>
+            <p className="text-body-sm text-bad">The transcript could not be loaded.</p>
           ) : turns.length ? (
             <VoiceCaptions turns={turns} agentName={agentName} callerName="Caller" showLatency />
           ) : (
@@ -147,11 +208,12 @@ const ConversationDetail = ({
             </p>
           )}
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };
 
+/** Voice agent call log: calls grouped by day on the left, the selected call's transcript on the right. */
 export const VoiceConversations = () => {
   useFetchFlowToLoad();
   const agentName = useCurrentFlowStore((state) => state.currentFlow.name) || "Agent";
@@ -163,9 +225,10 @@ export const VoiceConversations = () => {
     refetch,
   } = useVoiceConversations(flowVersionId);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const days = useMemo(() => groupConversationsByDay(conversations), [conversations]);
 
   const selected =
-    conversations.find((conversation) => conversation.id === selectedId) ?? conversations[0];
+    conversations.find((conversation) => conversation.id === selectedId) ?? days[0]?.entries[0];
   const {
     data: turns = [],
     isLoading: isLoadingTurns,
@@ -173,42 +236,46 @@ export const VoiceConversations = () => {
   } = useVoiceConversationTurns(selected?.id);
 
   return (
-    <div className="flex h-full gap-1.5 bg-bg p-1.5">
-      <aside className="flex w-[360px] shrink-0 flex-col overflow-hidden rounded-xl bg-surface">
-        <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-          <h1 className="text-heading text-ink">Conversations</h1>
-          {conversations.length > 0 && <Badge variant="secondary">{conversations.length}</Badge>}
+    <div className="flex h-full bg-surface">
+      <aside
+        aria-label="Call log"
+        className={cn("flex shrink-0 flex-col border-r border-line", LEFT_DOCK_PANEL_WIDTH)}
+      >
+        <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-line pl-4 pr-2">
+          <h1 className={cn("text-ink", LEFT_DOCK_TITLE_CLASS)}>Call log</h1>
+          {conversations.length > 0 && (
+            <DayTimelineCount count={conversations.length} noun="call" />
+          )}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <ScrollArea className="min-h-0 flex-1">
           {isLoading ? (
-            <p className="px-4 py-6 text-hint text-muted-foreground">Loading conversations…</p>
+            <DayTimelineSkeleton label="Loading calls" />
           ) : isError ? (
-            <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
-              <p className="text-hint text-muted-foreground">Conversations could not be loaded.</p>
-              <Button variant="outline" size="sm" onClick={() => void refetch()}>
-                Try again
-              </Button>
-            </div>
+            <EmptyState
+              Icon={WarningIcon}
+              primaryMessage="Could not load calls"
+              secondaryMessage="Something went wrong while fetching this version's calls."
+              action={
+                <Button size="sm" variant="outline" onClick={() => refetch()}>
+                  Retry
+                </Button>
+              }
+            />
           ) : conversations.length ? (
-            conversations.map((conversation) => (
-              <ConversationRow
-                key={conversation.id}
-                conversation={conversation}
-                isSelected={conversation.id === selected?.id}
-                onSelect={() => setSelectedId(conversation.id)}
-              />
-            ))
+            <div className="pb-2">
+              <CallLog days={days} selectedId={selected?.id} onSelect={setSelectedId} />
+            </div>
           ) : (
             <EmptyState
-              Icon={PhoneCall}
-              primaryMessage="No conversations yet"
+              Icon={PhoneCallIcon}
+              primaryMessage="No calls for this version"
               secondaryMessage="Start a test call to record the first one."
             />
           )}
-        </div>
+        </ScrollArea>
       </aside>
 
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl bg-surface">
+      <main className="flex min-w-0 flex-1 flex-col">
         {selected ? (
           <ConversationDetail
             conversation={selected}
@@ -219,9 +286,9 @@ export const VoiceConversations = () => {
           />
         ) : (
           <EmptyState
-            Icon={PhoneCall}
-            primaryMessage="Select a conversation"
-            secondaryMessage="Its transcript, timing, and tool calls appear here."
+            Icon={PhoneCallIcon}
+            primaryMessage="Select a call"
+            secondaryMessage="Its transcript, timing and tool calls appear here."
           />
         )}
       </main>

@@ -7,8 +7,10 @@ const Slider = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> & {
     thumbColor?: string;
     trackColor?: string;
+    /** Shows the value in a bubble above the thumb on hover; off when the value is shown elsewhere. */
+    showValueBubble?: boolean;
   }
->(({ className, value, thumbColor, trackColor, ...props }, ref) => {
+>(({ className, value, thumbColor, trackColor, showValueBubble = true, ...props }, ref) => {
   const currentValue = Array.isArray(value) ? value[0] : 0;
 
   return (
@@ -32,9 +34,11 @@ const Slider = React.forwardRef<
           thumbColor,
         )}
       >
-        <span className="absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-primary-foreground px-3 py-0.5 rounded-md bg-primary group-hover:block">
-          {currentValue}
-        </span>
+        {showValueBubble && (
+          <span className="absolute hidden -top-6 left-1/2 -translate-x-1/2 text-xs text-primary-foreground px-3 py-0.5 rounded-md bg-primary group-hover:block">
+            {currentValue}
+          </span>
+        )}
       </SliderPrimitive.Thumb>
     </SliderPrimitive.Root>
   );

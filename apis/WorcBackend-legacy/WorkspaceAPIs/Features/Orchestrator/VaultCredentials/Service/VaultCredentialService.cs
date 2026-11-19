@@ -102,20 +102,20 @@ public class VaultCredentialService : IVaultCredentialService
             });
 
             var oauthStatusTasks = vaultCredentialData
-                .Where(dto => MapVaultCredentialTypeToCorsairOAuthPlugin(dto.Type) is not null)
-                .Select(async dto =>
+                .Select(dto => (dto, plugin: MapVaultCredentialTypeToCorsairOAuthPlugin(dto.Type)))
+                .Where(item => item.plugin is not null)
+                .Select(async item =>
                 {
-                    var plugin = MapVaultCredentialTypeToCorsairOAuthPlugin(dto.Type)!;
-                    var status = await _corsairSidecarService.GetConnectionStatusAsync(dto.Id, plugin);
-                    dto.OAuthConnected = status?.Connected ?? false;
-                    dto.CorsairStatus = status?.Connected == true
+                    var status = await _corsairSidecarService.GetScopedConnectionStatusAsync(item.dto.Id, item.plugin!);
+                    item.dto.OAuthConnected = status?.Connected ?? false;
+                    item.dto.CorsairStatus = status?.Connected == true
                         ? "Connected"
                         : status?.State.Equals("expired", StringComparison.OrdinalIgnoreCase) == true
                             ? "Expired"
                             : status?.State.Contains("fail", StringComparison.OrdinalIgnoreCase) == true
                                 ? "Failed"
                                 : status is not null ? "Pending" : "Unknown";
-                    dto.CorsairStatusReason = status?.State;
+                    item.dto.CorsairStatusReason = status?.State;
                 })
                 .ToList();
 
@@ -1141,7 +1141,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var status = await _corsairSidecarService.GetConnectionStatusAsync(vaultCredential.Id, plugin);
+            var status = await _corsairSidecarService.GetScopedConnectionStatusAsync(vaultCredential.Id, plugin);
             if (status == null)
             {
                 serviceResponse.Message = "Failed to get OAuth connection status.";

@@ -16,4 +16,5 @@ export interface MyAccountDto {
   city: string;
   stateOrProvince: string;
   zipOrPostalCode: string;
+  hasPassword: boolean;
 }

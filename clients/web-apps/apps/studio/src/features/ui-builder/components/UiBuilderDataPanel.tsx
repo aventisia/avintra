@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@avplatform/ui/dialog";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import {
   type UiBuilderDataConnection,
@@ -136,8 +136,7 @@ const Label = ({ children, htmlFor }: { children: ReactNode; htmlFor?: string })
   </label>
 );
 
-const inputClass =
-  "h-8 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-xs text-slate-800 outline-none transition-colors focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/15";
+const inputClass = cn(FIELD_SURFACE, "h-8 w-full px-2.5 text-xs");
 
 const EnvToggle = ({ value, onChange }: { value: string; onChange: (env: string) => void }) => (
   <div className="flex rounded-lg bg-slate-100 p-0.5">
@@ -295,7 +294,7 @@ const SampleDataOption = ({
           value={count}
           onChange={(event) => onCountChange(Number(event.target.value))}
           onClick={(event) => event.stopPropagation()}
-          className="h-7 rounded-md border border-violet-200 bg-white px-1.5 text-2xs font-medium text-slate-700 outline-none focus:ring-2 focus:ring-violet-500/20"
+          className={cn(FIELD_SURFACE, "h-7 px-1.5 text-2xs font-medium")}
         >
           {SAMPLE_COUNTS.map((value) => (
             <option key={value} value={value}>
@@ -858,7 +857,7 @@ export const UiBuilderDataPanel = ({
                   onChange={(event) => setGoal(event.target.value)}
                   rows={3}
                   placeholder="e.g. Invoices captured by this form, which an AI agent validates and routes for approval."
-                  className="w-full resize-none rounded-lg border border-slate-200 bg-white p-2.5 text-xs outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/15"
+                  className={cn(FIELD_SURFACE, "w-full resize-none p-2.5 text-xs")}
                 />
                 <button
                   type="button"

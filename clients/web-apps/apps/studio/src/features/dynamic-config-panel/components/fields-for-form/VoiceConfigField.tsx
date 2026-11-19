@@ -126,7 +126,7 @@ const VoiceConfigField = ({
   }
 
   if (isLoading) {
-    return <p className="text-xs text-muted-foreground">Loading voices…</p>;
+    return <p className="text-hint text-muted-foreground">Loading voices…</p>;
   }
 
   if (providerData.languages.length === 0 && providerData.voices.length === 0) {
@@ -188,10 +188,10 @@ const VoiceConfigField = ({
       </div>
 
       {!voicePreview.isSupported ? (
-        <p className="text-xs text-muted-foreground">Preview not supported for this provider.</p>
+        <p className="text-hint text-muted-foreground">Preview not supported for this provider.</p>
       ) : null}
 
-      {voicePreview.error ? <p className="text-xs text-destructive">{voicePreview.error}</p> : null}
+      {voicePreview.error ? <p className="text-hint text-bad">{voicePreview.error}</p> : null}
     </div>
   );
 };

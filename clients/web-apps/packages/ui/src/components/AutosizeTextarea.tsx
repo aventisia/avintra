@@ -2,11 +2,11 @@
 import * as React from "react";
 import { useEffect, useImperativeHandle, useState } from "react";
 
-import { cn } from "@/ui/lib";
+import { FIELD_SURFACE, cn } from "@/ui/lib";
 import { type FormFieldSizeType } from "@/ui/types";
 
 interface UseAutosizeTextAreaProps {
-  textAreaRef: HTMLTextAreaElement | null;
+  textAreaRef: React.RefObject<HTMLTextAreaElement | null>;
   minHeight?: number;
   maxHeight?: number;
   triggerAutoSize: string;
@@ -22,23 +22,24 @@ const useAutosizeTextarea = ({
   useEffect(() => {
     // We need to reset the height momentarily to get the correct scrollHeight for the textarea
     const offsetBorder = 2;
-    if (textAreaRef) {
+    const textArea = textAreaRef.current;
+    if (textArea) {
       if (init) {
-        textAreaRef.style.minHeight = `${minHeight + offsetBorder}px`;
+        textArea.style.minHeight = `${minHeight + offsetBorder}px`;
         if (maxHeight > minHeight) {
-          textAreaRef.style.maxHeight = `${maxHeight}px`;
+          textArea.style.maxHeight = `${maxHeight}px`;
         }
         setInit(false);
       }
-      textAreaRef.style.height = `${minHeight + offsetBorder}px`;
-      const scrollHeight = textAreaRef.scrollHeight;
+      textArea.style.height = `${minHeight + offsetBorder}px`;
+      const scrollHeight = textArea.scrollHeight;
       // We then set the height directly, outside of the render loop
       // Trying to set this with state or a ref will product an incorrect value.
-      if (scrollHeight > maxHeight) {
-        textAreaRef.style.height = `${maxHeight}px`;
-      } else {
-        textAreaRef.style.height = `${scrollHeight + offsetBorder}px`;
-      }
+      // IMPORTANT NOTE: scrollHeight rounds fractional line heights down, so a box sized to it can sit
+      // a sub-pixel short and show a scrollbar; only scroll once the content is capped.
+      const isCapped = scrollHeight + offsetBorder > maxHeight;
+      textArea.style.height = `${isCapped ? maxHeight : scrollHeight + offsetBorder}px`;
+      textArea.style.overflowY = isCapped ? "auto" : "hidden";
     }
   }, [init, maxHeight, minHeight, textAreaRef, triggerAutoSize]);
 };
@@ -76,7 +77,7 @@ const AutosizeTextarea = React.forwardRef<AutosizeTextAreaRef, AutosizeTextAreaP
     const [triggerAutoSize, setTriggerAutoSize] = React.useState("");
 
     useAutosizeTextarea({
-      textAreaRef: textAreaRef.current,
+      textAreaRef,
       triggerAutoSize: triggerAutoSize,
       maxHeight,
       minHeight,
@@ -99,7 +100,8 @@ const AutosizeTextarea = React.forwardRef<AutosizeTextAreaRef, AutosizeTextAreaP
         value={value}
         ref={textAreaRef}
         className={cn(
-          "flex w-full resize-none rounded-md border border-line-strong bg-surface text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out placeholder:text-muted-foreground focus-visible:border-focus focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-focus/[0.28] aria-[invalid=true]:border-bad aria-[invalid=true]:focus-visible:ring-bad/[0.24] disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken disabled:text-muted-foreground motion-reduce:transition-none",
+          FIELD_SURFACE,
+          "flex w-full resize-none placeholder:text-muted-foreground",
           size === "xs" && "px-2 py-0.5 text-hint",
           size === "sm" && "px-2.5 py-1 text-body-sm",
           size === "base" && "px-[11px] py-1.5 text-body",

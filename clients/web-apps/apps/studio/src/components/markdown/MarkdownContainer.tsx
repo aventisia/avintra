@@ -1,3 +1,4 @@
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import {
   SEGMENTED_TABS_LIST_CLASS,
   SEGMENTED_TABS_TRIGGER_CLASS,
@@ -10,7 +11,7 @@ import {
 import MarkdownEditorInput from "./MarkdownEditorInput";
 import MarkdownViewer from "./MarkdownViewer";
 
-const PANEL_CLASS = "mt-2 min-h-[6rem] w-full rounded-md p-2 ring-1";
+const PANEL_CLASS = "mt-2 min-h-[6rem] w-full rounded-md p-2";
 
 const MarkdownContainer = ({
   textValue,
@@ -34,13 +35,10 @@ const MarkdownContainer = ({
         </TabsList>
         {children}
       </div>
-      <TabsContent
-        className={`${PANEL_CLASS} bg-sunken ring-border transition-shadow focus-within:ring-focus`}
-        value="write"
-      >
+      <TabsContent className={cn(PANEL_CLASS, FIELD_CONTAINER)} value="write">
         <MarkdownEditorInput value={textValue} setValue={setTextValue} />
       </TabsContent>
-      <TabsContent className={`${PANEL_CLASS} bg-sunken/60 ring-line`} value="preview">
+      <TabsContent className={cn(PANEL_CLASS, "border border-line bg-sunken/60")} value="preview">
         <MarkdownViewer textValue={textValue} />
       </TabsContent>
     </Tabs>

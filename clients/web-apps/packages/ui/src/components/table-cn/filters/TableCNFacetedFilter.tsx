@@ -40,7 +40,7 @@ export const TableCNOptionMark = ({
       multiple ? "rounded-sm" : "rounded-full",
       isSelected
         ? "border-indicator bg-indicator text-primary-foreground"
-        : "border-line-strong bg-surface text-transparent",
+        : "border-line-field bg-surface text-transparent",
     )}
   >
     <CheckIcon weight="bold" className="size-3" />

@@ -2,7 +2,7 @@
 
 import { Input, type InputProps, Textarea, type TextareaProps } from "@avplatform/ui";
 import { Button, type ButtonProps } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { type FormFieldSizeType } from "@avplatform/ui/types";
 import { type VariantProps, cva } from "class-variance-authority";
 import * as React from "react";
@@ -17,9 +17,9 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
       role="group"
       data-slot="input-group"
       className={cn(
-        "flex w-full items-center rounded-md border border-line-strong bg-surface text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out motion-reduce:transition-none",
-        "focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28]",
-        "has-[[aria-invalid=true]]:border-bad has-[:disabled]:border-line has-[:disabled]:bg-sunken",
+        FIELD_CONTAINER,
+        "flex w-full items-center",
+        "has-[[aria-invalid=true]]:border-bad has-[[aria-invalid=true]]:hover:border-bad has-[:disabled]:border-line has-[:disabled]:hover:border-line has-[:disabled]:bg-sunken",
         "has-[textarea]:items-stretch",
         "disabled:opacity-80",
         className,

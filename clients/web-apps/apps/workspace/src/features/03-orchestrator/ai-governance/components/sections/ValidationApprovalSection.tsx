@@ -1,5 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { useState } from "react";
 
 import { useDebounce } from "../../../agents-table/hooks/useDebounce";
@@ -114,7 +115,7 @@ export const ValidationApprovalSection = () => {
                 </label>
                 <div className="relative">
                   <input
-                    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                    className={getFieldInputClassName(false, "compact")}
                     placeholder="Search approver by name…"
                     value={approverSearch}
                     onChange={(e) => setApproverSearch(e.target.value)}
@@ -171,7 +172,7 @@ export const ValidationApprovalSection = () => {
             <div className="mt-4 space-y-3 border-t border-line pt-3">
               <Field label="Decision notes">
                 <textarea
-                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                  className={getFieldTextareaClassName(false)}
                   placeholder="Notes accompanying the decision"
                   value={approval.decisionNotes}
                   onChange={(e) => updateApproval({ decisionNotes: e.target.value })}

@@ -4,6 +4,7 @@ import type { ConversationDto, ConversationMessageDto } from "../dtos/conversati
 import { ConversationMessageSenderEnum } from "../enums/conversation-message-sender.enum";
 import { ConversationStatusEnum } from "../enums/conversation-status.enum";
 import type {
+  VoiceConversationDay,
   VoiceConversationOutcome,
   VoiceConversationSummary,
 } from "../types/voice-conversation.type";
@@ -121,4 +122,27 @@ export const toVoiceConversationTurns = (
   }
 
   return turns;
+};
+
+/** Groups calls into days, newest day and newest call first; calls without a valid start time are left out. */
+export const groupConversationsByDay = (
+  conversations: VoiceConversationSummary[],
+): VoiceConversationDay[] => {
+  const days = new Map<string, VoiceConversationDay>();
+  const timed = conversations
+    .map((conversation) => ({
+      conversation,
+      startedAt: new Date(conversation.startedAt).getTime(),
+    }))
+    .filter(({ startedAt }) => !Number.isNaN(startedAt))
+    .sort((a, b) => b.startedAt - a.startedAt);
+
+  timed.forEach(({ conversation, startedAt }) => {
+    const date = new Date(startedAt).toDateString();
+    const day = days.get(date) ?? { date, startedAt, entries: [] };
+    day.entries.push(conversation);
+    days.set(date, day);
+  });
+
+  return Array.from(days.values());
 };

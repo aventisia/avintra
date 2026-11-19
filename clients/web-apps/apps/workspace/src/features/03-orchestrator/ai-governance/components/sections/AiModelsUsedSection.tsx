@@ -1,4 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
+import { getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { MultiSelect } from "@/components/multi-select/MultiSelect";
@@ -18,7 +19,7 @@ import { SectionLayout } from "./SectionLayout";
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+    className={getFieldInputClassName(false, "compact")}
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -109,7 +110,7 @@ export const AiModelsUsedSection = () => {
             <div className="grid grid-cols-2 gap-3">
               <Field label="Node name" info="The flow node that uses this model.">
                 <input
-                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                  className={getFieldInputClassName(false, "compact")}
                   value={model.nodeName}
                   readOnly
                 />
@@ -119,7 +120,7 @@ export const AiModelsUsedSection = () => {
                 info="The type of the model, resolved from the agent definition: Conversation, Inferencing, or Generative."
               >
                 <input
-                  className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+                  className={getFieldInputClassName(false, "compact")}
                   value={modelTypeLabel(model.modelType)}
                   readOnly
                 />
@@ -169,7 +170,7 @@ export const AiModelsUsedSection = () => {
                 info="Describe ongoing monitoring for this model, e.g. drift/quality checks and frequency."
               >
                 <textarea
-                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                  className={getFieldTextareaClassName(false)}
                   placeholder="Monitoring plan (e.g. drift checks, frequency)"
                   value={model.monitoringPlan}
                   onChange={(e) => updateRow(index, { monitoringPlan: e.target.value })}
@@ -180,7 +181,7 @@ export const AiModelsUsedSection = () => {
                 info="Allowed use cases or guardrails for this model."
               >
                 <textarea
-                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                  className={getFieldTextareaClassName(false)}
                   placeholder="Usage restrictions / guardrails"
                   value={model.usageRestrictions}
                   onChange={(e) => updateRow(index, { usageRestrictions: e.target.value })}
@@ -194,7 +195,7 @@ export const AiModelsUsedSection = () => {
                 info="List the specific risks posed by this model, such as output variability, bias, hallucination risk, or data-privacy concerns."
               >
                 <textarea
-                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                  className={getFieldTextareaClassName(false)}
                   placeholder="Risks specific to this model"
                   value={model.risks}
                   onChange={(e) => updateRow(index, { risks: e.target.value })}
@@ -205,7 +206,7 @@ export const AiModelsUsedSection = () => {
                 info="Describe the controls in place to address the risks above, e.g. output verification, confidence thresholds, or periodic re-validation."
               >
                 <textarea
-                  className="w-full rounded-lg border border-line bg-surface p-3 text-sm"
+                  className={getFieldTextareaClassName(false)}
                   placeholder="Mitigations for the above"
                   value={model.mitigations}
                   onChange={(e) => updateRow(index, { mitigations: e.target.value })}

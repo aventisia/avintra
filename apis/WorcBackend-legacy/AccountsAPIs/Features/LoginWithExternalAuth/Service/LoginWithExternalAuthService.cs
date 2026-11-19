@@ -26,6 +26,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
     private readonly IDistributedCache _authStateCache;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly AccountsDbContext _accountsDbContext;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public LoginWithExternalAuthService(
         ILogger<LoginWithExternalAuthService> logger,
@@ -36,7 +37,8 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
         IAuthHelperService authHelperService,
         IDistributedCache authStateCache,
         IHttpClientFactory httpClientFactory,
-        AccountsDbContext accountsDbContext)
+        AccountsDbContext accountsDbContext,
+        IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -47,6 +49,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
         _authStateCache = authStateCache;
         _httpClientFactory = httpClientFactory;
         _accountsDbContext = accountsDbContext;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     // Generates an authentication URL carrying the email hint and the OAuth state binding for a specific tenant.
@@ -456,7 +459,7 @@ public partial class LoginWithExternalAuthService : ILoginWithExternalAuthServic
             return (false, 401, "Unable to verify the identity token. Please try again later.", null);
         }
 
-        var validationParameters = SsoConfigHelpers.BuildEntraIdTokenValidationParameters(configuration, request.ClientId);
+        var validationParameters = SsoConfigHelpers.BuildIdTokenValidationParameters(configuration, request.ClientId);
 
         ClaimsPrincipal principal;
         SecurityToken validatedToken;

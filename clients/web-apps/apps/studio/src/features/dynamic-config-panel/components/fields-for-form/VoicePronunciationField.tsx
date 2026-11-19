@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { EmptyState, Input } from "@avplatform/ui";
+import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -11,7 +11,14 @@ import {
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
-import { Check, CircleOffIcon, Pencil, Plus, X } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  TrashIcon,
+  XIcon,
+} from "@phosphor-icons/react";
 import { KeyboardEvent, useRef, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -130,14 +137,22 @@ export function buildPronunciationOnUpdate(
   return next;
 }
 
-/** Edits the Voice Agent Pronunciation list with add, edit, list, and delete rows. */
+const ROW_GRID = "grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)_4.5rem] items-center gap-2 px-3";
+
+const EXAMPLE_TERMS: Array<{ term: string; pronunciation: string }> = [
+  { term: "SQL", pronunciation: "sequel" },
+  { term: "nginx", pronunciation: "engine x" },
+  { term: "kubectl", pronunciation: "cube control" },
+];
+
+/** Edits the Voice Agent Pronunciation list as a term and spoken-as lexicon with an add row beneath. */
 export const VoicePronunciationField = ({
   name = VOICE_PRONUNCIATION_NAME,
   disabled,
   label,
   description,
   isRequired,
-  size,
+  size = "sm",
   placeholder,
 }: VoicePronunciationFieldProps) => {
   const [termDraft, setTermDraft] = useState("");
@@ -147,6 +162,7 @@ export const VoicePronunciationField = ({
   const [editPronunciationDraft, setEditPronunciationDraft] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const termInputRef = useRef<HTMLInputElement>(null);
+  const pronunciationInputRef = useRef<HTMLInputElement>(null);
 
   const { control, setValue } = useFormContext();
   const value = useWatch({ control, name });
@@ -159,26 +175,6 @@ export const VoicePronunciationField = ({
   const trimmedEditPronunciation = editPronunciationDraft.trim();
   const saveEditDisabled =
     Boolean(disabled) || trimmedEditTerm === "" || trimmedEditPronunciation === "";
-
-  function updateTermDraft(next: string) {
-    setTermDraft(next);
-    setNotice(null);
-  }
-
-  function updatePronunciationDraft(next: string) {
-    setPronunciationDraft(next);
-    setNotice(null);
-  }
-
-  function updateEditTermDraft(next: string) {
-    setEditTermDraft(next);
-    setNotice(null);
-  }
-
-  function updateEditPronunciationDraft(next: string) {
-    setEditPronunciationDraft(next);
-    setNotice(null);
-  }
 
   function hasDuplicateTerm(term: string, excludeIndex?: number): boolean {
     const entries = source ?? [];
@@ -193,14 +189,14 @@ export const VoicePronunciationField = ({
     });
   }
 
+  function warnDuplicate() {
+    setNotice(DUPLICATE_MESSAGE);
+    toast.warning(DUPLICATE_MESSAGE);
+  }
+
   function tryAdd() {
     if (addDisabled) return;
-
-    if (hasDuplicateTerm(trimmedTerm.toLowerCase())) {
-      setNotice(DUPLICATE_MESSAGE);
-      toast.warning(DUPLICATE_MESSAGE);
-      return;
-    }
+    if (hasDuplicateTerm(trimmedTerm.toLowerCase())) return warnDuplicate();
 
     setValue(name, buildPronunciationOnAdd(value, trimmedTerm, trimmedPronunciation), {
       shouldValidate: true,
@@ -210,6 +206,13 @@ export const VoicePronunciationField = ({
     setPronunciationDraft("");
     setNotice(null);
     termInputRef.current?.focus();
+  }
+
+  function applyExample(example: (typeof EXAMPLE_TERMS)[number]) {
+    setTermDraft(example.term);
+    setPronunciationDraft(example.pronunciation);
+    setNotice(null);
+    pronunciationInputRef.current?.focus();
   }
 
   function startEdit(row: PronunciationRow) {
@@ -228,12 +231,7 @@ export const VoicePronunciationField = ({
 
   function trySaveEdit() {
     if (editingIndex === null || saveEditDisabled) return;
-
-    if (hasDuplicateTerm(trimmedEditTerm.toLowerCase(), editingIndex)) {
-      setNotice(DUPLICATE_MESSAGE);
-      toast.warning(DUPLICATE_MESSAGE);
-      return;
-    }
+    if (hasDuplicateTerm(trimmedEditTerm.toLowerCase(), editingIndex)) return warnDuplicate();
 
     setValue(
       name,
@@ -268,22 +266,157 @@ export const VoicePronunciationField = ({
     }
   }
 
+  const renderRow = (row: PronunciationRow) =>
+    editingIndex === row.index ? (
+      <li
+        key={row.index}
+        className={cn(
+          ROW_GRID,
+          "bg-[color-mix(in_srgb,var(--primary-base)_6%,transparent)] py-1.5",
+        )}
+      >
+        <Input
+          value={editTermDraft}
+          onChange={(event) => {
+            setEditTermDraft(event.target.value);
+            setNotice(null);
+          }}
+          onKeyDown={handleEditKeyDown}
+          disabled={disabled}
+          aria-label="Edit term"
+          fieldSize={size}
+          autoFocus
+        />
+        <Input
+          value={editPronunciationDraft}
+          onChange={(event) => {
+            setEditPronunciationDraft(event.target.value);
+            setNotice(null);
+          }}
+          onKeyDown={handleEditKeyDown}
+          disabled={disabled}
+          aria-label="Edit pronunciation"
+          fieldSize={size}
+          className="font-mono"
+        />
+        <span className="flex justify-end gap-0.5">
+          <Button
+            type="button"
+            size="icon6"
+            onClick={trySaveEdit}
+            disabled={saveEditDisabled}
+            aria-label="Save pronunciation"
+          >
+            <CheckIcon aria-hidden="true" className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon6"
+            onClick={cancelEdit}
+            aria-label="Cancel edit"
+            className="text-muted-foreground"
+          >
+            <XIcon aria-hidden="true" className="size-3.5" />
+          </Button>
+        </span>
+      </li>
+    ) : (
+      <li
+        key={row.index}
+        className={cn(ROW_GRID, "group/row py-2 animate-in fade-in duration-150")}
+      >
+        <span title={row.term} className="truncate text-body-sm font-medium text-ink">
+          {row.term}
+        </span>
+        <span className="flex min-w-0 items-center gap-2">
+          <ArrowRightIcon aria-hidden="true" className="size-3 shrink-0 text-muted-foreground" />
+          <span title={row.pronunciation} className="truncate font-mono text-body-sm text-ink-2">
+            {row.pronunciation}
+          </span>
+        </span>
+        <span className="flex justify-end gap-0.5 opacity-70 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon6"
+            onClick={() => startEdit(row)}
+            disabled={disabled}
+            aria-label={`Edit ${row.term}`}
+            className="text-muted-foreground"
+          >
+            <PencilSimpleIcon aria-hidden="true" className="size-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon6"
+            onClick={() => removeRow(row.index)}
+            disabled={disabled}
+            aria-label={`Delete ${row.term}`}
+            className="text-muted-foreground hover:bg-bad/10 hover:text-bad"
+          >
+            <TrashIcon aria-hidden="true" className="size-3.5" />
+          </Button>
+        </span>
+      </li>
+    );
+
   return (
-    <>
-      <FormField
-        control={control}
-        name={name}
-        render={() => (
-          <FormItem className="space-y-0">
-            {label && (
-              <FormLabelExt size={size} {...{ label, disabled, isRequired, description }} />
+    <FormField
+      control={control}
+      name={name}
+      render={() => (
+        <FormItem className="space-y-2">
+          {label && <FormLabelExt size={size} {...{ label, disabled, isRequired, description }} />}
+
+          <div className="overflow-hidden rounded-md border border-line">
+            {rows.length > 0 ? (
+              <>
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    ROW_GRID,
+                    "border-b border-line py-1.5 font-mono text-label uppercase text-muted-foreground",
+                  )}
+                >
+                  <span>Term</span>
+                  <span>Spoken as</span>
+                </div>
+                <ul aria-label="Pronunciations" className="divide-y divide-line">
+                  {rows.map(renderRow)}
+                </ul>
+              </>
+            ) : (
+              <div className="flex flex-wrap items-center gap-1.5 px-3 py-2.5 text-hint text-muted-foreground">
+                <span className="mr-0.5">No terms yet. Try</span>
+                {EXAMPLE_TERMS.map((example) => (
+                  <Button
+                    key={example.term}
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    disabled={disabled}
+                    onClick={() => applyExample(example)}
+                    aria-label={`Use example ${example.term}`}
+                    className="gap-1 font-mono"
+                  >
+                    {example.term}
+                    <ArrowRightIcon aria-hidden="true" className="size-2.5 text-muted-foreground" />
+                    {example.pronunciation}
+                  </Button>
+                ))}
+              </div>
             )}
 
-            <div className="flex gap-2 mb-1 items-center">
+            <div className={cn(ROW_GRID, "border-t border-line bg-sunken/50 py-2")}>
               <Input
                 ref={termInputRef}
                 value={termDraft}
-                onChange={(event) => updateTermDraft(event.target.value)}
+                onChange={(event) => {
+                  setTermDraft(event.target.value);
+                  setNotice(null);
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder ?? "API"}
                 disabled={disabled}
@@ -291,119 +424,41 @@ export const VoicePronunciationField = ({
                 fieldSize={size}
               />
               <Input
+                ref={pronunciationInputRef}
                 value={pronunciationDraft}
-                onChange={(event) => updatePronunciationDraft(event.target.value)}
+                onChange={(event) => {
+                  setPronunciationDraft(event.target.value);
+                  setNotice(null);
+                }}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder ?? "A P I"}
                 disabled={disabled}
                 aria-label="Pronunciation"
                 fieldSize={size}
+                className="font-mono"
               />
-              <Button type="button" size="icon7" onClick={tryAdd} disabled={addDisabled}>
-                <Plus className="h-3.5 w-3.5" />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={tryAdd}
+                disabled={addDisabled}
+              >
+                <PlusIcon aria-hidden="true" className="mr-1 size-3.5" />
+                Add
               </Button>
             </div>
+          </div>
 
-            {notice ? <p className="text-xs text-destructive mb-1">{notice}</p> : null}
-            {invalidText !== null ? (
-              <p className="text-xs text-destructive mb-1">{INVALID_MESSAGE}</p>
-            ) : null}
-
-            <FormMessage size={size} />
-          </FormItem>
-        )}
-      />
-
-      <div className="flex flex-col gap-1.5 mb-4">
-        {rows.length === 0 ? (
-          <EmptyState
-            primaryMessage="No terms added"
-            secondaryMessage="Add a term and how it should be spoken."
-            Icon={CircleOffIcon}
-            className="mx-1"
-          />
-        ) : (
-          rows.map((row, displayIndex) => (
-            <div
-              key={row.index}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2",
-                "bg-muted/50 border border-border rounded-md",
-                "animate-in fade-in slide-in-from-top-1 duration-150",
-              )}
-            >
-              <span className="text-xs text-muted-foreground w-4 tabular-nums shrink-0">
-                {displayIndex + 1}
-              </span>
-              {editingIndex === row.index ? (
-                <>
-                  <Input
-                    value={editTermDraft}
-                    onChange={(event) => updateEditTermDraft(event.target.value)}
-                    onKeyDown={handleEditKeyDown}
-                    disabled={disabled}
-                    aria-label="Edit term"
-                    fieldSize={size}
-                  />
-                  <Input
-                    value={editPronunciationDraft}
-                    onChange={(event) => updateEditPronunciationDraft(event.target.value)}
-                    onKeyDown={handleEditKeyDown}
-                    disabled={disabled}
-                    aria-label="Edit pronunciation"
-                    fieldSize={size}
-                  />
-                  <Button
-                    type="button"
-                    onClick={trySaveEdit}
-                    size={"icon5"}
-                    disabled={saveEditDisabled}
-                    aria-label="Save pronunciation"
-                  >
-                    <Check className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={cancelEdit}
-                    variant={"ghost"}
-                    size={"icon5"}
-                    aria-label="Cancel edit"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <span className="flex-1 text-sm text-wrap">
-                    <span className="font-medium">{row.term}</span>
-                    <span className="text-muted-foreground"> = {row.pronunciation}</span>
-                  </span>
-                  <Button
-                    type="button"
-                    onClick={() => startEdit(row)}
-                    variant={"ghost"}
-                    size={"icon5"}
-                    disabled={disabled}
-                    aria-label={`Edit ${row.term}`}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => removeRow(row.index)}
-                    variant={"caution"}
-                    size={"icon5"}
-                    disabled={disabled}
-                    aria-label={`Delete ${row.term}`}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </>
-              )}
-            </div>
-          ))
-        )}
-      </div>
-    </>
+          {notice && (
+            <p role="alert" className="text-hint text-bad">
+              {notice}
+            </p>
+          )}
+          {invalidText !== null && <p className="text-hint text-bad">{INVALID_MESSAGE}</p>}
+          <FormMessage size={size} />
+        </FormItem>
+      )}
+    />
   );
 };

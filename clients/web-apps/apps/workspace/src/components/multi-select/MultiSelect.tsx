@@ -81,17 +81,12 @@ export const MultiSelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="field"
           role="combobox"
           aria-expanded={open}
           aria-multiselectable
           disabled={disabled}
-          className={cn(
-            "relative h-auto w-full py-2 hover:bg-hover",
-            sizeClasses[size],
-            className,
-            "pr-5",
-          )}
+          className={cn("relative h-auto w-full py-2", sizeClasses[size], className, "pr-5")}
         >
           <ScrollArea
             style={{ height: containerHeight }} // dynamic height

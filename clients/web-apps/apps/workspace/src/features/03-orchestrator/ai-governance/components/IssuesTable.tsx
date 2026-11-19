@@ -9,6 +9,7 @@ import {
 } from "@avplatform/ui/breadcrumb";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { TableCN, useTableCN } from "@avplatform/ui/table-cn";
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -44,7 +45,7 @@ const severityBadgeClass: Record<string, string> = {
 
 const renderSelect = (value: string, options: SelectOption[], onChange: (v: string) => void) => (
   <select
-    className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+    className={getFieldInputClassName(false, "compact")}
     value={value}
     onChange={(e) => onChange(e.target.value)}
   >
@@ -117,7 +118,7 @@ export const IssuesTable = () => {
         const index = row.index;
         return (
           <input
-            className="h-9 w-full rounded-md border border-line bg-surface px-2 text-sm"
+            className={getFieldInputClassName(false, "compact")}
             placeholder="Issue title"
             value={String(getValue() ?? "")}
             onChange={(e) => updateIssue(index, { title: e.target.value })}
@@ -165,7 +166,7 @@ export const IssuesTable = () => {
       header: "Description",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
+          className={getFieldTextareaClassName(false)}
           placeholder="Describe the issue"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { description: e.target.value })}
@@ -177,7 +178,7 @@ export const IssuesTable = () => {
       header: "Resolution notes",
       cell: ({ row, getValue }) => (
         <textarea
-          className="w-full rounded-lg border border-line bg-surface p-2 text-sm"
+          className={getFieldTextareaClassName(false)}
           placeholder="Resolution notes"
           value={String(getValue() ?? "")}
           onChange={(e) => updateIssue(row.index, { resolutionNotes: e.target.value })}

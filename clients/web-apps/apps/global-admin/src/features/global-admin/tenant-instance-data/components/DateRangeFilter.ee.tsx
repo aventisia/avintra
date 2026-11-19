@@ -54,11 +54,7 @@ export const DateRangeFilter = () => {
   return (
     <Popover open={showRangePicker} onOpenChange={setShowRangePicker}>
       <PopoverTrigger
-        className={cn(
-          buttonVariants({ variant: "outline", size: "xs" }),
-          "hidden gap-2 lg:flex",
-          "data-[state=open]:border-primary data-[state=open]:ring-[3px] data-[state=open]:ring-ring",
-        )}
+        className={cn(buttonVariants({ variant: "field", size: "xs" }), "hidden gap-2 lg:flex")}
       >
         <CalendarDotsIcon className="h-4 w-4 text-[--icon-color]" />{" "}
         {format(dateRange?.from || "", "MMM d, yyyy")} -{" "}

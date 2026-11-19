@@ -36,6 +36,8 @@ type ModelConfigFieldProps = {
   hideVoiceConfig?: boolean;
   /** Renders the fields without the named group wrapper when the caller provides one. */
   hideGroup?: boolean;
+  /** Lays the provider, model, and credential pickers out side by side when the panel is wide. */
+  inline?: boolean;
 };
 
 const PROVIDER_MAP: Record<string, string> = {
@@ -62,6 +64,7 @@ const ModelConfigField = ({
   hideByok = false,
   hideVoiceConfig = false,
   hideGroup = false,
+  inline = false,
 }: ModelConfigFieldProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -302,8 +305,20 @@ const ModelConfigField = ({
   const basePath = import.meta.env.VITE_STUDIO_PATH?.replace(/\/$/, "") ?? "";
 
   const modelSelectOptions = useMemo(
-    () => availableModels.map((model) => ({ ...model, icon: providerIcon })),
-    [availableModels, providerIcon],
+    () =>
+      inline ? availableModels : availableModels.map((model) => ({ ...model, icon: providerIcon })),
+    [availableModels, providerIcon, inline],
+  );
+
+  const providerSelectOptions = useMemo(
+    () =>
+      inline
+        ? filteredProviders.map((provider) => ({
+            ...provider,
+            icon: getProviderBrandIcon(provider.value),
+          }))
+        : filteredProviders,
+    [filteredProviders, inline],
   );
 
   const modelAdvancedSettings = (
@@ -391,19 +406,56 @@ const ModelConfigField = ({
         </div>
       )}
 
-      <div className="flex items-end gap-2">
-        {providerIcon && (
-          <img src={basePath + providerIcon} alt="" className="mb-1 h-5 w-5 shrink-0" />
-        )}
-        <div className="flex-grow">
-          <SelectField
+      <div className={inline ? "grid gap-3 lg:grid-cols-2 2xl:grid-cols-3" : "space-y-3.5"}>
+        {inline ? (
+          <SearchableSelectField
             size="sm"
             name={fieldNames.provider}
-            selectOptions={filteredProviders}
-            label="Model provider"
+            selectOptions={providerSelectOptions}
+            label="Provider"
+            primaryText="Providers"
             disabled={showByok && isLoading}
           />
-        </div>
+        ) : (
+          <div className="flex items-end gap-2">
+            {providerIcon && (
+              <img src={basePath + providerIcon} alt="" className="mb-1 h-5 w-5 shrink-0" />
+            )}
+            <div className="flex-grow">
+              <SelectField
+                size="sm"
+                name={fieldNames.provider}
+                selectOptions={providerSelectOptions}
+                label="Model provider"
+                disabled={showByok && isLoading}
+              />
+            </div>
+          </div>
+        )}
+
+        <SearchableSelectField
+          size="sm"
+          name={fieldNames.model}
+          selectOptions={modelSelectOptions}
+          label="Model"
+          primaryText="Models"
+          placeholder={providerValue ? undefined : "Pick a provider first"}
+          isLoading={isLoading}
+          disabled={
+            !isInitialized || !providerValue || (isSpeechSpecialty && !hasEnabledSpeechModels)
+          }
+        />
+
+        {showByok && currentProviderHasEnabledModels && (
+          <VaultCredentialSelectField
+            name={fieldNames.credential_name}
+            size="sm"
+            className={inline ? "h-8" : undefined}
+            label={inline ? "Credential" : `${currentProviderLabel ?? ""} Credentials`}
+            modelProvider={providerValue}
+            disabled={!modelField.value}
+          />
+        )}
       </div>
 
       {showByok && isLoading && (
@@ -414,28 +466,6 @@ const ModelConfigField = ({
         <p className="text-xs text-destructive">
           Could not load model providers. Please try again.
         </p>
-      )}
-
-      <SearchableSelectField
-        size="sm"
-        name={fieldNames.model}
-        selectOptions={modelSelectOptions}
-        label="Model"
-        primaryText="Models"
-        isLoading={isLoading}
-        disabled={
-          !isInitialized || !providerValue || (isSpeechSpecialty && !hasEnabledSpeechModels)
-        }
-      />
-
-      {showByok && currentProviderHasEnabledModels && (
-        <VaultCredentialSelectField
-          name={fieldNames.credential_name}
-          size="sm"
-          label={`${currentProviderLabel ?? ""} Credentials`}
-          modelProvider={providerValue}
-          disabled={!modelField.value}
-        />
       )}
 
       {isSpeechSpecialty &&

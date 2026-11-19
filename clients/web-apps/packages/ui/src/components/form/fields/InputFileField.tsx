@@ -4,6 +4,7 @@ import { type FieldPath, type FieldValues, useFormContext } from "react-hook-for
 import { Input } from "@/ui/components";
 import { FormControl, FormField, FormItem, FormLabelExt, FormMessage } from "@/ui/components/form";
 import type { BaseFieldProps } from "@/ui/components/form";
+import { FIELD_SURFACE, cn } from "@/ui/lib";
 
 interface InputFieldProps extends React.ComponentPropsWithoutRef<typeof Input>, BaseFieldProps {
   /** The name of the form field. */
@@ -73,7 +74,10 @@ export const InputFileField = ({
             <div className="relative w-full">
               <label
                 htmlFor={Id}
-                className="flex h-8 w-full cursor-pointer items-center rounded-md border border-line-strong bg-surface px-[11px] text-left text-body font-normal text-ink"
+                className={cn(
+                  FIELD_SURFACE,
+                  "flex h-8 w-full cursor-pointer items-center px-[11px] text-left text-body font-normal",
+                )}
               >
                 <span>
                   <p>{files?.item(0)?.name ?? "Select file"}</p>

@@ -26,6 +26,7 @@ tests {
     expect(res.getBody().data).to.have.property("name");
     expect(res.getBody().data).to.have.property("userName");
     expect(res.getBody().data).to.have.property("ssoConfigJson");
+    expect(res.getBody().data).to.have.property("hasPassword");
   });
 }
 

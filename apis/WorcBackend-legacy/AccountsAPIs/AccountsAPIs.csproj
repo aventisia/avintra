@@ -63,6 +63,9 @@
     <None Update="StaticFiles\EmailTemplates\ResetPwdCodeEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="StaticFiles\EmailTemplates\SocialSignInConnectedEmailTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="StaticFiles\EmailTemplates\VerifyEmailAddressEmailTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

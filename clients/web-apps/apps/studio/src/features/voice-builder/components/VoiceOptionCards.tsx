@@ -1,45 +1,77 @@
-import { cn } from "@avplatform/ui/lib";
-import type { LucideIcon } from "lucide-react";
+import { IconTile } from "@avplatform/ui/icon-tile";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS_WITHIN,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED,
+  cn,
+} from "@avplatform/ui/lib";
+import type { Icon } from "@phosphor-icons/react";
+import { type ReactNode, useId } from "react";
 
-export type VoiceOptionCard = {
+export type VoiceOption = {
   value: string;
   label: string;
   description: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 };
 
 type VoiceOptionCardsProps = {
-  ariaLabel: string;
+  legend: ReactNode;
   value: string;
-  options: readonly VoiceOptionCard[];
+  options: readonly VoiceOption[];
   onChange: (value: string) => void;
+  /** Extra content at each card's right, such as a glyph of what the option runs. */
+  renderTrailing?: (value: string, isSelected: boolean) => ReactNode;
 };
 
+/** A radio group drawn as option cards: a glyph tile, a label, and a one-line description each. */
 export const VoiceOptionCards = ({
-  ariaLabel,
+  legend,
   value,
   options,
   onChange,
-}: VoiceOptionCardsProps) => (
-  <div role="radiogroup" aria-label={ariaLabel} className="grid gap-2 sm:grid-cols-2">
-    {options.map(({ value: optionValue, label, description, Icon }) => (
-      <button
-        key={optionValue}
-        type="button"
-        role="radio"
-        aria-checked={value === optionValue}
-        onClick={() => onChange(optionValue)}
-        className={cn(
-          "flex items-start gap-3 rounded-lg border border-line px-3 py-3 text-left hover:bg-hover focus-visible:shadow-focus focus-visible:outline-none",
-          value === optionValue && "border-primary bg-selected hover:bg-selected",
-        )}
-      >
-        <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-ink-2" />
-        <span>
-          <span className="block text-body-sm font-semibold text-ink">{label}</span>
-          <span className="block text-hint text-muted-foreground">{description}</span>
-        </span>
-      </button>
-    ))}
-  </div>
-);
+  renderTrailing,
+}: VoiceOptionCardsProps) => {
+  const name = useId();
+
+  return (
+    <fieldset className="min-w-0">
+      <legend className="mb-2.5">{legend}</legend>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {options.map(({ value: optionValue, label, description, Icon }) => {
+          const isSelected = optionValue === value;
+          return (
+            <label
+              key={optionValue}
+              className={cn(
+                OPTION_CARD,
+                OPTION_CARD_FOCUS_WITHIN,
+                "flex cursor-pointer items-center gap-3 p-3",
+                isSelected ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
+              )}
+            >
+              <input
+                type="radio"
+                name={name}
+                value={optionValue}
+                checked={isSelected}
+                onChange={() => onChange(optionValue)}
+                className="sr-only"
+              />
+              <IconTile
+                Icon={Icon}
+                className={cn("transition-colors duration-150", isSelected && "text-primary-text")}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-body-sm font-semibold text-ink">{label}</span>
+                <span className="block text-hint text-muted-foreground">{description}</span>
+              </span>
+              {renderTrailing?.(optionValue, isSelected)}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+};

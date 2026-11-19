@@ -2,13 +2,14 @@ import { Input } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ArrowSquareOutIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { iconMapper } from "@/components/icon-mapper";
 import { NodeImage } from "@/components/node-container/node-header/NodeImage";
 import { PanelHeader, PanelTitle } from "@/components/panel/components/Panel";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
@@ -64,11 +65,30 @@ const DCPDialogHeader = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
 
+  // The action catalog owns the subtitle and docs link for catalog actions;
+  // nodes outside the catalog (triggers, custom tools, structural nodes)
+  // keep their own hardcoded text.
+  const actionSelectorData = useNodeSelectorStore((state) => state.actionSelectorData);
+
+  const catalogEntriesByName = useMemo(
+    () =>
+      new Map(
+        actionSelectorData.flatMap((primary) =>
+          primary.actionCategories.flatMap((category) =>
+            (category.actions ?? []).map((action) => [action.name, action] as const),
+          ),
+        ),
+      ),
+    [actionSelectorData],
+  );
+
+  const catalogEntry = nodeData && catalogEntriesByName.get(nodeData.name);
+
   // Renders the appropriate info link based on node type
   const renderInfoLink = () => {
     if (!nodeData) return null;
 
-    let href = "#";
+    let href: string | undefined;
     let label = "Docs";
 
     switch (nodeData.type) {
@@ -82,9 +102,10 @@ const DCPDialogHeader = () => {
         break;
 
       default:
-        href = nodeData.docsLink || "#";
-        label = "Docs";
+        href = catalogEntry?.docsLink || undefined;
     }
+
+    if (!href) return null;
 
     return (
       <a
@@ -112,7 +133,12 @@ const DCPDialogHeader = () => {
       <NodeImage src={nodeData?.img} />
     );
 
-  const description = nodeData?.description || "Node Configuration.";
+  // AI nodes keep their own text exactly as before; every other node resolves
+  // the subtitle from the catalog first and falls back to its own text.
+  const description =
+    nodeData?.type === "aiNode"
+      ? nodeData?.description || catalogEntry?.description || "Node Configuration."
+      : catalogEntry?.description || nodeData?.description || "Node Configuration.";
 
   return (
     <PanelHeader className="h-16 gap-3">

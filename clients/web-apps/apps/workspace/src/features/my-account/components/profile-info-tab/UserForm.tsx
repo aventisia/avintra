@@ -1,5 +1,5 @@
 import { Skeleton } from "@avplatform/ui";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName } from "@avplatform/ui/lib";
 import { useId } from "react";
 import { createPortal } from "react-dom";
 import type { z } from "zod";
@@ -7,7 +7,6 @@ import type { z } from "zod";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import type { MyAccountDto } from "../../dtos/my-account-profile-dto";
 import { useDefineProfileInfoForm } from "../../hooks/useDefineProfileInfoForm";
@@ -28,7 +27,9 @@ export const UserForm = ({ footerSlot }: AccountTabProps) => {
   const lastName = form.watch("lastName");
 
   const handleSubmit = form.handleSubmit((formData: z.infer<typeof UserProfileZodSchema>) =>
-    mutate(formData as unknown as MyAccountDto, { onSuccess: () => form.reset(formData) }),
+    mutate(formData as unknown as Omit<MyAccountDto, "hasPassword">, {
+      onSuccess: () => form.reset(formData),
+    }),
   );
 
   const nameFields = [
@@ -75,7 +76,7 @@ export const UserForm = ({ footerSlot }: AccountTabProps) => {
                     aria-invalid={Boolean(error)}
                     aria-describedby={error ? `${inputId}-error` : undefined}
                     {...form.register(name)}
-                    className={cn(getFieldInputClassName(Boolean(error)), "h-11")}
+                    className={getFieldInputClassName(Boolean(error))}
                   />
                 )}
               </FormField>

@@ -8,12 +8,24 @@ export * from "./components/condition-groups/ConditionListField";
 export * from "./components/condition-groups/FieldsLabelHeader";
 export * from "./components/DCPDialog";
 export * from "./components/DCPForm";
+export * from "./components/fields-for-form/ConfigFieldCard";
 export * from "./components/fields-for-form/ConfigPanelAutosizeInput";
-export * from "./components/fields-for-form/ConfigPanelAutosizeTextarea";
 export * from "./components/fields-for-form/ConfigPanelAutosizeTextareaField";
 export * from "./components/fields-for-form/GroupedFieldsWrapper";
+export { KnowledgeBaseConfigField } from "./components/fields-for-form/KnowledgeBaseConfigField";
+export { MemoryConfigField } from "./components/fields-for-form/MemoryConfigField";
 export * from "./components/fields-for-form/ModelConfigField";
 export * from "./components/fields-for-form/ConfigPanelOuputField";
+export { PromptConfigFieldV2 } from "./components/fields-for-form/prompt-field/PromptConfigFieldV2";
+export { SkillsConfigField } from "./components/fields-for-form/SkillsConfigField";
+export { ToolsConfigField } from "./components/fields-for-form/ToolsConfigField";
+export { VoiceAgentPromptAction } from "./components/fields-for-form/prompt-field/VoiceAgentPromptAction";
+export { VoicePronunciationTab } from "./components/fields-for-form/VoicePronunciationTab";
+export {
+  buildVariablesOnAdd,
+  buildVariablesOnDelete,
+  toVariableRows,
+} from "./components/fields-for-form/VoiceVariablesField";
 export * from "./components/RenderField";
 
 // constants

@@ -1,4 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react";
 import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -81,7 +82,7 @@ export const ActionSelectorContent = () => {
       </div>
 
       <div className="shrink-0 px-3 pb-3 pt-2">
-        <label className="group/search flex h-10 items-center gap-2.5 rounded-lg bg-sunken px-3 ring-1 ring-line transition-[background-color,box-shadow] focus-within:bg-surface focus-within:shadow-focus focus-within:ring-primary/50 hover:ring-line-strong">
+        <label className={cn(FIELD_CONTAINER, "group/search flex h-10 items-center gap-2.5 px-3")}>
           <MagnifyingGlassIcon
             aria-hidden="true"
             className="size-4 shrink-0 text-muted-foreground transition-colors group-focus-within/search:text-primary-text"

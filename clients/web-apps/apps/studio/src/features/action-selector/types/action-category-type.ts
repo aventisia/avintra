@@ -1,5 +1,4 @@
-import { NodeDataType } from "@/types/node-data-type";
-
+import { ActionEntryType } from "./action-entry-type";
 import { DoNotRenderIfType } from "./do-not-render-type";
 
 /**
@@ -21,7 +20,7 @@ export type ActionCategoryType = {
   listType?: "accordion" | "list";
 
   /** The list of actions associated with the action category. */
-  actions?: NodeDataType[];
+  actions?: ActionEntryType[];
 
   /** Visibility rules (absence = visible everywhere) */
   doNotRenderIf?: DoNotRenderIfType;

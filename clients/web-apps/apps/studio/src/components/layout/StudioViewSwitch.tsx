@@ -28,6 +28,8 @@ import {
 import { useCarryParams } from "@/features/version-history/hooks/useForwardQueryParams";
 import {
   VOICE_CONVERSATIONS_PATH,
+  countVoiceConversations,
+  loadVoiceConversationsView,
   useIsVoiceConversationsRoute,
 } from "@/features/voice-conversations";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -44,6 +46,11 @@ const LOADABLE_VIEWS = {
     load: loadAgentHistoryView,
     countEntries: countAgentHistory,
     emptyMessage: "No change history present",
+  },
+  [VOICE_CONVERSATIONS_PATH]: {
+    load: loadVoiceConversationsView,
+    countEntries: countVoiceConversations,
+    emptyMessage: "No calls for this version yet",
   },
 } as const;
 

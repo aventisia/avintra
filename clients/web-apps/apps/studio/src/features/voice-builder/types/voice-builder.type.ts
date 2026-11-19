@@ -1,5 +1,6 @@
-export type VoiceBuilderSectionId =
-  "persona" | "opening" | "brain" | "knowledge" | "pronunciation" | "later";
+import type { Icon } from "@phosphor-icons/react";
+
+export type VoiceBuilderSectionId = "prompt" | "engine" | "context" | "tools" | "pronunciation";
 
 export type VoiceReadinessCheck = {
   section: VoiceBuilderSectionId;
@@ -18,7 +19,23 @@ export type VoiceAgentTemplate = {
   introduction: string;
 };
 
-export type VoiceComingLaterGroup = {
-  phase: string;
-  items: string[];
+export type VoiceBuilderSectionMeta = {
+  id: VoiceBuilderSectionId;
+  label: string;
+  description: string;
+  icon: Icon;
 };
+
+export type VoiceEngineMode = "pipeline" | "realtime";
+
+export type VoiceEngineStepId = "speechToText" | "languageModel" | "voice";
+
+export type VoiceRealtimeModelConfig = {
+  provider?: string;
+  model?: string;
+  credential_name?: string;
+};
+
+export type VoiceStageMark = "ready" | "todo" | "idle";
+
+export type VoicePromptStageId = "persona" | "instructions" | "opening" | "variables";

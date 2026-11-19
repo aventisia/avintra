@@ -65,6 +65,7 @@ The sidecar runs as an internal Express service and exposes the following backen
 - POST /integration-keys: register OAuth client metadata
 - POST /connect/link: mint a provider connection URL for a tenant
 - POST /connect/status: check whether a tenant is connected
+- POST /connect/status/scoped: check one OAuth plugin's connection state (single-plugin evaluation; accepts the `oauthConfig` set plus plugins whose auth modes include `oauth_2`, and its answers are verified per credential against `/connect/status`, which stays the path for connect, reconnect and test)
 - GET /connect: resolve the OAuth consent state and redirect to the provider
 - GET /api/oauth/callback: complete the OAuth authorization flow and store tokens
   (reached by the browser via the Workspace API proxy at /api/integration/oauth-callback)
@@ -262,9 +263,10 @@ npm run seed:tools         # seed the tools into the Workspace ai_PlatformTools 
 ### After onboarding
 
 1. **Run `npm install`** (with `--legacy-peer-deps`) if new deps were added.
-2. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
-3. **Run `npm run seed:tools`** to seed the tools into `ai_PlatformTools`.
-4. **Commit** the generated artifacts + the new plugin registration.
+2. **Add the plugin's curated description** from the Corsair explorer catalog (`explorer/data/catalog.json` in `corsairdev/corsair`) to `src/plugin-descriptions.ts`; without it the tool keeps today's generic fallback text. If the catalog text is still generic, list the id in `genericUpstreamDescriptionIds` in `src/dcp-generator/generator.test.ts` instead.
+3. **Run `npm run generate:configs`** to refresh the configs/mapping/catalog/OpenAPI.
+4. **Run `npm run seed:tools`** to seed the tools into `ai_PlatformTools`.
+5. **Commit** the generated artifacts + the new plugin registration.
 
 ## Verification
 

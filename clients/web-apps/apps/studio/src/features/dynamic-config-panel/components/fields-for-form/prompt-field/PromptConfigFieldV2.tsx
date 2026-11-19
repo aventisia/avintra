@@ -1,3 +1,4 @@
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -19,6 +20,8 @@ interface PromptConfigFieldV2Props {
   name: string;
   disabled?: boolean;
   showTokenCount?: boolean;
+  /** Editor height; defaults to filling the DCP tab. */
+  height?: string;
 }
 
 // Extract the unique variable names referenced as {{name}} in the prompt.
@@ -34,6 +37,7 @@ const PromptConfigFieldV2 = ({
   name,
   disabled,
   showTokenCount = false,
+  height = FILL_HEIGHT,
 }: PromptConfigFieldV2Props) => {
   const { control } = useFormContext();
   const { field } = useController({ name, control });
@@ -67,8 +71,8 @@ const PromptConfigFieldV2 = ({
   }, [value, syncScroll]);
 
   return (
-    <div className="flex min-h-[15rem] w-full flex-col" style={{ height: FILL_HEIGHT }}>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-input transition-shadow focus-within:border-primary focus-within:ring-[3px] focus-within:ring-ring">
+    <div className="flex min-h-[15rem] w-full flex-col" style={{ height }}>
+      <div className={cn(FIELD_CONTAINER, "flex min-h-0 flex-1 flex-col overflow-hidden")}>
         <div className="flex min-h-0 flex-1" onMouseDown={() => textareaRef.current?.focus()}>
           <div
             ref={gutterRef}

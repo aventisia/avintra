@@ -1,10 +1,9 @@
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { WarningCircleIcon } from "@phosphor-icons/react";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
 import { FormField } from "@/components/card-dialog/FormField";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { isToolNameAvailable } from "../../apis/tools.apis";
 import { ManualToolOperation, ToolDto } from "../../dtos";
@@ -182,7 +181,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           placeholder="e.g. Weather API"
           disabled={crudAction === "update" || crudAction === "read"}
           aria-invalid={Boolean(nameError)}
-          className={cn(getFieldInputClassName(Boolean(nameError)), "h-11 disabled:bg-sunken")}
+          className={getFieldInputClassName(Boolean(nameError))}
         />
       </FormField>
 
@@ -193,7 +192,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
           onChange={(e) => updateDraft({ description: e.target.value })}
           placeholder="What does this tool do?"
           rows={3}
-          className={cn(getFieldInputClassName(false), "block resize-none py-2.5 leading-5")}
+          className={getFieldTextareaClassName(false)}
         />
       </FormField>
 
@@ -211,7 +210,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             onBlur={() => setTouched((prev) => ({ ...prev, baseUrl: true }))}
             placeholder="https://api.example.com"
             aria-invalid={Boolean(getError("baseUrl"))}
-            className={cn(getFieldInputClassName(Boolean(getError("baseUrl"))), "h-11")}
+            className={getFieldInputClassName(Boolean(getError("baseUrl")))}
           />
         </FormField>
 
@@ -230,7 +229,7 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
             onBlur={() => setTouched((prev) => ({ ...prev, iconUrl: true }))}
             placeholder="https://example.com/icon.svg"
             aria-invalid={Boolean(getError("iconUrl"))}
-            className={cn(getFieldInputClassName(Boolean(getError("iconUrl"))), "h-11")}
+            className={getFieldInputClassName(Boolean(getError("iconUrl")))}
           />
         </FormField>
       </div>

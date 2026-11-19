@@ -4,23 +4,20 @@ import { FlowActionLockBanner } from "@/features/collaboration/components/FlowAc
 import { ReactFlowDialogWrapper } from "@/features/react-flow/components/ReactFlowDialogWrapper";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
+import type { VoiceEngineMode } from "../types/voice-builder.type";
 import { VoiceBuilder } from "./VoiceBuilder";
 import { VoiceTestConsole } from "./VoiceTestConsole";
 
 type VoiceAgentStudioProps = {
   isLoading: boolean;
-  engineMode?: "pipeline" | "realtime";
+  engineMode?: VoiceEngineMode;
   modelLabel?: string;
 };
 
 /** Voice agent build view: the settings page beside the test call, in place of the canvas. */
 export const VoiceAgentStudio = ({ isLoading, engineMode, modelLabel }: VoiceAgentStudioProps) => (
-  <ResizablePanelGroup orientation="horizontal" className="!bg-bg p-1.5">
-    <ResizablePanel
-      defaultSize="60%"
-      minSize="35%"
-      className="overflow-hidden rounded-xl bg-surface"
-    >
+  <ResizablePanelGroup orientation="horizontal" className="!bg-bg">
+    <ResizablePanel defaultSize="50%" minSize="35%" className="overflow-hidden bg-surface">
       <div className="relative h-full w-full">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
@@ -33,8 +30,8 @@ export const VoiceAgentStudio = ({ isLoading, engineMode, modelLabel }: VoiceAge
       </div>
       <ReactFlowDialogWrapper />
     </ResizablePanel>
-    <ResizableHandle withHandle className="mr-px w-1.5 bg-transparent" />
-    <ResizablePanel defaultSize="40%" minSize="30%" className="overflow-hidden rounded-xl">
+    <ResizableHandle withHandle />
+    <ResizablePanel defaultSize="50%" minSize="30%" className="overflow-hidden">
       <VoiceTestConsole engineMode={engineMode} modelLabel={modelLabel} />
     </ResizablePanel>
   </ResizablePanelGroup>
