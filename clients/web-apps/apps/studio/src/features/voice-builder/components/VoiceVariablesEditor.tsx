@@ -51,7 +51,7 @@ export const VoiceVariablesEditor = ({ usedNames, missingNames }: VoiceVariables
   // builder has no switch for it, so the flag follows whether any variable exists.
   useEffect(() => {
     if (hasVariables && getValues(VOICE_FIELDS.variablesEnabled) !== true)
-      setValue(VOICE_FIELDS.variablesEnabled, true, { shouldDirty: true });
+      setValue(VOICE_FIELDS.variablesEnabled, true, { shouldDirty: false });
   }, [hasVariables, getValues, setValue]);
 
   const writeVariables = (next: Record<string, unknown>) =>
