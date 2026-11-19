@@ -24,6 +24,7 @@ export const VoiceTtsSection = () => {
         inline
       />
       <VoiceOutputFields
+        mode="pipeline"
         provider={watch(PROVIDER) as string | undefined}
         model={watch(MODEL) as string | undefined}
         capability="tts"

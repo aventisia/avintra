@@ -57,6 +57,7 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
                 inline
               />
               <VoiceOutputFields
+                mode="realtime"
                 provider={realtime.provider}
                 model={realtime.model}
                 capability="realtime"

@@ -4,11 +4,13 @@ import { useFormContext } from "react-hook-form";
 import { type VoiceProviderData, getVoiceClearedNote } from "@/features/dynamic-config-panel";
 
 import { VOICE_OUTPUT_FIELDS } from "../constants/voice-builder.constant";
+import type { VoiceEngineMode } from "../types/voice-builder.type";
 
 type PreviousSelection = { provider?: string; language?: string; voice?: string };
 
 /** Clears a saved voice when the provider or language it belongs to changes, and names what it cleared. */
 export const useVoiceOutputReset = (
+  mode: VoiceEngineMode,
   provider: string | undefined,
   language: string | undefined,
   selectedVoice: string | undefined,
@@ -16,11 +18,10 @@ export const useVoiceOutputReset = (
   isCatalogReady: boolean,
 ) => {
   const { setValue } = useFormContext();
+  const fields = VOICE_OUTPUT_FIELDS[mode];
   const previous = useRef<PreviousSelection>({});
   const [clearedNote, setClearedNote] = useState<string | null>(null);
 
-  // IMPORTANT NOTE: the voice setting is shared by both engine modes, so a value
-  // saved under a different provider must be cleared when the panel mounts.
   useEffect(() => {
     if (!provider || !isCatalogReady) return;
 
@@ -34,13 +35,13 @@ export const useVoiceOutputReset = (
       const languageIsKnown =
         !language || providerData.languages.some((option) => option.value === language);
       if (!languageIsKnown) {
-        setValue(VOICE_OUTPUT_FIELDS.language, "", { shouldDirty: false });
-        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: false });
+        setValue(fields.language, "", { shouldDirty: false });
+        setValue(fields.voice, "", { shouldDirty: false });
       } else if (
         selectedVoice &&
         !providerData.voices.some((voice) => voice.value === selectedVoice)
       ) {
-        setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: false });
+        setValue(fields.voice, "", { shouldDirty: false });
       }
       return;
     }
@@ -54,15 +55,15 @@ export const useVoiceOutputReset = (
     }
 
     if (providerChanged) {
-      setValue(VOICE_OUTPUT_FIELDS.language, "", { shouldDirty: true });
-      setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+      setValue(fields.language, "", { shouldDirty: true });
+      setValue(fields.voice, "", { shouldDirty: true });
       previous.current.language = "";
       previous.current.voice = "";
     } else if (languageChanged) {
-      setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+      setValue(fields.voice, "", { shouldDirty: true });
       previous.current.voice = "";
     }
-  }, [provider, language, providerData, isCatalogReady, selectedVoice, setValue]);
+  }, [provider, language, providerData, isCatalogReady, selectedVoice, setValue, fields]);
 
   return clearedNote;
 };

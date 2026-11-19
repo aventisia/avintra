@@ -25,6 +25,8 @@ export const VOICE_FIELDS = {
   speechToText: "__ModelConfig__SpeechToText",
   textToSpeech: "__ModelConfig__TextToSpeech",
   voiceConfig: "__VoiceConfig__TextToSpeech",
+  pipelineVoiceConfig: "__VoiceConfig__PipelineVoice",
+  realtimeVoiceConfig: "__VoiceConfig__RealtimeVoice",
   variablesEnabled: "__VariablesEnabled__Voice",
   variables: "__Variables__Voice",
   knowledgeBases: "__KbConfig__Voice",
@@ -33,11 +35,21 @@ export const VOICE_FIELDS = {
   tools: "__ToolsConfig__Voice",
 } as const;
 
-export const VOICE_OUTPUT_FIELDS = {
-  language: `${VOICE_FIELDS.voiceConfig}.language`,
-  voice: `${VOICE_FIELDS.voiceConfig}.voice`,
-  speed: `${VOICE_FIELDS.voiceConfig}.speed`,
-} as const;
+export const VOICE_OUTPUT_FIELDS: Record<
+  VoiceEngineMode,
+  { language: string; voice: string; speed: string }
+> = {
+  pipeline: {
+    language: `${VOICE_FIELDS.pipelineVoiceConfig}.language`,
+    voice: `${VOICE_FIELDS.pipelineVoiceConfig}.voice`,
+    speed: `${VOICE_FIELDS.pipelineVoiceConfig}.speed`,
+  },
+  realtime: {
+    language: `${VOICE_FIELDS.realtimeVoiceConfig}.language`,
+    voice: `${VOICE_FIELDS.realtimeVoiceConfig}.voice`,
+    speed: `${VOICE_FIELDS.realtimeVoiceConfig}.speed`,
+  },
+};
 
 export const VOICE_ENGINE_LABELS: Record<VoiceEngineMode, string> = {
   pipeline: "Pipeline",

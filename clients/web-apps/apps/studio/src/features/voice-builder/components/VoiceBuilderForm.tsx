@@ -3,6 +3,7 @@ import { Form } from "@avplatform/ui/form";
 import { Tabs } from "@avplatform/ui/tabs";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
+import { useWatch } from "react-hook-form";
 
 import {
   ConfigPanelAutosizeTextareaField,
@@ -10,12 +11,13 @@ import {
   RenderField,
   ToolsConfigField,
   VoicePronunciationTab,
+  stableStringify,
   useDefineDCPForm,
 } from "@/features/dynamic-config-panel";
 
 import { VOICE_FIELDS } from "../constants/voice-builder.constant";
 import { useVoiceBuilderStore } from "../stores/voice-builder.store";
-import type { VoiceBuilderSectionId } from "../types/voice-builder.type";
+import type { VoiceBuilderSectionId, VoiceEngineMode } from "../types/voice-builder.type";
 import { getPendingVoiceChecks, getVoiceReadiness } from "../utils/voice-builder.util";
 import { VoiceBuilderSection } from "./VoiceBuilderSection";
 import { VoiceContextSection } from "./VoiceContextSection";
@@ -32,6 +34,10 @@ export const VoiceBuilderForm = () => {
   const setActiveSection = useVoiceBuilderStore((state) => state.setActiveSection);
   const values = watch();
   const readiness = getVoiceReadiness(values);
+  const engineMode = (values[VOICE_FIELDS.engineMode] as VoiceEngineMode | undefined) ?? "pipeline";
+  const activeVoiceConfigName =
+    engineMode === "realtime" ? VOICE_FIELDS.realtimeVoiceConfig : VOICE_FIELDS.pipelineVoiceConfig;
+  const activeVoiceConfig = useWatch({ control: form.control, name: activeVoiceConfigName });
 
   const setPendingChecks = useVoiceBuilderStore((state) => state.setPendingChecks);
   const bumpConfigRevision = useVoiceBuilderStore((state) => state.bumpConfigRevision);
@@ -54,6 +60,15 @@ export const VoiceBuilderForm = () => {
     const subscription = watch(() => bumpConfigRevision());
     return () => subscription.unsubscribe();
   }, [watch, bumpConfigRevision]);
+
+  // IMPORTANT NOTE: the runtime reads one voice setting for both engines, so the active
+  // engine's choice is mirrored there while each engine keeps its own saved copy.
+  useEffect(() => {
+    if (!isFormReady || !activeVoiceConfig) return;
+    const shared = form.getValues(VOICE_FIELDS.voiceConfig);
+    if (stableStringify(shared) === stableStringify(activeVoiceConfig)) return;
+    form.setValue(VOICE_FIELDS.voiceConfig, { ...activeVoiceConfig }, { shouldDirty: false });
+  }, [activeVoiceConfig, form, isFormReady]);
 
   const fieldsByName = useMemo(
     () => new Map(nodeConfig.fields.map((field) => [field.name, field])),

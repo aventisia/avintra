@@ -74,7 +74,7 @@ export const getEngineStepReadiness = (values: FormValues): Record<VoiceEngineSt
   languageModel: hasProviderModel(values[VOICE_FIELDS.languageModel]),
   voice:
     hasText(readKey(values[VOICE_FIELDS.textToSpeech], "model")) &&
-    hasText(readKey(values[VOICE_FIELDS.voiceConfig], "voice")),
+    hasText(readKey(values[VOICE_FIELDS.pipelineVoiceConfig], "voice")),
 });
 
 /** Each Prompt stage's mark: to do when it blocks the tab, ready when filled, idle when optional and empty. */
@@ -101,15 +101,16 @@ export const getPromptStageMarks = (
   };
 };
 
-/** Whether the realtime model has a provider, a model, and the credential it uses. */
+/** Whether the realtime model has a provider, a model, the credential it uses, and a voice. */
 export const isRealtimeReady = (values: FormValues) =>
   hasProviderModel(values[VOICE_FIELDS.realtimeModel]) &&
-  hasText(readKey(values[VOICE_FIELDS.realtimeModel], "credential_name"));
+  hasText(readKey(values[VOICE_FIELDS.realtimeModel], "credential_name")) &&
+  hasText(readKey(values[VOICE_FIELDS.realtimeVoiceConfig], "voice"));
 
 const getEngineReadiness = (values: FormValues) => {
   if (values[VOICE_FIELDS.engineMode] === "realtime")
     return {
-      hint: "Pick a realtime provider, a model, and the credential it uses.",
+      hint: "Pick a realtime provider, a model, the credential it uses, and a voice.",
       isReady: isRealtimeReady(values),
     };
 

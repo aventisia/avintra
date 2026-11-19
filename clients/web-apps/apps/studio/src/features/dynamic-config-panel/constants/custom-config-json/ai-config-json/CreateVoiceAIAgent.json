@@ -224,7 +224,33 @@
       "direction": "Input",
       "type": "voice-config-select",
       "name": "__VoiceConfig__TextToSpeech",
-      "description": "Voice, language, and speed used for speech in both Realtime and Pipeline modes.",
+      "description": "The active engine's voice, language, and speed, read by the runtime.",
+      "defaultValue": {
+        "language": "en",
+        "voice": "",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__PipelineVoice",
+      "description": "Voice, language, and speed used when Engine Mode is Pipeline.",
+      "defaultValue": {
+        "language": "en",
+        "voice": "",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__RealtimeVoice",
+      "description": "Voice, language, and speed used when Engine Mode is Realtime.",
       "defaultValue": {
         "language": "en",
         "voice": "",
