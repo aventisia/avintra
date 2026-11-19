@@ -48,7 +48,6 @@ class LiteLLMService:
         litellm_model = build_litellm_model(request.provider, request.model)
         credential_resolution = resolve_credentials(
             request.provider,
-            request.is_byok_enabled,
             request.credential_name,
             user,
         )
@@ -85,7 +84,7 @@ class LiteLLMService:
 
         logger.debug(
             f"[LLM-V2] chat_completion provider={request.provider} "
-            f"model={request.model} stream={request.stream} byok={request.is_byok_enabled}"
+            f"model={request.model} stream={request.stream}"
         )
         try:
             return await litellm.acompletion(**kwargs)
@@ -114,7 +113,6 @@ class LiteLLMService:
         litellm_model = build_litellm_model(request.provider, request.model)
         credential_resolution = resolve_credentials(
             request.provider,
-            request.is_byok_enabled,
             request.credential_name,
             user,
         )
@@ -134,7 +132,7 @@ class LiteLLMService:
 
         logger.debug(
             f"[LLM-V2] embed provider={request.provider} model={request.model} "
-            f"inputs={len(input_texts)} byok={request.is_byok_enabled}"
+            f"inputs={len(input_texts)}"
         )
         try:
             return await litellm.aembedding(**kwargs)
@@ -161,7 +159,6 @@ class LiteLLMService:
         file: bytes,
         filename: str,
         language: str | None = None,
-        is_byok: bool = False,
         credential_name: str | None = None,
         user: User,
     ):
@@ -173,7 +170,6 @@ class LiteLLMService:
         litellm_model = build_litellm_model(provider, model)
         credential_resolution = resolve_credentials(
             provider,
-            is_byok,
             credential_name,
             user,
         )
@@ -189,8 +185,7 @@ class LiteLLMService:
             kwargs["language"] = language
 
         logger.debug(
-            f"[LLM-V2] transcribe provider={provider} model={model} "
-            f"byok={is_byok}"
+            f"[LLM-V2] transcribe provider={provider} model={model}"
         )
         try:
             return await litellm.atranscription(**kwargs)
@@ -217,7 +212,6 @@ class LiteLLMService:
         input: str,
         voice: str,
         speed: float = 1.0,
-        is_byok: bool = False,
         credential_name: str | None = None,
         user: User,
     ):
@@ -229,7 +223,6 @@ class LiteLLMService:
         litellm_model = build_litellm_model(provider, model)
         credential_resolution = resolve_credentials(
             provider,
-            is_byok,
             credential_name,
             user,
         )
@@ -245,8 +238,7 @@ class LiteLLMService:
         )
 
         logger.debug(
-            f"[LLM-V2] synthesize provider={provider} model={model} "
-            f"byok={is_byok}"
+            f"[LLM-V2] synthesize provider={provider} model={model}"
         )
         try:
             resp = await litellm.aspeech(**kwargs)

@@ -15,32 +15,21 @@ export const knowledgeBaseNameSchema = z
 /**
  * Represents the Zod schema for a knowledgeBase.
  */
-export const knowledgeBaseZodSchema = z
-  .object({
-    id: z.string(),
-    name: knowledgeBaseNameSchema,
-    description: z.string().optional(),
-    vectorStore: z.string().min(1, { message: reqError("Vector Store") }),
-    embeddingConfig: z.object({
-      isByokEnabled: z.boolean().default(false),
-      provider: z.string().min(1, { message: reqError("Embedding Provider") }),
-      credentialName: z.string().optional(),
-      model: z.string().min(1, { message: reqError("Embedding Model") }),
-    }),
-    storeCredentialName: z.string().optional(),
-    collectionName: z.string().optional(),
-    isDisabled: z.boolean().default(false).optional(),
-    createdBy: z.string(),
-    createdOn: z.date(),
-    lastModifiedBy: z.string(),
-    lastModifiedOn: z.date(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.embeddingConfig.isByokEnabled && !data.embeddingConfig.credentialName) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: reqError("Credential"),
-        path: ["embeddingConfig", "credentialName"],
-      });
-    }
-  });
+export const knowledgeBaseZodSchema = z.object({
+  id: z.string(),
+  name: knowledgeBaseNameSchema,
+  description: z.string().optional(),
+  vectorStore: z.string().min(1, { message: reqError("Vector Store") }),
+  embeddingConfig: z.object({
+    provider: z.string().min(1, { message: reqError("Embedding Provider") }),
+    credentialName: z.string().optional(),
+    model: z.string().min(1, { message: reqError("Embedding Model") }),
+  }),
+  storeCredentialName: z.string().optional(),
+  collectionName: z.string().optional(),
+  isDisabled: z.boolean().default(false).optional(),
+  createdBy: z.string(),
+  createdOn: z.date(),
+  lastModifiedBy: z.string(),
+  lastModifiedOn: z.date(),
+});

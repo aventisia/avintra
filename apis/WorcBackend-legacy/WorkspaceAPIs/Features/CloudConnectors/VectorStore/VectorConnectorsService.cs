@@ -212,8 +212,7 @@ public class VectorConnectorsService : IVectorConnectorsService
         JsonNode? embeddingConfig = null;
         string? embeddingProvider = null;
         string? embeddingModel = null;
-        string? embeddingCredentialId = null;
-        bool isByokEnabled = false;
+        string? embeddingCredentialName = null;
 
         // Build Request By Action
 
@@ -301,11 +300,7 @@ public class VectorConnectorsService : IVectorConnectorsService
 
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
-                embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
-                if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabled))
-                {
-                    isByokEnabled = parsedByokEnabled;
-                }
+                embeddingCredentialName = CredentialReferenceUtil.Resolve(embeddingConfig);
 
                 // Build Insert Request
                 return new JsonObject
@@ -319,10 +314,9 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["chunk_size"] = chunkSize,
                     ["chunk_overlap"] = chunkOverlap,
                     ["credential_name"] = storeCredentialName,
-                    ["embedding_credential_name"] = embeddingCredentialId,
+                    ["embedding_credential_name"] = embeddingCredentialName,
                     ["batch_size"] = batchSize,
                     ["dimensions"] = dimensions,
-                    ["is_byok_enabled"] = isByokEnabled,
                     ["ref_type"] = refType,
                     ["ref_id"] = refId,
                     ["ref_name"] = refName,
@@ -386,11 +380,7 @@ public class VectorConnectorsService : IVectorConnectorsService
 
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
-                embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
-                if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabledG))
-                {
-                    isByokEnabled = parsedByokEnabledG;
-                }
+                embeddingCredentialName = CredentialReferenceUtil.Resolve(embeddingConfig);
 
                 return new JsonObject
                 {
@@ -398,12 +388,11 @@ public class VectorConnectorsService : IVectorConnectorsService
                     // ["collection_name"] = collectionName,
                     ["embedding_provider"] = embeddingProvider,
                     ["embedding_model"] = embeddingModel,
-                    ["embedding_credential_name"] = embeddingCredentialId,
+                    ["embedding_credential_name"] = embeddingCredentialName,
                     ["query"] = inputText,
                     ["top_k"] = numberOfChunks,
                     ["score_threshold"] = scoreThreshold,
                     ["credential_name"] = cloudConnectorReqDto.CredentialName,
-                    ["is_byok_enabled"] = isByokEnabled,
                     ["kb_names"] = !string.IsNullOrWhiteSpace(knowledgeBaseNames)
                         ? System.Text.Json.JsonSerializer.SerializeToNode(
                             knowledgeBaseNames.Split(
@@ -470,15 +459,6 @@ public class VectorConnectorsService : IVectorConnectorsService
             default:
                 throw new InvalidOperationException($"Unsupported action: {action}");
         }
-    }
-
-    // Reads a credential reference from an embedding config object. Accepts the canonical
-    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
-    private static string? ReadCredentialFromConfig(JsonNode? config)
-    {
-        if (config is null) return null;
-        if (config["credential_name"] is { } nameNode) return nameNode.ToString();
-        return null;
     }
 
     #endregion

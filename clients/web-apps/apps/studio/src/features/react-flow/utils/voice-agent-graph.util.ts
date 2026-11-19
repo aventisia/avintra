@@ -42,7 +42,6 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
     {
       key: "__ModelConfig__Voice",
       value: {
-        is_byok_enabled: true,
         provider: "",
         credential_name: "",
         model: "",
@@ -55,7 +54,6 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
     {
       key: "__ModelConfig__SpeechToText",
       value: {
-        is_byok_enabled: true,
         provider: "",
         credential_name: "",
         model: "",
@@ -67,7 +65,6 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
     {
       key: "__ModelConfig__TextToSpeech",
       value: {
-        is_byok_enabled: true,
         provider: "",
         credential_name: "",
         model: "",
@@ -88,7 +85,6 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
     {
       key: "__ModelConfig__RealtimeVoice",
       value: {
-        is_byok_enabled: true,
         provider: "",
         credential_name: "",
         model: "",

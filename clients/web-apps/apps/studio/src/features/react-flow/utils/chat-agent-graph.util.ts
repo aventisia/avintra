@@ -52,7 +52,6 @@ const createDefaultChatAgentData = (): NodeDataType => ({
     {
       key: "__ModelConfig__Conversation",
       value: {
-        is_byok_enabled: false,
         provider: "openai",
         credential_name: "",
         model: "gpt-4o-mini",

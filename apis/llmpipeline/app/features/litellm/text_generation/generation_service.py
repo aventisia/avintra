@@ -26,6 +26,7 @@ from ..core.credit_utils import (
     post_platform_credit_usage,
     should_record_byok,
 )
+from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import (
     get_credit_service_type,
@@ -199,8 +200,7 @@ def _map_finish_reason_to_status(finish_reason: str | None) -> str:
 
 
 def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
-    # Only post usage for platform (non-BYOK) requests.
-    if not should_post_usage(req.is_byok_enabled, req.credential_name):
+    if not should_post_usage(req.credential_name):
         return
     # Skip token-based deduction when the agent has a fixed-credits override set
     # by the Super Admin (the WorkspaceAPIs job-close path already bills the fixed
@@ -231,9 +231,10 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
 
 def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
     # Only post usage for BYOK requests (caller's own key).
-    if not should_record_byok(req.is_byok_enabled, req.credential_name):
+    if not should_record_byok(req.credential_name):
         return
     try:
+        display_name = resolve_credential_name(req.credential_name, user)
         entries = []
         if (resp.input_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "input")
@@ -242,6 +243,7 @@ def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, use
                     service, req.provider, req.model, resp.input_tokens, "Tokens",
                     req.credential_name,
                     req.ref_type, req.ref_id, req.ref_name, req.action, triggered_by_agent=req.ref_name, space_id=user.space_id,
+                    display_name=display_name,
                 ))
         if (resp.output_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "output")
@@ -250,6 +252,7 @@ def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, use
                     service, req.provider, req.model, resp.output_tokens, "Tokens",
                     req.credential_name,
                     req.ref_type, req.ref_id, req.ref_name, req.action, triggered_by_agent=req.ref_name, space_id=user.space_id,
+                    display_name=display_name,
                 ))
         post_byok_usage(req.provider, entries, user.access_token)
     except Exception as e:
@@ -264,9 +267,9 @@ class GenerationService:
         # Normalize legacy provider aliases (e.g. "googlegemini" -> "gemini")
         # so the v2 route accepts the same names the legacy provider used.
         req.provider = normalize_provider(req.provider)
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
-        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
+        validate_provider(req.provider, req.credential_name)
+        validate_model(req.provider, req.model, req.credential_name)
+        check_sufficient_credits(req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
         await augment_with_skill_context(req, user)
 
@@ -309,7 +312,6 @@ class GenerationService:
             input_tokens=usage.get("prompt_tokens", 0),
             output_tokens=usage.get("completion_tokens", 0),
             is_json_output=req.is_json_output,
-            is_byok_enabled=req.is_byok_enabled,
             credential_name=req.credential_name,
             conversation_id=req.conversation_id,
             is_temp_chat=req.is_temp_chat,
@@ -324,14 +326,14 @@ class GenerationService:
         The stream generator yields newline-delimited `LLMGenerationChunk` JSON frames,
         one per non-empty content delta, stopping early if the job is cancelled.
         When the stream finishes, a final `LLMGenerationResponse` is emitted and
-        credit usage is posted (only for platform, non-BYOK requests).
+        credit or BYOK usage is posted.
         """
         # Normalize legacy provider aliases (e.g. "googlegemini" -> "gemini")
         # so the v2 route accepts the same names the legacy provider used.
         req.provider = normalize_provider(req.provider)
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
-        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
+        validate_provider(req.provider, req.credential_name)
+        validate_model(req.provider, req.model, req.credential_name)
+        check_sufficient_credits(req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
         await augment_with_skill_context(req, user)
 
@@ -408,15 +410,13 @@ class GenerationService:
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 is_json_output=req.is_json_output,
-                is_byok_enabled=req.is_byok_enabled,
                 credential_name=req.credential_name,
                 conversation_id=req.conversation_id,
                 is_temp_chat=req.is_temp_chat,
             )
             yield response.model_dump_json() + "\n"
 
-            # Post credit usage only for platform (non-BYOK) requests.
-            if should_post_usage(req.is_byok_enabled, req.credential_name):
+            if should_post_usage(req.credential_name):
                 _post_credit_usage(req, response, user)
             # Post BYOK usage for caller's own key requests.
             _post_byok_usage(req, response, user)

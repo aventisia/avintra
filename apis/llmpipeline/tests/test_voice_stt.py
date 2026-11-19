@@ -36,7 +36,6 @@ AGENT_SETTINGS = {
         "provider": "elevenlabs",
         "model": "scribe_v1",
         "credentialName": "caller-stt-key",
-        "isByokEnabled": True,
     },
     "ttsVoice": {"language": "en-US"},
 }
@@ -86,14 +85,14 @@ def _recording_provider(output: str = "hello there"):
 # ---------------------------------------------------------------------------
 
 
-def test_stt_request_carries_settings_byok_and_credit_references():
+def test_stt_request_carries_settings_and_credit_references():
     request = build_stt_request(_claims(), AGENT_SETTINGS)
 
     assert request.provider == "elevenlabs"
     assert request.model == "scribe_v1"
     assert request.language == "en-US"
     assert request.credential_name == "caller-stt-key"
-    assert request.is_byok_enabled is True
+    assert not hasattr(request, "is_byok_enabled")
     assert request.ref_type == "Agent"
     assert request.ref_id == str(FLOW_ID)
     assert request.ref_name == "Support Agent"
@@ -138,7 +137,6 @@ def test_speech_is_transcribed_as_one_final_event_with_one_wav_utterance():
 
     request, user = calls[0]
     assert request.credential_name == "caller-stt-key"
-    assert request.is_byok_enabled is True
     assert request.ref_id == str(FLOW_ID)
     assert user.access_token == "worker-token"
 

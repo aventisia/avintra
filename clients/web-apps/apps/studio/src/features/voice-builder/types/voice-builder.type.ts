@@ -34,7 +34,6 @@ export type VoiceRealtimeModelConfig = {
   provider?: string;
   model?: string;
   credential_name?: string;
-  is_byok_enabled?: boolean;
 };
 
 export type VoiceStageMark = "ready" | "todo" | "idle";

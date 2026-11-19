@@ -68,7 +68,6 @@ def _byok_request(**overrides) -> TTSRequest:
         "language": "en",
         "speed": 1.25,
         "credential_name": "preview-credential",
-        "is_byok_enabled": True,
     }
     fields.update(overrides)
     return TTSRequest(**fields)
@@ -84,7 +83,6 @@ def test_synthesize_returns_base64_of_transport_bytes(monkeypatch):
         input,
         voice,
         speed=1.0,
-        is_byok=False,
         credential_name=None,
         user,
     ):
@@ -95,7 +93,6 @@ def test_synthesize_returns_base64_of_transport_bytes(monkeypatch):
                 "input": input,
                 "voice": voice,
                 "speed": speed,
-                "is_byok": is_byok,
                 "credential_name": credential_name,
                 "user": user,
             }
@@ -113,7 +110,6 @@ def test_synthesize_returns_base64_of_transport_bytes(monkeypatch):
     assert response.provider == "openai"
     assert response.model == "tts-1"
     assert response.credential_name == "preview-credential"
-    assert response.is_byok_enabled is True
     assert response.token_count == len("Hello there")
     assert captured == {
         "provider": "openai",
@@ -121,7 +117,6 @@ def test_synthesize_returns_base64_of_transport_bytes(monkeypatch):
         "input": "Hello there",
         "voice": "alloy",
         "speed": 1.25,
-        "is_byok": True,
         "credential_name": "preview-credential",
         "user": user,
     }
@@ -212,7 +207,6 @@ def test_route_trims_credential_name_and_returns_provider_output(monkeypatch):
             output="QUJD",
             status="completed",
             credential_name=req.credential_name,
-            is_byok_enabled=req.is_byok_enabled,
         )
 
     monkeypatch.setattr(LiteLLMTTSProvider, "synthesize", _synthesize)
@@ -229,7 +223,6 @@ def test_route_trims_credential_name_and_returns_provider_output(monkeypatch):
                 "model": "tts-1",
                 "input": "Hello there",
                 "credential_name": "  padded  ",
-                "is_byok_enabled": True,
             },
         )
 

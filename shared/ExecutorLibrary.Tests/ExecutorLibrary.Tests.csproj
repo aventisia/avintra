@@ -25,5 +25,6 @@
         <Using Include="System.Text.Json.Serialization" />
         <Using Include="System.Text.RegularExpressions" />
         <Using Include="WorkspaceAPIs.Helpers" />
+        <Using Include="AspNetToolkit.Utils" />
     </ItemGroup>
 </Project>

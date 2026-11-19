@@ -12,6 +12,9 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
 from app.utils.file_converter_utils import file_to_base64
 
 class AnthropicProvider(BaseLLMProvider):
@@ -25,8 +28,7 @@ class AnthropicProvider(BaseLLMProvider):
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.debug(f"[NO STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
         
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the credential NAME and JWT
@@ -90,7 +92,7 @@ class AnthropicProvider(BaseLLMProvider):
                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                 
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data, user.space_id)
         except Exception as e:
             error_context = ""
             if "response_data" in locals() and isinstance(response_data, dict):
@@ -115,8 +117,7 @@ class AnthropicProvider(BaseLLMProvider):
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.debug(f"[STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
 
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the NAME and JWT
@@ -274,7 +275,8 @@ class AnthropicProvider(BaseLLMProvider):
                                         start_time,
                                         final_output,
                                         user.access_token,
-                                        response_data
+                                        response_data,
+                                        user.space_id
                                     )
 
                                     yield final_llm_response.model_dump_json() + "\n"
@@ -297,6 +299,7 @@ class AnthropicProvider(BaseLLMProvider):
                                         "input_tokens": usage.get("input_tokens", 0),
                                         "output_tokens": usage.get("output_tokens", 0),
                                         "cache_read_input_tokens": usage.get("cache_read_input_tokens", 0),
+                                        "cache_creation_input_tokens": usage.get("cache_creation_input_tokens", 0),
                                         "reasoning_tokens": usage.get("reasoning_tokens", 0)
                                     },
                                     "stop_reason": delta.get("stop_reason", "failed")
@@ -473,12 +476,11 @@ class AnthropicProvider(BaseLLMProvider):
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
-            is_byok_enabled=llm_request.is_byok_enabled,
             credential_name=llm_request.credential_name,
             error=None
         )
 
-    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data, space_id: str = None) -> LLMResponse: 
         llm_response = default_llm_response_obj   
         end_time = time.perf_counter()
         usage = response_data.get("usage", {})
@@ -489,8 +491,45 @@ class AnthropicProvider(BaseLLMProvider):
         llm_response.time_taken = round(end_time - start_time, 2)
         llm_response.input_tokens = usage.get("input_tokens", 0)
         llm_response.input_cached_tokens = usage.get("cache_read_input_tokens", 0)
+        llm_response.cache_write_tokens = usage.get("cache_creation_input_tokens", 0)
         llm_response.output_tokens = usage.get("output_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("reasoning_tokens", 0)
+
+        if not is_byok(llm_request.credential_name):
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.debug(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
+
+            credit_usage_data = self._build_anthropic_credit_usage(llm_request, llm_response, space_id)
+
+            if not credit_usage_data:
+                logger.debug(f"No credit usage to post for request ID {llm_request.ref_id}.")
+                return llm_response
+
+            credit_manager = CreditManagerService()
+
+            try:
+                credit_manager.post_credit_usage(task="anthropic", request=credit_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+
+        else:
+            try:
+                byok_usage_data = self._build_anthropic_byok_usage(llm_request, llm_response, space_id, jwt)
+
+                if not byok_usage_data:
+                    logger.debug(f"No BYOK usage to post for request ID {llm_request.ref_id}.")
+                    return llm_response
+
+                byok_manager = ByokUsageManager()
+
+                byok_manager.post_byok_usage(task="anthropic", request=byok_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted BYOK usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post BYOK usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
 
         return llm_response
 
@@ -508,54 +547,77 @@ class AnthropicProvider(BaseLLMProvider):
         # Return mapped status based on the stop_reason, defaulting to 'failed' if not found
         return mapping.get(stop_reason, "failed")
 
-    def _build_anthropic_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
-        model_name = (llm_request.model or "").strip().lower()
-
+    def _build_anthropic_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None):
         # Normalize token values
         input_tokens = max(llm_response.input_tokens or 0, 0)
         output_tokens = max(llm_response.output_tokens or 0, 0)
 
-        # Cache tokens (safe fallback if fields are missing)
-        cache_read_tokens = max(getattr(llm_response, "cache_read_tokens", 0) or 0, 0)
-        cache_write_tokens = max(getattr(llm_response, "cache_write_tokens", 0) or 0, 0)
+        # Cache reads and writes are billed separately; cache writes come from cache-creation tokens.
+        cache_read_tokens = max(llm_response.input_cached_tokens or 0, 0)
+        cache_write_tokens = max(llm_response.cache_write_tokens or 0, 0)
 
-        credit_usage_data = [
-            {
-                "ServiceType": "CustomInputService",
-                "ConsumedUnit": input_tokens,
+        def build_entry(service_type: str, tokens: int) -> dict:
+            return {
+                "ServiceType": service_type,
+                "ConsumedUnit": tokens,
                 "RefType": llm_request.ref_type,
                 "RefId": llm_request.ref_id,
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.ref_name
-            },
-            {
-                "ServiceType": "CustomOutputService",
-                "ConsumedUnit": output_tokens,
-                "RefType": llm_request.ref_type,
-                "RefId": llm_request.ref_id,
-                "RefName": llm_request.ref_name,
-                "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.ref_name
-            },
-            {
-                "ServiceType": "CustomCacheReadService",  # Tokens read from cache
-                "ConsumedUnit": cache_read_tokens,
-                "RefType": llm_request.ref_type,
-                "RefId": llm_request.ref_id,
-                "RefName": llm_request.ref_name,
-                "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.ref_name
-            },
-            {
-                "ServiceType": "CustomCacheWriteService",  # Tokens written to cache
-                "ConsumedUnit": cache_write_tokens,
-                "RefType": llm_request.ref_type,
-                "RefId": llm_request.ref_id,
-                "RefName": llm_request.ref_name,
-                "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.ref_name
+                "TriggeredByAgent": llm_request.ref_name,
+                "SpaceId": space_id,
             }
-        ]
+
+        # Only bill services that actually consumed units, so zero-unit entries are not posted.
+        credit_usage_data = []
+        if input_tokens > 0:
+            credit_usage_data.append(build_entry("CustomInputService", input_tokens))
+        if output_tokens > 0:
+            credit_usage_data.append(build_entry("CustomOutputService", output_tokens))
+        if cache_read_tokens > 0:
+            credit_usage_data.append(build_entry("CustomCacheReadService", cache_read_tokens))
+        if cache_write_tokens > 0:
+            credit_usage_data.append(build_entry("CustomCacheWriteService", cache_write_tokens))
 
         return credit_usage_data
+
+    def _build_anthropic_byok_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None, jwt: str = None):
+        # Normalize token values
+        input_tokens = max(llm_response.input_tokens or 0, 0)
+        output_tokens = max(llm_response.output_tokens or 0, 0)
+
+        # Cache reads and writes are recorded separately; cache writes come from cache-creation tokens.
+        cache_read_tokens = max(llm_response.input_cached_tokens or 0, 0)
+        cache_write_tokens = max(llm_response.cache_write_tokens or 0, 0)
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(llm_request.credential_name, jwt=jwt)
+
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "Provider": llm_request.provider,
+                "Model": llm_request.model,
+                "ConsumedUnit": tokens,
+                "UnitType": "Tokens",
+                "CredentialName": credential_name,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.ref_name,
+                "SpaceId": space_id,
+            }
+
+        # Only record services that actually consumed units.
+        entries = []
+        if input_tokens > 0:
+            entries.append(build_entry("CustomInputService", input_tokens))
+        if output_tokens > 0:
+            entries.append(build_entry("CustomOutputService", output_tokens))
+        if cache_read_tokens > 0:
+            entries.append(build_entry("CustomCacheReadService", cache_read_tokens))
+        if cache_write_tokens > 0:
+            entries.append(build_entry("CustomCacheWriteService", cache_write_tokens))
+
+        return entries

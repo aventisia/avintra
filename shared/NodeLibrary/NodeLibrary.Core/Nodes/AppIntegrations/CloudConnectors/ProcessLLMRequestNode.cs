@@ -96,9 +96,7 @@ public class ProcessLLMRequestNode : BaseNode
                 is_json_output = GetBoolProperty(modelConfig, "is_json_output") ?? false,
                 json_schema = resolvedJsonSchema,
                 max_output_tokens = GetLongProperty(modelConfig, "max_output_tokens") ?? 0L,
-                is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                // Canonical key is credential_name; legacy flows may still carry a credential_id (back-compat).
-                credential_name = ReadCredentialProperty(modelConfig),
+                credential_name = CredentialReferenceHelper.Read(modelConfig),
                 temperature = GetDoubleProperty(modelConfig, "temperature") ?? 1.0,
                 top_p = GetDoubleProperty(modelConfig, "top_p") ?? 1.0,
                 stream = false,
@@ -196,15 +194,6 @@ public class ProcessLLMRequestNode : BaseNode
 
         // Case 5 (legacy): a "json_schema" key embedded inside the ModelConfig.
         return GetStringProperty(modelConfig, "json_schema");
-    }
-
-    // Reads a credential reference from a config object. Accepts the canonical
-    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
-    private static string? ReadCredentialProperty(JsonElement element)
-    {
-        var canonical = GetStringProperty(element, "credential_name");
-        if (!string.IsNullOrWhiteSpace(canonical)) return canonical;
-        return GetStringProperty(element, "credential_id");
     }
 
     private static bool? GetBoolProperty(JsonElement element, string propertyName)

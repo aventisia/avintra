@@ -40,7 +40,6 @@ AGENT_SETTINGS = {
         "provider": "openai",
         "model": "tts-1",
         "credentialName": "caller-tts-key",
-        "isByokEnabled": True,
     },
     "ttsVoice": {"language": "en-US", "voice": "alloy", "speed": 1.25},
     "pronunciations": [{"term": "API", "pronunciation": "A P I"}],
@@ -100,7 +99,7 @@ def _adapter(synthesize_speech, events=None) -> LiteLLMTTS:
 # ---------------------------------------------------------------------------
 
 
-def test_tts_request_carries_voice_byok_pronunciations_and_credit_references():
+def test_tts_request_carries_voice_pronunciations_and_credit_references():
     request = build_tts_request(_claims(), AGENT_SETTINGS)
 
     assert request.provider == "openai"
@@ -109,7 +108,7 @@ def test_tts_request_carries_voice_byok_pronunciations_and_credit_references():
     assert request.language == "en-US"
     assert request.speed == 1.25
     assert request.credential_name == "caller-tts-key"
-    assert request.is_byok_enabled is True
+    assert not hasattr(request, "is_byok_enabled")
     assert [(entry.term, entry.pronunciation) for entry in request.pronunciations] == [
         ("API", "A P I")
     ]
@@ -189,7 +188,6 @@ def test_first_sentence_is_synthesized_before_the_rest_of_the_answer():
     assert request.language == "en-US"
     assert request.speed == 1.25
     assert request.credential_name == "caller-tts-key"
-    assert request.is_byok_enabled is True
     assert request.ref_id == str(FLOW_ID)
     assert request.ref_name == "Support Agent"
 
@@ -204,7 +202,6 @@ def test_pronunciations_are_forwarded_and_replaced_by_the_provider(monkeypatch):
         input,
         voice,
         speed=1.0,
-        is_byok=False,
         credential_name=None,
         user,
     ):

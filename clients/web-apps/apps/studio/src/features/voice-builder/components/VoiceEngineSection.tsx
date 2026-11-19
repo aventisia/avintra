@@ -61,7 +61,6 @@ export const VoiceEngineSection = ({ renderModelField }: VoiceEngineSectionProps
                 model={realtime.model}
                 capability="realtime"
                 credentialName={realtime.credential_name}
-                isByokEnabled={realtime.is_byok_enabled}
                 showPreview={false}
                 emptyMessage="Pick a supported realtime model above to see its voices."
               />

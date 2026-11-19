@@ -77,7 +77,6 @@ def _agent_settings(**overrides) -> dict:
             "provider": "openai",
             "model": "gpt-4o-mini",
             "credentialName": "voice-key",
-            "isByokEnabled": True,
             "temperature": 0.3,
             "topP": 0.9,
             "maxOutputTokens": 256,
@@ -147,8 +146,8 @@ class TestRequestMapping:
         assert request.temperature == 0.3
         assert request.top_p == 0.9
         assert request.reasoning_effort == "low"
-        assert request.is_byok_enabled is True
         assert request.credential_name == "voice-key"
+        assert not hasattr(request, "is_byok_enabled")
         assert request.max_output_tokens == 256
 
         assert request.is_chat_agent is True
@@ -222,6 +221,15 @@ class TestRequestMapping:
         request = build_voice_llm_request(_claims(), settings, "hello")
 
         assert request.tool_config[0].actions[0].approval == "human"
+
+    def test_pre_change_settings_carrying_the_removed_flag_use_the_credential_only(self):
+        settings = _agent_settings()
+        settings["llm"]["isByokEnabled"] = True
+
+        request = build_voice_llm_request(_claims(), settings, "hello")
+
+        assert request.credential_name == "voice-key"
+        assert not hasattr(request, "is_byok_enabled")
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,6 @@
-import { SelectField, SwitchField } from "@avplatform/ui/form";
-import { useEffect, useMemo, useRef } from "react";
+import { Switch } from "@avplatform/ui";
+import { SelectField } from "@avplatform/ui/form";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 
 import { SearchableSelectField } from "@/components/searchable-select/SearchableSelectField";
@@ -8,17 +9,15 @@ import { LLModelType } from "@/types";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
 import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
-interface EmbeddingConfigFieldProps {
+type EmbeddingConfigFieldProps = {
   /** The name of the form field. */
   name: string;
-}
+};
 
 const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
-  // Field names
   const fieldNames = useMemo(
     () =>
       ({
-        isByokEnabled: `${name}.isByokEnabled`,
         credentialName: `${name}.credentialName`,
         provider: `${name}.provider`,
         model: `${name}.model`,
@@ -26,69 +25,44 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
     [name],
   );
 
-  // Form context
-  const { control, setValue, formState } = useFormContext();
+  const { control, setValue, formState, watch } = useFormContext();
 
-  // Controllers
   const { field: providerField } = useController({
     name: fieldNames.provider,
     control,
   });
 
-  const { field: isByokField } = useController({
-    name: fieldNames.isByokEnabled,
-    control,
-  });
-
-  const { field: credentialsField } = useController({
-    name: fieldNames.credentialName,
-    control,
-  });
-
-  // Derived values
   const providerValue = providerField.value;
-  const isByokEnabled = Boolean(isByokField.value);
-  const credentialsValue = credentialsField.value;
+
+  // IMPORTANT NOTE: the attached credential alone decides BYOK, so a blank or whitespace name is the platform path.
+  const credentialName = watch(fieldNames.credentialName);
+  const [byokView, setByokView] = useState(false);
+  const showByok = byokView || Boolean(String(credentialName ?? "").trim());
 
   const prevProviderRef = useRef(providerValue);
-  const prevByokEnabledRef = useRef(isByokEnabled);
-  const prevCredentialRef = useRef(credentialsValue);
+  const prevCredentialRef = useRef(credentialName);
 
-  // Reset dependent fields when provider mode/provider changes after user interaction.
   useEffect(() => {
-    const hasProviderOrModeChanged =
-      prevProviderRef.current !== providerValue || prevByokEnabledRef.current !== isByokEnabled;
-
-    if (!hasProviderOrModeChanged) return;
+    if (prevProviderRef.current === providerValue) return;
 
     prevProviderRef.current = providerValue;
-    prevByokEnabledRef.current = isByokEnabled;
 
     if (!formState.isDirty) return;
 
     setValue(fieldNames.credentialName, "", { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
-  }, [
-    isByokEnabled,
-    providerValue,
-    setValue,
-    fieldNames.credentialName,
-    fieldNames.model,
-    formState.isDirty,
-  ]);
+  }, [providerValue, setValue, fieldNames.credentialName, fieldNames.model, formState.isDirty]);
 
-  // Reset model when credential changes in BYOK mode after user interaction.
   useEffect(() => {
-    if (prevCredentialRef.current === credentialsValue) return;
-    prevCredentialRef.current = credentialsValue;
+    if (prevCredentialRef.current === credentialName) return;
+    prevCredentialRef.current = credentialName;
 
-    if (!isByokEnabled) return;
+    if (!showByok) return;
     if (!formState.isDirty) return;
 
     setValue(fieldNames.model, "", { shouldDirty: true });
-  }, [credentialsValue, isByokEnabled, setValue, fieldNames.model, formState.isDirty]);
+  }, [credentialName, showByok, setValue, fieldNames.model, formState.isDirty]);
 
-  // Available models
   const availableModels = useMemo(() => {
     const provider = embeddingModelProviders.find((p) => p.value === providerValue);
     const models = (provider?.models as LLModelType[]) ?? [];
@@ -103,12 +77,24 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
 
   return (
     <>
-      <SwitchField
-        name={fieldNames.isByokEnabled}
-        label="Bring your own API key"
-        description="Use your own provider API key instead of the platform-hosted models."
-      />
-      <div className={isByokEnabled ? "grid grid-cols-2 gap-3" : undefined}>
+      <div className="flex flex-row items-center justify-between gap-8 rounded-lg border p-2.5 pt-1.5">
+        <div className="space-y-0.5">
+          <p className="text-xs font-medium leading-none">Bring your own API key</p>
+          <p className="text-2xs text-muted-foreground">
+            Use your own provider API key instead of the platform-hosted models.
+          </p>
+        </div>
+        <Switch
+          size="sm"
+          checked={showByok}
+          onCheckedChange={(checked) => {
+            setByokView(checked);
+            setValue(fieldNames.credentialName, "", { shouldDirty: true });
+            setValue(fieldNames.model, "", { shouldDirty: true });
+          }}
+        />
+      </div>
+      <div className={showByok ? "grid grid-cols-2 gap-3" : undefined}>
         <SelectField
           isRequired
           name={fieldNames.provider}
@@ -118,9 +104,8 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
           }))}
           label="Embedding provider"
         />
-        {isByokEnabled && (
+        {showByok && (
           <VaultCredentialSelectField
-            isRequired
             name={fieldNames.credentialName}
             label="Credential"
             description={`The ${currentProvider?.label ?? ""} credential that holds your API key.`}
@@ -136,7 +121,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
         label="Embedding model"
         primaryText="Models"
         isLoading={false}
-        disabled={isByokEnabled && !credentialsValue}
+        disabled={showByok && !credentialName}
       />
     </>
   );

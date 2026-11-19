@@ -13,6 +13,7 @@ from __future__ import annotations
 import litellm
 from fastapi import HTTPException
 
+from .credentials import is_byok
 from .schemas import ProviderLiteral
 
 # Map user-facing provider names to LiteLLM prefixes. LiteLLM has no "google"
@@ -225,30 +226,14 @@ def get_credit_service_type(provider: str, model: str, kind: str) -> str | None:
     return model_map.get(kind)
 
 
-def _has_credential(is_byok: bool, credential_name: str | None) -> bool:
-    """True when a real BYOK credential name is supplied (not null / empty)."""
-    if not is_byok:
-        return False
-    if not credential_name:
-        return False
-    cleaned = str(credential_name).strip()
-    return cleaned != ""
-
-
-def should_post_usage(is_byok: bool, credential_name: str | None) -> bool:
+def should_post_usage(credential_name: str | None) -> bool:
     """True only when the request used platform (non-BYOK) credentials.
 
-    Usage is posted against the platform's credit system only when BYOK is
-    disabled AND no real credential name is supplied. A null/empty
-    credential counts as "no real credential"; any other value (a real
-    credential) means we should not post platform usage.
+    Usage is posted against the platform's credit system only when no real
+    credential name is supplied. A null/empty/whitespace credential counts as
+    "no real credential"; any other value means the caller's own key was used.
     """
-    if is_byok:
-        return False
-    if not credential_name:
-        return True
-    cleaned = str(credential_name).strip()
-    return cleaned == ""
+    return not is_byok(credential_name)
 
 
 def _litellm_providers() -> set[str]:
@@ -265,13 +250,13 @@ def _litellm_models(provider: str) -> set[str]:
         return set()
 
 
-def validate_provider(provider: str, is_byok: bool = False, credential_name: str | None = None) -> None:
+def validate_provider(provider: str, credential_name: str | None = None) -> None:
     """Validate a provider name.
 
-    - Non-BYOK: must be in the curated `ProviderLiteral` list.
+    - Platform (no real credential_name): must be in the curated `ProviderLiteral` list.
     - BYOK (real credential_name): must be a provider LiteLLM knows about.
     """
-    if _has_credential(is_byok, credential_name):
+    if is_byok(credential_name):
         if provider not in _litellm_providers():
             raise HTTPException(
                 status_code=400,
@@ -288,15 +273,16 @@ def validate_provider(provider: str, is_byok: bool = False, credential_name: str
         )
 
 
-def validate_model(provider: str, model: str, is_byok: bool = False, credential_name: str | None = None) -> None:
+def validate_model(provider: str, model: str, credential_name: str | None = None) -> None:
     """Validate a model id for a provider.
 
-    - Non-BYOK (POST credit-based): must be in the hardcoded `PROVIDER_MODEL_MAP` list.
+    - Platform (no real credential_name; POST credit-based): must be in the hardcoded
+      `PROVIDER_MODEL_MAP` list.
     - BYOK (real credential_name): must be in `litellm.models_by_provider[provider]`.
       Providers with no model catalog (empty set) are accepted — LiteLLM will
       validate the model at call time, so we don't reject catalog-less providers.
     """
-    if _has_credential(is_byok, credential_name):
+    if is_byok(credential_name):
         available = _litellm_models(provider)
         # Catalog-less providers (empty model set) are valid; don't reject them.
         if not available:

@@ -474,17 +474,16 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
                     }
             }
 
-            // AI models: __ModelConfig__* -> { provider, model, credential_name, is_byok_enabled }
             var nodeName = string.IsNullOrWhiteSpace(node.Data.Name) ? node.Data.Label : node.Data.Name;
             foreach (var kvp in configObj)
             {
                 if (!kvp.Key.Contains("__ModelConfig__") || kvp.Value is not JsonObject mc) continue;
+                var credentialName = CredentialReferenceUtil.Resolve(mc);
                 aiModels.Add(new AiModelDto
                 {
                     Provider = mc.TryGetPropertyValue("provider", out var p) ? p?.ToString() : null,
                     Model = mc.TryGetPropertyValue("model", out var m) ? m?.ToString() : null,
-                    CredentialName = mc.TryGetPropertyValue("credential_name", out var c) ? c?.ToString() : null,
-                    IsByokEnabled = mc.TryGetPropertyValue("is_byok_enabled", out var b) && b?.GetValue<bool>() == true,
+                    CredentialName = credentialName,
                     NodeName = nodeName,
                     ModelType = ResolveModelType(kvp.Key),
                     LinkedKnowledgeBases = nodeKbs,

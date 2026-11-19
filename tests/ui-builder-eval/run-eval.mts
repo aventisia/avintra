@@ -137,7 +137,6 @@ const generate = async (entry: EvalPrompt) => {
         { role: "user", content: buildUiBuilderFrameworkUserContent("", entry.prompt) },
       ],
       stream: false,
-      is_byok_enabled: Boolean(model.credential),
       credential_name: model.credential,
       max_output_tokens: Number(process.env.UI_EVAL_MAX_OUTPUT_TOKENS ?? 16000),
       skill_names: [...UI_BUILDER_FRAMEWORK_SKILL_NAMES, UI_BUILDER_ARCHETYPE_SKILL_NAME],
