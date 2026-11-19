@@ -25,8 +25,8 @@ const toFlowVariablesEntries = (value: unknown[]): FlowVariablesEntry[] =>
   value.filter(isFlowVariablesEntry);
 
 /**
- * Builds the file the Studio's Export writes: the canvas with flow variables and inputs/outputs
- * nested in `reactFlowObject`.
+ * Builds the exported file: the agent's create metadata plus the canvas with flow variables,
+ * inputs/outputs and platform nested in `reactFlowObject`.
  */
 export const buildFlowExportPayload = (loadFlow: LoadFlowDto) => {
   const inputOutputObject = parseJsonArray(loadFlow.inputOutputObject);
@@ -36,10 +36,16 @@ export const buildFlowExportPayload = (loadFlow: LoadFlowDto) => {
   );
 
   return {
+    agent: {
+      name: loadFlow.name,
+      type: loadFlow.type,
+      description: loadFlow.description ?? "",
+    },
     reactFlowObject: {
       ...parseJsonObject(loadFlow.reactFlowObject),
       flowVariablesObject,
       inputOutputObject,
+      ...(loadFlow.supportedPlatform ? { supportedPlatform: loadFlow.supportedPlatform } : {}),
     },
   };
 };
