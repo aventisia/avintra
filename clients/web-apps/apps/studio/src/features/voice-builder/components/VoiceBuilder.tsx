@@ -39,7 +39,7 @@ export const VoiceBuilder = () => {
   if (boundNodeId !== voiceNodeId) {
     return (
       <div className="flex h-full items-center justify-center">
-        <LoadingSpinner className="size-5 text-primary" />
+        <LoadingSpinner label="Loading voice settings" className="size-5 text-primary" />
       </div>
     );
   }

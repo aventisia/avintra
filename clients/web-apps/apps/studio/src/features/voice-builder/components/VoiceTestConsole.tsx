@@ -54,6 +54,7 @@ export const VoiceTestConsole = ({
       variant="panel"
       showDiagnostics
       startDisabled={isPublished || isIncomplete}
+      statusLabel={call.isSavingDraft ? "Saving draft…" : undefined}
       idleTitle={isIncomplete ? "Finish setup to test" : "Call your agent"}
       idleDescription={
         isPublished

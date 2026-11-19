@@ -40,6 +40,26 @@ three together, or Studio will offer a provider that the worker rejects.
 The test console reads the saved engine mode and model label through
 `VoiceAgentStudio`; it does not infer the engine from a hard-coded default.
 
+## Feedback in the builder
+
+- A template applied on the Prompt tab is announced with an Undo action that
+  puts back the goal, role, instructions, first speaker, and introduction. The
+  toast no longer tells you to save, because a template is a draft edit like any
+  other.
+- Changing the provider or language clears the voice (and sometimes the
+  language) that belonged to it. A note under the voice pickers says what was
+  cleared until the next change. Picking a voice for the first time in a saved
+  agent stays silent — those values are corrected, not discarded.
+- Starting a test call saves the draft first. The call view shows "Saving
+  draft…" while that save runs, and a failed save shows its error without
+  starting a call.
+- Loading failures are shown, not hidden: a configuration that cannot be loaded
+  says "Configuration not found for this node." instead of spinning, a voice list
+  that cannot be fetched shows an error line, the Pronunciation tab says its
+  settings could not be loaded, and a preview button that cannot play says why.
+  Spinners expose an accessible name, and a failed preview is announced to
+  screen readers.
+
 ## Shared settings
 
 `__PreemptiveGeneration__Voice` applies to pipeline calls only; realtime uses

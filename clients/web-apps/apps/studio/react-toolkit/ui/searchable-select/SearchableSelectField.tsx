@@ -63,6 +63,7 @@ const SearchableSelectField = ({
               disabled={disabled}
               size={size}
               isLoading={isLoading}
+              ariaLabel={label}
               fallbackIcon={fallbackIcon}
             />
           </FormControl>

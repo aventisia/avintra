@@ -41,13 +41,22 @@ const VoicePreviewButton = ({
   voice,
   preview,
   className,
+  showReason = false,
 }: {
   voice: VoiceOption;
   preview: VoicePreviewRequest;
   className?: string;
+  showReason?: boolean;
 }) => {
   const { name } = splitVoiceLabel(voice.label);
   const player = useVoicePreview({ ...preview, voice: voice.value, sample: voice.sample });
+
+  const disabledReason =
+    player.isPreviewing || player.canPreview
+      ? undefined
+      : player.isSupported
+        ? "Pick a model to hear this voice"
+        : "Preview is not supported for this provider";
 
   const toggle = (event: MouseEvent) => {
     event.stopPropagation();
@@ -60,31 +69,43 @@ const VoicePreviewButton = ({
   };
 
   return (
-    <button
-      type="button"
-      aria-label={player.isPreviewing ? `Stop ${name}` : `Preview ${name}`}
-      title={
-        player.error ??
-        (player.isSupported ? undefined : "Preview is not supported for this provider")
-      }
-      disabled={!player.canPreview && !player.isPreviewing}
-      onClick={toggle}
-      onKeyDown={keepKeysLocal}
-      className={cn(
-        buttonVariants({ variant: "outline", size: "icon" }),
-        "text-ink-2",
-        player.isPreviewing &&
-          "border-primary/40 bg-selected text-primary-text hover:border-primary/40 hover:bg-selected",
-        player.error && "border-bad/50 text-bad hover:border-bad/50",
-        className,
-      )}
-    >
-      {player.isPreviewing ? (
-        <StopIcon aria-hidden="true" weight="fill" className="size-3" />
-      ) : (
-        <PlayIcon aria-hidden="true" weight="fill" className="size-3" />
-      )}
-    </button>
+    <span className="inline-flex items-center gap-1.5">
+      <button
+        type="button"
+        aria-label={
+          player.isPreviewing
+            ? `Stop ${name}`
+            : disabledReason
+              ? `Preview ${name} — ${disabledReason}`
+              : `Preview ${name}`
+        }
+        title={player.error ?? disabledReason}
+        disabled={!player.canPreview && !player.isPreviewing}
+        onClick={toggle}
+        onKeyDown={keepKeysLocal}
+        className={cn(
+          buttonVariants({ variant: "outline", size: "icon" }),
+          "text-ink-2",
+          player.isPreviewing &&
+            "border-primary/40 bg-selected text-primary-text hover:border-primary/40 hover:bg-selected",
+          player.error && "border-bad/50 text-bad hover:border-bad/50",
+          className,
+        )}
+      >
+        {player.isPreviewing ? (
+          <StopIcon aria-hidden="true" weight="fill" className="size-3" />
+        ) : (
+          <PlayIcon aria-hidden="true" weight="fill" className="size-3" />
+        )}
+      </button>
+      {player.error ? (
+        <span role="alert" className={showReason ? "text-2xs text-bad" : "sr-only"}>
+          {player.error}
+        </span>
+      ) : showReason && disabledReason ? (
+        <span className="text-2xs text-muted-foreground">{disabledReason}</span>
+      ) : null}
+    </span>
   );
 };
 
@@ -117,13 +138,14 @@ export const VoicePickerField = ({
         return (
           <FormItem size="sm">
             <FormLabelExt size="sm" label={label} />
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               <Popover open={open} onOpenChange={setOpen}>
                 <FormControl>
                   <PopoverTrigger asChild>
                     <Button
                       variant="field"
                       role="combobox"
+                      aria-label={label}
                       aria-expanded={open}
                       className="h-8 min-w-0 flex-1 justify-between gap-2 px-2.5 text-xs"
                     >
@@ -205,7 +227,9 @@ export const VoicePickerField = ({
                   </Command>
                 </PopoverContent>
               </Popover>
-              {preview && selected && <VoicePreviewButton voice={selected} preview={preview} />}
+              {preview && selected && (
+                <VoicePreviewButton voice={selected} preview={preview} showReason />
+              )}
             </div>
             <FormMessage size="sm" />
           </FormItem>

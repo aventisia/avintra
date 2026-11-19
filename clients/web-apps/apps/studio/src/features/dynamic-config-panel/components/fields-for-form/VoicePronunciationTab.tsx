@@ -26,6 +26,7 @@ const normalizeFields = (config: CachedNodeConfig | undefined): DCPFieldSchemaTy
 export const VoicePronunciationTab = () => {
   const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
   const [fallbackFields, setFallbackFields] = useState<DCPFieldSchemaType[] | null>(null);
+  const [hasLoadError, setHasLoadError] = useState(false);
 
   const cachedFields = useMemo(
     () => normalizeFields(getCachedNodeConfig(nodeName ?? "") as CachedNodeConfig | undefined),
@@ -33,6 +34,7 @@ export const VoicePronunciationTab = () => {
   );
 
   useEffect(() => {
+    setHasLoadError(false);
     if (!nodeName || cachedFields.length > 0) return;
 
     let active = true;
@@ -41,7 +43,9 @@ export const VoicePronunciationTab = () => {
         if (active) setFallbackFields(normalizeFields(config as unknown as CachedNodeConfig));
       })
       .catch(() => {
-        if (active) setFallbackFields([]);
+        if (!active) return;
+        setFallbackFields([]);
+        setHasLoadError(true);
       });
 
     return () => {
@@ -73,7 +77,19 @@ export const VoicePronunciationTab = () => {
     ],
   });
 
-  if (!nodeName || nodeName !== VOICE_AGENT_NODE_NAME || pronunciationFields.length === 0) {
+  if (!nodeName || nodeName !== VOICE_AGENT_NODE_NAME) {
+    return null;
+  }
+
+  if (pronunciationFields.length === 0 && hasLoadError) {
+    return (
+      <p role="alert" className="text-hint text-bad">
+        Pronunciation settings could not be loaded.
+      </p>
+    );
+  }
+
+  if (pronunciationFields.length === 0) {
     return null;
   }
 

@@ -35,6 +35,7 @@ export * from "./constants/voice-providers.constant";
 // hooks
 export * from "./hooks/useDCPNavigationGuard";
 export * from "./hooks/useDefineDCPForm";
+export { useFetchTenantEnabledModels } from "./hooks/useFetchTenantEnabledModels.hook";
 export * from "./hooks/useFlushNodeConfig";
 export * from "./hooks/usePreloadNodeConfigs.hook";
 export * from "./hooks/useRegisterFormFlush";
@@ -56,3 +57,4 @@ export * from "./types/voice-provider.type";
 export * from "./utils/generate-zod-schema";
 export * from "./utils/get-default-values-for-form";
 export * from "./utils/should-render-field";
+export { getVoiceClearedNote } from "./utils/voice-reset-note.util";

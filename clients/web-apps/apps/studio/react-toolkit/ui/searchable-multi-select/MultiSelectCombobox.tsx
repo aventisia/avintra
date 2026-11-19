@@ -42,6 +42,8 @@ interface MultiSelectComboboxProps {
   className?: string;
   disabled?: boolean;
   fieldSize?: FormFieldSizeType;
+  /** Accessible name for the trigger, since it is not a native form control. */
+  ariaLabel?: string;
 }
 
 export function MultiSelectCombobox({
@@ -53,6 +55,7 @@ export function MultiSelectCombobox({
   className,
   disabled = false,
   fieldSize = "base",
+  ariaLabel,
 }: MultiSelectComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -86,6 +89,7 @@ export function MultiSelectCombobox({
           <Button
             variant="ghost"
             role="combobox"
+            aria-label={ariaLabel}
             aria-expanded={open}
             disabled={disabled}
             className={cn(
