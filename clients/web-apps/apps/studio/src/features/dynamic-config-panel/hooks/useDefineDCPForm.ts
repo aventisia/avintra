@@ -21,7 +21,9 @@ import { useRegisterFormFlush } from "./useRegisterFormFlush";
  * Defines the generic node config form: loads the node-type schema, builds
  * validation, and publishes dirty state for the panel boundary guards.
  */
-export const useDefineDCPForm = () => {
+export const useDefineDCPForm = (args?: {
+  beforeFlush?: (form: UseFormReturn<FieldValues>) => boolean | void;
+}) => {
   // Get node unique name state (required to get config panel data)
   const { nodeId, nodeData, nodeLabel, selectedTab, setSelectedTab } = useDynamicConfigPanelStore(
     useShallow((state) => ({
@@ -150,6 +152,7 @@ export const useDefineDCPForm = () => {
     outputKeys,
     nodeLabel,
     isLabelDirty,
+    beforeFlush: args?.beforeFlush,
   });
 
   // Expose the latest flush to boundary handlers (panel close / node switch /

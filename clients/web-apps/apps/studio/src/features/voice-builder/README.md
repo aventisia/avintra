@@ -27,8 +27,10 @@ unmounts.
 The engine choice uses the same two-card selector as Opening. Realtime provider,
 model, and credentials come from `ModelConfigField`; language, voice, and speed
 come from `__VoiceConfig__RealtimeVoice` for realtime and
-`__VoiceConfig__PipelineVoice` for pipeline, so each engine keeps its own choice.
-The builder mirrors the active engine's setting into
+`__VoiceConfig__PipelineVoice` for pipeline, so each engine keeps its own voice.
+Saving empties the provider, model, and credential of the engine that is not
+selected (`VOICE_ENGINE_MODEL_FIELDS`), so a saved node holds one engine's config
+at a time. The builder mirrors the active engine's voice into
 `__VoiceConfig__TextToSpeech`, which the runtime reads for both modes; agents
 saved before this split seed both engines from that shared value on load. The
 builder is the only writer of the per-engine copies: the generic node panel

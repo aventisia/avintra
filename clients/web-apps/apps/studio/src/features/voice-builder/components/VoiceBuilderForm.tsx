@@ -18,7 +18,11 @@ import {
 import { VOICE_FIELDS } from "../constants/voice-builder.constant";
 import { useVoiceBuilderStore } from "../stores/voice-builder.store";
 import type { VoiceBuilderSectionId, VoiceEngineMode } from "../types/voice-builder.type";
-import { getPendingVoiceChecks, getVoiceReadiness } from "../utils/voice-builder.util";
+import {
+  getPendingVoiceChecks,
+  getVoiceReadiness,
+  resetInactiveEngineModels,
+} from "../utils/voice-builder.util";
 import { VoiceBuilderSection } from "./VoiceBuilderSection";
 import { VoiceContextSection } from "./VoiceContextSection";
 import { VoiceEngineSection } from "./VoiceEngineSection";
@@ -28,8 +32,13 @@ import { VoiceTabHeading } from "./VoiceTabHeading";
 
 /** Voice agent settings in tabs like the node config panel, bound to the saved voice node through the node config form. */
 export const VoiceBuilderForm = () => {
+  // IMPORTANT NOTE: both engines share one saved node, so a save empties the engine that is not
+  // selected to keep one set of provider, model, and credential; its voice stays for later.
   const { form, watch, flushNow, nodeConfig, isFormReady, isLoading, hasLoadError } =
-    useDefineDCPForm();
+    useDefineDCPForm({
+      beforeFlush: (next) => resetInactiveEngineModels(next),
+    });
+
   const activeSection = useVoiceBuilderStore((state) => state.activeSection);
   const setActiveSection = useVoiceBuilderStore((state) => state.setActiveSection);
   const values = watch();

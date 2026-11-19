@@ -51,6 +51,12 @@ export const VOICE_OUTPUT_FIELDS: Record<
   },
 };
 
+/** Provider, model, and credential fields each engine owns, cleared on save when it is not selected. */
+export const VOICE_ENGINE_MODEL_FIELDS: Record<VoiceEngineMode, string[]> = {
+  pipeline: [VOICE_FIELDS.speechToText, VOICE_FIELDS.languageModel, VOICE_FIELDS.textToSpeech],
+  realtime: [VOICE_FIELDS.realtimeModel],
+};
+
 export const VOICE_ENGINE_LABELS: Record<VoiceEngineMode, string> = {
   pipeline: "Pipeline",
   realtime: "Realtime",

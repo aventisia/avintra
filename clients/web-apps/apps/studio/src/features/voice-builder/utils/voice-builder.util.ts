@@ -1,5 +1,6 @@
-import { VOICE_FIELDS } from "../constants/voice-builder.constant";
+import { VOICE_ENGINE_MODEL_FIELDS, VOICE_FIELDS } from "../constants/voice-builder.constant";
 import type {
+  VoiceEngineMode,
   VoiceEngineStepId,
   VoicePromptStageId,
   VoiceReadinessCheck,
@@ -67,6 +68,40 @@ export const isPersonaEmpty = (values: FormValues) =>
 
 const hasProviderModel = (value: unknown) =>
   hasText(readKey(value, "provider")) && hasText(readKey(value, "model"));
+
+/** Model fields of the engine that is not selected, cleared so a save keeps one engine's config. */
+export const getInactiveEngineModelFields = (mode: VoiceEngineMode) =>
+  VOICE_ENGINE_MODEL_FIELDS[mode === "realtime" ? "pipeline" : "realtime"];
+
+type ResettableForm = {
+  getValues: (name: string) => unknown;
+  setValue: (
+    name: string,
+    value: unknown,
+    options?: { shouldDirty?: boolean; shouldValidate?: boolean },
+  ) => void;
+};
+
+/** Empties the unselected engine's provider, model, and credential; its voice stays. */
+export const resetInactiveEngineModels = (form: ResettableForm): boolean => {
+  const mode = form.getValues(VOICE_FIELDS.engineMode) as VoiceEngineMode | undefined;
+  if (mode !== "pipeline" && mode !== "realtime") return false;
+  let didClear = false;
+  for (const name of getInactiveEngineModelFields(mode)) {
+    const config = form.getValues(name);
+    if (
+      !hasText(readKey(config, "provider")) &&
+      !hasText(readKey(config, "model")) &&
+      !hasText(readKey(config, "credential_name"))
+    )
+      continue;
+    for (const key of ["provider", "model", "credential_name"]) {
+      form.setValue(`${name}.${key}`, "", { shouldDirty: true, shouldValidate: false });
+    }
+    didClear = true;
+  }
+  return didClear;
+};
 
 /** Whether each pipeline step (hear, think, speak) has the models it needs. */
 export const getEngineStepReadiness = (values: FormValues): Record<VoiceEngineStepId, boolean> => ({

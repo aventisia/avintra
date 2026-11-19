@@ -4,6 +4,7 @@ import { VOICE_FIELDS } from "../../constants/voice-builder.constant";
 import type { VoiceReadinessCheck } from "../../types/voice-builder.type";
 import {
   formatPendingSections,
+  getInactiveEngineModelFields,
   getInstructionVariables,
   getPendingVoiceChecks,
   getPersonaVariables,
@@ -12,6 +13,7 @@ import {
   getUsedVariables,
   getVoiceReadiness,
   isRealtimeReady,
+  resetInactiveEngineModels,
   toVariableName,
 } from "../voice-builder.util";
 
@@ -123,6 +125,76 @@ describe("toVariableName", () => {
     expect(toVariableName("{{business name}}")).toBe("business_name");
     expect(toVariableName("caller-id")).toBe("caller_id");
     expect(toVariableName("order.total$")).toBe("order.total");
+  });
+});
+
+describe("getInactiveEngineModelFields", () => {
+  it("targets the engine that is not selected", () => {
+    expect(getInactiveEngineModelFields("realtime")).toEqual([
+      VOICE_FIELDS.speechToText,
+      VOICE_FIELDS.languageModel,
+      VOICE_FIELDS.textToSpeech,
+    ]);
+    expect(getInactiveEngineModelFields("pipeline")).toEqual([VOICE_FIELDS.realtimeModel]);
+  });
+});
+
+describe("resetInactiveEngineModels", () => {
+  const makeForm = (store: Record<string, unknown>) => {
+    const setCalls: string[] = [];
+    return {
+      setCalls,
+      store,
+      form: {
+        getValues: (name: string) => store[name],
+        setValue: (name: string, value: unknown) => {
+          setCalls.push(name);
+          const dot = name.indexOf(".");
+          const field = name.slice(0, dot);
+          const key = name.slice(dot + 1);
+          store[field] = { ...((store[field] as Record<string, unknown>) ?? {}), [key]: value };
+        },
+      },
+    };
+  };
+
+  it("clears the pipeline models and keeps voices when realtime is selected", () => {
+    const { form, store, setCalls } = makeForm({
+      [VOICE_FIELDS.engineMode]: "realtime",
+      [VOICE_FIELDS.speechToText]: { provider: "deepgram", model: "nova-3" },
+      [VOICE_FIELDS.languageModel]: { provider: "openai", model: "gpt-4o" },
+      [VOICE_FIELDS.textToSpeech]: { provider: "cartesia", model: "sonic-2", credential_name: "k" },
+      [VOICE_FIELDS.pipelineVoiceConfig]: { voice: "alloy" },
+      [VOICE_FIELDS.realtimeModel]: { provider: "openai", model: "gpt-realtime" },
+    });
+    expect(resetInactiveEngineModels(form)).toBe(true);
+    expect(store[VOICE_FIELDS.speechToText]).toMatchObject({ provider: "", model: "" });
+    expect(store[VOICE_FIELDS.pipelineVoiceConfig]).toMatchObject({ voice: "alloy" });
+    expect(store[VOICE_FIELDS.realtimeModel]).toMatchObject({ model: "gpt-realtime" });
+    expect(setCalls.length).toBeGreaterThan(0);
+  });
+
+  it("clears the realtime model when pipeline is selected", () => {
+    const { form, store } = makeForm({
+      [VOICE_FIELDS.engineMode]: "pipeline",
+      [VOICE_FIELDS.realtimeModel]: { provider: "openai", model: "gpt-realtime" },
+    });
+    expect(resetInactiveEngineModels(form)).toBe(true);
+    expect(store[VOICE_FIELDS.realtimeModel]).toMatchObject({ provider: "", model: "" });
+  });
+
+  it("leaves an already empty engine untouched", () => {
+    const { form, setCalls } = makeForm({ [VOICE_FIELDS.engineMode]: "pipeline" });
+    expect(resetInactiveEngineModels(form)).toBe(false);
+    expect(setCalls).toEqual([]);
+  });
+
+  it("does nothing when the engine mode is unknown", () => {
+    const { form, setCalls } = makeForm({
+      [VOICE_FIELDS.realtimeModel]: { provider: "openai", model: "gpt-realtime" },
+    });
+    expect(resetInactiveEngineModels(form)).toBe(false);
+    expect(setCalls).toEqual([]);
   });
 });
 

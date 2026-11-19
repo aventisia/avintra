@@ -30,6 +30,8 @@ type UseFlushNodeConfigArgs = {
   /** De-maps namespaced CallBlock output keys back to original names. */
   outputKeyMap?: Record<string, string>;
   extras?: FlushExtras;
+  /** Runs before the dirty check; returning true forces the commit through. */
+  beforeFlush?: (form: UseFormReturn<FieldValues>) => boolean | void;
 };
 
 /** Stable stringify with sorted object keys so key order never affects equality. */
@@ -65,16 +67,24 @@ export const useFlushNodeConfig = ({
   isLabelDirty,
   outputKeyMap,
   extras,
+  beforeFlush,
 }: UseFlushNodeConfigArgs) => {
   const { updateNodeDataIO, updateFlowVariablesObject } = useUpdateNodeDataIO();
 
-  const flushNow = async (): Promise<void> => {
+  const flushNow = async (options?: { force?: boolean }): Promise<void> => {
+    const preDirtied = beforeFlush?.(form) ?? false;
     // Commit in-progress composite field edits (e.g. an unfinished tool) first;
     // these may not flip formState.isDirty on their own.
     const pendingFieldCommitted =
       useDynamicConfigPanelStore.getState().flushPendingFieldEdits?.() ?? false;
 
-    if (!form.formState.isDirty && !pendingFieldCommitted && !isLabelDirty) {
+    if (
+      !preDirtied &&
+      !options?.force &&
+      !form.formState.isDirty &&
+      !pendingFieldCommitted &&
+      !isLabelDirty
+    ) {
       return;
     }
 
