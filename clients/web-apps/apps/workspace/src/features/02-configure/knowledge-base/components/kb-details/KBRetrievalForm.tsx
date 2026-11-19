@@ -13,6 +13,7 @@ import { numberOfChunksProps, queryProps } from "../../constants/kb-retrieval-fe
 import { knowledgeBaseRetrievalSchema } from "../../constants/kb-retrieval-zod-schema";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKnowledgeBaseRetrievalForm } from "../../hooks/useDefineKBRetrievalForm";
+import { assertEmbeddingCredentialAvailable } from "../../utils/embedding-credential-guard.util";
 
 export const KnowledgeBaseRetrievalForm = ({
   setChunksRetrieved,
@@ -34,6 +35,8 @@ export const KnowledgeBaseRetrievalForm = ({
       if (!knowledgeBase) {
         throw new Error("Knowledge base configuration is not available");
       }
+
+      assertEmbeddingCredentialAvailable(knowledgeBase);
 
       return queryVectorStore({
         vector_store: knowledgeBase.vectorStore,
