@@ -11,9 +11,11 @@ import {
 
 import { VOICE_OUTPUT_FIELDS } from "../constants/voice-builder.constant";
 import { useVoiceOutputReset } from "../hooks/useVoiceOutputReset.hook";
+import type { VoiceEngineMode } from "../types/voice-builder.type";
 import { VoicePickerField, type VoicePreviewRequest } from "./VoicePickerField";
 
 type VoiceOutputFieldsProps = {
+  mode: VoiceEngineMode;
   provider?: string;
   model?: string;
   capability: VoiceCatalogCapability;
@@ -23,6 +25,7 @@ type VoiceOutputFieldsProps = {
 };
 
 export const VoiceOutputFields = ({
+  mode,
   provider,
   model,
   capability,
@@ -31,8 +34,9 @@ export const VoiceOutputFields = ({
   emptyMessage,
 }: VoiceOutputFieldsProps) => {
   const { watch } = useFormContext();
-  const language = watch(VOICE_OUTPUT_FIELDS.language) as string | undefined;
-  const selectedVoice = watch(VOICE_OUTPUT_FIELDS.voice) as string | undefined;
+  const fields = VOICE_OUTPUT_FIELDS[mode];
+  const language = watch(fields.language) as string | undefined;
+  const selectedVoice = watch(fields.voice) as string | undefined;
   const pronunciations = watch("__Pronunciation__Voice") as unknown;
   // IMPORTANT NOTE: the attached credential alone decides BYOK, so a blank or whitespace name is the platform path.
   const activeCredential = String(credentialName ?? "").trim() || undefined;
@@ -54,7 +58,7 @@ export const VoiceOutputFields = ({
     provider,
     model,
     language,
-    speed: watch(VOICE_OUTPUT_FIELDS.speed) as number | undefined,
+    speed: watch(fields.speed) as number | undefined,
     credentialName: activeCredential,
     pronunciations:
       watch("__PronunciationEnabled__Voice") !== false && Array.isArray(pronunciations)
@@ -62,7 +66,18 @@ export const VoiceOutputFields = ({
         : [],
   };
 
-  const clearedNote = useVoiceOutputReset(provider, language, selectedVoice, providerData, isReady);
+  // IMPORTANT NOTE: the provider-level fallback list is stale for newer voices, so a saved voice
+  // is validated only against the selected model's loaded catalog. The catalog is credential-scoped
+  // when a credential is attached (a BYOK account lists its own voices) and platform-scoped otherwise.
+  const isCatalogReady = isReady && !isError && Boolean(model);
+  const clearedNote = useVoiceOutputReset(
+    mode,
+    provider,
+    language,
+    selectedVoice,
+    providerData,
+    isCatalogReady,
+  );
 
   const hasNoEnabledModels =
     Boolean(activeCredential) &&
@@ -118,22 +133,27 @@ export const VoiceOutputFields = ({
 
   return (
     <div className="space-y-2">
+      {provider && model && !activeCredential ? (
+        <p className="rounded-lg bg-sunken px-3 py-2 text-hint text-muted-foreground">
+          Pick the credential this model uses to load its account voices.
+        </p>
+      ) : null}
       <div className="grid items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
         <SelectField
           size="sm"
           className="h-8"
-          name={VOICE_OUTPUT_FIELDS.language}
+          name={fields.language}
           selectOptions={providerData.languages}
           label="Language"
         />
         <VoicePickerField
-          name={VOICE_OUTPUT_FIELDS.voice}
+          name={fields.voice}
           voices={providerData.voices}
           preview={showPreview ? preview : undefined}
         />
         <SliderField
           size="sm"
-          name={VOICE_OUTPUT_FIELDS.speed}
+          name={fields.speed}
           label="Speed"
           min={0.7}
           max={1.2}

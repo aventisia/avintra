@@ -81,6 +81,22 @@ const createDefaultVoiceAgentData = (): NodeDataType => ({
         speed: 1,
       },
     },
+    {
+      key: "__VoiceConfig__PipelineVoice",
+      value: {
+        language: "en",
+        voice: "",
+        speed: 1,
+      },
+    },
+    {
+      key: "__VoiceConfig__RealtimeVoice",
+      value: {
+        language: "en",
+        voice: "",
+        speed: 1,
+      },
+    },
     { key: "__EngineMode__Voice", value: "pipeline" },
     {
       key: "__ModelConfig__RealtimeVoice",
@@ -201,6 +217,28 @@ const applyLegacyVoiceFeatureDefaults = (
   });
 };
 
+const VOICE_MODE_CONFIG_KEYS = new Set([
+  "__VoiceConfig__PipelineVoice",
+  "__VoiceConfig__RealtimeVoice",
+]);
+
+// IMPORTANT NOTE: agents saved before per-engine voice storage keep their voice in the shared
+// setting, so each engine starts from it until it saves its own choice.
+const applyLegacyVoiceConfigDefaults = (
+  inputs: NodeInputType[],
+  existingInputs?: NodeInputType[],
+): NodeInputType[] => {
+  const savedKeys = new Set((existingInputs ?? []).map((input) => input.key));
+  const sharedVoice = readInputValue(inputs, "__VoiceConfig__TextToSpeech");
+  if (!hasObjectEntries(sharedVoice)) return inputs;
+
+  return inputs.map((input) =>
+    VOICE_MODE_CONFIG_KEYS.has(input.key) && !savedKeys.has(input.key)
+      ? { ...input, value: { ...(sharedVoice as Record<string, unknown>) } }
+      : input,
+  );
+};
+
 /** Creates complete Voice AI data while preserving saved configuration values. */
 const createVoiceAgentData = (existingData?: NodeDataType): NodeDataType => {
   /** Default fields ensure incomplete legacy nodes become executable. */
@@ -209,13 +247,14 @@ const createVoiceAgentData = (existingData?: NodeDataType): NodeDataType => {
     defaultData.inputs ?? [],
     existingData?.inputs,
   );
+  const legacyInputs = applyLegacyVoiceFeatureDefaults(mergedInputs, existingData?.inputs);
 
   return {
     ...defaultData,
     ...existingData,
     type: "aiNode",
     name: VOICE_AGENT_NODE_NAME,
-    inputs: applyLegacyVoiceFeatureDefaults(mergedInputs, existingData?.inputs),
+    inputs: applyLegacyVoiceConfigDefaults(legacyInputs, existingData?.inputs),
     outputs: mergeNodeValues<NodeOutputType>(defaultData.outputs ?? [], existingData?.outputs),
   };
 };

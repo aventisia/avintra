@@ -20,13 +20,20 @@ const READY_PIPELINE = {
   [VOICE_FIELDS.speechToText]: { model: "nova-3" },
   [VOICE_FIELDS.languageModel]: { provider: "openai", model: "gpt-4o" },
   [VOICE_FIELDS.textToSpeech]: { model: "sonic-2" },
-  [VOICE_FIELDS.voiceConfig]: { voice: "alloy" },
+  [VOICE_FIELDS.pipelineVoiceConfig]: { voice: "alloy" },
 };
 
 const READY_REALTIME_MODEL = {
   provider: "openai",
   model: "gpt-realtime",
   credential_name: "openai-key",
+};
+
+const READY_REALTIME = {
+  [VOICE_FIELDS.goal]: "Book calls",
+  [VOICE_FIELDS.engineMode]: "realtime",
+  [VOICE_FIELDS.realtimeModel]: READY_REALTIME_MODEL,
+  [VOICE_FIELDS.realtimeVoiceConfig]: { voice: "marin" },
 };
 
 describe("getPromptStageMarks", () => {
@@ -135,20 +142,36 @@ describe("getVoiceReadiness", () => {
       })[1],
     ).toMatchObject({ isReady: false, hint: "Pick a language model." });
     expect(
-      getVoiceReadiness({ ...READY_PIPELINE, [VOICE_FIELDS.voiceConfig]: {} })[1],
+      getVoiceReadiness({ ...READY_PIPELINE, [VOICE_FIELDS.pipelineVoiceConfig]: {} })[1],
     ).toMatchObject({
       isReady: false,
       hint: "Pick speech-to-text and text-to-speech models, and a voice.",
     });
   });
 
-  it("judges a realtime agent by its realtime model alone", () => {
-    const realtime = {
-      [VOICE_FIELDS.goal]: "Book calls",
-      [VOICE_FIELDS.engineMode]: "realtime",
-      [VOICE_FIELDS.realtimeModel]: READY_REALTIME_MODEL,
-    };
-    expect(getVoiceReadiness(realtime)[1]).toMatchObject({ section: "engine", isReady: true });
+  it("judges a realtime agent by its realtime model and voice", () => {
+    expect(getVoiceReadiness(READY_REALTIME)[1]).toMatchObject({
+      section: "engine",
+      isReady: true,
+    });
+    expect(
+      getVoiceReadiness({
+        ...READY_REALTIME,
+        [VOICE_FIELDS.realtimeVoiceConfig]: { voice: "" },
+      })[1],
+    ).toMatchObject({
+      isReady: false,
+      hint: "Pick a realtime provider, a model, the credential it uses, and a voice.",
+    });
+  });
+
+  it("keeps the engine voice checks independent", () => {
+    expect(
+      getVoiceReadiness({ ...READY_PIPELINE, [VOICE_FIELDS.realtimeVoiceConfig]: {} })[1].isReady,
+    ).toBe(true);
+    expect(
+      getVoiceReadiness({ ...READY_REALTIME, [VOICE_FIELDS.pipelineVoiceConfig]: {} })[1].isReady,
+    ).toBe(true);
   });
 
   it("requires an introduction when the agent speaks first", () => {
@@ -159,15 +182,25 @@ describe("getVoiceReadiness", () => {
 });
 
 describe("isRealtimeReady", () => {
-  it("requires a provider, a model, and a credential name", () => {
-    expect(isRealtimeReady({ [VOICE_FIELDS.realtimeModel]: READY_REALTIME_MODEL })).toBe(true);
+  it("requires a provider, a model, a credential name, and a voice", () => {
+    expect(isRealtimeReady(READY_REALTIME)).toBe(true);
     expect(
       isRealtimeReady({
+        ...READY_REALTIME,
         [VOICE_FIELDS.realtimeModel]: { ...READY_REALTIME_MODEL, credential_name: " " },
       }),
     ).toBe(false);
     expect(
-      isRealtimeReady({ [VOICE_FIELDS.realtimeModel]: { ...READY_REALTIME_MODEL, model: "" } }),
+      isRealtimeReady({
+        ...READY_REALTIME,
+        [VOICE_FIELDS.realtimeModel]: { ...READY_REALTIME_MODEL, model: "" },
+      }),
+    ).toBe(false);
+    expect(
+      isRealtimeReady({
+        ...READY_REALTIME,
+        [VOICE_FIELDS.realtimeVoiceConfig]: { voice: " " },
+      }),
     ).toBe(false);
     expect(isRealtimeReady({})).toBe(false);
   });

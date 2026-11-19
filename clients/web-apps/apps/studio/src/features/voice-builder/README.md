@@ -26,13 +26,21 @@ unmounts.
 
 The engine choice uses the same two-card selector as Opening. Realtime provider,
 model, and credentials come from `ModelConfigField`; language, voice, and speed
-come from the shared `__VoiceConfig__TextToSpeech` setting, so switching engines
-reuses one voice configuration instead of duplicating it. Realtime preview is
-hidden because the preview route synthesizes through a TTS model, not a realtime
-model.
+come from `__VoiceConfig__RealtimeVoice` for realtime and
+`__VoiceConfig__PipelineVoice` for pipeline, so each engine keeps its own choice.
+The builder mirrors the active engine's setting into
+`__VoiceConfig__TextToSpeech`, which the runtime reads for both modes; agents
+saved before this split seed both engines from that shared value on load. The
+builder is the only writer of the per-engine copies: the generic node panel
+still reads and writes the shared setting alone.
+Both engines show the credential picker. Languages and voices load from the
+selected model's platform catalog, and from the attached credential's account
+catalog once a credential is picked.
+Realtime preview is hidden because the preview route synthesizes through a TTS
+model, not a realtime model.
 
-Realtime readiness requires a provider, a model, and a credential name. The
-provider allowlist is mirrored in three places: `EXECUTABLE_REALTIME_PROVIDERS`
+Realtime readiness requires a provider, a model, a credential name, and a voice.
+The provider allowlist is mirrored in three places: `EXECUTABLE_REALTIME_PROVIDERS`
 (`dynamic-config-panel/constants/model-providers.ts`), `AllowedRealtimeProviders`
 (WorkspaceAPIs `VoiceAgentGraphHelpers`), and `realtime_adapters.py`. Change all
 three together, or Studio will offer a provider that the worker rejects.
