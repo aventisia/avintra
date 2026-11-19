@@ -138,6 +138,9 @@ type State = {
   /** Flag to track pending flow save */
   isSavePending: boolean;
 
+  /** True when the last save request failed; shared by every save caller. */
+  lastSaveFailed: boolean;
+
   /** Origin of context menu. null means menu is closed */
   contextMenuOrigin: "Node" | "Edge" | "Pane" | "Selection" | null;
 
@@ -194,6 +197,9 @@ type Actions = {
   /** Set flag to track pending flow save */
   setIsSavePending: (isSavePending: boolean) => void;
 
+  /** Set the outcome of the last save request */
+  setLastSaveFailed: (lastSaveFailed: boolean) => void;
+
   /** Set viewport */
   setViewport: (viewport: Viewport) => void;
 
@@ -217,6 +223,7 @@ export const useReactFlowExtStore = create<State & Actions>()(
     inputOutputObject: [],
     panOnDrag: true,
     isSavePending: false,
+    lastSaveFailed: false,
     contextMenuOrigin: null,
     isPublished: false,
     flowType: FlowTypesEnum.Agent,
@@ -336,6 +343,7 @@ export const useReactFlowExtStore = create<State & Actions>()(
         panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,
       })),
     setIsSavePending: (isSavePending: boolean) => set({ isSavePending }),
+    setLastSaveFailed: (lastSaveFailed) => set({ lastSaveFailed }),
     setContextMenuOrigin: (contextMenuOrigin) => set({ contextMenuOrigin }),
     setViewport: (viewport) => set({ viewport }),
 

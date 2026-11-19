@@ -77,10 +77,11 @@ export const useVoiceCatalog = ({
   }, [staticData, languagesQuery.data]);
 
   const isLoading = isEnabled && (voicesQuery.isLoading || languagesQuery.isLoading);
+  const isError = isEnabled && (voicesQuery.isError || languagesQuery.isError);
   const isReady = !isEnabled || !isLoading;
 
   return useMemo(
-    () => ({ providerData: { voices, languages }, isLoading, isReady }),
-    [voices, languages, isLoading, isReady],
+    () => ({ providerData: { voices, languages }, isLoading, isError, isReady }),
+    [voices, languages, isLoading, isError, isReady],
   );
 };

@@ -93,6 +93,8 @@ const SliderField = ({
                     thumbColor={thumbColor}
                     trackColor={trackColor}
                     showValueBubble={!formatValue}
+                    thumbAriaLabel={label}
+                    valueText={formatValue ? formatValue(currentValue) : undefined}
                     min={min}
                     max={max}
                     {...props}

@@ -1,6 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Form } from "@avplatform/ui/form";
 import { Tabs } from "@avplatform/ui/tabs";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
 
 import {
@@ -25,7 +26,8 @@ import { VoiceTabHeading } from "./VoiceTabHeading";
 
 /** Voice agent settings in tabs like the node config panel, bound to the saved voice node through the node config form. */
 export const VoiceBuilderForm = () => {
-  const { form, watch, flushNow, nodeConfig, isFormReady, isLoading } = useDefineDCPForm();
+  const { form, watch, flushNow, nodeConfig, isFormReady, isLoading, hasLoadError } =
+    useDefineDCPForm();
   const activeSection = useVoiceBuilderStore((state) => state.activeSection);
   const setActiveSection = useVoiceBuilderStore((state) => state.setActiveSection);
   const values = watch();
@@ -93,10 +95,19 @@ export const VoiceBuilderForm = () => {
     ) : null;
   };
 
+  if (hasLoadError) {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 text-sm">
+        <MagnifyingGlassIcon aria-hidden="true" className="text-icon h-5 w-5" />
+        Configuration not found for this node.
+      </div>
+    );
+  }
+
   if (isLoading || !isFormReady) {
     return (
       <div className="flex h-full items-center justify-center">
-        <LoadingSpinner className="size-5 text-primary" />
+        <LoadingSpinner label="Loading agent settings" className="size-5 text-primary" />
       </div>
     );
   }

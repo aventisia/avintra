@@ -1,13 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-import type { VoiceProviderData } from "@/features/dynamic-config-panel";
+import { type VoiceProviderData, getVoiceClearedNote } from "@/features/dynamic-config-panel";
 
 import { VOICE_OUTPUT_FIELDS } from "../constants/voice-builder.constant";
 
-type PreviousSelection = { provider?: string; language?: string };
+type PreviousSelection = { provider?: string; language?: string; voice?: string };
 
-/** Clears a saved voice when the provider or language it belongs to changes. */
+/** Clears a saved voice when the provider or language it belongs to changes, and names what it cleared. */
 export const useVoiceOutputReset = (
   provider: string | undefined,
   language: string | undefined,
@@ -17,6 +17,7 @@ export const useVoiceOutputReset = (
 ) => {
   const { setValue } = useFormContext();
   const previous = useRef<PreviousSelection>({});
+  const [clearedNote, setClearedNote] = useState<string | null>(null);
 
   // IMPORTANT NOTE: the voice setting is shared by both engine modes, so a value
   // saved under a different provider must be cleared when the panel mounts.
@@ -26,7 +27,8 @@ export const useVoiceOutputReset = (
     const isFirstRun = previous.current.provider === undefined;
     const providerChanged = previous.current.provider !== provider;
     const languageChanged = previous.current.language !== language;
-    previous.current = { provider, language };
+    const voiceChanged = previous.current.voice !== selectedVoice;
+    previous.current = { provider, language, voice: selectedVoice };
 
     if (isFirstRun) {
       const languageIsKnown =
@@ -43,11 +45,24 @@ export const useVoiceOutputReset = (
       return;
     }
 
+    if (providerChanged || languageChanged) {
+      setClearedNote(
+        getVoiceClearedNote({ providerChanged, languageChanged, language, voice: selectedVoice }),
+      );
+    } else if (voiceChanged) {
+      setClearedNote(null);
+    }
+
     if (providerChanged) {
       setValue(VOICE_OUTPUT_FIELDS.language, "", { shouldDirty: true });
       setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+      previous.current.language = "";
+      previous.current.voice = "";
     } else if (languageChanged) {
       setValue(VOICE_OUTPUT_FIELDS.voice, "", { shouldDirty: true });
+      previous.current.voice = "";
     }
   }, [provider, language, providerData, isCatalogReady, selectedVoice, setValue]);
+
+  return clearedNote;
 };

@@ -64,6 +64,8 @@ export type VoiceCallViewProps = {
   showDiagnostics?: boolean;
   /** Blocks starting a new call; an in-progress call stays controllable. */
   startDisabled?: boolean;
+  /** Overrides the state label, e.g. for a step before the call connects. */
+  statusLabel?: string;
   className?: string;
 };
 
@@ -78,6 +80,7 @@ export const VoiceCallView = ({
   idleAction,
   showDiagnostics,
   startDisabled,
+  statusLabel,
   className,
 }: VoiceCallViewProps) => {
   const [isToolCueOn, setIsToolCueOn] = useState(true);
@@ -85,8 +88,9 @@ export const VoiceCallView = ({
 
   const runningToolKey = findRunningToolKey(call.turns[call.turns.length - 1]);
   const lastLatency = findLastLatency(call.turns);
-  const statusLabel =
-    call.isMuted && call.state === "listening" ? "Muted" : VOICE_CALL_STATE_LABELS[call.state];
+  const shownStatusLabel =
+    statusLabel ??
+    (call.isMuted && call.state === "listening" ? "Muted" : VOICE_CALL_STATE_LABELS[call.state]);
 
   useSpaceToMute(call.isActive, call.toggleMute);
 
@@ -102,7 +106,7 @@ export const VoiceCallView = ({
       {header}
 
       <p className="sr-only" aria-live="polite">
-        {statusLabel}
+        {shownStatusLabel}
       </p>
 
       <div
@@ -117,7 +121,7 @@ export const VoiceCallView = ({
           <VoiceOrb state={call.state} isMuted={call.isMuted} size={isFull ? "lg" : "md"} />
           <div className="flex flex-col items-center gap-0.5">
             <span className={cn("font-semibold text-ink", isFull ? "text-heading" : "text-body")}>
-              {statusLabel}
+              {shownStatusLabel}
             </span>
             {call.state !== "idle" && (
               <span className="font-mono text-[12px] tabular-nums text-muted-foreground">

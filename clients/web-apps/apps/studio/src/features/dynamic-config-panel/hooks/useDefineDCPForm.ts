@@ -44,6 +44,8 @@ export const useDefineDCPForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [hasLoadError, setHasLoadError] = useState(false);
+
   const [tabKeys, setTabKeys] = useState<string[]>(["Inputs"]);
 
   const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
@@ -61,6 +63,7 @@ export const useDefineDCPForm = () => {
 
     setIsLoading(true);
     setIsFormReady(false);
+    setHasLoadError(false);
 
     const getErrorFieldJson = (errorHandling?: string): DCPFieldSchemaType[] => {
       if (errorHandling == "standard") return onErrorFieldsJson;
@@ -71,19 +74,25 @@ export const useDefineDCPForm = () => {
     // Get node config from API and Set node config and zod schema
     getNodeConfig(nodeUniqueName, nodeData?.type)
       .then((config: NodeConfigSchemaType) => {
-        if (config) {
-          const updatedConfig = {
-            ...config,
-            fields: [...config.fields, ...getErrorFieldJson(config?.errorHandling)],
-          };
-
-          setNodeConfig(updatedConfig);
-          const baseSchema = generateZodSchema(updatedConfig.fields);
-          setNodeConfigZodSchema(baseSchema);
-          setNodeConfigResolverSchema(
-            withVoiceAgentEngineRefinement(baseSchema, updatedConfig.fields),
-          );
+        if (!config) {
+          setHasLoadError(true);
+          return;
         }
+
+        const updatedConfig = {
+          ...config,
+          fields: [...config.fields, ...getErrorFieldJson(config?.errorHandling)],
+        };
+
+        setNodeConfig(updatedConfig);
+        const baseSchema = generateZodSchema(updatedConfig.fields);
+        setNodeConfigZodSchema(baseSchema);
+        setNodeConfigResolverSchema(
+          withVoiceAgentEngineRefinement(baseSchema, updatedConfig.fields),
+        );
+      })
+      .catch(() => {
+        setHasLoadError(true);
       })
       .finally(() => {
         setIsLoading(false);
@@ -164,6 +173,7 @@ export const useDefineDCPForm = () => {
     flushNow,
     nodeConfig,
     isFormReady,
+    hasLoadError,
     nodeUniqueName,
     inputKeys,
     outputKeys,

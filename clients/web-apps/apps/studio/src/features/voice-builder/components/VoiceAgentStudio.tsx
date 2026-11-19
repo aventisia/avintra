@@ -21,7 +21,7 @@ export const VoiceAgentStudio = ({ isLoading, engineMode, modelLabel }: VoiceAge
       <div className="relative h-full w-full">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
-            <LoadingSpinner className="size-6 text-primary" />
+            <LoadingSpinner label="Loading the agent" className="size-6 text-primary" />
           </div>
         ) : (
           <VoiceBuilder />

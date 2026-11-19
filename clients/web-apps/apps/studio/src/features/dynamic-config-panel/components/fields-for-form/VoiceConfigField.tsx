@@ -3,7 +3,7 @@ import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { PlayIcon, SlidersHorizontalIcon, StopIcon } from "@phosphor-icons/react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
@@ -14,6 +14,7 @@ import type { VoiceCatalogCapability } from "../../dtos/voice-catalog.dto";
 import { useVoiceCatalog } from "../../hooks/useVoiceCatalog.hook";
 import { useVoicePreview } from "../../hooks/useVoicePreview.hook";
 import { useDynamicConfigPanelStore } from "../../stores/dcp-store";
+import { getVoiceClearedNote } from "../../utils/voice-reset-note.util";
 
 const LEGACY_TTS_NODE_NAME = "CreateTTSAIAgent";
 
@@ -37,7 +38,7 @@ const VoiceConfigField = ({
   credentialPath,
   capability = "tts",
 }: VoiceConfigFieldProps) => {
-  const { control, setValue, watch } = useFormContext();
+  const { control, setValue, watch, formState } = useFormContext();
   const nodeName = useDynamicConfigPanelStore((state) => state.nodeData?.name);
   const isVoiceNode = nodeName === VOICE_AGENT_NODE_NAME || nodeName === LEGACY_TTS_NODE_NAME;
 
@@ -79,8 +80,10 @@ const VoiceConfigField = ({
   const languageValue = languageField.value;
   const prevLanguage = useRef(languageValue);
   const prevProvider = useRef(providerValue);
+  const prevVoice = useRef(voiceValue);
+  const [clearedNote, setClearedNote] = useState<string | null>(null);
 
-  const { providerData, isLoading } = useVoiceCatalog({
+  const { providerData, isLoading, isError } = useVoiceCatalog({
     provider: providerValue,
     model: modelValue,
     capability,
@@ -108,18 +111,41 @@ const VoiceConfigField = ({
   });
 
   useEffect(() => {
-    if (prevProvider.current !== providerValue) {
-      prevProvider.current = providerValue;
-      setValue(fieldNames.language, "", { shouldDirty: true });
-      setValue(fieldNames.voice, "", { shouldDirty: true });
-      return;
+    const providerChanged = prevProvider.current !== providerValue;
+    const languageChanged = prevLanguage.current !== languageValue;
+    const voiceChanged = prevVoice.current !== voiceValue;
+
+    prevProvider.current = providerValue;
+    prevLanguage.current = languageValue;
+    prevVoice.current = voiceValue;
+
+    // IMPORTANT NOTE: the form is reset to the saved node values on load and on
+    // node switch. Only a dirty form means the user changed provider/language.
+    if (!formState.isDirty) return;
+
+    if (providerChanged || languageChanged) {
+      setClearedNote(
+        getVoiceClearedNote({
+          providerChanged,
+          languageChanged,
+          language: languageValue,
+          voice: voiceValue,
+        }),
+      );
+    } else if (voiceChanged) {
+      setClearedNote(null);
     }
 
-    if (prevLanguage.current !== languageValue) {
-      prevLanguage.current = languageValue;
+    if (providerChanged) {
+      setValue(fieldNames.language, "", { shouldDirty: true });
       setValue(fieldNames.voice, "", { shouldDirty: true });
+      prevLanguage.current = "";
+      prevVoice.current = "";
+    } else if (languageChanged) {
+      setValue(fieldNames.voice, "", { shouldDirty: true });
+      prevVoice.current = "";
     }
-  }, [providerValue, languageValue, setValue, fieldNames]);
+  }, [providerValue, languageValue, voiceValue, formState.isDirty, setValue, fieldNames]);
 
   if (!isVoiceNode) {
     return null;
@@ -127,6 +153,14 @@ const VoiceConfigField = ({
 
   if (isLoading) {
     return <p className="text-hint text-muted-foreground">Loading voices…</p>;
+  }
+
+  if (isError && providerData.languages.length === 0 && providerData.voices.length === 0) {
+    return (
+      <p role="alert" className="text-hint text-bad">
+        Voices could not be loaded. Try again later.
+      </p>
+    );
   }
 
   if (providerData.languages.length === 0 && providerData.voices.length === 0) {
@@ -172,7 +206,17 @@ const VoiceConfigField = ({
 
         <button
           type="button"
-          aria-label="Preview voice"
+          aria-label={
+            voicePreview.isPreviewing
+              ? "Stop voice preview"
+              : voicePreview.canPreview
+                ? "Preview voice"
+                : `Preview voice — ${
+                    voicePreview.isSupported
+                      ? "pick a model first"
+                      : "not supported for this provider"
+                  }`
+          }
           disabled={!voicePreview.canPreview && !voicePreview.isPreviewing}
           onClick={() =>
             voicePreview.isPreviewing ? voicePreview.stopPreview() : voicePreview.playPreview()
@@ -191,7 +235,13 @@ const VoiceConfigField = ({
         <p className="text-hint text-muted-foreground">Preview not supported for this provider.</p>
       ) : null}
 
-      {voicePreview.error ? <p className="text-hint text-bad">{voicePreview.error}</p> : null}
+      {voicePreview.error ? (
+        <p role="alert" className="text-hint text-bad">
+          {voicePreview.error}
+        </p>
+      ) : null}
+
+      {clearedNote ? <p className="text-hint text-muted-foreground">{clearedNote}</p> : null}
     </div>
   );
 };

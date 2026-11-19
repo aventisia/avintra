@@ -295,6 +295,11 @@ const ModelConfigField = ({
     [enabledModelIdsByProvider],
   );
 
+  const isProviderPickerDisabled =
+    showByok && (isLoading || (!isError && !hasEnabledModelsForSpecialty));
+
+  const modelProvidersHref = `${(import.meta.env.VITE_WORKSPACE_PATH ?? "").replace(/\/$/, "")}/tenant/model-providers`;
+
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
     [availableModels, modelField.value],
@@ -414,7 +419,7 @@ const ModelConfigField = ({
             selectOptions={providerSelectOptions}
             label="Provider"
             primaryText="Providers"
-            disabled={showByok && isLoading}
+            disabled={isProviderPickerDisabled}
           />
         ) : (
           <div className="flex items-end gap-2">
@@ -427,7 +432,7 @@ const ModelConfigField = ({
                 name={fieldNames.provider}
                 selectOptions={providerSelectOptions}
                 label="Model provider"
-                disabled={showByok && isLoading}
+                disabled={isProviderPickerDisabled}
               />
             </div>
           </div>
@@ -476,7 +481,16 @@ const ModelConfigField = ({
         !hasEnabledModelsForSpecialty && (
           <p className="text-xs text-muted-foreground">
             No {isStt ? "speech-to-text" : "text-to-speech"} models are enabled for this tenant.
-            Enable one under Tenant Admin &gt; Model Providers.
+            Enable one under{" "}
+            <a
+              href={modelProvidersHref}
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2"
+            >
+              Tenant Admin → Model Providers
+            </a>
+            .
           </p>
         )}
 
@@ -487,8 +501,16 @@ const ModelConfigField = ({
         !isError &&
         !hasEnabledModelsForSpecialty && (
           <p className="text-xs text-muted-foreground">
-            No realtime models are enabled for this tenant. Enable one under Tenant Admin &gt; Model
-            Providers.
+            No realtime models are enabled for this tenant. Enable one under{" "}
+            <a
+              href={modelProvidersHref}
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2"
+            >
+              Tenant Admin → Model Providers
+            </a>
+            .
           </p>
         )}
 

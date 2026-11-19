@@ -66,6 +66,7 @@ const MultiSelectField = ({
               fieldSize={fieldSize}
               className={cn(className)}
               disabled={disabled}
+              ariaLabel={label}
             />
           </FormControl>
 

@@ -57,20 +57,54 @@ const StageVariables = ({ names, emptyHint }: { names: string[]; emptyHint: stri
   </div>
 );
 
+/** Prompt fields a template overwrites, so Undo can restore exactly those. */
+const TEMPLATE_FIELDS = [
+  VOICE_FIELDS.goal,
+  VOICE_FIELDS.role,
+  VOICE_FIELDS.instructions,
+  VOICE_FIELDS.firstSpeaker,
+  VOICE_FIELDS.introduction,
+] as const;
+
 /** Prompt tab: persona, instructions, opening, and variables as stages on a rail. */
 export const VoicePromptSection = ({ renderField, renderPromptField }: VoicePromptSectionProps) => {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue, getValues, resetField, formState } = useFormContext();
   const values = watch();
   const marks = getPromptStageMarks(values);
 
   const applyTemplate = (template: VoiceAgentTemplate) => {
+    const wasDirty = formState.isDirty;
+    const previous = getValues();
+    const snapshot = {
+      goal: previous[VOICE_FIELDS.goal],
+      role: previous[VOICE_FIELDS.role],
+      instructions: previous[VOICE_FIELDS.instructions],
+      firstSpeaker: previous[VOICE_FIELDS.firstSpeaker],
+      introduction: previous[VOICE_FIELDS.introduction],
+    };
     const options = { shouldDirty: true };
     setValue(VOICE_FIELDS.goal, template.goal, options);
     setValue(VOICE_FIELDS.role, template.role, options);
     setValue(VOICE_FIELDS.instructions, template.instructions, options);
     setValue(VOICE_FIELDS.firstSpeaker, "ai", options);
     setValue(VOICE_FIELDS.introduction, template.introduction, options);
-    toast.success(`Applied the ${template.name} template. Review it, then save.`);
+    toast.success(`Applied the ${template.name} template.`, {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          // Restoring saved values on a clean form should leave it clean, not mark it edited.
+          if (!wasDirty) {
+            TEMPLATE_FIELDS.forEach((name) => resetField(name));
+            return;
+          }
+          setValue(VOICE_FIELDS.goal, snapshot.goal, options);
+          setValue(VOICE_FIELDS.role, snapshot.role, options);
+          setValue(VOICE_FIELDS.instructions, snapshot.instructions, options);
+          setValue(VOICE_FIELDS.firstSpeaker, snapshot.firstSpeaker, options);
+          setValue(VOICE_FIELDS.introduction, snapshot.introduction, options);
+        },
+      },
+    });
   };
 
   return (
