@@ -89,6 +89,96 @@ const getImportGraphKind = (nodes: ImportGraphNode[], edges: ImportGraphEdge[]):
       ? "voice"
       : "generic";
 
+/** Entry check mirroring the exporter's filter; a variable names its node and string outputs. */
+const isFlowImportVariable = (value: unknown): value is FlowImportVariable =>
+  isObject(value) &&
+  typeof (value as FlowImportVariable).nodeId === "string" &&
+  Array.isArray((value as FlowImportVariable).outputs) &&
+  (value as FlowImportVariable).outputs.every((output) => typeof output === "string");
+
+/**
+ * Rejects graphs the canvas cannot open or run: missing edge endpoints and conditional/loop
+ * nodes with missing merge ids or no branches. Empty canvases stay valid.
+ */
+export const validateImportedFlowGraph = (
+  nodes: ImportGraphNode[],
+  edges: ImportGraphEdge[],
+): string | null => {
+  if (nodes.length === 0) return null;
+
+  const nodeIdSet = new Set(nodes.map((node) => node.id.toLowerCase()));
+
+  for (const edge of edges) {
+    if (!edge.source.trim() || !edge.target.trim()) {
+      return "Flow contains edge(s) with missing source or target.";
+    }
+    if (!nodeIdSet.has(edge.source.toLowerCase()) || !nodeIdSet.has(edge.target.toLowerCase())) {
+      return `Flow contains dangling edge: '${edge.source}' -> '${edge.target}'.`;
+    }
+  }
+
+  const conditionalNodes = nodes.filter(
+    (node) => (node.type ?? "").toLowerCase() === "conditionalnode",
+  );
+  for (const conditionalNode of conditionalNodes) {
+    const data = conditionalNode.data ?? {};
+    const mergeNodeId = data.mergeBranchesNodeId;
+    if (typeof mergeNodeId !== "string" || !mergeNodeId.trim()) {
+      return `Conditional node '${conditionalNode.id}' is missing merge node id.`;
+    }
+    if (!nodeIdSet.has(mergeNodeId.toLowerCase())) {
+      return `Conditional node '${conditionalNode.id}' has invalid merge node id '${mergeNodeId}'.`;
+    }
+    const configuredBranches = Array.isArray(data.branches)
+      ? (data.branches as unknown[]).filter(
+          (branch): branch is string =>
+            typeof branch === "string" &&
+            !!branch.trim() &&
+            branch.toLowerCase() !== mergeNodeId.toLowerCase(),
+        )
+      : [];
+    const branches =
+      configuredBranches.length > 0
+        ? [...new Set(configuredBranches)]
+        : [
+            ...new Set(
+              edges
+                .filter(
+                  (edge) =>
+                    edge.source === conditionalNode.id &&
+                    edge.target.toLowerCase() !== mergeNodeId.toLowerCase(),
+                )
+                .map((edge) => edge.target)
+                .filter((target) => !!target.trim()),
+            ),
+          ];
+    if (branches.length === 0) {
+      return `Conditional node '${conditionalNode.id}' has no branch entry nodes.`;
+    }
+  }
+
+  const loopNodes = nodes.filter((node) => (node.type ?? "").toLowerCase() === "forloopnode");
+  for (const loopNode of loopNodes) {
+    const data = loopNode.data ?? {};
+    const mergeNodeId = data.mergeBranchesNodeId;
+    if (typeof mergeNodeId !== "string" || !mergeNodeId.trim()) {
+      return `For loop node '${loopNode.id}' is missing merge node id.`;
+    }
+    if (!nodeIdSet.has(mergeNodeId.toLowerCase())) {
+      return `For loop node '${loopNode.id}' has invalid merge node id '${mergeNodeId}'.`;
+    }
+    const hasBodyEdge = edges.some(
+      (edge) =>
+        edge.source === loopNode.id && edge.target.toLowerCase() !== mergeNodeId.toLowerCase(),
+    );
+    if (!hasBodyEdge) {
+      return `For loop node '${loopNode.id}' has no loop body entry edge.`;
+    }
+  }
+
+  return null;
+};
+
 const readCanvasGraph = (canvas: Record<string, unknown>): { nodes: Node[]; edges: Edge[] } => {
   const nodes = canvas.nodes;
   const edges = canvas.edges;
@@ -158,6 +248,9 @@ export const parseFlowImportContent = (content: string, fileName: string): FlowI
   if (flowVariablesObject !== undefined && !Array.isArray(flowVariablesObject)) {
     throw new Error("Invalid flow variables object (must be an array)");
   }
+  if (Array.isArray(flowVariablesObject) && !flowVariablesObject.every(isFlowImportVariable)) {
+    throw new Error("Invalid flow variables object (entries must have a nodeId and outputs)");
+  }
 
   const inputOutputObject = canvasRecord.inputOutputObject;
   if (inputOutputObject !== undefined && !Array.isArray(inputOutputObject)) {
@@ -165,6 +258,11 @@ export const parseFlowImportContent = (content: string, fileName: string): FlowI
   }
 
   const { nodes, edges } = readCanvasGraph(canvasRecord);
+  const graphError = validateImportedFlowGraph(
+    nodes as ImportGraphNode[],
+    edges as ImportGraphEdge[],
+  );
+  if (graphError) throw new Error(graphError);
   const platformValue = canvasRecord.supportedPlatform;
   const canvasRest = { ...canvasRecord };
   delete canvasRest.flowVariablesObject;
@@ -173,9 +271,12 @@ export const parseFlowImportContent = (content: string, fileName: string): FlowI
   const canvasPayload = { ...canvasRest, nodes, edges } as FlowImportCanvas;
 
   if (!Object.hasOwn(file, "agent")) {
+    const derivedName = fileName.replace(/\.json$/i, "");
+    const derivedNameCheck = flowNameSchema.safeParse(derivedName);
+    if (!derivedNameCheck.success) throw new Error(derivedNameCheck.error.errors[0].message);
     const graphKind = getImportGraphKind(nodes as ImportGraphNode[], edges as ImportGraphEdge[]);
     return {
-      name: fileName.replace(/\.json$/i, ""),
+      name: derivedName,
       type:
         graphKind === "chat"
           ? FlowTypesEnum.ChatAgent

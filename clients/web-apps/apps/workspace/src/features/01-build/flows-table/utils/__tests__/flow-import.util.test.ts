@@ -185,4 +185,36 @@ describe("parseFlowImportContent", () => {
       ),
     ).toThrow("Unknown supported platform");
   });
+
+  it("rejects a derived name that breaks the create rules", () => {
+    expect(() =>
+      parseFlowImportContent(JSON.stringify({ reactFlowObject: canvas() }), "Bad/name.json"),
+    ).toThrow("Agent name can only contain");
+    expect(() =>
+      parseFlowImportContent(
+        JSON.stringify({ reactFlowObject: canvas() }),
+        `${"a".repeat(256)}.json`,
+      ),
+    ).toThrow("Agent name must not exceed 255 characters");
+  });
+
+  it("rejects malformed flow variable entries", () => {
+    expect(() =>
+      parseFlowImportContent(
+        JSON.stringify({ reactFlowObject: canvas({ flowVariablesObject: [{ foo: 1 }] }) }),
+        "bad.json",
+      ),
+    ).toThrow("entries must have a nodeId and outputs");
+  });
+
+  it("rejects a conditional node with a missing merge id", () => {
+    expect(() =>
+      parseFlowImportContent(
+        JSON.stringify({
+          reactFlowObject: canvas({ nodes: [{ id: "cond", type: "conditionalNode", data: {} }] }),
+        }),
+        "bad.json",
+      ),
+    ).toThrow("missing merge node id");
+  });
 });
