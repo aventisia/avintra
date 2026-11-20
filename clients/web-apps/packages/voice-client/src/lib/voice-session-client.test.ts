@@ -122,6 +122,53 @@ describe("VoiceSessionClient turn times", () => {
   });
 });
 
+describe("VoiceSessionClient call timer", () => {
+  it("starts counting when connecting begins, after the draft save", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    let finishPrepare = () => {};
+    const client = new VoiceSessionClient({
+      prepare: () =>
+        new Promise((resolve) => {
+          finishPrepare = () => resolve();
+        }),
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(snapshots.at(-1)?.callMs).toBe(0);
+
+    finishPrepare();
+    await starting;
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(snapshots.at(-1)?.callMs).toBe(5_000);
+
+    emitState(fakeRooms[0], "listening");
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(snapshots.at(-1)?.callMs).toBe(6_000);
+
+    await client.end();
+  });
+
+  it("keeps the timer at zero when the call is rejected before it goes live", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    emitData(fakeRooms[0], { type: "session.closed", code: 4000 });
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    expect(snapshots.at(-1)?.state).toBe("error");
+    expect(snapshots.at(-1)?.callMs).toBe(0);
+
+    await client.end();
+  });
+});
+
 describe("VoiceSessionClient speech gate", () => {
   it("mutes the microphone while the worker speaks and resumes after the playback tail", async () => {
     const { client, room } = await startCall();

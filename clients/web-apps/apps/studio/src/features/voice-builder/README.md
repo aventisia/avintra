@@ -60,9 +60,9 @@ The test console reads the saved engine mode and model label through
   language) that belonged to it. A note under the voice pickers says what was
   cleared until the next change. Picking a voice for the first time in a saved
   agent stays silent — those values are corrected, not discarded.
-- Starting a test call saves the draft first. The call view shows "Saving
-  draft…" while that save runs, and a failed save shows its error without
-  starting a call.
+- Starting a test call saves the draft only when something changed. The call view
+  shows "Saving draft…" while that save runs, and a failed save shows its error
+  without starting a call.
 - Loading failures are shown, not hidden: a configuration that cannot be loaded
   says "Configuration not found for this node." instead of spinning, a voice list
   that cannot be fetched shows an error line, the Pronunciation tab says its
