@@ -91,7 +91,7 @@ const AppHeader: React.FC = () => {
       />
       <div className="flex flex-1 basis-0 items-center justify-end gap-2">
         {/* shortcut: no running-jobs count API yet, pass runningCount once the backend exposes one */}
-        <JobsPill to="/orchestrator/jobs" />
+        {import.meta.env.MODE !== "production" && <JobsPill to="/orchestrator/jobs" />}
         {import.meta.env.VITE_WORKSPACE_API_PATH?.includes("https://localhost") && (
           <TrustLocalhostSSLButton />
         )}
