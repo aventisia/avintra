@@ -56,6 +56,65 @@ describe("toVoiceConversationTurns", () => {
     });
   });
 
+  it("shows only the caller's words when the stored message carries injected knowledge base context", () => {
+    const turns = toVoiceConversationTurns([
+      message(
+        "m1",
+        ConversationMessageSenderEnum.User,
+        "[Knowledge Base Context]\nrefunds take 30 days\n[/Knowledge Base Context]\n\nwhat is the refund policy?",
+        "2026-11-19T10:00:00.000Z",
+      ),
+    ]);
+
+    expect(turns).toEqual([
+      {
+        id: "m1",
+        speaker: "caller",
+        text: "what is the refund policy?",
+        createdAt: "2026-11-19T10:00:00.000Z",
+      },
+    ]);
+  });
+
+  it("keeps an unclosed knowledge base block as the caller's words", () => {
+    const turns = toVoiceConversationTurns([
+      message(
+        "m1",
+        ConversationMessageSenderEnum.User,
+        "[Knowledge Base Context]\nrefunds take 30 days",
+        "2026-11-19T10:00:00.000Z",
+      ),
+    ]);
+
+    expect(turns[0].text).toBe("[Knowledge Base Context]\nrefunds take 30 days");
+  });
+
+  it("keeps the knowledge base marker in an agent turn", () => {
+    const turns = toVoiceConversationTurns([
+      message(
+        "m1",
+        ConversationMessageSenderEnum.Assistant,
+        "The [Knowledge Base Context] block is model-only.",
+        "2026-11-19T10:00:00.000Z",
+      ),
+    ]);
+
+    expect(turns[0].text).toBe("The [Knowledge Base Context] block is model-only.");
+  });
+
+  it("drops a caller row that only carried knowledge base context", () => {
+    const turns = toVoiceConversationTurns([
+      message(
+        "m1",
+        ConversationMessageSenderEnum.User,
+        "[Knowledge Base Context]\nrefunds take 30 days\n[/Knowledge Base Context]",
+        "2026-11-19T10:00:00.000Z",
+      ),
+    ]);
+
+    expect(turns).toEqual([]);
+  });
+
   it("carries to the assistant turn the tools it consumed", () => {
     const turns = toVoiceConversationTurns([
       message("m1", ConversationMessageSenderEnum.Tool, "", "2026-11-19T10:00:01.000Z", {
