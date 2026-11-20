@@ -1,7 +1,8 @@
+import { isErrorStatus } from "@avplatform/ui/utils";
+
 import { DayTimelineCount, DayTimelineItem, DayTimelineSection } from "@/components/day-timeline";
 
 import { DaySection } from "../../types/log-list-type";
-import { isErrorStatus } from "../../utils/job-log-level";
 import ExecutionLogAccordionItem from "./ExecutionLogAccordionItem";
 
 type Props = {

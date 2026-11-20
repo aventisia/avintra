@@ -3,11 +3,13 @@ import { Button } from "@avplatform/ui/buttons";
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { Node, NodeProps, Position } from "@xyflow/react";
 import { memo, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { getLivePathKey } from "@/features/execute-flow/utils/live-loop-index";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
@@ -18,18 +20,26 @@ type ForLoopNode = Node<LoopNodeDataType, "forLoopNode">;
 
 export const ForLoopNode = memo(
   ({ id, data, selected, sourcePosition, targetPosition }: NodeProps<ForLoopNode>) => {
+    const [searchParams] = useSearchParams();
     const isExecutionLog = useIsExecutionLogsRoute();
     // 1. Destructure executionMap and nodeToParentStack from the store
-    const { loopRegistry, activeIteration, setIteration, executionMap, nodeToParentStack } =
-      useExecutionStore(
-        useShallow((state) => ({
-          loopRegistry: state.loopRegistry,
-          activeIteration: state.activeIteration,
-          setIteration: state.setIteration,
-          executionMap: state.executionMap,
-          nodeToParentStack: state.nodeToParentStack,
-        })),
-      );
+    const {
+      loopRegistry,
+      activeIteration,
+      setIteration,
+      executionMap,
+      skippedLoops,
+      nodeToParentStack,
+    } = useExecutionStore(
+      useShallow((state) => ({
+        loopRegistry: state.loopRegistry,
+        activeIteration: state.activeIteration,
+        setIteration: state.setIteration,
+        executionMap: state.executionMap,
+        skippedLoops: state.skippedLoops,
+        nodeToParentStack: state.nodeToParentStack,
+      })),
+    );
 
     const { liveActiveIteration, setLiveIteration, liveExecutionMap, liveLoopIndex } =
       useLiveExecutionStore(
@@ -54,6 +64,14 @@ export const ForLoopNode = memo(
 
     // 3. Determine if this loop was actually reached in the current parent iteration
     const isActiveInCurrentPath = !!executionMap[id]?.[pathKey];
+    const isSkipped = !!skippedLoops[id]?.[pathKey];
+    const livePathKey = getLivePathKey(
+      liveLoopIndex,
+      searchParams.get("ci") || "",
+      id,
+      liveActiveIteration,
+    );
+    const isLiveSkipped = !!liveLoopIndex.skippedLoops[id]?.[livePathKey];
 
     const [inputValue, setInputValue] = useState(current + 1);
     const [liveInputValue, setLiveInputValue] = useState(liveCurrent + 1);
@@ -138,9 +156,18 @@ export const ForLoopNode = memo(
 
     return (
       <BaseNode selected={selected} nodeData={data} nodeId={id}>
-        {isExecutionLog && total > 0 && isActiveInCurrentPath && (
+        {isExecutionLog && isSkipped && isActiveInCurrentPath && (
           <Badge
-            className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2"
+            className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 bg-bg text-xs"
+            variant="default"
+          >
+            Skipped
+          </Badge>
+        )}
+
+        {isExecutionLog && !isSkipped && total > 0 && isActiveInCurrentPath && (
+          <Badge
+            className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 bg-bg"
             variant="default"
           >
             <Button variant="ghost" size="icon5" onClick={goPrev}>
@@ -161,7 +188,7 @@ export const ForLoopNode = memo(
                   }
                 }}
                 className="
-                  w-4
+                  w-8
                   bg-transparent
                   border-none
                   outline-none
@@ -180,7 +207,16 @@ export const ForLoopNode = memo(
           </Badge>
         )}
 
-        {!isExecutionLog && liveTotal > 0 && liveExecutionMap[id] && (
+        {!isExecutionLog && isLiveSkipped && liveExecutionMap[id] && (
+          <Badge
+            className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 text-xs"
+            variant="default"
+          >
+            Skipped
+          </Badge>
+        )}
+
+        {!isExecutionLog && !isLiveSkipped && liveTotal > 0 && liveExecutionMap[id] && (
           <Badge
             className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2"
             variant="default"
