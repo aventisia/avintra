@@ -490,8 +490,7 @@ public class JobsExecutorService : IJobsExecutorService
                 && w.MachineId == machineId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, (Guid?)null)
-                .SetProperty(w => w.ExecutedOn, (string?)null)
-                .SetProperty(w => w.RetryCount, w => w.RetryCount + 1));
+                .SetProperty(w => w.ExecutedOn, (string?)null));
 
     private Task<int> CancelJobForInsufficientCreditsAsync(Guid jobId)
     {

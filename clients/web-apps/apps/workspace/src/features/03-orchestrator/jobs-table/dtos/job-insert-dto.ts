@@ -16,9 +16,10 @@ export interface JobInsertDto {
   /** The input payload for the job in JSON format. */
   jobInputData?: Record<string, unknown>;
 
-  /** Optional existing job id to create the job with retryCount > 0.
-   * If provided, the job id will remain the same but retry count > 0. Also, the existing job id should exist in the database for the same flowVersionId.
-   * If not provided, a new job id will be generated and retry count will be 0.
+  /** Optional job id of any attempt in an existing retry chain.
+   * If provided, a new attempt is created with a fresh job id, numbered one above the chain's latest attempt; the latest attempt must be terminal or the request fails with 409.
+   * The retry inherits the chain's trigger type and parent reference; any trigger type in this payload applies to fresh jobs only.
+   * If not provided, a new job id is generated and retry count is 0.
    */
   existingJobId?: string;
 }
