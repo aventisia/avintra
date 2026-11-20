@@ -37,6 +37,7 @@ export type VoiceCaptionTurn = {
   id: string;
   speaker: "caller" | "agent";
   text: string;
+  createdAt?: string;
   isInterim?: boolean;
   toolCalls?: VoiceToolCall[];
   skillCalls?: string[];

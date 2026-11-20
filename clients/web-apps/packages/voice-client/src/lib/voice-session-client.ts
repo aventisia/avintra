@@ -2,6 +2,7 @@ import { type AudioCaptureOptions, type RemoteTrack, Room, RoomEvent, Track } fr
 
 import type {
   VoiceCallSnapshot,
+  VoiceCaptionTurn,
   VoiceSessionRequest,
   VoiceSessionResponse,
 } from "../types/voice-session.type";
@@ -39,6 +40,12 @@ export const createVoiceCallSnapshot = (): VoiceCallSnapshot => ({
   conversationId: null,
   needsAudioResume: false,
 });
+
+const stampTurnTimes = (turns: VoiceCaptionTurn[]): VoiceCaptionTurn[] => {
+  if (turns.every((turn) => turn.createdAt)) return turns;
+  const now = new Date().toISOString();
+  return turns.map((turn) => (turn.createdAt ? turn : { ...turn, createdAt: now }));
+};
 
 export type VoiceSessionClientOptions = {
   createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
@@ -307,9 +314,10 @@ export class VoiceSessionClient {
 
   private _setSnapshot(snapshot: VoiceCallSnapshot): void {
     const previousState = this._snapshot.state;
-    this._snapshot = snapshot;
-    if (!this._disposed) this._onSnapshot(snapshot);
-    if (previousState !== snapshot.state) this._syncSpeechGate();
+    const turns = stampTurnTimes(snapshot.turns);
+    this._snapshot = turns === snapshot.turns ? snapshot : { ...snapshot, turns };
+    if (!this._disposed) this._onSnapshot(this._snapshot);
+    if (previousState !== this._snapshot.state) this._syncSpeechGate();
   }
 
   private _syncSpeechGate(): void {
