@@ -4,3 +4,4 @@ export {
 } from "./constants/home-chat.constant";
 export { useIsHomeChatAvailable } from "./hooks/useIsHomeChatAvailable.hook";
 export { HomeChatSidebarSection } from "./components/HomeChatSidebarSection";
+export { buildSharedChatLink, buildSharedFileLink } from "./utils/shared-link.util";

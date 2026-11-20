@@ -15,7 +15,11 @@ import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
-import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_SHARED_ROUTE,
+  useIsHomeChatAvailable,
+} from "@/features/home-chat";
 import { AccountDialog } from "@/features/my-account";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
@@ -169,6 +173,7 @@ export const AppLayout = () => {
 
     setAllowedRoutes([
       ...(isHomeChatAvailable ? [HOME_CHAT_CONVERSATION_ROUTE] : []),
+      HOME_CHAT_SHARED_ROUTE,
       ...allowedRoutes,
       LEGACY_ASSIST_AGENTS_ROUTE,
       DESKTOP_DOWNLOAD_ROUTE,
