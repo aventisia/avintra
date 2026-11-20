@@ -17,6 +17,7 @@ type VoiceSessionClientConstructor = new (options: VoiceSessionClientOptions) =>
 export type UseLiveVoiceCallOptions = {
   flowVersionId: string;
   mode: VoiceSessionMode;
+  prepare?: () => Promise<void>;
   createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
 };
 
@@ -24,14 +25,17 @@ export type UseLiveVoiceCallOptions = {
 export const useLiveVoiceCall = ({
   flowVersionId,
   mode,
+  prepare,
   createSession,
 }: UseLiveVoiceCallOptions): VoiceCallController => {
   const [snapshot, setSnapshot] = useState<VoiceCallSnapshot>(createVoiceCallSnapshot);
   const clientRef = useRef<VoiceSessionClient | null>(null);
   const createSessionRef = useRef(createSession);
+  const prepareRef = useRef(prepare);
   const startGenerationRef = useRef(0);
 
   createSessionRef.current = createSession;
+  prepareRef.current = prepare;
 
   const fail = useCallback((code: string, error: unknown, fallback: string) => {
     setSnapshot((current) => ({
@@ -62,6 +66,7 @@ export const useLiveVoiceCall = ({
       if (generation !== startGenerationRef.current) return;
 
       const client = new ClientConstructor({
+        prepare: () => prepareRef.current?.() ?? Promise.resolve(),
         createSession: (request) => createSessionRef.current(request),
         onSnapshot: (next) => {
           if (generation !== startGenerationRef.current) return;
