@@ -144,6 +144,7 @@ class VoiceSession:
     ctx: JobContext
     claims: VoiceJobClaims
     agent_settings: dict
+    started_at: float
     events: VoiceSessionEvents
     lifecycle: VoiceConversationLifecycle
     caller: RemoteParticipant
@@ -277,10 +278,17 @@ async def _join(
     claims: VoiceJobClaims,
     events: VoiceSessionEvents,
     lifecycle: VoiceConversationLifecycle,
+    started_at: float,
 ) -> RemoteParticipant:
     try:
         await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
-        return await ctx.wait_for_participant(identity=f"user-{claims.user_id}")
+        participant = await ctx.wait_for_participant(identity=f"user-{claims.user_id}")
+        logger.info(
+            "[voice-timing] participant ready room=%s total_ms=%d",
+            ctx.room.name,
+            round((time.perf_counter() - started_at) * 1000),
+        )
+        return participant
     except asyncio.CancelledError:
         raise
     except Exception:
@@ -315,9 +323,12 @@ async def run_session(
     ctx: JobContext,
     claims: VoiceJobClaims,
     agent_settings: dict,
+    *,
+    started_at: float | None = None,
 ) -> None:
     """Validate the engine, join the room, run the call, and clean up once."""
 
+    started_at = time.perf_counter() if started_at is None else started_at
     events = VoiceSessionEvents(
         claims.conversation_id,
         publish=RoomEventPublisher(ctx.room),
@@ -339,12 +350,13 @@ async def run_session(
             await _reject(ctx, claims, events, lifecycle, code, message)
             return
 
-    caller = await _join(ctx, claims, events, lifecycle)
+    caller = await _join(ctx, claims, events, lifecycle, started_at)
 
     session = VoiceSession(
         ctx=ctx,
         claims=claims,
         agent_settings=agent_settings,
+        started_at=started_at,
         events=events,
         lifecycle=lifecycle,
         caller=caller,
@@ -447,6 +459,11 @@ async def run_pipeline_session(session: VoiceSession) -> None:
             room=session.ctx.room,
             room_options=_room_options(session),
         )
+        logger.info(
+            "[voice-timing] session started engine=pipeline room=%s total_ms=%d",
+            session.ctx.room.name,
+            round((time.perf_counter() - session.started_at) * 1000),
+        )
         introduction = introduction_for(agent_settings)
         if introduction:
             session.agent_session.say(introduction, add_to_chat_ctx=False)
@@ -519,6 +536,11 @@ async def run_realtime_session(
             ),
             room=session.ctx.room,
             room_options=_room_options(session),
+        )
+        logger.info(
+            "[voice-timing] session started engine=realtime room=%s total_ms=%d",
+            session.ctx.room.name,
+            round((time.perf_counter() - session.started_at) * 1000),
         )
         introduction = introduction_for(agent_settings)
         if introduction:

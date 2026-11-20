@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { VoiceCallSnapshot } from "../types/voice-session.type";
 import { VoiceSessionClient } from "./voice-session-client";
 
 const { FakeRoom, fakeRooms } = vi.hoisted(() => {
@@ -69,6 +70,13 @@ const emitState = (room: (typeof fakeRooms)[number], state: string): void => {
   room.emit("dataReceived", event, undefined, undefined, "avintra.voice");
 };
 
+const emitData = (room: (typeof fakeRooms)[number], payload: Record<string, unknown>): void => {
+  const event = new TextEncoder().encode(
+    JSON.stringify({ conversationId: SESSION.conversationId, ...payload }),
+  );
+  room.emit("dataReceived", event, undefined, undefined, "avintra.voice");
+};
+
 const startCall = async () => {
   const client = new VoiceSessionClient({
     createSession: async () => ({ ...SESSION }),
@@ -85,6 +93,80 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+});
+
+describe("VoiceSessionClient turn times", () => {
+  it("stamps each turn when it first appears and keeps that time as it grows", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    const room = fakeRooms[0];
+
+    emitData(room, { type: "transcript.interim", role: "user", text: "bo" });
+    const interimTime = snapshots.at(-1)?.turns[0]?.createdAt;
+    expect(interimTime && Date.parse(interimTime)).toBeTruthy();
+
+    emitData(room, { type: "transcript.interim", role: "user", text: "book" });
+    expect(snapshots.at(-1)?.turns[0]?.createdAt).toBe(interimTime);
+
+    emitData(room, { type: "transcript.final", role: "user", text: "book" });
+    expect(snapshots.at(-1)?.turns[0]?.createdAt).toBe(interimTime);
+
+    emitData(room, { type: "tool.call", tool: { name: "search" }, turnId: 1 });
+    expect(snapshots.at(-1)?.turns[1]?.createdAt).toBeTruthy();
+
+    await client.end();
+  });
+});
+
+describe("VoiceSessionClient call timer", () => {
+  it("starts counting when connecting begins, after the draft save", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    let finishPrepare = () => {};
+    const client = new VoiceSessionClient({
+      prepare: () =>
+        new Promise((resolve) => {
+          finishPrepare = () => resolve();
+        }),
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(snapshots.at(-1)?.callMs).toBe(0);
+
+    finishPrepare();
+    await starting;
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(snapshots.at(-1)?.callMs).toBe(5_000);
+
+    emitState(fakeRooms[0], "listening");
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(snapshots.at(-1)?.callMs).toBe(6_000);
+
+    await client.end();
+  });
+
+  it("keeps the timer at zero when the call is rejected before it goes live", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    emitData(fakeRooms[0], { type: "session.closed", code: 4000 });
+    await vi.advanceTimersByTimeAsync(2_000);
+
+    expect(snapshots.at(-1)?.state).toBe("error");
+    expect(snapshots.at(-1)?.callMs).toBe(0);
+
+    await client.end();
+  });
 });
 
 describe("VoiceSessionClient speech gate", () => {

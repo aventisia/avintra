@@ -11,6 +11,7 @@ Run from ``apis/llmpipeline``:
 from __future__ import annotations
 
 import asyncio
+from types import SimpleNamespace
 
 import pytest
 from starlette.testclient import TestClient
@@ -18,6 +19,7 @@ from starlette.testclient import TestClient
 from app.core.config import settings
 from app.main import app as api_app
 from voice_agent import agent
+from voice_agent.metadata import VoiceSessionRejected
 
 
 def _configure(monkeypatch):
@@ -249,3 +251,151 @@ def test_prewarm_still_loads_the_vad_when_the_audio_warmup_fails(monkeypatch):
     agent.prewarm(proc)
 
     assert "vad" in proc.userdata
+
+
+class _FakeEntrypointContext:
+    def __init__(self) -> None:
+        self.room = SimpleNamespace(name="voice-room", on=lambda *_args: None)
+        self.job = SimpleNamespace(
+            metadata="job-metadata",
+            agent_name="avintra-voice-agent",
+            room=self.room,
+        )
+        self.shutdowns: list[str] = []
+
+    async def connect(self, **kwargs) -> None:
+        self.connect_kwargs = kwargs
+
+    def shutdown(self, reason: str) -> None:
+        self.shutdowns.append(reason)
+
+
+def _patch_entrypoint(monkeypatch, fetch_settings):
+    claims = object()
+    sessions: list[dict] = []
+
+    async def run_session(_ctx, _claims, agent_settings, *, started_at):
+        sessions.append({"settings": agent_settings, "started_at": started_at})
+
+    monkeypatch.setattr(agent, "parse_job_metadata", lambda _raw: claims)
+    monkeypatch.setattr(agent, "validate_job", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(agent, "fetch_settings", fetch_settings)
+    monkeypatch.setattr(agent, "run_session", run_session)
+    monkeypatch.setattr(settings, "LIVEKIT_AGENT_NAME", "avintra-voice-agent")
+    return sessions
+
+
+def test_entrypoint_starts_connecting_while_settings_are_still_loading(monkeypatch):
+    connect_called = asyncio.Event()
+    settings_loaded = asyncio.Event()
+
+    async def fetch_settings(_claims):
+        await connect_called.wait()
+        settings_loaded.set()
+        return {"engineMode": "pipeline"}
+
+    sessions = _patch_entrypoint(monkeypatch, fetch_settings)
+    ctx = _FakeEntrypointContext()
+
+    async def connect(**kwargs):
+        ctx.connect_kwargs = kwargs
+        connect_called.set()
+
+    monkeypatch.setattr(ctx, "connect", connect)
+
+    async def run_entrypoint():
+        await agent.entrypoint(ctx)
+        assert settings_loaded.is_set()
+        assert len(sessions) == 1
+        assert sessions[0]["settings"] == {"engineMode": "pipeline"}
+
+    asyncio.run(asyncio.wait_for(run_entrypoint(), timeout=1))
+    assert ctx.connect_kwargs["auto_subscribe"] == agent.AutoSubscribe.AUDIO_ONLY
+
+
+def test_entrypoint_shuts_down_a_job_rejected_after_connect(monkeypatch):
+    connect_called = asyncio.Event()
+
+    async def fetch_settings(_claims):
+        await connect_called.wait()
+        raise VoiceSessionRejected("Voice agent settings are unreachable.")
+
+    sessions = _patch_entrypoint(monkeypatch, fetch_settings)
+    ctx = _FakeEntrypointContext()
+
+    async def connect(**kwargs):
+        ctx.connect_kwargs = kwargs
+        connect_called.set()
+
+    monkeypatch.setattr(ctx, "connect", connect)
+
+    asyncio.run(asyncio.wait_for(agent.entrypoint(ctx), timeout=1))
+
+    assert ctx.shutdowns == ["voice session rejected"]
+    assert sessions == []
+
+
+def test_entrypoint_rejects_without_waiting_for_a_slow_connect(monkeypatch):
+    async def fetch_settings(_claims):
+        raise VoiceSessionRejected("Voice agent settings are unreachable.")
+
+    sessions = _patch_entrypoint(monkeypatch, fetch_settings)
+    ctx = _FakeEntrypointContext()
+
+    async def connect(**_kwargs):
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(ctx, "connect", connect)
+
+    asyncio.run(asyncio.wait_for(agent.entrypoint(ctx), timeout=1))
+
+    assert ctx.shutdowns == ["voice session rejected"]
+    assert sessions == []
+
+
+def test_entrypoint_runs_the_session_when_the_early_connect_fails(monkeypatch):
+    async def fetch_settings(_claims):
+        return {"engineMode": "pipeline"}
+
+    sessions = _patch_entrypoint(monkeypatch, fetch_settings)
+    ctx = _FakeEntrypointContext()
+
+    async def connect(**_kwargs):
+        raise RuntimeError("connect failed")
+
+    monkeypatch.setattr(ctx, "connect", connect)
+
+    asyncio.run(asyncio.wait_for(agent.entrypoint(ctx), timeout=1))
+
+    assert len(sessions) == 1
+    assert sessions[0]["settings"] == {"engineMode": "pipeline"}
+
+
+def test_entrypoint_cancellation_stops_the_connect_and_settings_tasks(monkeypatch):
+    inner_tasks: list[asyncio.Task] = []
+
+    async def fetch_settings(_claims):
+        inner_tasks.append(asyncio.current_task())
+        await asyncio.Event().wait()
+
+    _patch_entrypoint(monkeypatch, fetch_settings)
+    ctx = _FakeEntrypointContext()
+
+    async def connect(**_kwargs):
+        inner_tasks.append(asyncio.current_task())
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(ctx, "connect", connect)
+
+    async def run_entrypoint():
+        task = asyncio.create_task(agent.entrypoint(ctx))
+        await asyncio.sleep(0.01)
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+        return task
+
+    task = asyncio.run(asyncio.wait_for(run_entrypoint(), timeout=1))
+
+    assert task.cancelled()
+    assert len(inner_tasks) == 2
+    assert all(inner.cancelled() for inner in inner_tasks)

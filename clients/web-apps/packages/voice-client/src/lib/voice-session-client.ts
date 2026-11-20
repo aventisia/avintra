@@ -2,6 +2,7 @@ import { type AudioCaptureOptions, type RemoteTrack, Room, RoomEvent, Track } fr
 
 import type {
   VoiceCallSnapshot,
+  VoiceCaptionTurn,
   VoiceSessionRequest,
   VoiceSessionResponse,
 } from "../types/voice-session.type";
@@ -40,7 +41,14 @@ export const createVoiceCallSnapshot = (): VoiceCallSnapshot => ({
   needsAudioResume: false,
 });
 
+const stampTurnTimes = (turns: VoiceCaptionTurn[]): VoiceCaptionTurn[] => {
+  if (turns.every((turn) => turn.createdAt)) return turns;
+  const now = new Date().toISOString();
+  return turns.map((turn) => (turn.createdAt ? turn : { ...turn, createdAt: now }));
+};
+
 export type VoiceSessionClientOptions = {
+  prepare?: () => Promise<void>;
   createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
   onSnapshot: (snapshot: VoiceCallSnapshot) => void;
 };
@@ -61,10 +69,12 @@ export class VoiceSessionClient {
   private _startedAt = 0;
   private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
   private _disposed = false;
+  private readonly _prepare: VoiceSessionClientOptions["prepare"];
   private readonly _createSession: VoiceSessionClientOptions["createSession"];
   private readonly _onSnapshot: VoiceSessionClientOptions["onSnapshot"];
 
   constructor(options: VoiceSessionClientOptions) {
+    this._prepare = options.prepare;
     this._createSession = options.createSession;
     this._onSnapshot = options.onSnapshot;
   }
@@ -74,9 +84,22 @@ export class VoiceSessionClient {
 
     const generation = ++this._generation;
     await this._releaseRoom();
+    this._setSnapshot(createVoiceCallSnapshot());
+
+    try {
+      await this._prepare?.();
+    } catch (error) {
+      if (generation === this._generation) this._fail(error);
+      return;
+    }
+
+    if (generation !== this._generation) return;
+
+    // IMPORTANT NOTE: the call clock starts with the connecting phase, so the
+    // timer the caller sees always matches the wait, and never covers the save.
     this._startedAt = Date.now();
-    this._setSnapshot({ ...createVoiceCallSnapshot(), state: "connecting", isActive: true });
     this._startTimer();
+    this._setSnapshot({ ...createVoiceCallSnapshot(), state: "connecting", isActive: true });
 
     let session: VoiceSessionResponse;
     try {
@@ -307,9 +330,10 @@ export class VoiceSessionClient {
 
   private _setSnapshot(snapshot: VoiceCallSnapshot): void {
     const previousState = this._snapshot.state;
-    this._snapshot = snapshot;
-    if (!this._disposed) this._onSnapshot(snapshot);
-    if (previousState !== snapshot.state) this._syncSpeechGate();
+    const turns = stampTurnTimes(snapshot.turns);
+    this._snapshot = turns === snapshot.turns ? snapshot : { ...snapshot, turns };
+    if (!this._disposed) this._onSnapshot(this._snapshot);
+    if (previousState !== this._snapshot.state) this._syncSpeechGate();
   }
 
   private _syncSpeechGate(): void {

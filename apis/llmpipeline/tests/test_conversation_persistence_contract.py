@@ -7,11 +7,12 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import UUID
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.checkpoint.models import Conversation
 from app.features.langgraph.checkpoint.persistence import (
+    _message_content,
     attach_voice_turn_timing,
     ensure_conversation,
     update_conversation_status,
@@ -46,6 +47,46 @@ def _request(**overrides) -> LLMRequest:
     }
     payload.update(overrides)
     return LLMRequest(**payload)
+
+
+def test_persisted_user_message_drops_injected_kb_context():
+    content = (
+        "[Knowledge Base Context]\nrefunds take 30 days\n"
+        "[/Knowledge Base Context]\n\n"
+        "what is the refund policy?"
+    )
+
+    assert (
+        _message_content(HumanMessage(content=content))
+        == "what is the refund policy?"
+    )
+
+
+def test_persisted_user_message_keeps_unclosed_kb_block():
+    content = "[Knowledge Base Context]\nrefunds take 30 days\nwhat now?"
+
+    assert _message_content(HumanMessage(content=content)) == content
+
+
+def test_persisted_user_message_drops_a_kb_only_turn():
+    content = "[Knowledge Base Context]\nrefunds take 30 days\n[/Knowledge Base Context]"
+
+    assert _message_content(HumanMessage(content=content)) == ""
+
+
+def test_persisted_user_message_drops_kb_context_from_list_content():
+    content = [
+        {"type": "text", "text": "[Knowledge Base Context]\nfact\n[/Knowledge Base Context]\n"},
+        {"type": "text", "text": "hello"},
+    ]
+
+    assert _message_content(HumanMessage(content=content)) == "hello"
+
+
+def test_persisted_assistant_message_keeps_a_kb_marker_it_mentions():
+    content = "The [Knowledge Base Context] block is model-only."
+
+    assert _message_content(AIMessage(content=content)) == content
 
 
 def test_conversation_service_prefers_flow_version_and_channel():
