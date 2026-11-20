@@ -22,19 +22,25 @@ Read [`../GITHUB.md`](../GITHUB.md) and [`../BRIEF.md`](../BRIEF.md) first. `GIT
    gh api "repos/$REPO/issues/$ID/comments" --paginate
    ```
 
-   Keep the body, labels, state, and `updated_at` as fetched. The body is the original report; when it already holds a brief from an earlier refine, its Original report section is the original report and the rest is your starting draft. Warn and continue when the issue is closed. On a tool error, report it and stop rather than reconstructing issue contents.
+   Keep the title, body, labels, state, and `updated_at` as fetched. The body is the original report; when it already holds a brief from an earlier refine, its Original report section is the original report and the rest is your starting draft. Warn and continue when the issue is closed. On a tool error, report it and stop rather than reconstructing issue contents.
 
-3. **Brief.** Find related issues, investigate, draft, and review per `BRIEF.md` until the user approves a revision. The comments are requirements alongside the body.
+3. **Brief.** Find related issues, investigate, draft, and review per `BRIEF.md` until the user approves a revision. The comments are requirements alongside the body. Show beside every revision the title, the labels as step 5 will leave them, and the project the `Kind/*` label names (per `GITHUB.md` → Projects); the approval covers them. The title and kind stay as fetched unless the brief shows the issue is another kind, or it carries no `Kind/*` label or several. Then propose the one kind that fits and a title for it in the `create-issue` format (`[Type] Actionable and specific summary`).
 
 4. **Check for concurrent edits.** Re-fetch the issue. When its `updated_at` differs from step 2, re-fetch the comments too, show the user what changed in the body or comments, and fold it into a new revision for approval.
 
-5. **Post** the approved file as the description. The title stays as it is. Add `--remove-labels "Status/Need More Info"` when the issue carries that label.
+5. **Post** the approved file as the description, with the approved title and kind:
 
    ```bash
    BODY=$(cat "local-issues/<key>/brief.md")
    gh issue edit --repo "$REPO" "$ID" --body "$BODY" --add-label "Reviewed/Confirmed"
    ```
 
-   Then record the approval and close the Combine issues per Post in `BRIEF.md`.
+   Add these flags when they apply:
+   - The issue carries `Status/Need More Info` → `--remove-label "Status/Need More Info"`.
+   - A fetched `Kind/*` label other than the approved kind → `--remove-label "<that Kind/*>"` for each one.
+   - The approved kind is not among the fetched labels → `--add-label "<approved Kind/*>"`.
+   - The approved title differs from the fetched one → `--title "$TITLE"`. Dropping extra `Kind/*` labels while keeping a fetched one leaves the title as fetched.
 
-6. **Report** per `GITHUB.md`: each issue's URL and what was posted to it or done to it. When the description edit succeeded and a later step failed, say which parts landed.
+   Then record the approval and close the Combine issues per Post in `BRIEF.md`, and place the issue per `GITHUB.md` → Projects, which also takes it off the wrong project.
+
+6. **Report** per `GITHUB.md`: each issue's URL, what was posted to it or done to it, and its project placement as `GITHUB.md` → Projects reports it. When the description edit succeeded and a later step failed, say which parts landed.
