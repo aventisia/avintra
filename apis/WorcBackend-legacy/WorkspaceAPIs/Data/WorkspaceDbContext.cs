@@ -118,6 +118,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<VaultCredential>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<QueueTransaction>().HasIndex(e => new { e.SourceWorkItemId, e.RetryCount }).IsUnique();
+        modelBuilder.Entity<Job>().HasIndex(e => new { e.SourceJobId, e.RetryCount }).IsUnique();
         modelBuilder.Entity<ResourceFlowAccess>().HasIndex(e => new { e.TenantId, e.ResourceType, e.ResourceId, e.FlowId }).IsUnique();
         
         // Enum to string conversion
