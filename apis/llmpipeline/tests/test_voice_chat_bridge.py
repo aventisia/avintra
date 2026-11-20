@@ -691,8 +691,8 @@ class TestRealEngineTurn:
         # The engine executed the configured tool exactly once.
         assert calls == ["first question"]
         assert conversation.bound_tools[0] == ["demo_lookup"]
-        # Voice turns bind every configured capability instead of planning.
-        assert planner.calls == 0
+        # The pipeline turn runs the same planner as chat and binds its selection.
+        assert planner.calls == 1
 
         # Persona, KB context, and the selected skill reached the model prompt.
         first_prompt = conversation.calls[0]
