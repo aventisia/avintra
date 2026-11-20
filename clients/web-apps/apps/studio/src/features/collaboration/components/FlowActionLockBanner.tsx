@@ -17,7 +17,7 @@ export const FlowActionLockBanner = () => {
   if (!lock) return null;
 
   return (
-    <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 items-center gap-2 rounded-md border border-warn/40 bg-surface px-3 py-1.5 text-xs font-medium text-ink shadow-pop">
+    <div className="pointer-events-none flex items-center gap-2 rounded-md border border-warn/40 bg-surface px-3 py-1.5 text-xs font-medium text-ink shadow-pop">
       <LockIcon className="h-3.5 w-3.5 text-warn" />
       <span>
         {lock.holderDisplayName ?? "Another user"} is publishing this agent. Publishing is
