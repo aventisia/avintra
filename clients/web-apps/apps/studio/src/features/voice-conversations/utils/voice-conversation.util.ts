@@ -11,6 +11,12 @@ import type {
 
 const TRANSCRIPT_KEY = "ui_transcript";
 const TIMING_KEY = "voice_turn_timing";
+const KB_CONTEXT_PATTERN = /\[Knowledge Base Context\][\s\S]*?\[\/Knowledge Base Context\]\s*/g;
+
+// IMPORTANT NOTE: pipeline calls saved the KB block as the caller message, so
+// calls recorded before the persistence fix still carry it in their rows. The
+// markers are duplicated from the backend kb_context_markers module.
+const toCallerText = (content: string): string => content.replace(KB_CONTEXT_PATTERN, "").trim();
 
 const toNumber = (value: unknown): number | null =>
   typeof value === "number" && Number.isFinite(value) ? value : null;
@@ -97,7 +103,10 @@ export const toVoiceConversationTurns = (
       continue;
     }
 
-    const text = message.content.trim();
+    const text =
+      message.role === ConversationMessageSenderEnum.User
+        ? toCallerText(message.content)
+        : message.content.trim();
     if (!text) continue;
     if (message.role === ConversationMessageSenderEnum.User) {
       turns.push({ id: message.id, speaker: "caller", text, createdAt: message.createdOn });

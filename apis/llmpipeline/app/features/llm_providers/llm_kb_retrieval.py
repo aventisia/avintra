@@ -8,6 +8,10 @@ from app.core.database import TenantDB, get_db_session_context
 from app.core.env_utils import normalize_env_type
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
+from app.features.llm_providers.kb_context_markers import (
+    KB_CONTEXT_CLOSE,
+    KB_CONTEXT_OPEN,
+)
 from app.features.llm_providers.llm_providers_schemas import LLMMessage, LLMRequest
 from app.features.vector_stores.vector_stores_factory import get_vector_store
 from app.features.vector_stores.vector_stores_schemas import QueryDocRequest
@@ -267,7 +271,7 @@ async def search_knowledge(query: str, llm_request: LLMRequest, user: User) -> s
         # Format retrieved chunks as a context block for the caller
         chunks_text = "\n\n".join(chunk.content for chunk in all_chunks)
         logger.debug(f"[KB-RETRIEVAL] Retrieved {len(all_chunks)} chunk(s) from knowledge base.")
-        return f"[Knowledge Base Context]\n{chunks_text}\n[/Knowledge Base Context]"
+        return f"{KB_CONTEXT_OPEN}\n{chunks_text}\n{KB_CONTEXT_CLOSE}"
 
     except Exception as exc:
         logger.warning(f"[KB-RETRIEVAL] Failed to retrieve KB context: {exc} — continuing without KB context.")

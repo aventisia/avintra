@@ -6,6 +6,7 @@
 """
 
 import json
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import Any
@@ -25,8 +26,19 @@ from app.features.langgraph.checkpoint.models import (
     Conversation,
     ConversationMessage,
 )
+from app.features.llm_providers.kb_context_markers import (
+    KB_CONTEXT_CLOSE,
+    KB_CONTEXT_OPEN,
+)
 
 TERMINAL_CONVERSATION_STATUSES = {"Completed", "Failed", "AccessRevoked", "Archived"}
+
+# shortcut: a caller who literally utters both markers loses that text; only
+# matters if real transcripts ever show it.
+_KB_CONTEXT_BLOCK = re.compile(
+    re.escape(KB_CONTEXT_OPEN) + r".*?" + re.escape(KB_CONTEXT_CLOSE) + r"\s*",
+    re.DOTALL,
+)
 
 
 def _message_role(message: BaseMessage) -> str:
@@ -54,17 +66,22 @@ def _message_content(message: BaseMessage) -> str:
 
     content = getattr(message, "content", "")
 
-    if isinstance(content, str):
-        return content
-
     if isinstance(content, list):
-        return "".join(
+        content = "".join(
             part.get("text", "")
             for part in content
             if isinstance(part, dict)
         )
+    elif not isinstance(content, str):
+        content = str(content)
 
-    return str(content)
+    # IMPORTANT NOTE: KB retrieval is model-only context. Persisting it as the
+    # caller's message leaks the whole context block into the conversation
+    # transcript, so only the original input is stored.
+    if isinstance(message, HumanMessage) and KB_CONTEXT_OPEN in content:
+        return _KB_CONTEXT_BLOCK.sub("", content).strip()
+
+    return content
 
 
 def _message_metadata(

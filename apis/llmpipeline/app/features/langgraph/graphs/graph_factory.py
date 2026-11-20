@@ -161,10 +161,11 @@ def _create_agent_selector_node(
         current_request = restore_request(metadata, request)
 
         # Explicitly configured tools (via "Configure Tools") are the only tools
-        # the agent may call. Chat turns are NOT force-bound: the ReAct planner
-        # decides per-message which configured actions are relevant (Path B), so
-        # a pure text/drafting request binds and executes nothing. Explicitly
-        # attached skills follow the same per-message routing.
+        # the agent may call. Turns are NOT force-bound: the ReAct planner decides
+        # per-message which configured actions are relevant (Path B), so a pure
+        # text/drafting request binds and executes nothing. Explicitly attached
+        # skills follow the same per-message routing, including voice pipeline
+        # turns. The realtime bridge has no planner and binds every capability.
         configured_tool_names = list(explicit_tool_names or [])
         configured_tool_set = set(configured_tool_names)
 
@@ -173,21 +174,6 @@ def _create_agent_selector_node(
                 "Attached skills available for planner routing: %s",
                 explicit_skill_names,
             )
-
-        # IMPORTANT NOTE: a voice call has no per-message plan step; bind every
-        # configured capability for the turn, matching the realtime bridge.
-        if current_request.is_voice_agent:
-            return {
-                "metadata": {
-                    **metadata,
-                    "selected_tool_names": configured_tool_names or None,
-                    "selected_skills": resolve_skill_configs(
-                        skill_registry,
-                        list(explicit_skill_names or []),
-                        tenant_id=tenant_id,
-                    ),
-                }
-            }
 
         # Let the ReAct planner decide which tools and skills are relevant for
         # this specific user message.

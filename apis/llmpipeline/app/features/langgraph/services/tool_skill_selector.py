@@ -20,6 +20,7 @@ from app.features.langgraph.services.tool_approval import (
 )
 from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_registry import ToolRegistry
+from app.features.llm_providers.kb_context_markers import KB_CONTEXT_OPEN
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.llm_providers.services.corsair_sidecar_service import (
     fetch_corsair_schemas,
@@ -476,7 +477,7 @@ def _format_recent_messages(
 
         # Knowledge-base context is injected as a user message; it is retrieval
         # payload, not conversation, and only adds noise for the planner.
-        if "[Knowledge Base Context]" in text:
+        if KB_CONTEXT_OPEN in text:
             continue
 
         # Assistant tool-call messages carry no text; surface the called tools.
