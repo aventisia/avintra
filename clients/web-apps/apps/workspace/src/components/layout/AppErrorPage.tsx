@@ -1,9 +1,9 @@
 import { ErrorPage } from "@avplatform/layout";
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { useEffect } from "react";
 import { useRouteError } from "react-router-dom";
 
 import { AppLogo } from "./AppLogo";
-import { AppMinimalFooter } from "./AppMinimalFooter";
 
 export const AppErrorPage = () => {
   // Get the error object
@@ -22,5 +22,5 @@ export const AppErrorPage = () => {
     }
   }, [error?.message]);
 
-  return <ErrorPage appLogo={<AppLogo showFullLogo />} minimalFooter={<AppMinimalFooter />} />;
+  return <ErrorPage appLogo={<AppLogo showFullLogo />} minimalFooter={<MinimalFooter />} />;
 };

@@ -1,3 +1,4 @@
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { useShallow } from "zustand/react/shallow";
@@ -5,7 +6,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
 
 import { AppLogo } from "./AppLogo";
-import { AppMinimalFooter } from "./AppMinimalFooter";
 
 interface AppLoaderProps {
   className?: string;
@@ -27,7 +27,7 @@ const AppLoader = ({ className }: AppLoaderProps) => {
         <LoadingSpinner className="h-10 w-10 text-primary" />
         {message}
       </div>
-      <AppMinimalFooter />
+      <MinimalFooter />
     </div>
   );
 };
