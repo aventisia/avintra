@@ -16,18 +16,19 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import NamedTuple
 
 from livekit import rtc
 from livekit.agents import (
     AgentServer,
+    AutoSubscribe,
     JobContext,
     JobExecutorType,
     JobProcess,
     WorkerOptions,
     cli,
 )
-from livekit.agents.worker import ServerEnvOption
 from livekit.plugins import silero
 
 from app.core.config import env, livekit_ws_url, settings
@@ -46,6 +47,11 @@ class VoiceWorker(NamedTuple):
 
 
 async def entrypoint(ctx: JobContext) -> None:
+    started_at = time.perf_counter()
+
+    # IMPORTANT NOTE: only local metadata validation runs before connect. Joining
+    # the room first keeps settings, credential, and model setup off the caller's
+    # connection path.
     try:
         claims = parse_job_metadata(ctx.job.metadata)
         validate_job(
@@ -54,13 +60,98 @@ async def entrypoint(ctx: JobContext) -> None:
             expected_agent_name=settings.LIVEKIT_AGENT_NAME,
             room_name=ctx.job.room.name,
         )
-        agent_settings = await fetch_settings(claims)
     except VoiceSessionRejected as error:
         logger.warning("[voice-agent] rejected job: %s", error)
         ctx.shutdown("voice session rejected")
         return
 
-    await run_session(ctx, claims, agent_settings)
+    room_name = ctx.job.room.name
+    logger.info("[voice-timing] entrypoint room=%s", room_name)
+
+    def _log_track_subscribed(_track, _publication, participant) -> None:
+        logger.info(
+            "[voice-timing] audio subscribed participant=%s total_ms=%d",
+            participant.identity,
+            round((time.perf_counter() - started_at) * 1000),
+        )
+
+    ctx.room.on("track_subscribed", _log_track_subscribed)
+    connect_started_at = time.perf_counter()
+    connect_task = asyncio.create_task(ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY))
+    settings_started_at = time.perf_counter()
+    settings_task = asyncio.create_task(fetch_settings(claims))
+
+    try:
+        agent_settings = await _prepare_session(
+            ctx,
+            connect_task,
+            settings_task,
+            room_name,
+            connect_started_at,
+        )
+    except asyncio.CancelledError:
+        await _cancel_tasks(connect_task, settings_task)
+        raise
+
+    if agent_settings is None:
+        return
+
+    logger.info(
+        "[voice-timing] prepared room=%s total_ms=%d settings_ms=%d",
+        room_name,
+        round((time.perf_counter() - started_at) * 1000),
+        round((time.perf_counter() - settings_started_at) * 1000),
+    )
+    await run_session(ctx, claims, agent_settings, started_at=started_at)
+
+
+async def _cancel_tasks(*tasks: asyncio.Task) -> None:
+    for task in tasks:
+        task.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+
+async def _prepare_session(
+    ctx: JobContext,
+    connect_task: asyncio.Task[None],
+    settings_task: asyncio.Task[dict],
+    room_name: str,
+    connect_started_at: float,
+) -> dict | None:
+    done, _ = await asyncio.wait(
+        {connect_task, settings_task}, return_when=asyncio.FIRST_COMPLETED
+    )
+
+    if settings_task in done and not connect_task.done():
+        try:
+            settings_task.result()
+        except VoiceSessionRejected as error:
+            await _cancel_tasks(connect_task, settings_task)
+            logger.warning("[voice-agent] rejected job: %s", error)
+            ctx.shutdown("voice session rejected")
+            return None
+        except Exception:
+            await _cancel_tasks(connect_task, settings_task)
+            raise
+
+    # IMPORTANT NOTE: the session join retries the connect and owns the
+    # user-facing failure path; this early attempt only saves setup time.
+    try:
+        await connect_task
+        logger.info(
+            "[voice-timing] connected room=%s connect_ms=%d",
+            room_name,
+            round((time.perf_counter() - connect_started_at) * 1000),
+        )
+    except Exception as error:
+        logger.warning("[voice-agent] early connect failed: %s", error)
+
+    try:
+        return await settings_task
+    except VoiceSessionRejected as error:
+        logger.warning("[voice-agent] rejected job: %s", error)
+        ctx.shutdown("voice session rejected")
+        return None
 
 
 def _warm_audio_resampler() -> None:
@@ -122,9 +213,10 @@ def worker_options() -> WorkerOptions:
         # IMPORTANT NOTE: a Windows job process imports its modules and loads the VAD
         # in ~20s, past the 10s default that kills it mid-startup.
         initialize_process_timeout=30,
-        # IMPORTANT NOTE: warm processes delay registration until they initialize, so dev
-        # registers immediately and spawns on the first job while prod keeps a floor.
-        num_idle_processes=ServerEnvOption(dev_default=0, prod_default=4),
+        # IMPORTANT NOTE: a cold job process adds its whole import and VAD load
+        # (~20s on Windows) to the caller's wait, so every environment keeps warm
+        # processes instead of spawning on the first job.
+        num_idle_processes=2,
     )
 
 

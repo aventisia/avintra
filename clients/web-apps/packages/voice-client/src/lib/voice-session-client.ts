@@ -48,6 +48,7 @@ const stampTurnTimes = (turns: VoiceCaptionTurn[]): VoiceCaptionTurn[] => {
 };
 
 export type VoiceSessionClientOptions = {
+  prepare?: () => Promise<void>;
   createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
   onSnapshot: (snapshot: VoiceCallSnapshot) => void;
 };
@@ -68,10 +69,12 @@ export class VoiceSessionClient {
   private _startedAt = 0;
   private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
   private _disposed = false;
+  private readonly _prepare: VoiceSessionClientOptions["prepare"];
   private readonly _createSession: VoiceSessionClientOptions["createSession"];
   private readonly _onSnapshot: VoiceSessionClientOptions["onSnapshot"];
 
   constructor(options: VoiceSessionClientOptions) {
+    this._prepare = options.prepare;
     this._createSession = options.createSession;
     this._onSnapshot = options.onSnapshot;
   }
@@ -81,9 +84,22 @@ export class VoiceSessionClient {
 
     const generation = ++this._generation;
     await this._releaseRoom();
+    this._setSnapshot(createVoiceCallSnapshot());
+
+    try {
+      await this._prepare?.();
+    } catch (error) {
+      if (generation === this._generation) this._fail(error);
+      return;
+    }
+
+    if (generation !== this._generation) return;
+
+    // IMPORTANT NOTE: the call clock starts with the connecting phase, so the
+    // timer the caller sees always matches the wait, and never covers the save.
     this._startedAt = Date.now();
-    this._setSnapshot({ ...createVoiceCallSnapshot(), state: "connecting", isActive: true });
     this._startTimer();
+    this._setSnapshot({ ...createVoiceCallSnapshot(), state: "connecting", isActive: true });
 
     let session: VoiceSessionResponse;
     try {

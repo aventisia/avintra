@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 from datetime import timedelta
 from uuid import uuid4
 
@@ -73,6 +74,7 @@ def build_dispatch_metadata(
 async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessionResponse:
     """Creates one room, dispatches the bound worker, and returns the caller's join token."""
 
+    started_at = time.perf_counter()
     http_url, ws_url, api_key, api_secret = livekit_config()
     room_name = f"voice-{request.conversation_id}-{uuid4().hex[:8]}"
     metadata = build_dispatch_metadata(
@@ -90,6 +92,7 @@ async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessi
     )
 
     async with LiveKitAPI(url=http_url, api_key=api_key, api_secret=api_secret) as livekit:
+        room_started_at = time.perf_counter()
         await livekit.room.create_room(
             CreateRoomRequest(
                 name=room_name,
@@ -97,6 +100,8 @@ async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessi
                 departure_timeout=ROOM_DEPARTURE_TIMEOUT_SECONDS,
             )
         )
+        room_ms = round((time.perf_counter() - room_started_at) * 1000)
+        dispatch_started_at = time.perf_counter()
         try:
             await livekit.agent_dispatch.create_dispatch(
                 CreateAgentDispatchRequest(
@@ -115,7 +120,9 @@ async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessi
                     exc_info=True,
                 )
             raise
+        dispatch_ms = round((time.perf_counter() - dispatch_started_at) * 1000)
 
+    token_started_at = time.perf_counter()
     client_token = (
         AccessToken(api_key, api_secret)
         .with_identity(f"user-{user.user_id}")
@@ -131,6 +138,14 @@ async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessi
             )
         )
         .to_jwt()
+    )
+    logger.info(
+        "[voice-timing] session ready room=%s room_ms=%d dispatch_ms=%d token_ms=%d total_ms=%d",
+        room_name,
+        room_ms,
+        dispatch_ms,
+        round((time.perf_counter() - token_started_at) * 1000),
+        round((time.perf_counter() - started_at) * 1000),
     )
 
     return VoiceSessionResponse(
