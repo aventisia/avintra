@@ -20,9 +20,11 @@ Both engines publish the same `avintra.voice` events. Pipeline assistant
 transcripts come from the chat-engine deltas plus the spoken introduction;
 realtime assistant transcripts come from LiveKit's `conversation_item_added`,
 which includes the spoken introduction, and caller transcripts from
-`user_input_transcribed`. Both engines bind every configured tool and skill for
-the whole call instead of planning per message, and publish each configured
-skill once as `skill.call` when the call starts.
+`user_input_transcribed`. The pipeline engine runs the same per-message planner
+as chat, so it binds only the tools and skills selected for that turn; the
+realtime engine has no planner and binds every configured capability for the
+whole call. Both engines publish each configured skill once as `skill.call` when
+the call starts.
 
 ## Pipeline latency
 
