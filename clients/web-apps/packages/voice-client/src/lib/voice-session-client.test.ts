@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { VoiceCallSnapshot } from "../types/voice-session.type";
 import { VoiceSessionClient } from "./voice-session-client";
 
 const { FakeRoom, fakeRooms } = vi.hoisted(() => {
@@ -69,6 +70,13 @@ const emitState = (room: (typeof fakeRooms)[number], state: string): void => {
   room.emit("dataReceived", event, undefined, undefined, "avintra.voice");
 };
 
+const emitData = (room: (typeof fakeRooms)[number], payload: Record<string, unknown>): void => {
+  const event = new TextEncoder().encode(
+    JSON.stringify({ conversationId: SESSION.conversationId, ...payload }),
+  );
+  room.emit("dataReceived", event, undefined, undefined, "avintra.voice");
+};
+
 const startCall = async () => {
   const client = new VoiceSessionClient({
     createSession: async () => ({ ...SESSION }),
@@ -85,6 +93,33 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+});
+
+describe("VoiceSessionClient turn times", () => {
+  it("stamps each turn when it first appears and keeps that time as it grows", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    const room = fakeRooms[0];
+
+    emitData(room, { type: "transcript.interim", role: "user", text: "bo" });
+    const interimTime = snapshots.at(-1)?.turns[0]?.createdAt;
+    expect(interimTime && Date.parse(interimTime)).toBeTruthy();
+
+    emitData(room, { type: "transcript.interim", role: "user", text: "book" });
+    expect(snapshots.at(-1)?.turns[0]?.createdAt).toBe(interimTime);
+
+    emitData(room, { type: "transcript.final", role: "user", text: "book" });
+    expect(snapshots.at(-1)?.turns[0]?.createdAt).toBe(interimTime);
+
+    emitData(room, { type: "tool.call", tool: { name: "search" }, turnId: 1 });
+    expect(snapshots.at(-1)?.turns[1]?.createdAt).toBeTruthy();
+
+    await client.end();
+  });
 });
 
 describe("VoiceSessionClient speech gate", () => {

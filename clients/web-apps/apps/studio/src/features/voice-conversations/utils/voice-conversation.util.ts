@@ -79,6 +79,7 @@ export const toVoiceConversationTurns = (
 ): VoiceCaptionTurn[] => {
   let turns: VoiceCaptionTurn[] = [];
   let pendingToolCalls: VoiceToolCall[] = [];
+  let pendingToolCreatedAt: string | undefined;
 
   for (const message of messages) {
     const latency = toLatency(message.metadata);
@@ -92,20 +93,23 @@ export const toVoiceConversationTurns = (
 
     if (message.role === ConversationMessageSenderEnum.Tool) {
       pendingToolCalls.push(toToolCall(message));
+      pendingToolCreatedAt = message.createdOn;
       continue;
     }
 
     const text = message.content.trim();
     if (!text) continue;
     if (message.role === ConversationMessageSenderEnum.User) {
-      turns.push({ id: message.id, speaker: "caller", text });
+      turns.push({ id: message.id, speaker: "caller", text, createdAt: message.createdOn });
     } else if (message.role === ConversationMessageSenderEnum.Assistant) {
       const toolCalls = pendingToolCalls;
       pendingToolCalls = [];
+      pendingToolCreatedAt = undefined;
       turns.push({
         id: message.id,
         speaker: "agent",
         text,
+        createdAt: message.createdOn,
         latency,
         ...(toolCalls.length ? { toolCalls } : {}),
       });
@@ -117,6 +121,7 @@ export const toVoiceConversationTurns = (
       id: "tool-calls",
       speaker: "agent",
       text: "",
+      createdAt: pendingToolCreatedAt,
       toolCalls: pendingToolCalls,
     });
   }
