@@ -3,6 +3,7 @@ export * from "./components/LockedNodeOverlay";
 export * from "./components/LockedEdgeOverlay";
 export * from "./components/LockHolderBadge";
 export * from "./components/FlowActionLockBanner";
+export * from "./components/ViewOnlyBanner";
 export * from "./components/Chat";
 export * from "./hooks/useCollaboration";
 export * from "./stores/collaboration-store";

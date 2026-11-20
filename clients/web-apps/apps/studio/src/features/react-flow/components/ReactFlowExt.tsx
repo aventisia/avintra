@@ -18,7 +18,7 @@ import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants.ee";
-import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
+import { FlowActionLockBanner, ViewOnlyBanner } from "@/features/collaboration";
 import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
 import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
 import {
@@ -412,7 +412,10 @@ export const ReactFlowExt = () => {
           {/* Non-modal node config drawer — canvas-level mount next to the other
               fixed panels so it shares their stacking context. */}
           <DCPDialog />
-          <FlowActionLockBanner />
+          <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center gap-2">
+            <FlowActionLockBanner />
+            <ViewOnlyBanner />
+          </div>
           {(isLoading || isVersionTransitioning) && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
               <LoadingSpinner className="h-6 w-6 text-primary" />
