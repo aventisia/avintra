@@ -18,6 +18,13 @@ import BaseNode from "./BaseNode";
 
 type ForLoopNode = Node<LoopNodeDataType, "forLoopNode">;
 
+// One badge for both canvases so the run and build pages cannot drift apart.
+const LOOP_BADGE_CLASS =
+  "absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 bg-bg";
+const LOOP_SKIPPED_BADGE_CLASS = "absolute -top-8 left-1/2 -translate-x-1/2 px-2 bg-bg text-xs";
+const LOOP_BADGE_INPUT_CLASS =
+  "w-8 bg-transparent border-none outline-none text-center appearance-none focus:ring-0";
+
 export const ForLoopNode = memo(
   ({ id, data, selected, sourcePosition, targetPosition }: NodeProps<ForLoopNode>) => {
     const [searchParams] = useSearchParams();
@@ -157,19 +164,13 @@ export const ForLoopNode = memo(
     return (
       <BaseNode selected={selected} nodeData={data} nodeId={id}>
         {isExecutionLog && isSkipped && isActiveInCurrentPath && (
-          <Badge
-            className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 bg-bg text-xs"
-            variant="default"
-          >
+          <Badge className={LOOP_SKIPPED_BADGE_CLASS} variant="default">
             Skipped
           </Badge>
         )}
 
         {isExecutionLog && !isSkipped && total > 0 && isActiveInCurrentPath && (
-          <Badge
-            className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 bg-bg"
-            variant="default"
-          >
+          <Badge className={LOOP_BADGE_CLASS} variant="default">
             <Button variant="ghost" size="icon5" onClick={goPrev}>
               <CaretLeftIcon />
             </Button>
@@ -187,15 +188,7 @@ export const ForLoopNode = memo(
                     commitInput();
                   }
                 }}
-                className="
-                  w-8
-                  bg-transparent
-                  border-none
-                  outline-none
-                  text-center
-                  appearance-none
-                  focus:ring-0
-                "
+                className={LOOP_BADGE_INPUT_CLASS}
               />
               <span>/</span>
               <p> {total}</p>
@@ -208,19 +201,13 @@ export const ForLoopNode = memo(
         )}
 
         {!isExecutionLog && isLiveSkipped && liveExecutionMap[id] && (
-          <Badge
-            className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 text-xs"
-            variant="default"
-          >
+          <Badge className={LOOP_SKIPPED_BADGE_CLASS} variant="default">
             Skipped
           </Badge>
         )}
 
         {!isExecutionLog && !isLiveSkipped && liveTotal > 0 && liveExecutionMap[id] && (
-          <Badge
-            className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2"
-            variant="default"
-          >
+          <Badge className={LOOP_BADGE_CLASS} variant="default">
             <Button variant="ghost" size="icon5" onClick={goLivePrev}>
               <CaretLeftIcon />
             </Button>
@@ -236,10 +223,10 @@ export const ForLoopNode = memo(
                     commitLiveInput();
                   }
                 }}
-                className="w-4 bg-transparent border-none outline-none text-center appearance-none focus:ring-0"
+                className={LOOP_BADGE_INPUT_CLASS}
               />
               <span>/</span>
-              <p>{liveTotal}</p>
+              <p> {liveTotal}</p>
             </div>
             <Button variant="ghost" size="icon5" onClick={goLiveNext}>
               <CaretRightIcon />
