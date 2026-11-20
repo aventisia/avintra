@@ -17,7 +17,11 @@ import type { GroupImperativeHandle } from "react-resizable-panels";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  buildSharedFileLink,
+  useIsHomeChatAvailable,
+} from "@/features/home-chat";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import {
@@ -142,7 +146,7 @@ export const WorkspaceChatArtifactsGallery = () => {
   const copyShareLink = async (artifactId: string) => {
     try {
       const token = (await shareChatArtifact(artifactId)).data;
-      await navigator.clipboard.writeText(`${window.location.origin}/s/file/${token}`);
+      await navigator.clipboard.writeText(buildSharedFileLink(token));
       toast.success("Read-only link copied");
     } catch {
       toast.error("Couldn't create the share link");

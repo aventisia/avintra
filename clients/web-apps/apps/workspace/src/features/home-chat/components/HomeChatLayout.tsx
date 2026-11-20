@@ -17,6 +17,7 @@ import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatHistoryPanel } from "../hooks/useHomeChatHistoryPanel.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
+import { buildSharedChatLink } from "../utils/shared-link.util";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
 import { HomeChatThread } from "./HomeChatThread";
@@ -24,7 +25,7 @@ import { HomeChatThread } from "./HomeChatThread";
 const copyShareLink = async (id: string) => {
   try {
     const token = (await shareConversation(id)).data;
-    await navigator.clipboard.writeText(`${window.location.origin}/s/${token}`);
+    await navigator.clipboard.writeText(buildSharedChatLink(token));
     toast.success("Read-only link copied");
   } catch {
     toast.error("Couldn't create the share link");
