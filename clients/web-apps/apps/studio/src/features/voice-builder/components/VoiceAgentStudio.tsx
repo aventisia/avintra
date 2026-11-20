@@ -1,6 +1,6 @@
 import { LoadingSpinner } from "@avplatform/ui";
 
-import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
+import { FlowActionLockBanner, ViewOnlyBanner } from "@/features/collaboration";
 import { ReactFlowDialogWrapper } from "@/features/react-flow/components/ReactFlowDialogWrapper";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
@@ -26,7 +26,10 @@ export const VoiceAgentStudio = ({ isLoading, engineMode, modelLabel }: VoiceAge
         ) : (
           <VoiceBuilder />
         )}
-        <FlowActionLockBanner />
+        <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center gap-2">
+          <FlowActionLockBanner />
+          <ViewOnlyBanner />
+        </div>
       </div>
       <ReactFlowDialogWrapper />
     </ResizablePanel>
