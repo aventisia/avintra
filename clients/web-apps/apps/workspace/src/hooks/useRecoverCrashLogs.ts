@@ -1,7 +1,7 @@
+import { JobStatusEnum } from "@avplatform/ui/enums";
 import { get } from "idb-keyval";
 import { useEffect, useRef } from "react";
 
-import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
 import { closeJob } from "@/features/execute-flow/apis/job-trigger-apis";
 

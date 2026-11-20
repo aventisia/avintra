@@ -1,7 +1,4 @@
-import type { BadgeProps } from "@avplatform/ui/badge";
 import { KeyValueLookupType } from "@avplatform/ui/types";
-
-import { JobStatusEnum } from "../enums/job-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -28,18 +25,4 @@ export const columnDisplayNames: KeyValueLookupType[] = [
 export const getColumnName = (key: string): string => {
   const column = columnDisplayNames.find((column) => column.key === key);
   return column?.value ?? key;
-};
-
-export const statusVariant: { [key in JobStatusEnum]: BadgeProps["variant"] } = {
-  [JobStatusEnum.Completed]: "completed",
-  [JobStatusEnum.Running]: "running",
-  [JobStatusEnum.Aborted]: "failed",
-  [JobStatusEnum.Canceled]: "secondary",
-  [JobStatusEnum.Cleanup]: "running",
-  [JobStatusEnum.Paused]: "queued",
-  [JobStatusEnum.Resumed]: "running",
-  [JobStatusEnum.Retrying]: "running",
-  [JobStatusEnum.Created]: "queued",
-  [JobStatusEnum.Failed]: "failed",
-  [JobStatusEnum.Killed]: "failed",
 };

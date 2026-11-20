@@ -1,4 +1,5 @@
 import { PersonAvatar } from "@avplatform/ui/avatar";
+import { FALLBACK_STATUS_DISPLAY, STATUS_DISPLAY } from "@avplatform/ui/constants";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
@@ -16,33 +17,22 @@ import {
   RecordSheetUnavailable,
   RecordStatusHero,
   RecordSummary,
-  type RecordTone,
 } from "@avplatform/ui/record-sheet";
-import type { IconProps } from "@avplatform/ui/types";
 import { formatDate, formatRelativeTime } from "@avplatform/ui/utils";
 import {
-  ArrowClockwiseIcon,
   ArrowSquareOutIcon,
   ArrowsClockwiseIcon,
   BriefcaseIcon,
-  BroomIcon,
   CalendarBlankIcon,
-  CheckCircleIcon,
   CoinsIcon,
   GaugeIcon,
-  HourglassIcon,
   LightningIcon,
   MapPinIcon,
-  PauseCircleIcon,
-  PlayCircleIcon,
-  ProhibitIcon,
-  StopCircleIcon,
   TimerIcon,
   UserCircleIcon,
-  XCircleIcon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import {
   AGENT_NAME_LINK_CLASS,
@@ -55,23 +45,7 @@ import { getFlowTypeLabel } from "@/features/01-build/flows-table/utils/flow-typ
 
 import { getJob } from "../../apis/jobs-table-apis";
 import type { JobRecordDto } from "../../dtos/job-record-dto";
-import { JobStatusEnum } from "../../enums/job-status-enum";
 import { formatSecondsToCompactDuration } from "../../utils/format-time-utils";
-
-const STATUS_DISPLAY: Record<JobStatusEnum, { tone: RecordTone; Icon: ComponentType<IconProps> }> =
-  {
-    [JobStatusEnum.Created]: { tone: "neutral", Icon: HourglassIcon },
-    [JobStatusEnum.Running]: { tone: "live", Icon: PlayCircleIcon },
-    [JobStatusEnum.Resumed]: { tone: "live", Icon: PlayCircleIcon },
-    [JobStatusEnum.Retrying]: { tone: "live", Icon: ArrowClockwiseIcon },
-    [JobStatusEnum.Cleanup]: { tone: "live", Icon: BroomIcon },
-    [JobStatusEnum.Paused]: { tone: "warn", Icon: PauseCircleIcon },
-    [JobStatusEnum.Completed]: { tone: "ok", Icon: CheckCircleIcon },
-    [JobStatusEnum.Failed]: { tone: "bad", Icon: XCircleIcon },
-    [JobStatusEnum.Aborted]: { tone: "bad", Icon: StopCircleIcon },
-    [JobStatusEnum.Killed]: { tone: "bad", Icon: StopCircleIcon },
-    [JobStatusEnum.Canceled]: { tone: "neutral", Icon: ProhibitIcon },
-  };
 
 const getTimeline = (job: JobRecordDto) => {
   if (job.endTimeStamp) {
@@ -152,7 +126,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
   const executionLogUrl = flowId
     ? `${import.meta.env.VITE_STUDIO_PATH}execution-log?f=${flowId}&v=${job.flowVersionId}&j=${job.id}&rf=${flowId}&rv=${job.flowVersionId}`
     : `${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
-  const status = STATUS_DISPLAY[job.status] ?? { tone: "neutral", Icon: BriefcaseIcon };
+  const status = STATUS_DISPLAY[job.status] ?? FALLBACK_STATUS_DISPLAY;
   const { description, detail } = getTimeline(job);
 
   return (
@@ -161,7 +135,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
         <RecordStatusHero
           Icon={status.Icon}
           tone={status.tone}
-          title={job.status}
+          title={status.label}
           description={description}
           detail={detail}
         />

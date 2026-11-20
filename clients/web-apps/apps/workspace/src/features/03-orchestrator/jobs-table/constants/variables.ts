@@ -1,8 +1,8 @@
+import { JobStatusEnum } from "@avplatform/ui/enums";
 import { TABLE_CN_ACTIONS_COLUMN_ID } from "@avplatform/ui/table-cn";
 import { DialogCrudAction } from "@avplatform/ui/types";
 import { InitialTableState } from "@tanstack/react-table";
 
-import { JobStatusEnum } from "../enums/job-status-enum";
 import { columnVisibilityState } from "./column-visibility-state";
 
 /**
