@@ -420,8 +420,6 @@ public class OrchestratorHub : Hub
                 return;
             }
 
-            var jobId = Guid.NewGuid();
-
             // Retrieve user identity and tenant ID from the HTTP context
             var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             var tenantId = Guid.Parse(Context?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
@@ -438,7 +436,6 @@ public class OrchestratorHub : Hub
             // Create a new job for agent execution
             var job = new Job()
             {
-                Id = jobId,
                 FlowVersionId = agent.Id,
                 MachineId = clientDataStore.ClientId,
                 ExecutedOn = clientDataStore.ClientName ?? machineName,

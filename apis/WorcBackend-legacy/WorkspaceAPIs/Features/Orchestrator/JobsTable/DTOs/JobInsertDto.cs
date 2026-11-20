@@ -50,9 +50,10 @@ public class JobInsertDto
     public JsonDocument? JobInputData { get; set; }
 
     /// <summary>
-    /// Optional existing job id to create the job with retryCount > 0.
-    /// If provided, the job id will remain the same but retry count > 0. Also, the existing job id should exist in the database for the same flowVersionId.
-    /// If not provided, a new job id will be generated and retry count will be 0.
+    /// Gets or sets the job ID of any attempt in an existing retry chain.
+    /// The new attempt gets a fresh job ID, shares the chain's SourceJobId, and is numbered one above the chain's latest attempt.
+    /// The job must exist for the same flowVersionId, and the latest attempt must have reached a terminal status.
+    /// The retry inherits the chain's trigger type and parent reference; any trigger type or reference in this payload applies to fresh jobs only.
     /// </summary>
     public Guid? ExistingJobId { get; set; }
 }
