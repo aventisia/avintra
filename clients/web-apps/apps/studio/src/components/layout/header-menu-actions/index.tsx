@@ -3,7 +3,6 @@ import { DropdownMenu, DropdownMenuContent, SimpleDDMenuItem } from "@avplatform
 import { toast } from "@avplatform/ui/sonner";
 import {
   ArchiveIcon,
-  ArrowSquareInIcon,
   ArrowSquareOutIcon,
   ArrowsLeftRightIcon,
   BooksIcon,
@@ -21,11 +20,9 @@ import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useInputOutputsStore } from "@/features/add-input-output/stores/inputs-outputs-store";
 import { useArchiveAgentAction } from "@/features/archive-agent/hooks/useArchiveAgentAction.hook";
 import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/useDirtyNodeConfigGuard";
-import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import {
   EXPORT_SHORTCUT,
   FIND_NODE_SHORTCUT,
-  IMPORT_SHORTCUT,
   KEYBOARD_SHORTCUTS_SHORTCUT,
 } from "@/features/keyboard-shortcuts/constants/shortcut-groups.constant";
 import { useKeyboardShortcutsStore } from "@/features/keyboard-shortcuts/stores/keyboard-shortcuts-store";
@@ -48,12 +45,6 @@ export const HeaderActionMenu = () => {
   const { setShowDialog: setExportDialog } = useInputOutputsStore(
     useShallow((state) => ({
       setShowDialog: state.setShowDialog,
-    })),
-  );
-
-  const { setUpload } = useImportStore(
-    useShallow((state) => ({
-      setUpload: state.setUpload,
     })),
   );
 
@@ -84,10 +75,6 @@ export const HeaderActionMenu = () => {
   );
 
   // Menu shortcuts are bound here, not on the items, so they work while the menu is closed.
-  useHotkeys(toHotkeyString(IMPORT_SHORTCUT), () => setUpload(true), { preventDefault: true }, [
-    setUpload,
-  ]);
-
   useHotkeys(
     toHotkeyString(EXPORT_SHORTCUT),
     () => {
@@ -156,16 +143,6 @@ export const HeaderActionMenu = () => {
             onClick={openUIInspector}
           />
         ) : null}
-
-        <SimpleDDMenuItem
-          size="md"
-          Icon={ArrowSquareInIcon}
-          content="Import"
-          {...menuShortcutProps(IMPORT_SHORTCUT)}
-          onClick={() => {
-            setUpload(true);
-          }}
-        />
 
         <SimpleDDMenuItem
           size="md"

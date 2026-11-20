@@ -117,7 +117,6 @@
       "label": "Realtime Model",
       "description": "Model used when Engine Mode is Realtime. Realtime is bring-your-own-key only: pick the provider, its model, and the credential it uses.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -146,7 +145,6 @@
       "label": "LLM",
       "description": "Model used when Engine Mode is Pipeline.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -174,7 +172,6 @@
       "name": "__ModelConfig__SpeechToText",
       "description": "Speech-to-text model used when Engine Mode is Pipeline. ElevenLabs Scribe streams interim transcripts; other models transcribe each utterance.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -202,7 +199,6 @@
       "name": "__ModelConfig__TextToSpeech",
       "description": "Text-to-speech model used when Engine Mode is Pipeline.",
       "defaultValue": {
-        "is_byok_enabled": true,
         "provider": "",
         "credential_name": "",
         "model": "",
@@ -228,7 +224,33 @@
       "direction": "Input",
       "type": "voice-config-select",
       "name": "__VoiceConfig__TextToSpeech",
-      "description": "Voice, language, and speed used for speech in both Realtime and Pipeline modes.",
+      "description": "The active engine's voice, language, and speed, read by the runtime.",
+      "defaultValue": {
+        "language": "en",
+        "voice": "",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__PipelineVoice",
+      "description": "Voice, language, and speed used when Engine Mode is Pipeline.",
+      "defaultValue": {
+        "language": "en",
+        "voice": "",
+        "speed": 1
+      },
+      "required": false,
+      "category": "Voice & Model"
+    },
+    {
+      "direction": "Input",
+      "type": "voice-config-select",
+      "name": "__VoiceConfig__RealtimeVoice",
+      "description": "Voice, language, and speed used when Engine Mode is Realtime.",
       "defaultValue": {
         "language": "en",
         "voice": "",

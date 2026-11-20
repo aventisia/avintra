@@ -5,6 +5,7 @@ import { Edge, Node, useReactFlow } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { toCanvasNodeData } from "@/features/action-selector/utils/to-canvas-node-data.util";
 import {
   isSingleNodeAgentFlow,
   notifySingleNodeAgentActionNotAllowed,
@@ -329,7 +330,10 @@ export const useFlowOperations = () => {
         const extractedNodes = currentNodes
           .filter((n) => nodeIdsToExtract.has(n.id))
           .map((node) => {
-            const data = { ...node.data, isCut: false } as NodeDataType;
+            const data: NodeDataType = {
+              ...toCanvasNodeData(node.data as NodeDataType),
+              isCut: false,
+            };
 
             if (data.groupId) {
               const isHeadExtracted = currentNodes.some(
@@ -517,18 +521,14 @@ export const useFlowOperations = () => {
         idMap = generated.idMap;
         newNodes = generated.newNodes;
 
-        // Remap modelNode parentId and data.description to the new aiNode id.
-        // generatePastedSubgraph assigns new IDs to all nodes via idMap but
-        // doesn't know about the aiNode→modelNode parentId relationship.
+        // Remap the modelNode parentId to the new aiNode id: generatePastedSubgraph
+        // assigns new IDs to all nodes via idMap but doesn't know about the
+        // aiNode -> modelNode parentId relationship, which is the only link it needs.
         newNodes = newNodes.map((n) => {
           if (n.type !== "modelNode" || !n.parentId) return n;
           const newParentId = idMap.get(n.parentId);
           if (!newParentId) return n;
-          return {
-            ...n,
-            parentId: newParentId,
-            data: { ...n.data, description: newParentId },
-          };
+          return { ...n, parentId: newParentId };
         });
       } else {
         // cut: IDs are unchanged, parentId relationships are already intact

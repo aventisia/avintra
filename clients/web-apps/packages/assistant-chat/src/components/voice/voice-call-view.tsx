@@ -1,7 +1,13 @@
 import { Switch } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { Mic, MicOff, Phone, PhoneOff, Volume2 } from "lucide-react";
+import {
+  MicrophoneIcon,
+  MicrophoneSlashIcon,
+  PhoneDisconnectIcon,
+  PhoneIcon,
+  SpeakerHighIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode, useEffect, useState } from "react";
 
 import { VOICE_CALL_STATE_LABELS } from "../../lib/voice-call-labels";
@@ -52,10 +58,14 @@ export type VoiceCallViewProps = {
   header?: ReactNode;
   idleTitle?: string;
   idleDescription?: string;
+  /** Shown under the idle text, e.g. a link to what blocks the call. */
+  idleAction?: ReactNode;
   /** Shows per-turn timing and the tool-call sound switch. */
   showDiagnostics?: boolean;
   /** Blocks starting a new call; an in-progress call stays controllable. */
   startDisabled?: boolean;
+  /** Overrides the state label, e.g. for a step before the call connects. */
+  statusLabel?: string;
   className?: string;
 };
 
@@ -67,8 +77,10 @@ export const VoiceCallView = ({
   header,
   idleTitle,
   idleDescription,
+  idleAction,
   showDiagnostics,
   startDisabled,
+  statusLabel,
   className,
 }: VoiceCallViewProps) => {
   const [isToolCueOn, setIsToolCueOn] = useState(true);
@@ -76,8 +88,9 @@ export const VoiceCallView = ({
 
   const runningToolKey = findRunningToolKey(call.turns[call.turns.length - 1]);
   const lastLatency = findLastLatency(call.turns);
-  const statusLabel =
-    call.isMuted && call.state === "listening" ? "Muted" : VOICE_CALL_STATE_LABELS[call.state];
+  const shownStatusLabel =
+    statusLabel ??
+    (call.isMuted && call.state === "listening" ? "Muted" : VOICE_CALL_STATE_LABELS[call.state]);
 
   useSpaceToMute(call.isActive, call.toggleMute);
 
@@ -93,7 +106,7 @@ export const VoiceCallView = ({
       {header}
 
       <p className="sr-only" aria-live="polite">
-        {statusLabel}
+        {shownStatusLabel}
       </p>
 
       <div
@@ -108,7 +121,7 @@ export const VoiceCallView = ({
           <VoiceOrb state={call.state} isMuted={call.isMuted} size={isFull ? "lg" : "md"} />
           <div className="flex flex-col items-center gap-0.5">
             <span className={cn("font-semibold text-ink", isFull ? "text-heading" : "text-body")}>
-              {statusLabel}
+              {shownStatusLabel}
             </span>
             {call.state !== "idle" && (
               <span className="font-mono text-[12px] tabular-nums text-muted-foreground">
@@ -138,12 +151,13 @@ export const VoiceCallView = ({
               showLatency={showDiagnostics}
               size={isFull ? "lg" : "md"}
             />
-          ) : (
+          ) : call.error ? null : (
             <div className="flex h-full flex-col items-center justify-center gap-1 px-6 text-center">
               {idleTitle && <p className="text-body font-semibold text-ink">{idleTitle}</p>}
               {idleDescription && (
                 <p className="text-hint text-muted-foreground">{idleDescription}</p>
               )}
+              {idleAction && <div className="mt-2">{idleAction}</div>}
             </div>
           )}
         </div>
@@ -156,18 +170,20 @@ export const VoiceCallView = ({
                 <VoiceLatencyStrip latency={lastLatency} />
               </div>
             ) : null}
-            <label
-              htmlFor="voice-tool-cue"
-              className="flex items-center justify-end gap-2 text-hint text-ink-2"
-            >
+            <div className="flex items-center justify-between gap-4">
+              <label htmlFor="voice-tool-cue" className="flex min-w-0 flex-col">
+                <span className="text-hint font-medium text-ink">Tool-call sound</span>
+                <span className="text-hint text-muted-foreground">
+                  Plays a cue while the agent runs a tool.
+                </span>
+              </label>
               <Switch
                 id="voice-tool-cue"
                 size="sm"
                 checked={isToolCueOn}
                 onCheckedChange={setIsToolCueOn}
               />
-              Tool-call sound
-            </label>
+            </div>
           </div>
         )}
 
@@ -181,7 +197,7 @@ export const VoiceCallView = ({
         >
           {call.needsAudioResume && (
             <Button variant="secondary" size={isFull ? "lg" : "default"} onClick={call.resumeAudio}>
-              <Volume2 aria-hidden="true" className="mr-1.5 size-4" />
+              <SpeakerHighIcon aria-hidden="true" className="mr-1.5 size-4" />
               Resume audio
             </Button>
           )}
@@ -194,14 +210,14 @@ export const VoiceCallView = ({
                 onClick={call.toggleMute}
               >
                 {call.isMuted ? (
-                  <MicOff aria-hidden="true" className="mr-1.5 size-4" />
+                  <MicrophoneSlashIcon aria-hidden="true" className="mr-1.5 size-4" />
                 ) : (
-                  <Mic aria-hidden="true" className="mr-1.5 size-4" />
+                  <MicrophoneIcon aria-hidden="true" className="mr-1.5 size-4" />
                 )}
                 {call.isMuted ? "Unmute" : "Mute"}
               </Button>
               <Button variant="destructive" size={isFull ? "lg" : "default"} onClick={call.end}>
-                <PhoneOff aria-hidden="true" className="mr-1.5 size-4" />
+                <PhoneDisconnectIcon aria-hidden="true" className="mr-1.5 size-4" />
                 End call
               </Button>
               <span className="ml-2 hidden text-hint text-muted-foreground sm:inline">
@@ -213,7 +229,7 @@ export const VoiceCallView = ({
             </>
           ) : (
             <Button size={isFull ? "lg" : "default"} disabled={startDisabled} onClick={call.start}>
-              <Phone aria-hidden="true" className="mr-1.5 size-4" />
+              <PhoneIcon aria-hidden="true" className="mr-1.5 size-4" />
               {call.state === "ended" ? "Start voice call" : "Start call"}
             </Button>
           )}

@@ -6,12 +6,6 @@ export const FIND_NODE_SHORTCUT: Shortcut = {
   key: "k",
 };
 
-export const IMPORT_SHORTCUT: Shortcut = {
-  label: "Import an agent",
-  modifiers: ["mod"],
-  key: "o",
-};
-
 export const EXPORT_SHORTCUT: Shortcut = {
   label: "Export the agent",
   modifiers: ["mod"],
@@ -28,7 +22,6 @@ const GENERAL: ShortcutGroup = {
   title: "General",
   shortcuts: [
     FIND_NODE_SHORTCUT,
-    IMPORT_SHORTCUT,
     EXPORT_SHORTCUT,
     KEYBOARD_SHORTCUTS_SHORTCUT,
     { label: "Save changes", modifiers: ["mod"], key: "s" },

@@ -109,7 +109,7 @@ Verify with: <existing commands that check the behavior: typecheck, lint, build,
 3. The brief is **approved** when the user explicitly approves the revision last shown and its Open questions section is gone. With questions still open, the user answers them or accepts your suggestions; fold those in and show the new revision. A reply that approves and also asks for changes is a change request.
 4. Re-read the file after approval; a change since you last showed it needs a fresh approval.
 
-Approving a revision authorizes posting exactly that file and closing the Combine issues it lists. Post its contents unchanged.
+Approving a revision authorizes posting exactly that file, applying the title and labels shown beside it, and closing the Combine issues it lists. Post its contents unchanged.
 
 ## Post
 

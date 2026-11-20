@@ -77,13 +77,10 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="field"
           role="combobox"
           disabled={disabled}
-          className={cn(
-            "gap-1.5 pl-[11px] pr-2 text-body font-normal disabled:border-line disabled:bg-sunken",
-            value ? "w-max" : "w-[10rem]",
-          )}
+          className={cn("gap-1.5 pl-[11px] pr-2 text-body", value ? "w-max" : "w-[10rem]")}
         >
           {value ? (
             <>

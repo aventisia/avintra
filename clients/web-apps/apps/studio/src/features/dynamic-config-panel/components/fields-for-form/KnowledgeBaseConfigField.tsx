@@ -1,105 +1,94 @@
-import { InputField, MultiSelectField } from "@avplatform/ui/form";
+import { InputField } from "@avplatform/ui/form";
+import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { Controller, FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+import { FieldPath, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
 import { SliderField } from "@/components/Slider/SliderField";
 
 import { getKnowledgeBaseSelectOptions } from "../../apis/knowledge-base-apis.ts";
-import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { useNormalizedIdList } from "../../hooks/useNormalizedIdList.hook";
+import { ConfigFieldCard, ConfigFieldCount } from "./ConfigFieldCard";
+import { ResourceListField } from "./ResourceListField";
 
 interface KnowledgeBaseConfigFieldProps {
   /** The name of the form field. */
   name: string;
+  /** Renders the body without its card, for a host that frames it. */
+  hideGroup?: boolean;
 }
 
-const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
-  // Set names for the fields
+const KnowledgeBaseConfigField = ({ name, hideGroup = false }: KnowledgeBaseConfigFieldProps) => {
   const knowledgeBaseFieldName = `${name}.knowledgeBase` as FieldPath<FieldValues>;
   const numberOfChunksFieldName = `${name}.numberOfChunks` as FieldPath<FieldValues>;
   const sourceThresholdFieldName = `${name}.sourceThreshold` as FieldPath<FieldValues>;
 
-  // Get the form context
-  const { control, setValue, getValues } = useFormContext();
+  const { control } = useFormContext();
+  const attached = useWatch({ control, name: knowledgeBaseFieldName });
+  const attachedCount = Array.isArray(attached) ? attached.length : 0;
 
-  const { data: kbOptionsData } = useQuery({
+  const { data: kbOptionsData, isLoading } = useQuery({
     queryKey: ["knowledge-base-options"],
     queryFn: getKnowledgeBaseSelectOptions,
     select: (response) => response?.data ?? [],
   });
 
-  const knowledgeBaseSelectOptions = (kbOptionsData ?? []).map((option) => ({
-    label: option.label,
-    value: option.value,
-    description: option.description,
-  }));
+  useNormalizedIdList(knowledgeBaseFieldName);
 
-  useEffect(() => {
-    const currentValue = getValues(knowledgeBaseFieldName);
-
-    if (Array.isArray(currentValue)) {
-      return;
-    }
-
-    if (typeof currentValue === "string") {
-      const normalizedValue = currentValue
-        .split(",")
-        .map((item) => item.trim())
-        .filter((item) => item.length > 0);
-
-      setValue(knowledgeBaseFieldName, normalizedValue, {
-        shouldDirty: false,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-      return;
-    }
-
-    setValue(knowledgeBaseFieldName, [], {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-  }, [getValues, knowledgeBaseFieldName, setValue]);
-
-  const { field: sourceThresholdField } = useController({
-    name: sourceThresholdFieldName,
-    control,
-  });
-
-  // Render the KnowledgeBaseConfigField component
-  return (
-    <GroupedFieldsWrapper groupName="Knowledge base">
-      <MultiSelectField
-        size="sm"
+  const body = (
+    <div className="space-y-3">
+      <ResourceListField
         name={knowledgeBaseFieldName}
-        label="Knowledge base(s)"
-        placeholder="Select knowledge base(s)"
-        selectOptions={knowledgeBaseSelectOptions}
+        options={kbOptionsData ?? []}
+        isLoading={isLoading}
+        Icon={BookOpenTextIcon}
+        tone="sky"
+        noun={["knowledge base", "knowledge bases"]}
+        emptyHint="Nothing attached. The agent answers from its prompt alone."
       />
 
-      <InputField
-        name={numberOfChunksFieldName}
-        type="number"
-        label="Number of chunks"
-        fieldSize="sm"
-      />
-
-      <Controller
-        {...sourceThresholdField}
-        render={({ field }) => (
+      <fieldset className="rounded-md bg-sunken/60 p-3">
+        <legend className="float-left mb-2 w-full font-mono text-label uppercase text-muted-foreground">
+          Retrieval
+        </legend>
+        <div className="clear-both grid gap-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+          <InputField
+            name={numberOfChunksFieldName}
+            type="number"
+            label="Chunks per lookup"
+            fieldSize="sm"
+            min={1}
+          />
           <SliderField
-            label="Source threshold"
-            name={field.name}
+            label="Relevance threshold"
+            name={sourceThresholdFieldName}
             trackColor="bg-muted"
             min={0}
             max={1.0}
             step={0.1}
-            className="resize-none text-sm"
+            size="sm"
+            formatValue={(value) => value.toFixed(1)}
           />
-        )}
-      />
-    </GroupedFieldsWrapper>
+        </div>
+        <p className="mt-2 text-hint text-muted-foreground">
+          Passages scoring below the threshold are skipped.
+        </p>
+      </fieldset>
+    </div>
+  );
+
+  if (hideGroup) return body;
+
+  return (
+    <ConfigFieldCard
+      Icon={BookOpenTextIcon}
+      tone="sky"
+      label="Knows"
+      title="Knowledge base"
+      description="Documents the agent searches before it answers."
+      aside={<ConfigFieldCount count={attachedCount} noun="attached" />}
+    >
+      {body}
+    </ConfigFieldCard>
   );
 };
 

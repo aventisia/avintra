@@ -1,7 +1,7 @@
 import { Switch } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { ImageIcon, TrashIcon } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
@@ -161,7 +161,7 @@ export const UiBuilderSettingsDialog = ({
             maxLength={INSTRUCTIONS_CAP}
             onChange={(event) => setInstructions(event.target.value)}
             placeholder="Users are claims processors on desktop. Keep layouts dense, use our terms 'claim' and 'adjuster', and show amounts in USD."
-            className="h-36 w-full resize-none rounded-md border border-slate-200 bg-white p-2 text-xs"
+            className={cn(FIELD_SURFACE, "h-36 w-full resize-none p-2 text-xs")}
             disabled={saveMutation.isPending}
           />
           <span className="block text-right text-[10px] text-slate-400">
@@ -217,7 +217,7 @@ export const UiBuilderSettingsDialog = ({
                     setColorDraft(event.target.value);
                     patchTheme({ primaryColor: event.target.value });
                   }}
-                  className="h-6 w-6 cursor-pointer rounded border border-slate-200 bg-white p-0"
+                  className="h-6 w-6 cursor-pointer rounded border border-line-field bg-surface p-0 hover:border-line-field-hover"
                   disabled={saveMutation.isPending}
                 />
                 <input
@@ -229,10 +229,8 @@ export const UiBuilderSettingsDialog = ({
                     if (HEX_COLOR_PATTERN.test(event.target.value))
                       patchTheme({ primaryColor: event.target.value });
                   }}
-                  className={cn(
-                    "h-6 w-20 rounded border px-1.5 font-mono text-[10px]",
-                    isColorValid ? "border-slate-200" : "border-rose-300 text-rose-600",
-                  )}
+                  aria-invalid={!isColorValid}
+                  className={cn(FIELD_SURFACE, "h-6 w-20 px-1.5 font-mono text-[10px]")}
                   disabled={saveMutation.isPending}
                 />
               </label>

@@ -60,8 +60,31 @@ const hasPlanIntent = (): boolean => {
   return plan !== null && plan.toLowerCase() !== "starter";
 };
 
+/** Query keys that describe the chosen paid plan and survive the move to onboarding. */
+const ONBOARDING_QUERY_KEYS = ["plan", "currency", "frequency"];
+
+/**
+ * Builds the onboarding URL, keeping the chosen plan, currency and frequency from the
+ * current query string. Social sign-in loses the query on the provider round trip, so
+ * callers with a server-confirmed intent pass `fallbackPlan` to land on a generic Pro
+ * checkout instead of bouncing back to workspace.
+ */
+const buildOnboardingUrl = (fallbackPlan = false): string => {
+  const kept = new URLSearchParams();
+  const current = new URLSearchParams(window.location.search);
+  for (const key of ONBOARDING_QUERY_KEYS) {
+    const value = current.get(key);
+    if (value) kept.set(key, value);
+  }
+  const base = `${import.meta.env.VITE_ACCOUNTS_PATH}onboarding`;
+  const search = kept.toString();
+  if (search) return `${base}?${search}`;
+  return fallbackPlan ? `${base}?plan=Pro` : base;
+};
+
 export {
   AVENTISIA_EMAIL_DOMAIN,
+  buildOnboardingUrl,
   getPostLoginDestination,
   hasPlanIntent,
   resolvePostLoginDestination,

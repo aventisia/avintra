@@ -47,6 +47,12 @@ public class CallerContext
     /// Defaults to "dev" when not supplied.
     /// </summary>
     public string EnvType { get; set; } = "dev";
+
+    /// <summary>
+    /// The space of the executing flow, forwarded as "X-Space-Id" on outbound backend calls
+    /// so space-scoped resources resolve. Null means the Central space.
+    /// </summary>
+    public Guid? SpaceId { get; set; }
 }
 
 

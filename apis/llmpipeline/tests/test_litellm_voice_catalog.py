@@ -182,11 +182,10 @@ def test_elevenlabs_voices_use_the_provider_preview_url(monkeypatch):
 def test_elevenlabs_byok_credential_is_trimmed_and_used(monkeypatch):
     captured: dict = {}
 
-    def _resolve(provider, is_byok, credential_name, user):
+    def _resolve(provider, credential_name, user):
         captured.update(
             {
                 "provider": provider,
-                "is_byok": is_byok,
                 "credential_name": credential_name,
             }
         )
@@ -214,7 +213,6 @@ def test_elevenlabs_byok_credential_is_trimmed_and_used(monkeypatch):
     assert response.status_code == 200
     assert captured == {
         "provider": "elevenlabs",
-        "is_byok": True,
         "credential_name": "byok-credential",
         "path": "/voices?page_size=100",
         "api_base": "https://byok.test/v1",

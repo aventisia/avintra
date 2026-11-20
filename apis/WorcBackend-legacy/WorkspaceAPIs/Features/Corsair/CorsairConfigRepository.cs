@@ -28,6 +28,9 @@ public class CorsairConfigRepository
     private readonly Dictionary<string, CorsairConnectorConfig> _configCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, CorsairActionInvocation> _invocationCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly object _gate = new();
+    private List<CorsairIntegrationCatalogEntry>? _catalogCache;
+    private DateTime _catalogCacheLastWriteUtc;
+    private long _catalogCacheLength;
 
     public CorsairConfigRepository(
         ILogger<CorsairConfigRepository> logger,
@@ -190,29 +193,13 @@ public class CorsairConfigRepository
 
         vaultCredentialType = NormalizeVaultCredentialType(vaultCredentialType);
 
-        var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
-        if (catalogPath == null)
-        {
-            return Array.Empty<string>();
-        }
-
-        try
-        {
-            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry>>(
-                File.ReadAllText(catalogPath),
-                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return catalog?
-                .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase))
-                .Select(entry => entry.PluginId)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(plugin => plugin, StringComparer.OrdinalIgnoreCase)
-                .ToArray() ?? Array.Empty<string>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to parse Corsair integration catalog at {Path}.", catalogPath);
-            return Array.Empty<string>();
-        }
+        var catalog = GetCatalogEntries();
+        return catalog?
+            .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase))
+            .Select(entry => entry.PluginId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(plugin => plugin, StringComparer.OrdinalIgnoreCase)
+            .ToArray() ?? Array.Empty<string>();
     }
 
     /// <summary>
@@ -226,27 +213,11 @@ public class CorsairConfigRepository
             return null;
         }
 
-        var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
-        if (catalogPath == null)
-        {
-            return null;
-        }
-
-        try
-        {
-            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry>>(
-                File.ReadAllText(catalogPath),
-                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return catalog?
-                .Where(entry => string.Equals(entry.PluginId, pluginId, StringComparison.OrdinalIgnoreCase))
-                .Select(entry => entry.VaultCredentialType)
-                .FirstOrDefault(vaultCredentialType => !string.IsNullOrWhiteSpace(vaultCredentialType));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to parse Corsair integration catalog at {Path}.", catalogPath);
-            return null;
-        }
+        var catalog = GetCatalogEntries();
+        return catalog?
+            .Where(entry => string.Equals(entry.PluginId, pluginId, StringComparison.OrdinalIgnoreCase))
+            .Select(entry => entry.VaultCredentialType)
+            .FirstOrDefault(vaultCredentialType => !string.IsNullOrWhiteSpace(vaultCredentialType));
     }
 
     private static string NormalizeVaultCredentialType(string vaultCredentialType) => vaultCredentialType.Trim() switch
@@ -298,6 +269,21 @@ public class CorsairConfigRepository
 
         vaultCredentialType = NormalizeVaultCredentialType(vaultCredentialType);
 
+        var catalog = GetCatalogEntries();
+        return catalog?
+            .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(entry.DefaultAuthMode, "oauth_2", StringComparison.OrdinalIgnoreCase))
+            .Select(entry => entry.PluginId)
+            .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Returns the parsed integration catalog, re-reading it only when the file's
+    /// last-write time or length changed since the cached parse.
+    /// </summary>
+    private List<CorsairIntegrationCatalogEntry>? GetCatalogEntries()
+    {
         var catalogPath = ResolveArtifactPath("CorsairIntegrationCatalog.json");
         if (catalogPath == null)
         {
@@ -306,15 +292,51 @@ public class CorsairConfigRepository
 
         try
         {
-            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry>>(
+            var beforeRead = new FileInfo(catalogPath);
+            if (!beforeRead.Exists)
+            {
+                return null;
+            }
+
+            var beforeReadLastWriteUtc = beforeRead.LastWriteTimeUtc;
+            var beforeReadLength = beforeRead.Length;
+
+            lock (_gate)
+            {
+                if (_catalogCache != null
+                    && _catalogCacheLastWriteUtc == beforeReadLastWriteUtc
+                    && _catalogCacheLength == beforeReadLength)
+                {
+                    return _catalogCache;
+                }
+            }
+
+            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry?>>(
                 File.ReadAllText(catalogPath),
-                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return catalog?
-                .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(entry.DefaultAuthMode, "oauth_2", StringComparison.OrdinalIgnoreCase))
-                .Select(entry => entry.PluginId)
-                .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
-                .FirstOrDefault();
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })?
+                .Where(entry => entry is not null)
+                .Select(entry => entry!)
+                .ToList();
+            if (catalog == null)
+            {
+                return null;
+            }
+
+            // IMPORTANT NOTE: A rewrite between the read and this stat must not be cached as if
+            // it matched, so the parse is served uncached whenever the file changed mid-read.
+            var afterRead = new FileInfo(catalogPath);
+            if (afterRead.Exists
+                && afterRead.LastWriteTimeUtc == beforeReadLastWriteUtc
+                && afterRead.Length == beforeReadLength)
+            {
+                lock (_gate)
+                {
+                    _catalogCache = catalog;
+                    _catalogCacheLastWriteUtc = beforeReadLastWriteUtc;
+                    _catalogCacheLength = beforeReadLength;
+                }
+            }
+            return catalog;
         }
         catch (Exception ex)
         {

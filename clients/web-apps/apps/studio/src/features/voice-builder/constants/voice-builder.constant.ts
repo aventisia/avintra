@@ -1,7 +1,16 @@
+import {
+  BookOpenTextIcon,
+  ChatTextIcon,
+  CpuIcon,
+  SpeakerHighIcon,
+  WrenchIcon,
+} from "@phosphor-icons/react";
+
 import type {
   VoiceAgentTemplate,
   VoiceBuilderSectionId,
-  VoiceComingLaterGroup,
+  VoiceBuilderSectionMeta,
+  VoiceEngineMode,
 } from "../types/voice-builder.type";
 
 export const VOICE_FIELDS = {
@@ -16,6 +25,8 @@ export const VOICE_FIELDS = {
   speechToText: "__ModelConfig__SpeechToText",
   textToSpeech: "__ModelConfig__TextToSpeech",
   voiceConfig: "__VoiceConfig__TextToSpeech",
+  pipelineVoiceConfig: "__VoiceConfig__PipelineVoice",
+  realtimeVoiceConfig: "__VoiceConfig__RealtimeVoice",
   variablesEnabled: "__VariablesEnabled__Voice",
   variables: "__Variables__Voice",
   knowledgeBases: "__KbConfig__Voice",
@@ -24,37 +35,67 @@ export const VOICE_FIELDS = {
   tools: "__ToolsConfig__Voice",
 } as const;
 
-export const VOICE_OUTPUT_FIELDS = {
-  language: `${VOICE_FIELDS.voiceConfig}.language`,
-  voice: `${VOICE_FIELDS.voiceConfig}.voice`,
-  speed: `${VOICE_FIELDS.voiceConfig}.speed`,
-} as const;
-
-export const VOICE_BUILDER_SECTIONS: { id: VoiceBuilderSectionId; label: string }[] = [
-  { id: "persona", label: "Persona" },
-  { id: "opening", label: "Opening" },
-  { id: "brain", label: "Brain" },
-  { id: "knowledge", label: "Knowledge & tools" },
-  { id: "pronunciation", label: "Pronunciation & variables" },
-  { id: "later", label: "Coming soon" },
-];
-
-export const VOICE_COMING_LATER: VoiceComingLaterGroup[] = [
-  {
-    phase: "Phase 4",
-    items: [
-      "Escalation to a person",
-      "Transcript webhook",
-      "Phone and widget channels",
-      "Redaction",
-    ],
+export const VOICE_OUTPUT_FIELDS: Record<
+  VoiceEngineMode,
+  { language: string; voice: string; speed: string }
+> = {
+  pipeline: {
+    language: `${VOICE_FIELDS.pipelineVoiceConfig}.language`,
+    voice: `${VOICE_FIELDS.pipelineVoiceConfig}.voice`,
+    speed: `${VOICE_FIELDS.pipelineVoiceConfig}.speed`,
   },
-  { phase: "Phase 5", items: ["Preemptive generation", "Noise cancellation"] },
-  {
-    phase: "Phase 6",
-    items: ["Manager agent", "Call recording", "Custom sounds", "Avatar", "Screen share", "Camera"],
+  realtime: {
+    language: `${VOICE_FIELDS.realtimeVoiceConfig}.language`,
+    voice: `${VOICE_FIELDS.realtimeVoiceConfig}.voice`,
+    speed: `${VOICE_FIELDS.realtimeVoiceConfig}.speed`,
   },
-];
+};
+
+/** Provider, model, and credential fields each engine owns, cleared on save when it is not selected. */
+export const VOICE_ENGINE_MODEL_FIELDS: Record<VoiceEngineMode, string[]> = {
+  pipeline: [VOICE_FIELDS.speechToText, VOICE_FIELDS.languageModel, VOICE_FIELDS.textToSpeech],
+  realtime: [VOICE_FIELDS.realtimeModel],
+};
+
+export const VOICE_ENGINE_LABELS: Record<VoiceEngineMode, string> = {
+  pipeline: "Pipeline",
+  realtime: "Realtime",
+};
+
+export const VOICE_BUILDER_SECTION_META: Record<VoiceBuilderSectionId, VoiceBuilderSectionMeta> = {
+  prompt: {
+    id: "prompt",
+    label: "Prompt",
+    description: "Who the agent is, what it must achieve, and how it opens the call.",
+    icon: ChatTextIcon,
+  },
+  engine: {
+    id: "engine",
+    label: "Engine",
+    description: "The model that thinks, and the voice it hears and speaks with.",
+    icon: CpuIcon,
+  },
+  context: {
+    id: "context",
+    label: "Context",
+    description: "What the agent can look up during a call.",
+    icon: BookOpenTextIcon,
+  },
+  tools: {
+    id: "tools",
+    label: "Tools",
+    description: "Actions the agent can take during a call.",
+    icon: WrenchIcon,
+  },
+  pronunciation: {
+    id: "pronunciation",
+    label: "Pronunciation",
+    description: "Say names, terms, and acronyms the way you want.",
+    icon: SpeakerHighIcon,
+  },
+};
+
+export const VOICE_BUILDER_SECTIONS = Object.values(VOICE_BUILDER_SECTION_META);
 
 export const VOICE_AGENT_TEMPLATES: VoiceAgentTemplate[] = [
   {

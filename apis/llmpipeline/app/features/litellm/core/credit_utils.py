@@ -11,22 +11,12 @@ import httpx
 from fastapi import HTTPException
 
 from app.core.byok_usage_manager import ByokUsageManager
-from app.core.config import settings
+from app.core.config import settings, workspace_api_url
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
 
-from .provider_registry import get_credit_service_type, should_post_usage
-
-
-def _workspace_api_base_url() -> str:
-    """Return the base URL for WorkspaceAPIs internal calls.
-
-    Defaults to ``https://{APP_BASE_URL}/api``. The ASP.NET backend uses a
-    ``/api`` path base, so internal callers should target ``/api`` directly.
-    Can be overridden via the ``WORKSPACE_API_URL`` setting for local dev.
-    """
-    default = f"https://{settings.APP_BASE_URL}/api"
-    return getattr(settings, "WORKSPACE_API_URL", None) or default
+from .credentials import is_byok
+from .provider_registry import get_credit_service_type
 
 
 def agent_has_fixed_credits(ref_id: str, access_token: str) -> bool:
@@ -53,7 +43,7 @@ def agent_has_fixed_credits(ref_id: str, access_token: str) -> bool:
         if access_token:
             headers["Authorization"] = f"Bearer {access_token}"
 
-        url = f"{_workspace_api_base_url()}/execution/agent/{ref_id}/fixed-credits"
+        url = f"{workspace_api_url()}/execution/agent/{ref_id}/fixed-credits"
         response = httpx.get(url, headers=headers, timeout=15, verify=settings.SSL_VERIFY)
         if not response.is_success:
             return False
@@ -65,37 +55,22 @@ def agent_has_fixed_credits(ref_id: str, access_token: str) -> bool:
         return False
 
 
-def has_sufficient_platform_credits(access_token: str) -> bool:
-    """Check whether the platform account has enough credits for a non-BYOK call.
-
-    Args:
-        access_token: The authenticated user's JWT, used to authorize the
-            credit-balance lookup on the Accounts API.
-
-    Returns:
-        True if the platform has sufficient credits, False otherwise.
-    """
-    credit_manager = CreditManagerService()
-    return bool(credit_manager.has_sufficient_credits(task="platform", jwt=access_token))
-
-
-def check_sufficient_credits(is_byok_enabled: bool, credential_name: str | None, provider: str, access_token: str) -> None:
-    """Raise a 400 if the platform lacks credits for a non-BYOK call.
+def check_sufficient_credits(credential_name: str | None, provider: str, access_token: str) -> None:
+    """Raise a 400 if the platform lacks credits for a platform-key call.
 
     BYOK requests skip the platform credit check because the caller supplies
     their own provider credentials. Shared by Text Generation and Embeddings.
 
     Args:
-        is_byok_enabled: Whether the request uses the caller's own credentials.
-        credential_name: The BYOK vault credential name (None when not BYOK).
+        credential_name: The BYOK vault credential name (None/blank when platform).
         provider: The provider name, used for billing/logging labels.
         access_token: The authenticated user's JWT.
 
     Raises:
-        HTTPException(400): When non-BYOK and the platform has insufficient credits.
+        HTTPException(400): When platform-keyed and the platform has insufficient credits.
     """
     # BYOK requests are never billed against platform credits.
-    if is_byok_enabled and credential_name:
+    if is_byok(credential_name):
         return
 
     credit_manager = CreditManagerService()
@@ -110,12 +85,14 @@ def build_credit_entry(
     ref_id: str,
     ref_name: str,
     action: str,
-    agent_name: str | None,
+    triggered_by_agent: str | None = None,
     space_id: str | None = None,
 ) -> dict:
     """Build a single credit-usage payload entry (PascalCase fields).
 
     Shared by Text Generation and Embeddings so billing payloads stay identical.
+    Agent flows pass their single name field (`ref_name`) as
+    `triggered_by_agent`; embeddings record no triggering agent.
     """
     return {
         "ServiceType": service_type,
@@ -124,7 +101,7 @@ def build_credit_entry(
         "RefId": ref_id,
         "RefName": ref_name,
         "Action": action or "AgentExecution",
-        "TriggeredByAgent": agent_name,
+        "TriggeredByAgent": triggered_by_agent,
         "SpaceId": space_id,
     }
 
@@ -183,7 +160,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
         "RefId": request.ref_id,
         "RefName": request.ref_name,
         "Action": request.action,
-        "TriggeredByAgent": request.agent_name,
+        "TriggeredByAgent": request.ref_name,
         "SpaceId": space_id,
     }
 
@@ -193,26 +170,20 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     logger.debug(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
 
 
-def should_record_byok(is_byok: bool, credential_name: str | None) -> bool:
+def should_record_byok(credential_name: str | None) -> bool:
     """True when a request used the caller's own (BYOK) credentials.
 
     BYOK consumption is recorded against the user's own key (not platform
-    credits). A null/empty credential name counts as "no real
+    credits). A null/empty/whitespace credential name counts as "no real
     credential" and therefore not BYOK.
 
     Args:
-        is_byok: Whether the request is flagged as BYOK.
-        credential_name: The BYOK vault credential name (None when not BYOK).
+        credential_name: The BYOK vault credential name (None/blank when platform).
 
     Returns:
-        True when BYOK is enabled AND a real credential name is supplied.
+        True when a real credential name is supplied.
     """
-    if not is_byok:
-        return False
-    if not credential_name:
-        return False
-    cleaned = str(credential_name).strip()
-    return cleaned != ""
+    return is_byok(credential_name)
 
 
 def build_byok_entry(
@@ -226,7 +197,7 @@ def build_byok_entry(
     ref_id: str,
     ref_name: str,
     action: str,
-    agent_name: str | None,
+    triggered_by_agent: str | None = None,
     space_id: str | None = None,
     *,
     display_name: str | None = None,
@@ -250,7 +221,8 @@ def build_byok_entry(
         ref_id: The reference id (e.g. AgentId).
         ref_name: The reference display name.
         action: The action type (e.g. "AgentExecution").
-        agent_name: The triggering agent name.
+        triggered_by_agent: The agent name recorded as the trigger; agent flows
+            pass their single name field (`ref_name`).
         space_id: The current space id (None = Central).
 
     Returns:
@@ -267,7 +239,7 @@ def build_byok_entry(
         "RefId": ref_id,
         "RefName": ref_name,
         "Action": action or "AgentExecution",
-        "TriggeredByAgent": agent_name,
+        "TriggeredByAgent": triggered_by_agent,
         "SpaceId": space_id,
     }
 

@@ -5,7 +5,7 @@ import { type CrudActionType } from "@avplatform/ui/types";
 import { getUserDisplayName } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
@@ -19,6 +19,7 @@ import {
 } from "../constants/knowledge-base-zod-schema";
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 import { VectorStoreEnum } from "../enums/vector-store-enum";
+import { resolveEmbeddingCredentialIdForSave } from "../utils/embedding-credential-guard.util";
 import { useTableTab } from "./useTableTab";
 
 interface UseDefineKnowledgeBaseFormOptions {
@@ -35,6 +36,8 @@ export const useDefineKnowledgeBaseForm = ({
 }: UseDefineKnowledgeBaseFormOptions) => {
   // Set knowledge base name state (required for availability check)
   const [knowledgeBaseName, setKnowledgeBaseName] = useState("");
+
+  const initialEmbeddingCredential = useRef<{ name: string; id?: string }>({ name: "" });
 
   const { setIsDirty } = useCrudDialogDirty();
 
@@ -58,7 +61,6 @@ export const useDefineKnowledgeBaseForm = ({
       description: "",
       vectorStore: "pgvector",
       embeddingConfig: {
-        isByokEnabled: false,
         provider: "openai",
         credentialName: "",
         model: "",
@@ -90,6 +92,12 @@ export const useDefineKnowledgeBaseForm = ({
     // Set knowledge base name
     setKnowledgeBaseName(knowledgeBaseData?.name ?? "");
 
+    // Keep the persisted credential so an unresolvable ID survives edits that do not touch it.
+    initialEmbeddingCredential.current = {
+      name: knowledgeBaseData?.embeddingCredentialName ?? "",
+      id: knowledgeBaseData?.embeddingCredentialId,
+    };
+
     // Set knowledge base data to form
     form.reset({
       id: rowId,
@@ -97,12 +105,8 @@ export const useDefineKnowledgeBaseForm = ({
       description: knowledgeBaseData?.description ?? "",
       vectorStore: knowledgeBaseData?.vectorStore ?? "pgvector",
       embeddingConfig: {
-        isByokEnabled: knowledgeBaseData?.embeddingCredentialId ? true : false,
         provider: knowledgeBaseData?.embeddingProvider ?? "openai",
-        credentialName:
-          knowledgeBaseData?.embeddingCredentialName ??
-          knowledgeBaseData?.embeddingCredentialId ??
-          "",
+        credentialName: knowledgeBaseData?.embeddingCredentialName ?? "",
         model: knowledgeBaseData?.embeddingModel ?? "",
       },
       isDisabled: knowledgeBaseData?.isDisabled ?? false,
@@ -132,14 +136,17 @@ export const useDefineKnowledgeBaseForm = ({
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof knowledgeBaseZodSchema>) => {
+    const credentialName = (formData.embeddingConfig.credentialName ?? "").trim();
+    const initialCredential = initialEmbeddingCredential.current;
+
     return {
       id: formData.id || undefined,
       name: formData.name,
       description: formData.description,
       vectorStore: formData.vectorStore as VectorStoreEnum,
       embeddingProvider: formData.embeddingConfig.provider,
-      embeddingCredentialName: formData.embeddingConfig.credentialName || undefined,
-      embeddingCredentialId: undefined,
+      embeddingCredentialName: credentialName || undefined,
+      embeddingCredentialId: resolveEmbeddingCredentialIdForSave(credentialName, initialCredential),
       embeddingModel: formData.embeddingConfig.model,
       isDisabled: formData.isDisabled,
       createdBy: formData.createdBy,

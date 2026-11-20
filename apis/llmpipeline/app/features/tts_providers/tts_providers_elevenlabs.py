@@ -9,6 +9,8 @@ from app.core.config import settings
 from app.core.logger import logger, log_exception
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
 
 from app.features.auth.authenticated_user import User
 from app.features.tts_providers.tts_providers_schema import (
@@ -18,6 +20,15 @@ from app.features.tts_providers.tts_providers_schema import (
 )
 from app.features.tts_providers.tts_providers_base import BaseTextToSpeechProvider
 from app.features.tts_providers.tts_providers_manager import list_active_tts_jobs
+
+TTS_MODEL_MAP = {
+    "eleven_v3": "ElevenLabsV3",
+    "eleven_multilingual_v2": "ElevenLabsMultilingualV2",
+    "eleven_multilingual_v3": "ElevenLabsMultilingualV3",
+    "eleven_turbo_v2": "ElevenLabsTurboV2",
+    "eleven_flash_v2": "ElevenLabsFlashV2",
+    "eleven_english_v2": "ElevenLabsEnglishV2",
+}
 
 
 class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
@@ -64,7 +75,8 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                 base_response,
                 start_time,
                 audio_base64,
-                user.access_token
+                user.access_token,
+                space_id=user.space_id
             )
 
         except Exception as e:
@@ -140,10 +152,8 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                             is_final=False,
                             ref_id=tts_request.ref_id,
                             ref_type=tts_request.ref_type,
-                            agent_name=tts_request.agent_name,
                             action=tts_request.action
                         )
-                        full_audio_bytes.extend(chunk)
                         yield chunk_obj.model_dump_json() + "\n"
 
                 # final full audio
@@ -154,7 +164,8 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                     base_response,
                     start_time,
                     final_audio_base64,
-                    user.access_token
+                    user.access_token,
+                    space_id=user.space_id
                 )
                 
                 yield final_response.model_dump_json() + "\n"
@@ -169,13 +180,15 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
     def _handle_auth_and_credits(self, req: TTSProviderRequest, user: User):
 
         # BYOK flow (use user-provided API key)
-        if req.is_byok_enabled and req.credential_name:
+        if is_byok(req.credential_name):
             vault_credential = VaultCredentialManager()
 
             credential = vault_credential.get_vault_credential_secret_by_name(
                 credential=req.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -229,10 +242,9 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             output="",
             stream=req.stream,
             credential_name=req.credential_name,
-            is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
-            agent_name=req.agent_name,
+            ref_name=req.ref_name,
             action=req.action,
             error=None
         )
@@ -244,7 +256,8 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         base_response: TTSProviderResponse,
         start_time: float,
         audio_base64: str,
-        jwt: str
+        jwt: str,
+        space_id: str = None
     ) -> TTSProviderResponse:
 
         end_time = time.perf_counter()
@@ -255,25 +268,13 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         base_response.time_taken = round(end_time - start_time, 2)
         base_response.token_count = len(req.input)
 
-        # Post credit usage if not BYOK
-        if not req.is_byok_enabled and not req.credential_name:
+        # Post credit usage only for platform-keyed requests
+        if not is_byok(req.credential_name):
             try:
                 credit_manager = CreditManagerService()
 
-                # Mapping of request model names to internal service type identifiers
-                # This ensures consistent naming for billing/reporting
-                TTS_MODEL_MAP = {
-                    "eleven_v3": "ElevenLabsV3",
-                    "eleven_multilingual_v2": "ElevenLabsMultilingualV2",
-                    "eleven_multilingual_v3": "ElevenLabsMultilingualV3",
-                    "eleven_turbo_v2": "ElevenLabsTurboV2",
-                    "eleven_flash_v2": "ElevenLabsFlashV2",
-                    "eleven_english_v2": "ElevenLabsEnglishV2",
-                }
-
-                # Resolve the internal service type based on requested model
                 service_type = TTS_MODEL_MAP.get(req.model)
-                
+
                 # Validate model support to avoid silent billing errors
                 if not service_type:
                     raise ValueError(f"Unsupported TTS model: {req.model}")
@@ -285,22 +286,58 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                 }
 
                 credit_manager.post_credit_usage(
                     task="elevenlabs_tts",
-                    request=credit_usage,
+                    request=[credit_usage],
                     jwt=jwt
                 )
 
                 logger.debug(f"TTS credit usage posted | ref_id={req.ref_id}")
 
             except Exception as e:
-                logger.error(f"Failed to post TTS credit usage | error={str(e)}")
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Failed to post credit usage: {str(e)}"
+                # The audio already exists; a billing failure must not fail the request.
+                logger.warning(f"Failed to post TTS credit usage | error={str(e)}")
+
+        # BYOK USAGE (caller's own key)
+        else:
+            try:
+                byok_manager = ByokUsageManager()
+
+                service_type = TTS_MODEL_MAP.get(req.model)
+
+                if not service_type:
+                    raise ValueError(f"Unsupported TTS model: {req.model}")
+
+                # Resolve the vault credential name for attribution
+                credential_name = resolve_credential_name(req.credential_name, jwt=jwt)
+
+                byok_usage = {
+                    "ServiceType": service_type,
+                    "Provider": req.provider,
+                    "Model": req.model,
+                    "ConsumedUnit": base_response.token_count,
+                    "UnitType": "Characters",
+                    "CredentialName": credential_name,
+                    "RefType": req.ref_type,
+                    "RefId": req.ref_id,
+                    "RefName": req.ref_name,
+                    "Action": req.action,
+                    "TriggeredByAgent": req.ref_name,
+                    "SpaceId": space_id,
+                }
+
+                byok_manager.post_byok_usage(
+                    task="elevenlabs_tts",
+                    request=[byok_usage],
+                    jwt=jwt
                 )
+
+                logger.debug(f"TTS BYOK usage posted | ref_id={req.ref_id}")
+
+            except Exception as e:
+                logger.error(f"Failed to post TTS BYOK usage | error={str(e)}")
 
         return base_response

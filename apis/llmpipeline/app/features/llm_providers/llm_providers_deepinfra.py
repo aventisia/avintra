@@ -12,6 +12,9 @@ from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
 from fastapi import HTTPException
 from app.utils.file_converter_utils import file_to_base64
 
@@ -25,8 +28,7 @@ class DeepInfraProvider(BaseLLMProvider):
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
         logger.info(f"[NO STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
 
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
@@ -95,7 +97,7 @@ class DeepInfraProvider(BaseLLMProvider):
                     output = content
                     
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data, user.space_id)
                 
         except Exception as e:
             error_context = ""
@@ -121,8 +123,7 @@ class DeepInfraProvider(BaseLLMProvider):
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
         logger.info(f"[STREAMING] Prompt sent to DeepInfra provider with model: {llm_request.model}")
         
-        # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential_manager = VaultCredentialManager()
 
             # Fetch the credentials from the vault credential using the credential NAME, tenant, and JWT
@@ -244,7 +245,8 @@ class DeepInfraProvider(BaseLLMProvider):
                                     start_time,
                                     output,
                                     user.access_token,
-                                    chunk
+                                    chunk,
+                                    user.space_id
                                 )
 
                                 yield final_llm_response.model_dump_json() + "\n"
@@ -364,13 +366,12 @@ class DeepInfraProvider(BaseLLMProvider):
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
-            is_byok_enabled=llm_request.is_byok_enabled,
             credential_name=llm_request.credential_name,
             error=None
         )
      
     # Helper: Create final llm_response object with actual values
-    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request:LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data, space_id: str = None) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -392,44 +393,99 @@ class DeepInfraProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = 0 # DeepInfra does not provide reasoning tokens info
 
-        # TODO: Uncomment the code and update the ServiceType to reflect the correct services (e.g., "CustomInputService" and "CustomOutputService")
-        # # If not BYOK and credential name is present, post the credit usage
-        # if not llm_request.is_byok_enabled and llm_request.credential_name:
-        #    # Prepare the credit usage data
-        #     credit_usage_data = [
-        #         {
-        #             "ServiceType": "CustomInputService",
-        #             "ConsumedUnit": llm_response.input_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         },
-        #         {
-        #             "ServiceType": "CustomOutputService",
-        #             "ConsumedUnit": llm_response.output_tokens or 0,
-        #             "RefType": llm_request.ref_type,
-        #             "RefId": llm_request.ref_id,
-        #             "RefName": llm_request.ref_name,
-        #             "Action": llm_request.action,
-        #             "TriggeredByAgent": llm_request.agent_name
-        #         }
-        #     ]
+        if not is_byok(llm_request.credential_name):
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.debug(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
 
-        #     # Initialize the CreditManagerService
-        #     credit_manager = CreditManagerService()
+            # Prepare the credit usage data
+            credit_usage_data = []
+            if (llm_response.input_tokens or 0) > 0:
+                credit_usage_data.append({
+                    "ServiceType": "CustomInputService",
+                    "ConsumedUnit": llm_response.input_tokens,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.ref_name,
+                    "SpaceId": space_id
+                })
+            if (llm_response.output_tokens or 0) > 0:
+                credit_usage_data.append({
+                    "ServiceType": "CustomOutputService",
+                    "ConsumedUnit": llm_response.output_tokens,
+                    "RefType": llm_request.ref_type,
+                    "RefId": llm_request.ref_id,
+                    "RefName": llm_request.ref_name,
+                    "Action": llm_request.action,
+                    "TriggeredByAgent": llm_request.ref_name,
+                    "SpaceId": space_id
+                })
 
-        #     # Post the credit usage data
-        #     try:
-        #         credit_manager.post_credit_usage(task="deepinfra", request=credit_usage_data, jwt=jwt)
-        #         logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
-        #     except Exception as e:
-        #         logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
-        #         raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
-        
+            if not credit_usage_data:
+                logger.debug(f"No credit usage to post for request ID {llm_request.ref_id}.")
+                return llm_response
+
+            # Initialize the CreditManagerService
+            credit_manager = CreditManagerService()
+
+            # Post the credit usage data
+            try:
+                credit_manager.post_credit_usage(task="deepinfra", request=credit_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+
+        else:
+            try:
+                byok_usage_data = self._build_deepinfra_byok_usage(llm_request, llm_response, space_id, jwt)
+
+                if not byok_usage_data:
+                    logger.debug(f"No BYOK usage to post for request ID {llm_request.ref_id}.")
+                    return llm_response
+
+                byok_manager = ByokUsageManager()
+
+                byok_manager.post_byok_usage(task="deepinfra", request=byok_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted BYOK usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post BYOK usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+
         # Return the final llm_response
         return llm_response
+
+    def _build_deepinfra_byok_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None, jwt: str = None):
+        input_tokens = max(llm_response.input_tokens or 0, 0)
+        output_tokens = max(llm_response.output_tokens or 0, 0)
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(llm_request.credential_name, jwt=jwt)
+
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "Provider": llm_request.provider,
+                "Model": llm_request.model,
+                "ConsumedUnit": tokens,
+                "UnitType": "Tokens",
+                "CredentialName": credential_name,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.ref_name,
+                "SpaceId": space_id,
+            }
+
+        entries = []
+        if input_tokens > 0:
+            entries.append(build_entry("CustomInputService", input_tokens))
+        if output_tokens > 0:
+            entries.append(build_entry("CustomOutputService", output_tokens))
+        return entries
 
     # Helper: Map DeepInfra finish_reason to LLMResponse status
     def _map_deepinfra_finish_reason_to_status(self, finish_reason: str) -> str:

@@ -106,6 +106,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
+            await PopulateEmbeddingCredentialNamesAsync(knowledgeBaseDtoList);
+
             serviceResponse.Data = knowledgeBaseDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Knowledge bases retrieved successfully";
@@ -293,6 +295,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             var knowledgeBaseDto = knowledgeBase.Adapt<KnowledgeBaseDto>();
             knowledgeBaseDto.AccessLevel = accessLevel ?? ResourceAccessTypeEnum.View;
 
+            await PopulateEmbeddingCredentialNamesAsync(new[] { knowledgeBaseDto });
+
             serviceResponse.Data = knowledgeBaseDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Knowledge base retrieved successfully.";
@@ -407,6 +411,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .GetByConditionAsync(u => u.Id == _userId)
                 .FirstOrDefaultAsync();
             resultDto.CreatedBy = createdByUser?.UserName;
+
+            await PopulateEmbeddingCredentialNamesAsync(new[] { resultDto });
 
             serviceResponse.Data = resultDto;
             serviceResponse.StatusCode = 201;
@@ -595,6 +601,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .GetByConditionAsync(u => u.Id == existingKB.LastModifiedByUserId)
                 .FirstOrDefaultAsync();
             resultDto.LastModifiedBy = lastModifiedUser?.UserName;
+
+            await PopulateEmbeddingCredentialNamesAsync(new[] { resultDto });
 
             serviceResponse.Data = resultDto;
             serviceResponse.StatusCode = 200;
@@ -854,5 +862,47 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             .FirstOrDefaultAsync();
 
         return credential?.Id ?? existingCredentialId;
+    }
+
+    private async Task PopulateEmbeddingCredentialNamesAsync(IEnumerable<KnowledgeBaseDto> knowledgeBases)
+    {
+        var credentialIds = knowledgeBases
+            .Select(kb => kb.EmbeddingCredentialId)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        if (credentialIds.Count == 0) return;
+
+        var accessibleCredentialIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
+            _userId,
+            ResourceTypeEnum.VaultCredential,
+            new[]
+            {
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
+            }
+        );
+
+        var credentials = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w =>
+                credentialIds.Contains(w.Id) &&
+                w.EnvType == _currentTenantService.CurrentEnvType &&
+                (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleCredentialIds.Contains(w.Id)))
+            .Select(w => new { w.Id, w.Name })
+            .ToListAsync();
+
+        var nameById = credentials.ToDictionary(c => c.Id, c => c.Name);
+
+        foreach (var knowledgeBase in knowledgeBases)
+        {
+            if (knowledgeBase.EmbeddingCredentialId.HasValue &&
+                nameById.TryGetValue(knowledgeBase.EmbeddingCredentialId.Value, out var name))
+            {
+                knowledgeBase.EmbeddingCredentialName = name;
+            }
+        }
     }
 }

@@ -97,12 +97,10 @@ def build_tts_request(claims: VoiceJobClaims, agent_settings: dict) -> TTSReques
         speed=speed if speed is not None else 1.0,
         pronunciations=pronunciations or None,
         credential_name=tts_settings.get("credentialName") or None,
-        is_byok_enabled=bool(tts_settings.get("isByokEnabled")),
         ref_type="Agent",
         ref_id=str(claims.flow_id),
         ref_name=agent_name,
         action="AgentExecution",
-        agent_name=agent_name or None,
     )
 
 

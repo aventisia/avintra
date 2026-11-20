@@ -29,6 +29,14 @@ public interface IJobsTableService
     Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto, Guid? providedTenantId = null);
 
     /// <summary>
+    /// Creates a job for another flow for the given tenant, requiring a running same-tenant parent job when the caller is not a machine identity.
+    /// </summary>
+    /// <param name="jobInsertDto">The data needed to create the new job.</param>
+    /// <param name="tenantId">The tenant resolved from the caller's claims.</param>
+    /// <returns>A task representing the service response containing the details of the newly created job.</returns>
+    Task<ServiceResponse<JobRecordDto>> CreateFlowJobAsync(JobInsertDto jobInsertDto, Guid tenantId);
+
+    /// <summary>
     /// Updates an existing job.
     /// </summary>
     /// <param name="jobUpdateDto">The data required to update the job.</param>
@@ -97,6 +105,15 @@ public interface IJobsTableService
     /// <param name="flowVersionId">The flow version (agent) ID to look up.</param>
     /// <returns>A service response containing the fixed credits amount, if configured.</returns>
     Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
+
+    /// <summary>
+    /// Gets the status and output of a job scoped to the given tenant, restricted to the caller's linked parent job when the caller is not a machine identity.
+    /// </summary>
+    /// <param name="jobId">The identifier of the job to retrieve.</param>
+    /// <param name="tenantId">The tenant resolved from the caller's claims.</param>
+    /// <param name="parentJobId">The calling flow's job id, required for non-machine callers.</param>
+    /// <returns>A task representing the service response containing the job status.</returns>
+    Task<ServiceResponse<FlowJobStatusDto>> GetFlowJobStatusAsync(Guid jobId, Guid tenantId, Guid? parentJobId);
 
     // TODO: Need to check this
     // /// <summary>

@@ -1,5 +1,5 @@
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { CircleNotchIcon, InfoIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
@@ -9,7 +9,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { type UserChatProfileDto } from "../dtos/user-chat-profile.dto";
 import { useUserChatProfile } from "../hooks/useUserChatProfile.hook";
@@ -128,10 +127,7 @@ const HomeChatPreferencesBody = ({
               placeholder="e.g. Keep answers short and use bullet points."
               value={customInstructions}
               onChange={(event) => setCustomInstructions(event.target.value)}
-              className={cn(
-                getFieldInputClassName(false),
-                "block resize-none py-2.5 leading-5 disabled:opacity-60",
-              )}
+              className={cn(getFieldTextareaClassName(false), "disabled:opacity-60")}
             />
           </FormField>
 
@@ -150,10 +146,7 @@ const HomeChatPreferencesBody = ({
               placeholder={"e.g. I work in the finance team.\nMy timezone is IST."}
               value={memoryNotes}
               onChange={(event) => setMemoryNotes(event.target.value)}
-              className={cn(
-                getFieldInputClassName(false),
-                "block resize-none py-2.5 leading-5 disabled:opacity-60",
-              )}
+              className={cn(getFieldTextareaClassName(false), "disabled:opacity-60")}
             />
           </FormField>
 

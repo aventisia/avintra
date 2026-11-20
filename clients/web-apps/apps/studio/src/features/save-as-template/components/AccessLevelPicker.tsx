@@ -1,4 +1,10 @@
-import { cn } from "@avplatform/ui/lib";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS_WITHIN,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED,
+  cn,
+} from "@avplatform/ui/lib";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 import { ACCESS_LEVEL_OPTIONS } from "../constants/access-level-options.constant";
@@ -22,10 +28,10 @@ export const AccessLevelPicker = ({ selectedValue, registration }: AccessLevelPi
           <label
             key={value}
             className={cn(
-              "flex cursor-pointer flex-col gap-3 rounded-md p-3.5 transition-[background-color,box-shadow] duration-200 has-[:disabled]:cursor-default has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
-              isSelected
-                ? "bg-focus/[0.06] ring-1 ring-focus"
-                : "bg-popover ring-1 ring-border hover:bg-sunken/80 hover:ring-line-strong",
+              OPTION_CARD,
+              OPTION_CARD_FOCUS_WITHIN,
+              "flex cursor-pointer flex-col gap-3 p-3.5 has-[:disabled]:cursor-default",
+              isSelected ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
             )}
           >
             <input type="radio" value={value} {...registration} className="sr-only" />
@@ -41,7 +47,7 @@ export const AccessLevelPicker = ({ selectedValue, registration }: AccessLevelPi
               <span
                 className={cn(
                   "grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-200",
-                  isSelected ? "bg-focus" : "bg-popover ring-[1.5px] ring-inset ring-line-strong",
+                  isSelected ? "bg-focus" : "bg-popover ring-[1.5px] ring-inset ring-line-field",
                 )}
               >
                 <span

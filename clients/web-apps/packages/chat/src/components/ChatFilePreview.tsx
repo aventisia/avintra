@@ -1,5 +1,6 @@
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import {
   ArrowSquareOutIcon,
   CodeIcon,
@@ -285,7 +286,7 @@ export const ChatFilePreview = ({
             onChange={(event) => onSelectVersion?.(event.target.value)}
             aria-label="Artifact version"
             title="Artifact version"
-            className="h-8 shrink-0 rounded-lg border border-line bg-surface px-1 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-focus"
+            className={cn(FIELD_SURFACE, "h-8 shrink-0 px-1 text-xs")}
           >
             {[...versions]
               .sort((a, b) => a.versionNumber - b.versionNumber)

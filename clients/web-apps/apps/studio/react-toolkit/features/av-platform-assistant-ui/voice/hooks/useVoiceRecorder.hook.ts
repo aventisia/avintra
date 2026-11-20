@@ -27,7 +27,6 @@ type UseVoiceRecorderParams = {
   sttConfig: ModelConfigType | null;
   refId: string;
   refName: string;
-  agentName?: string | null;
   language?: string | null;
   onTranscript: (text: string) => void;
 };
@@ -40,7 +39,6 @@ export const useVoiceRecorder = ({
   sttConfig,
   refId,
   refName,
-  agentName,
   language,
   onTranscript,
 }: UseVoiceRecorderParams) => {
@@ -76,12 +74,10 @@ export const useVoiceRecorder = ({
           language: language ?? null,
           stream: false,
           credential_name: sttConfig.credential_name || null,
-          is_byok_enabled: sttConfig.is_byok_enabled ?? false,
           ref_type: "Agent",
           ref_id: refId,
           ref_name: refName,
           action: "AgentExecution",
-          agent_name: agentName ?? null,
         };
         const response = await transcribeSpeechToText(requestDto);
         const transcript = response.output?.trim();
@@ -94,7 +90,7 @@ export const useVoiceRecorder = ({
         if (isMountedRef.current) setIsTranscribing(false);
       }
     },
-    [sttConfig, refId, refName, agentName, language],
+    [sttConfig, refId, refName, language],
   );
 
   const transcribeRef = useRef(transcribe);

@@ -8,6 +8,7 @@ from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.features.auth.authenticated_user import User
+from app.features.litellm.core.credentials import is_byok
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
 
@@ -47,7 +48,7 @@ def create_gemini_model(
     resolved_base_url: str | None = None
 
     # Use user-provided credentials when BYOK is enabled
-    if llm_request.is_byok_enabled and llm_request.credential_name:
+    if is_byok(llm_request.credential_name):
 
         # Initialize vault credential client
         vault_credential_manager = VaultCredentialManager()

@@ -1,5 +1,5 @@
 import { VerificationCodeRequestTypesEnum } from "@avplatform/ui/enums";
-import { cn } from "@avplatform/ui/lib";
+import { getFieldInputClassName } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useId } from "react";
 import { createPortal } from "react-dom";
@@ -9,7 +9,6 @@ import { AvailabilityHint } from "@/components/card-dialog/AvailabilityHint";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { useCreateCodeMutationForEmailUpdate } from "../../hooks/useCreateCodeMutationForEmailUpdate";
 import { useDefineEmailUpdateForm } from "../../hooks/useDefineEmailUpdateForm";
@@ -71,7 +70,7 @@ export const EnterEmail = ({ footerSlot }: AccountTabProps) => {
               {...form.register("email", {
                 onChange: (event) => handleInputChange(event.target.value),
               })}
-              className={cn(getFieldInputClassName(Boolean(emailError)), "h-11")}
+              className={getFieldInputClassName(Boolean(emailError))}
             />
           </FormField>
         </fieldset>

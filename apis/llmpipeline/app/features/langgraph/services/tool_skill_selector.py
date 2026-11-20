@@ -102,10 +102,8 @@ async def select_tools_and_skills(
         ref_id=request.ref_id,
         ref_name=request.ref_name,
         action="ToolSkillSelection",
-        agent_name=request.agent_name,
         is_json_output=True,
         json_schema=ToolSkillSelectionResponse.model_json_schema(),
-        is_byok_enabled=request.is_byok_enabled,
         credential_name=request.credential_name,
         temperature=0.0,
         max_output_tokens=1024,
@@ -272,7 +270,9 @@ async def _build_catalog(
             for name in allowed_tool_names
             if name and name.strip()
         }
-        corsair_entries = await _build_corsair_catalog_entries(allowed_tool_names)
+        corsair_entries = await _build_corsair_catalog_entries(
+            allowed_tool_names,
+        )
         available_tools = {tool["name"].lower() for tool in tools}
         available_tools.update(entry["name"].lower() for entry in corsair_entries)
         missing_tools = sorted(allowed_tools - available_tools)
@@ -337,10 +337,9 @@ async def _build_corsair_catalog_entries(
         except ValueError:
             logger.warning("Skipping malformed Corsair tool name: %s", name)
             continue
+        normalized_plugin = plugin.strip().lower()
         normalized_action = to_corsair_action(plugin, action)
-        plugin_actions.setdefault(plugin.strip().lower(), set()).add(
-            normalized_action
-        )
+        plugin_actions.setdefault(normalized_plugin, set()).add(normalized_action)
 
     if not plugin_actions:
         return []

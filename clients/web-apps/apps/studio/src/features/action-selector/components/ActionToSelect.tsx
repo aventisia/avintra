@@ -1,15 +1,15 @@
 import { MonitorIcon, PlusIcon } from "@phosphor-icons/react";
 
 import { iconMapper } from "@/components/icon-mapper";
-import { NodeDataType } from "@/types/node-data-type";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
+import { ActionEntryType } from "../types/action-entry-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
 import { HighlightMatch } from "./HighlightMatch";
 
-interface ActionToSelectProps {
-  data: NodeDataType;
-}
+type ActionToSelectProps = {
+  data: ActionEntryType;
+};
 
 const ActionTag = ({
   children,

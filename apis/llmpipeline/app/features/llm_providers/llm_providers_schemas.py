@@ -1,8 +1,10 @@
 # Schemas for LLM Providers feature
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Dict, Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
+
+from app.features.litellm.core.legacy_byok import LegacyByokWarningModel
 
 # Centralized provider literal for all schemas
 ProviderLiteral: TypeAlias = Literal['openai', 'ollama', 'deepinfra', 'googlegemini', 'openrouter', "anthropic"]
@@ -22,10 +24,13 @@ class ToolConfig(BaseModel):
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')    # Credential reference (unique name) used to access the tool
     credential_id: Optional[str] = Field(default=None, validation_alias='credential_id', serialization_alias='credential_id')    # Credential reference (unique id) used to access the tool
     actions: List[ToolAction]    # List of permitted actions for this tool
+    source: Optional[Literal["custom", "platform"]] = None    # Entity the tool is resolved from; absent tries the custom store first, then enabled platform tools
 
 
 # Request schema to generate LLM response
-class LLMRequest(BaseModel):
+class LLMRequest(LegacyByokWarningModel):
+    model_config = ConfigDict(extra="ignore")
+
     provider: ProviderLiteral
     model: str
     input: Union[str, List[LLMMessage]]  # Accepts string or list of messages
@@ -34,7 +39,6 @@ class LLMRequest(BaseModel):
     is_json_output: Optional[bool] = False # Try to extract JSON from response and sends no streaming response in one go even if streaming is true
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
-    is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name') # Credential reference (unique name)
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
@@ -53,7 +57,6 @@ class LLMRequest(BaseModel):
     ref_id: str = "" # Identifier to link back to Agent/Workflow
     ref_name: str = "" # Name of the reference (e.g., name of the Agent/Workflow)
     action: str = "" # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
-    agent_name: Optional[str] = None  # Knowledge base retrieval (optional)
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
     source_threshold: Optional[float] = Field(default=None, ge=0.0, le=1.0)  # Minimum similarity score for KB chunks; None uses the default (0.1)
@@ -96,10 +99,10 @@ class LLMResponse(BaseModel):
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0
     input_cached_tokens: Optional[int] = 0
+    cache_write_tokens: Optional[int] = 0  # Cache-creation tokens, billed separately by some providers
     output_tokens: Optional[int] = 0
     output_reasoning_tokens: Optional[int] = 0
     is_json_output: Optional[bool] = False
-    is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name') # Credential name
     error: Optional[str] = None
     skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
@@ -107,7 +110,9 @@ class LLMResponse(BaseModel):
     is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
 
 
-class EmbeddingRequest(BaseModel):
+class EmbeddingRequest(LegacyByokWarningModel):
+    model_config = ConfigDict(extra="ignore")
+
     provider: ProviderLiteral  # Embedding provider (e.g., openai, azure, etc.)
     model: str  # Model name used for generating embeddings
     input: Union[str, List[str]]  # Text or list of texts to embed
@@ -117,7 +122,6 @@ class EmbeddingRequest(BaseModel):
     reference_type: Optional[str] = None  # Type of reference (e.g., "document")
     reference_name: Optional[str] = None  # Human-readable name
     action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
-    is_byok_enabled: bool = False  # Whether custom credentials are used
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')  # Credential name
 
 class EmbeddingResponse(BaseModel):
@@ -126,7 +130,6 @@ class EmbeddingResponse(BaseModel):
     embeddings: List[List[float]]  # List of embedding vectors (one per input)
     created_on: datetime = datetime.now(timezone.utc)  # Timestamp of response creation
     time_taken: Optional[float] = 0.0  # Time taken to generate embeddings (in seconds)
-    is_byok_enabled: Optional[bool] = False  # Whether BYOK was used
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')  # Credential name
     input_tokens: Optional[int] = 0  # Number of tokens processed
     status: Literal['completed', 'failed'] = 'completed'  # Execution status

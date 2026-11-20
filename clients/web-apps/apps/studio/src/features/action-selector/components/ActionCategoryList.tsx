@@ -12,14 +12,15 @@ import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
 import { isNodeInsideLoopBody } from "@/utils/is-node-inside-loop-body.util";
 
 import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionCategoryType } from "../types/action-category-type";
+import { ActionEntryType } from "../types/action-entry-type";
 import { countActions } from "../utils/count-actions.util";
+import { toCanvasNodeData } from "../utils/to-canvas-node-data.util";
 import ActionsList from "./ActionsList";
 import { CustomToolsPane } from "./CustomToolsPane";
 import { FallbackImageIcon } from "./FallbackImageIcon";
@@ -130,20 +131,22 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   const addFirstNodeToBranch = useAddFirstNodeToBranch();
   const replaceNodeHandler = useReplaceNode();
 
-  const handleSelectNode = (item: NodeDataType) => {
+  const handleSelectNode = (item: ActionEntryType) => {
+    const nodeData = toCanvasNodeData(item);
+
     setPrimaryCategoryLabel(null);
     switch (origin) {
       case "plusFirstNode":
-        addFirstNodeToFlow(item, originId);
+        addFirstNodeToFlow(nodeData, originId);
         break;
       case "PlusEdgeLabel":
-        addNodeFromEdge(item, originId);
+        addNodeFromEdge(nodeData, originId);
         break;
       case "plusNode":
-        addFirstNodeToBranch(item, originId);
+        addFirstNodeToBranch(nodeData, originId);
         break;
       case "ReplaceTrigger":
-        replaceNodeHandler(item);
+        replaceNodeHandler(nodeData);
         break;
     }
   };
@@ -211,7 +214,7 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
     }
   };
 
-  const handleRightPaneKeyDown = (e: KeyboardEvent, index: number, action: NodeDataType) => {
+  const handleRightPaneKeyDown = (e: KeyboardEvent, index: number, action: ActionEntryType) => {
     const listLength = isOriginReplaceTrigger ? triggersList.length : activeActions.length;
 
     if (e.key === "ArrowDown") {

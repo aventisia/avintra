@@ -215,7 +215,7 @@ class TestLoadToolsForTenant:
         sql = _sql(session.statements[0])
         assert '"EnvType"' in sql and "lower" in sql
         assert "'prod'" in sql
-        assert '"Name" IN' in sql and "'outlook'" in sql
+        assert "lower(\"ai_Tools\".\"Name\") IN" in sql and "'outlook'" in sql
         assert '"CreatedOn"' in sql
         assert "CASE" in sql
 

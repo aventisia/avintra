@@ -40,7 +40,6 @@ def _settings(**realtime) -> dict:
         "realtime": {
             "provider": "openai",
             "model": "gpt-realtime",
-            "isByokEnabled": True,
             "credentialName": "voice-key",
         },
         "persona": {"systemPrompt": "Help the caller."},
@@ -174,7 +173,7 @@ def test_non_byok_realtime_posts_nothing(monkeypatch):
     _FakeByokManager.instances = []
     monkeypatch.setattr(usage, "ByokUsageManager", _FakeByokManager)
     recorder = RealtimeUsageRecorder(
-        _claims(), _settings(isByokEnabled=False, credentialName=None)
+        _claims(), _settings(credentialName=None)
     )
 
     recorder.on_metrics_collected(

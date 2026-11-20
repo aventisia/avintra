@@ -1,0 +1,33 @@
+meta {
+  name: Social link verification rejects an unknown code
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/link/verify
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "verificationCodeId": "11111111-1111-1111-1111-111111111111",
+    "secretCode": "123456"
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("reports the attempt as expired", function() {
+    expect(res.getBody()).to.contain("This sign-in attempt has expired. Please try again.");
+  });
+}
+
+docs {
+  > The provider identity held for an outstanding link code is the only way to know which account and
+  > provider key to link, so an unknown or expired code id cannot link anything and creates no account.
+}

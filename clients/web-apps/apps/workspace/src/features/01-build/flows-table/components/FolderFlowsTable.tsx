@@ -1,6 +1,5 @@
 import { EmptyState } from "@avplatform/ui";
 import { CountToggle } from "@avplatform/ui/count-toggle";
-import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { TableCNSkeleton, TableCNSortMenu, TableCNToolbar } from "@avplatform/ui/table-cn";
@@ -25,6 +24,7 @@ import {
   buildFolderSummaries,
   filterArchivedAgents,
 } from "../utils/agents-list-items.util";
+import { AgentsCreateButton } from "./AgentsCreateButton";
 import { AgentsListView } from "./AgentsListView";
 import { FlowsGridSkeleton } from "./FlowsGridSkeleton";
 import { flowsTableColumns } from "./FlowsTableColumns";
@@ -102,7 +102,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
             </div>
             <div className="flex items-center gap-2">
               <ViewModeToggle view={view} onChange={setView} />
-              {!showArchived && <CrudCreateButton entity="flow" />}
+              {!showArchived && <AgentsCreateButton />}
             </div>
           </div>
           <FolderHero summary={currentSummary} />

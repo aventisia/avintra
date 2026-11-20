@@ -15,13 +15,16 @@ import {
 import { onErrorFieldsJson } from "../constants/OnErrorFields";
 import { NodeConfigSchemaType } from "../types/node-config-schema-type";
 import { useFlushNodeConfig } from "./useFlushNodeConfig";
+import { useNodeConfigValidation } from "./useNodeConfigValidation.hook";
 import { useRegisterFormFlush } from "./useRegisterFormFlush";
 
 /**
  * Defines the generic node config form: loads the node-type schema, builds
  * validation, and publishes dirty state for the panel boundary guards.
  */
-export const useDefineDCPForm = () => {
+export const useDefineDCPForm = (args?: {
+  beforeFlush?: (form: UseFormReturn<FieldValues>) => boolean | void;
+}) => {
   // Get node unique name state (required to get config panel data)
   const { nodeId, nodeData, nodeLabel, selectedTab, setSelectedTab } = useDynamicConfigPanelStore(
     useShallow((state) => ({
@@ -44,6 +47,8 @@ export const useDefineDCPForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [hasLoadError, setHasLoadError] = useState(false);
+
   const [tabKeys, setTabKeys] = useState<string[]>(["Inputs"]);
 
   const [isFormReady, setIsFormReady] = useState(false); // Flag to check if form is ready with default values. It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled".
@@ -61,6 +66,7 @@ export const useDefineDCPForm = () => {
 
     setIsLoading(true);
     setIsFormReady(false);
+    setHasLoadError(false);
 
     const getErrorFieldJson = (errorHandling?: string): DCPFieldSchemaType[] => {
       if (errorHandling == "standard") return onErrorFieldsJson;
@@ -71,19 +77,25 @@ export const useDefineDCPForm = () => {
     // Get node config from API and Set node config and zod schema
     getNodeConfig(nodeUniqueName, nodeData?.type)
       .then((config: NodeConfigSchemaType) => {
-        if (config) {
-          const updatedConfig = {
-            ...config,
-            fields: [...config.fields, ...getErrorFieldJson(config?.errorHandling)],
-          };
-
-          setNodeConfig(updatedConfig);
-          const baseSchema = generateZodSchema(updatedConfig.fields);
-          setNodeConfigZodSchema(baseSchema);
-          setNodeConfigResolverSchema(
-            withVoiceAgentEngineRefinement(baseSchema, updatedConfig.fields),
-          );
+        if (!config) {
+          setHasLoadError(true);
+          return;
         }
+
+        const updatedConfig = {
+          ...config,
+          fields: [...config.fields, ...getErrorFieldJson(config?.errorHandling)],
+        };
+
+        setNodeConfig(updatedConfig);
+        const baseSchema = generateZodSchema(updatedConfig.fields);
+        setNodeConfigZodSchema(baseSchema);
+        setNodeConfigResolverSchema(
+          withVoiceAgentEngineRefinement(baseSchema, updatedConfig.fields),
+        );
+      })
+      .catch(() => {
+        setHasLoadError(true);
       })
       .finally(() => {
         setIsLoading(false);
@@ -141,11 +153,14 @@ export const useDefineDCPForm = () => {
     outputKeys,
     nodeLabel,
     isLabelDirty,
+    beforeFlush: args?.beforeFlush,
   });
 
   // Expose the latest flush to boundary handlers (panel close / node switch /
   // tab switch / before Test / before Save).
   useRegisterFormFlush(flushNow);
+
+  useNodeConfigValidation(form as unknown as UseFormReturn<FieldValues>, nodeUniqueName);
 
   // Publish dirty state for the navigation guard (X / Escape / node switch).
   // Reading formState.isDirty during render subscribes to dirty updates.
@@ -164,6 +179,7 @@ export const useDefineDCPForm = () => {
     flushNow,
     nodeConfig,
     isFormReady,
+    hasLoadError,
     nodeUniqueName,
     inputKeys,
     outputKeys,

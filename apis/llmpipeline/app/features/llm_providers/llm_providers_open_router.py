@@ -8,6 +8,9 @@ from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
 from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from app.features.llm_providers.llm_providers_schemas import (
     EmbeddingRequest,
@@ -133,6 +136,10 @@ class OpenRouterProvider(BaseLLMProvider):
 
         payload, headers = self._create_request_payload_and_headers(llm_request)
         payload["stream"] = True
+        payload["stream_options"] = {"include_usage": True}
+
+        usage_data = {}
+        finish_reason = None
 
         timeout = httpx.Timeout(600.0)
 
@@ -167,11 +174,16 @@ class OpenRouterProvider(BaseLLMProvider):
                         # Parse JSON chunk from stream
                         chunk = json.loads(data)
 
-                        # ADD THIS
-                        if "usage" in chunk:
+                        if chunk.get("usage"):
                             usage_data = chunk["usage"]
 
-                        finish_reason = chunk.get("choices", [{}])[0].get("finish_reason")
+                        # IMPORTANT NOTE: OpenRouter sends a trailing usage-only chunk with no
+                        # `choices` once `stream_options.include_usage` is set, so it must be
+                        # captured above and skipped here.
+                        if not chunk.get("choices"):
+                            continue
+
+                        finish_reason = chunk["choices"][0].get("finish_reason") or finish_reason
 
                         # Extract token delta (same structure as OpenAI streaming)
                         delta = (
@@ -381,7 +393,7 @@ class OpenRouterProvider(BaseLLMProvider):
 
     # Helper: Handle BYOK credentials or credit usage
     def _handle_byok_and_credits(self, llm_request: LLMRequest, user: User):
-        if llm_request.is_byok_enabled and llm_request.credential_name:
+        if is_byok(llm_request.credential_name):
             vault_credential = VaultCredentialManager()
             credential = vault_credential.get_vault_credential_secret_by_name(
                 llm_request.credential_name,
@@ -418,7 +430,6 @@ class OpenRouterProvider(BaseLLMProvider):
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
-            is_byok_enabled=llm_request.is_byok_enabled,
             credential_name=llm_request.credential_name,
             error=None,
         )
@@ -445,10 +456,18 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
 
-        # If BYOK is not enabled and a credential name is not provided, post credit usage to CreditManagerService
-        if not llm_request.is_byok_enabled and not llm_request.credential_name:
+        if not is_byok(llm_request.credential_name):
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.debug(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
+
             # Prepare the credit usage data
             credit_usage_data = self._build_openrouter_credit_usage(llm_request, llm_response, space_id)
+
+            if not credit_usage_data:
+                logger.debug(f"No credit usage to post for request ID {llm_request.ref_id}.")
+                return llm_response
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -460,6 +479,19 @@ class OpenRouterProvider(BaseLLMProvider):
             except Exception as e:
                 logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
+
+        else:
+            try:
+                byok_usage_data = self._build_openrouter_byok_usage(llm_request, llm_response, space_id, jwt)
+
+                # Initialize the ByokUsageManager
+                byok_manager = ByokUsageManager()
+
+                # Post the BYOK usage data
+                byok_manager.post_byok_usage(task="openrouter", request=byok_usage_data, jwt=jwt)
+                logger.debug(f"Successfully posted BYOK usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post BYOK usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
 
         # Return the final llm_response
         return llm_response
@@ -571,7 +603,7 @@ class OpenRouterProvider(BaseLLMProvider):
                 "RefId": llm_request.ref_id,
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
-                "TriggeredByAgent": llm_request.agent_name,
+                "TriggeredByAgent": llm_request.ref_name,
             }
 
         credit_usage = []
@@ -589,13 +621,112 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.debug("Credit usage: %s", json.dumps(credit_usage, default=str))
 
         return credit_usage
-    
+
+    # Helper: Build OpenRouter BYOK usage
+    def _build_openrouter_byok_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None, jwt: str = None):
+        """
+        Build BYOK usage for OpenRouter models (Claude, Grok, Qwen, etc.)
+
+        - Mirrors the credit-usage model mapping entry for entry
+        - Carries the vault credential attribution
+        """
+
+        # Normalize model name
+        model_name = (llm_request.model or "").strip().lower()
+        model_name = model_name.split("/")[-1]  # handle provider prefixes
+
+        # Safe token extraction
+        input_tokens = max(getattr(llm_response, "input_tokens", 0) or 0, 0)
+        output_tokens = max(getattr(llm_response, "output_tokens", 0) or 0, 0)
+        cached_tokens = max(getattr(llm_response, "input_cached_tokens", 0) or 0, 0)
+
+        # OpenRouter Model → Enum Mapping
+        OPENROUTER_MODEL_MAP = {
+            # Claude
+            "claude-4.5-sonnet": {
+                "input": "Claude45SonnetInput",
+                "output": "Claude45SonnetOutput",
+                "cache": "Claude45SonnetCached",
+            },
+            "claude-4.5-haiku": {
+                "input": "Claude45HaikuInput",
+                "output": "Claude45HaikuOutput",
+                "cache": "Claude45HaikuCached",
+            },
+
+            # Grok
+            "grok-3-mini": {
+                "input": "Grok3MiniInput",
+                "output": "Grok3MiniOutput",
+                "cache": "Grok3MiniCached",
+            },
+
+            # Qwen VL 32B Instruct
+            "qwen3-vl-32b-instruct": {
+                "input": "Qwen3Vl32bInstructInput",
+                "output": "Qwen3Vl32bInstructOutput",
+                "cache": "Qwen3Vl32bInstructCached",  # include if backend supports
+            },
+        }
+
+        # Resolve service mapping
+        service_map = OPENROUTER_MODEL_MAP.get(model_name)
+
+        if not service_map:
+            for key, value in OPENROUTER_MODEL_MAP.items():
+                if model_name.startswith(key):
+                    service_map = value
+                    break
+
+        # Fallback (future-proof)
+        if not service_map:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_map = {
+                "input": f"{normalized}Input",
+                "output": f"{normalized}Output",
+                "cache": f"{normalized}Cached",
+            }
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(llm_request.credential_name, jwt=jwt)
+
+        # Helper to build entry
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "Provider": llm_request.provider,
+                "Model": llm_request.model,
+                "ConsumedUnit": tokens,
+                "UnitType": "Tokens",
+                "CredentialName": credential_name,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.ref_name,
+                "SpaceId": space_id,
+            }
+
+        byok_usage = []
+
+        # Add token usage entries
+        if input_tokens > 0:
+            byok_usage.append(build_entry(service_map["input"], input_tokens))
+
+        if cached_tokens > 0:
+            byok_usage.append(build_entry(service_map["cache"], cached_tokens))
+
+        if output_tokens > 0:
+            byok_usage.append(build_entry(service_map["output"], output_tokens))
+
+        return byok_usage
+
     # Method: Generate embeddings via OpenRouter (OpenAI-compatible)
     async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
         logger.debug(f"[EMBEDDING] Request sent to OpenRouter with model: {embedding_request.model}")
 
         # Handle BYOK or credit validation
-        if embedding_request.is_byok_enabled and embedding_request.credential_name:
+        if is_byok(embedding_request.credential_name):
             vault_credential = VaultCredentialManager()
             credential = vault_credential.get_vault_credential_secret_by_name(
                 embedding_request.credential_name,
@@ -662,13 +793,12 @@ class OpenRouterProvider(BaseLLMProvider):
                     created_on=datetime.now(timezone.utc),
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
-                    is_byok_enabled=embedding_request.is_byok_enabled,
                     credential_name=embedding_request.credential_name,
                     status="completed"
                 )
 
                 # Credit consumption
-                if not embedding_request.is_byok_enabled and not embedding_request.credential_name:
+                if not is_byok(embedding_request.credential_name):
                     credit_usage = self._build_openrouter_embedding_credit_usage(
                         embedding_request,
                         embedding_response,
@@ -686,6 +816,26 @@ class OpenRouterProvider(BaseLLMProvider):
                     except Exception as e:
                         logger.error(f"Failed to post embedding credit usage: {str(e)}")
                         raise HTTPException(status_code=500, detail="Credit usage failed")
+
+                else:
+                    byok_usage = self._build_openrouter_embedding_byok_usage(
+                        embedding_request,
+                        embedding_response,
+                        user.space_id,
+                        user.access_token
+                    )
+
+                    byok_manager = ByokUsageManager()
+                    try:
+                        if byok_usage:
+                            byok_manager.post_byok_usage(
+                                task="openrouter",
+                                request=byok_usage,
+                                jwt=user.access_token
+                            )
+                        logger.debug("Embedding BYOK usage posted successfully.")
+                    except Exception as e:
+                        logger.error(f"Failed to post embedding BYOK usage: {str(e)}")
 
                 return embedding_response
 
@@ -741,6 +891,68 @@ class OpenRouterProvider(BaseLLMProvider):
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": embedding_request.action,
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
+        }]
+
+    def _build_openrouter_embedding_byok_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
+        jwt: str = None,
+    ):
+        """
+        Construct BYOK usage payload for OpenRouter embedding requests.
+
+        - Extracts the model name from provider-prefixed format (e.g., "qwen/...")
+        - Mirrors the credit-usage model mapping
+        - Carries the vault credential attribution
+        """
+
+        # Normalize model name (handle None, casing, whitespace)
+        raw_model = (embedding_request.model or "").strip().lower()
+
+        # Extract provider + model (OpenRouter format: "provider/model")
+        # Keep both full and short name for flexible matching
+        full_model_name = raw_model
+        short_model_name = raw_model.split("/")[-1] if "/" in raw_model else raw_model
+
+        # Ensure token count is non-negative
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        # Mapping of OpenRouter models → internal service identifiers (with owner)
+        EMBEDDING_MODEL_MAP = {
+            "openai/text-embedding-3-small": "OpenRouterOpenAIEmbedding3Small",
+            "openai/text-embedding-ada-002": "OpenRouterOpenAIEmbeddingAda002",
+        }
+
+        # Resolve service type (try full name first, then fallback to short name)
+        service_type = (
+            EMBEDDING_MODEL_MAP.get(full_model_name)
+            or EMBEDDING_MODEL_MAP.get(short_model_name)
+        )
+
+        # Skip unsupported models and zero-token calls instead of posting an invalid entry
+        if not service_type or input_tokens <= 0:
+            logger.warning(f"No embedding BYOK usage recorded for model {embedding_request.model}.")
+            return []
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(embedding_request.credential_name, jwt=jwt)
+
+        # Build and return usage payload
+        return [{
+            "ServiceType": service_type,
+            "Provider": embedding_request.provider,
+            "Model": embedding_request.model,
+            "ConsumedUnit": input_tokens,
+            "UnitType": "Tokens",
+            "CredentialName": credential_name,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,

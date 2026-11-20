@@ -40,14 +40,19 @@ public class EmailConnectorsService : IEmailConnectorsService
             },
             StatusCode = 400
         };
+        string? username = null;
+        string? password = null;
         try
         {
             // Get Username and Password 
-            var emailCred = await GetEmailCredentialAsync(cloudConnectorReqDto.CredentialName);
-            if (emailCred == null)
+            var emailCredential = await GetEmailCredentialAsync(cloudConnectorReqDto.CredentialName);
+            username = emailCredential.Username;
+            password = emailCredential.Password;
+            var credentialFailure = emailCredential.Failure;
+            if (credentialFailure != null)
             {
                 _logger.LogWarning("Failed to obtain Email credentials for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
-                serviceResponse.Message = "Failed to retrieve Email Username and AppPassword.";
+                serviceResponse.Message = credentialFailure;
                 return serviceResponse;
             }
 
@@ -60,7 +65,7 @@ public class EmailConnectorsService : IEmailConnectorsService
             }
 
             // Take action as per the enum
-            var emailResponse = await TakeEmailActionAsync(emailActions, cloudConnectorReqDto.Payload, emailCred.Value.Username, emailCred.Value.Password);
+            var emailResponse = await TakeEmailActionAsync(emailActions, cloudConnectorReqDto.Payload, username!, password!);
 
             if (emailResponse == null)
             {
@@ -72,44 +77,62 @@ public class EmailConnectorsService : IEmailConnectorsService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Email connector invoked successfully.";
         }
+        catch (AuthenticationException ex)
+        {
+            _logger.LogWarning(ex, "The mail server rejected Email credential {CredentialName}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName));
+            serviceResponse.StatusCode = 400;
+            serviceResponse.Message = CredentialResolution.ToLogMessage(
+                CredentialResolutionReason.RejectedUpstream,
+                cloudConnectorReqDto.CredentialName,
+                CloudConnectorLogRedactor.RedactProviderReason(ex.Message, password));
+            serviceResponse.Data.Response = new { Error = serviceResponse.Message, AuthFailed = true };
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while invoking Email connector.");
             serviceResponse.StatusCode = 500;
-            serviceResponse.Message = $"Error: {ex.Message}";
-            serviceResponse.Data.Response = $"Error: {ex.Message}";
+            serviceResponse.Message = $"Error: {CloudConnectorLogRedactor.RedactProviderReason(ex.Message, password)}";
+            serviceResponse.Data.Response = serviceResponse.Message;
         }
         return serviceResponse;
     }
 
 
     // Get Email Username  and Password.
-    // Get Email Username  and Password.
-    private async Task<(string Username, string Password)?> GetEmailCredentialAsync(string credentialName)
+    private async Task<(string? Username, string? Password, string? Failure)> GetEmailCredentialAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
-        if (vaultCredential == null)
+        var resolution = await _cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
+        if (!resolution.IsSuccess)
         {
-            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
-            return null;
+            return (null, null, resolution.FailureMessage);
         }
 
-        if (vaultCredential.Data == null ||
-            !vaultCredential.Data.TryGetValue("Username", out var usernameValue) ||
-            !vaultCredential.Data.TryGetValue("Password", out var passwordValue))
+        var credentialData = resolution.Credential!.Data;
+        if (credentialData == null ||
+            !credentialData.TryGetValue("Username", out var usernameValue) ||
+            !credentialData.TryGetValue("Password", out var passwordValue))
         {
-            _logger.LogWarning("No 'Username' or 'Password' found in vault credential Data for Name: {CredentialName}", credentialName);
-            return null;
+            var missingField = credentialData == null || !credentialData.ContainsKey("Username") ? "Username" : "Password";
+            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, missingField));
         }
+
         string? username = usernameValue?.ToString();
         string? password = passwordValue?.ToString();
 
-        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(username))
         {
-            _logger.LogWarning("Username or Password is null or whitespace for credential Name: {CredentialName}", credentialName);
-            return null;
+            _logger.LogWarning("Username is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "Username"));
         }
-        return (username, password);
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            _logger.LogWarning("Password is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "Password"));
+        }
+
+        return (username, password, null);
     }
 
     // Perform the email actions.
@@ -408,10 +431,16 @@ public class EmailConnectorsService : IEmailConnectorsService
                     return new { Error = $"Unsupported Email action: '{action}'." };
             }
         }
+        catch (AuthenticationException)
+        {
+            // IMPORTANT NOTE: a rejected credential must reach the invoke path, which alone knows the
+            // email credential name needed for the execution-log message.
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Email operation failed");
-            return new { Error = ex.Message };
+            return new { Error = CloudConnectorLogRedactor.RedactProviderReason(ex.Message, password) };
         }
     }
 

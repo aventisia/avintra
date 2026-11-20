@@ -97,7 +97,6 @@ const ImproveWithAIButton = ({
         ],
         is_json_output: Boolean(isJsonOutput),
         max_output_tokens: maxOutputTokens ?? undefined,
-        is_byok_enabled: false,
         credential_name: null,
         temperature: temperature ?? 0.7,
         top_p: topP ?? 1,
@@ -118,7 +117,7 @@ const ImproveWithAIButton = ({
         label="Improve with AI"
         icon={<SparkleIcon className="h-4 w-4" />}
         pricingUrl={`${import.meta.env.VITE_MARKETING_URL}/pricing`}
-        className="flex items-center gap-2 rounded-full border-primary text-primary transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+        className="flex items-center gap-2 text-ink-2 hover:bg-hover hover:text-ink"
       />
     );
   }

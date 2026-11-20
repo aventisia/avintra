@@ -44,7 +44,6 @@
       "label": "Embedding Model Config",
       "description": "Configuration for the embedding model used to convert the input prompt into a vector representation.",
       "defaultValue": {
-        "is_byok_enabled": false,
         "provider": "openai",
         "credential_name": "",
         "model": "text-embedding-3-small",

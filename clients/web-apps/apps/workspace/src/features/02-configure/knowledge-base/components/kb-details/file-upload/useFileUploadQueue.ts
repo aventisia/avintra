@@ -11,6 +11,7 @@ import {
 import { DETAIL_DATA_QUERY_KEY } from "../../../constants";
 import { kbAddFilesSchema } from "../../../constants/kb-add-files-zod-schema";
 import type { KnowledgeBaseTableDto } from "../../../dtos/knowledge-base-table-dto";
+import { getEmbeddingCredentialGuardError } from "../../../utils/embedding-credential-guard.util";
 import type { FileQueueItem } from "./types";
 import { deduplicateFiles, fileToDataUri } from "./utils";
 
@@ -113,6 +114,19 @@ export const useFileUploadQueue = ({
     mutationFn: async (data: z.infer<typeof kbAddFilesSchema>) => {
       if (!knowledgeBase) {
         throw new Error("Knowledge base configuration is not available");
+      }
+
+      const credentialError = getEmbeddingCredentialGuardError(knowledgeBase);
+
+      if (credentialError) {
+        fileQueue.forEach((fileItem) =>
+          updateFileStatus(fileItem.id, {
+            status: "failed",
+            stageMessage: "Upload failed",
+            errorMessage: credentialError,
+          }),
+        );
+        throw new Error(credentialError);
       }
 
       let successCount = 0;

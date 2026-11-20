@@ -1,4 +1,4 @@
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@avplatform/ui/lib";
 import { useThemeStore } from "@avplatform/ui/stores";
 import type { FormFieldSizeType } from "@avplatform/ui/types";
 import Editor, {
@@ -84,8 +84,9 @@ const MonacoEditor = React.forwardRef<HTMLDivElement, MonacoEditorProps>(
       <div
         ref={ref}
         className={cn(
-          "monaco-editor-shell w-full overflow-hidden rounded-lg border border-input bg-surface ring-offset-background transition-shadow duration-[120ms] motion-reduce:transition-none focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
-          disabled && "cursor-not-allowed opacity-80",
+          FIELD_CONTAINER,
+          "monaco-editor-shell w-full overflow-hidden",
+          disabled && FIELD_CONTAINER_DISABLED,
           className,
         )}
       >

@@ -1,5 +1,5 @@
 import { cn } from "@avplatform/ui/lib";
-import { LoaderCircle, Sparkles, Wrench } from "lucide-react";
+import { CircleNotchIcon, SparkleIcon, WrenchIcon } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
 
 import type { VoiceCaptionTurn, VoiceToolCall } from "../../types/voice-call.type";
@@ -8,12 +8,12 @@ import { VoiceLatencyStrip } from "./voice-latency-strip";
 const VoiceToolChip = ({ tool }: { tool: VoiceToolCall }) => (
   <span className="inline-flex h-6 items-center gap-1.5 rounded-sm border border-line bg-sunken px-2 font-mono text-[11.5px] text-ink-2">
     {tool.isRunning ? (
-      <LoaderCircle
+      <CircleNotchIcon
         aria-hidden="true"
         className="size-3 animate-spin text-live motion-reduce:animate-none"
       />
     ) : (
-      <Wrench aria-hidden="true" className="size-3 text-muted-foreground" />
+      <WrenchIcon aria-hidden="true" className="size-3 text-muted-foreground" />
     )}
     {tool.name}
     <span className="text-muted-foreground">
@@ -28,7 +28,7 @@ const VoiceToolChip = ({ tool }: { tool: VoiceToolCall }) => (
 
 const VoiceSkillChip = ({ name }: { name: string }) => (
   <span className="inline-flex h-6 items-center gap-1.5 rounded-sm border border-line bg-sunken px-2 text-[11.5px] text-ink-2">
-    <Sparkles aria-hidden="true" className="size-3 text-muted-foreground" />
+    <SparkleIcon aria-hidden="true" className="size-3 text-muted-foreground" />
     Using skill: {name}
   </span>
 );

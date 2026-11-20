@@ -83,5 +83,15 @@ public enum EmailTypesEnum
     /// <summary>
     /// Email sent when a subscription plan has expired.
     /// </summary>
-    SubscriptionExpired
+    SubscriptionExpired,
+
+    /// <summary>
+    /// Email type to send the one-time confirmation code that links a social provider account to an existing account.
+    /// </summary>
+    LinkSocialLogin,
+
+    /// <summary>
+    /// Email type to notify the account that a social provider sign-in was connected to it.
+    /// </summary>
+    SocialSignInConnected
 }

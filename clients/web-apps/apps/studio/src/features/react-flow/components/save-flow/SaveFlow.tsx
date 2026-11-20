@@ -1,6 +1,5 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { cn } from "@avplatform/ui/lib";
 import { CheckIcon } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -10,23 +9,21 @@ import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import { usePreventNavigation } from "@/hooks/usePreventExecutionNavigation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { useSaveFlow } from "../../hooks/useSaveFlow";
 import useUnsavedChanges from "../../hooks/useUnSavedChanges";
-
-const SAVED_FEEDBACK_MS = 2500;
-const SAVED_FADE_OUT_CLASS =
-  "duration-300 animate-out fade-out-0 fill-mode-forwards [animation-delay:2200ms] motion-reduce:animate-none";
 
 type SaveFlowStatus = "hidden" | "saving" | "unsaved" | "saved";
 
 /**
  * Canvas save status beside the agent type in the header. Unsaved changes show with a Save
- * action; a finished save shows "Saved" briefly, then the status hides.
+ * action; a finished save keeps "All changes saved" until the next edit.
  */
 export default function SaveFlow() {
   const { saveData, isSavePending } = useSaveFlow();
   const isSaving = useCurrentFlowStore((state) => state.isFlowSaving);
+  const lastSaveFailed = useReactFlowExtStore((state) => state.lastSaveFailed);
 
   // Uncommitted config-form edits count as unsaved changes too.
   const isFormDirty = useDynamicConfigPanelStore((state) => state.isFormDirty);
@@ -37,11 +34,12 @@ export default function SaveFlow() {
   useEffect(() => {
     const hasFinishedSaving = wasSavingRef.current && !isSaving;
     wasSavingRef.current = isSaving;
-    if (!hasFinishedSaving) return;
-    setIsSavedVisible(true);
-    const hideTimer = window.setTimeout(() => setIsSavedVisible(false), SAVED_FEEDBACK_MS);
-    return () => window.clearTimeout(hideTimer);
-  }, [isSaving]);
+    if (hasFinishedSaving && !lastSaveFailed) setIsSavedVisible(true);
+  }, [isSaving, lastSaveFailed]);
+
+  useEffect(() => {
+    if (isDirty) setIsSavedVisible(false);
+  }, [isDirty]);
 
   // Get setExecutionState action from current flow store
   const { executionState } = useCurrentFlowStore(
@@ -68,8 +66,12 @@ export default function SaveFlow() {
   // server. The flush always persists, including incomplete/invalid edits —
   // that mid-edit state is intentional and saved for later completion.
   const handleSave = useCallback(async () => {
-    await useDynamicConfigPanelStore.getState().flushForm?.();
-    await saveData();
+    try {
+      await useDynamicConfigPanelStore.getState().flushForm?.();
+      await saveData();
+    } catch {
+      // The mutation's onError already reported the failure.
+    }
   }, [saveData]);
 
   useHotkeys(
@@ -94,10 +96,7 @@ export default function SaveFlow() {
     <div className="flex shrink-0 items-center gap-1.5">
       <span
         aria-live="polite"
-        className={cn(
-          "inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] leading-3 text-muted-foreground",
-          status === "saved" && SAVED_FADE_OUT_CLASS,
-        )}
+        className="inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] leading-3 text-muted-foreground"
       >
         {status !== "hidden" ? (
           <span aria-hidden="true" className="size-0.5 shrink-0 rounded-full bg-muted-foreground" />
@@ -121,12 +120,12 @@ export default function SaveFlow() {
               weight="bold"
               className="size-3 text-ok duration-200 animate-in fade-in-0 zoom-in-50 motion-reduce:animate-none"
             />
-            Saved
+            All changes saved
           </span>
         ) : null}
       </span>
       {status === "unsaved" ? (
-        <Button variant="link" className="text-[11px] leading-3" onClick={handleSave}>
+        <Button size="sm" onClick={handleSave}>
           Save
         </Button>
       ) : null}

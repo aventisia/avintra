@@ -28,8 +28,7 @@ type NodeDataType = {
   category?: string;
   name: string;
   label: string;
-  description: string;
-  docsLink?: string;
+  description?: string;
   icon?: string;
   img?: string;
   /**

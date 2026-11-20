@@ -1,5 +1,5 @@
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { FileXIcon } from "@phosphor-icons/react";
 import { useId } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -8,7 +8,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 
 import { useFetchTemplateDetails } from "../hooks/useFetchTemplateDetails";
 import { useUpdateTemplateMutation } from "../hooks/useUpdateTemplateMutation";
@@ -84,7 +83,7 @@ const RejectWithRemarkDialog = () => {
           value={remark}
           onChange={(e) => setRemark(e.target.value)}
           placeholder="Why is this template rejected?"
-          className={cn(getFieldInputClassName(false), "block resize-none py-2.5 leading-5")}
+          className={getFieldTextareaClassName(false)}
         />
       </FormField>
     </CardDialog>

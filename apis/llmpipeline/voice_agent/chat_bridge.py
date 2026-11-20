@@ -103,7 +103,6 @@ def build_voice_llm_request(
         temperature=llm.get("temperature", 1),
         top_p=llm.get("topP", 1),
         reasoning_effort=llm.get("reasoningEffort"),
-        is_byok_enabled=bool(llm.get("isByokEnabled")),
         credential_name=llm.get("credentialName") or None,
         max_output_tokens=llm.get("maxOutputTokens"),
         kb_names=kb_names,
@@ -117,7 +116,6 @@ def build_voice_llm_request(
         ref_id=str(claims.flow_id),
         ref_name=agent_name,
         action="AgentExecution",
-        agent_name=agent_name or None,
     )
 
 

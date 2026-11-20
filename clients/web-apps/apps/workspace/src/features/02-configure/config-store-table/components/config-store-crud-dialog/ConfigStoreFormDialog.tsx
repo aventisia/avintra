@@ -2,7 +2,7 @@ import { Switch } from "@avplatform/ui";
 import { type CrudCustomDialogProps, useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { IconTile } from "@avplatform/ui/icon-tile";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { KeyIcon } from "@phosphor-icons/react";
 import { useEffect, useId } from "react";
 import { Controller } from "react-hook-form";
@@ -13,7 +13,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import { configStoreOptimisticMutationFn } from "../../apis/config-stores-table-apis";
@@ -148,7 +147,7 @@ export const ConfigStoreFormDialog = ({
                 disabled
                 value={form.getValues("id")}
                 readOnly
-                className={cn(getFieldInputClassName(false), "h-11")}
+                className={getFieldInputClassName(false)}
               />
             </FormField>
           )}
@@ -173,7 +172,7 @@ export const ConfigStoreFormDialog = ({
                 onChange: (event) => handleInputChange(event.target.value),
               })}
               disabled={crudAction !== "create"}
-              className={cn(getFieldInputClassName(Boolean(errors.name)), "h-11")}
+              className={getFieldInputClassName(Boolean(errors.name))}
             />
           </FormField>
 
@@ -204,7 +203,7 @@ export const ConfigStoreFormDialog = ({
                 aria-invalid={Boolean(errors.value)}
                 aria-describedby={errors.value ? `${valueId}-error` : undefined}
                 {...form.register("value")}
-                className={cn(getFieldInputClassName(Boolean(errors.value)), "h-11")}
+                className={getFieldInputClassName(Boolean(errors.value))}
               />
             </FormField>
           )}
@@ -215,7 +214,7 @@ export const ConfigStoreFormDialog = ({
                 id={valueId}
                 aria-invalid={Boolean(errors.value)}
                 {...form.register("value")}
-                className={cn(getFieldInputClassName(Boolean(errors.value)), "h-11")}
+                className={getFieldInputClassName(Boolean(errors.value))}
               >
                 <option value="true">True</option>
                 <option value="false">False</option>
@@ -235,10 +234,7 @@ export const ConfigStoreFormDialog = ({
               placeholder="A short summary of what the key is used for"
               aria-invalid={Boolean(errors.description)}
               {...form.register("description")}
-              className={cn(
-                getFieldInputClassName(Boolean(errors.description)),
-                "block resize-none py-2.5 leading-5",
-              )}
+              className={getFieldTextareaClassName(Boolean(errors.description))}
             />
           </FormField>
 

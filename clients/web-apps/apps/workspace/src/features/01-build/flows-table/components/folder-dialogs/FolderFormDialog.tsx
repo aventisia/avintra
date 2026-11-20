@@ -1,6 +1,6 @@
 import { useCrudDialogDirty } from "@avplatform/ui/crud-dialog";
 import { FolderGlyph } from "@avplatform/ui/folder-glyph";
-import { cn } from "@avplatform/ui/lib";
+import { cn, getFieldInputClassName, getFieldTextareaClassName } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { ArrowRightIcon, InfoIcon } from "@phosphor-icons/react";
@@ -11,7 +11,6 @@ import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getFieldInputClassName } from "@/components/card-dialog/field-input.util";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import {
@@ -192,7 +191,7 @@ export const FolderFormDialog = ({
               aria-invalid={Boolean(nameError)}
               aria-describedby={nameError ? `${nameId}-error` : undefined}
               {...form.register("name")}
-              className={cn(getFieldInputClassName(Boolean(nameError)), "h-11 pl-10")}
+              className={cn(getFieldInputClassName(Boolean(nameError)), "pl-10")}
             />
           </div>
         </FormField>
@@ -214,10 +213,7 @@ export const FolderFormDialog = ({
             placeholder="What belongs in this folder?"
             aria-invalid={Boolean(errors.description)}
             {...form.register("description")}
-            className={cn(
-              getFieldInputClassName(Boolean(errors.description)),
-              "block resize-none py-2.5 leading-5",
-            )}
+            className={getFieldTextareaClassName(Boolean(errors.description))}
           />
         </FormField>
 

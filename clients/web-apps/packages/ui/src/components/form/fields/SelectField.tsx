@@ -66,6 +66,7 @@ const SelectField = ({
             >
               <SelectTrigger
                 size={size}
+                aria-label={label}
                 {...field}
                 ref={field.ref}
                 {...props}

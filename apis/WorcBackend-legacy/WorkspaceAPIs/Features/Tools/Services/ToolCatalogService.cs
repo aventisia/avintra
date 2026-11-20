@@ -13,6 +13,7 @@ public class ToolCatalogService : IToolCatalogService
     private readonly CorsairConfigRepository _corsairConfigRepository;
     private readonly CamelConnectorCatalogRepository _camelConnectorCatalogRepository;
     private readonly CorsairIntegrationCatalogRepository _corsairIntegrationCatalogRepository;
+    private readonly IPlatformToolTenantService _platformToolTenantService;
 
     public ToolCatalogService(
         IUnitOfWork unitOfWork,
@@ -21,7 +22,8 @@ public class ToolCatalogService : IToolCatalogService
         ICurrentTenantService currentTenantService,
         CorsairConfigRepository corsairConfigRepository,
         CamelConnectorCatalogRepository camelConnectorCatalogRepository,
-        CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository)
+        CorsairIntegrationCatalogRepository corsairIntegrationCatalogRepository,
+        IPlatformToolTenantService platformToolTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -30,6 +32,7 @@ public class ToolCatalogService : IToolCatalogService
         _corsairConfigRepository = corsairConfigRepository;
         _camelConnectorCatalogRepository = camelConnectorCatalogRepository;
         _corsairIntegrationCatalogRepository = corsairIntegrationCatalogRepository;
+        _platformToolTenantService = platformToolTenantService;
     }
 
     public async Task<ServiceResponse<IEnumerable<UsableToolDto>>> GetUsableToolsAsync()
@@ -40,15 +43,16 @@ public class ToolCatalogService : IToolCatalogService
 
         try
         {
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+
             var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
 
             var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
             ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
 
-            var usableTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
-                .OrderBy(o => o.Name)
+            var customTools = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(BuildCustomToolsPredicate(resourceAccessMap))
                 .IgnoreQueryFilters()
                 .Select(w => new UsableToolDto
                 {
@@ -64,6 +68,23 @@ public class ToolCatalogService : IToolCatalogService
                     IsDisabled = w.IsDisabled,
                 })
                 .ToListAsync();
+
+            var platformTools = (await GetEnabledPlatformToolsAsync())
+                .Select(w => new UsableToolDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    Type = ComponentTypeEnum.Platform,
+                    IsActive = true,
+                    IsVerified = true,
+                    IsDisabled = false,
+                });
+
+            var usableTools = customTools
+                .Concat(platformTools)
+                .OrderBy(o => o.Name)
+                .ToList();
 
             foreach (var tool in usableTools)
             {
@@ -91,14 +112,32 @@ public class ToolCatalogService : IToolCatalogService
 
         try
         {
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+
             var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
 
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+                .GetByConditionAsync(BuildCustomToolsPredicate(resourceAccessMap))
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(w => w.Id == toolId);
 
-            if (tool is null)
+            if (tool is not null)
+            {
+                return serviceResponse.Update(
+                    "Usable tool operations retrieved successfully.",
+                    200,
+                    new UsableToolOperationsDto
+                    {
+                        CredentialType = ResolveCredentialType(tool.Type, tool.ParsedSchema),
+                        Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified),
+                    });
+            }
+
+            var platformTool = await _unitOfWork.PlatformToolRepo
+                .GetByConditionAsync(w => w.Id == toolId && !w.IsDisabled)
+                .FirstOrDefaultAsync();
+
+            if (platformTool is null || !await _platformToolTenantService.IsEnabledAsync(toolId))
             {
                 return serviceResponse.Update("Tool not found.", 404);
             }
@@ -108,8 +147,8 @@ public class ToolCatalogService : IToolCatalogService
                 200,
                 new UsableToolOperationsDto
                 {
-                    CredentialType = ResolveCredentialType(tool),
-                    Operations = ToolOperationHelpers.ExtractOperations(tool.ParsedSchema, tool.IsVerified),
+                    CredentialType = ResolveCredentialType(ComponentTypeEnum.Platform, platformTool.ParsedSchema),
+                    Operations = ToolOperationHelpers.ExtractOperations(platformTool.ParsedSchema, true),
                 });
         }
         catch (Exception ex)
@@ -128,14 +167,16 @@ public class ToolCatalogService : IToolCatalogService
 
         try
         {
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+
             var resourceAccessMap = await GetUsableToolsResourceAccessAsync();
 
             var iconLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             ToolIconHelpers.AddCamelIcons(iconLookup, _camelConnectorCatalogRepository.GetCatalog());
             ToolIconHelpers.AddCorsairIcons(iconLookup, _corsairIntegrationCatalogRepository.GetIconMap());
 
-            var usableTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(BuildUsableToolsPredicate(resourceAccessMap))
+            var customTools = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(BuildCustomToolsPredicate(resourceAccessMap))
                 .OrderByDescending(o => o.CreatedOn)
                 .IgnoreQueryFilters()
                 .Select(w => new UsableToolCatalogItemDto
@@ -155,6 +196,21 @@ public class ToolCatalogService : IToolCatalogService
                         : ToolOperationHelpers.ExtractOperations(w.ParsedSchema, w.IsVerified)
                 })
                 .ToListAsync();
+
+            var platformTools = (await GetEnabledPlatformToolsAsync())
+                .Select(w => new UsableToolCatalogItemDto
+                {
+                    Id = w.Id,
+                    Name = w.Name,
+                    Description = w.Description,
+                    Type = ComponentTypeEnum.Platform,
+                    IsActive = true,
+                    IsVerified = true,
+                    IsDisabled = false,
+                    Operations = ToolOperationHelpers.ExtractOperations(w.ParsedSchema, true),
+                });
+
+            var usableTools = customTools.Concat(platformTools).ToList();
 
             foreach (var tool in usableTools)
             {
@@ -182,16 +238,23 @@ public class ToolCatalogService : IToolCatalogService
 
         try
         {
-            var platformTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .IgnoreQueryFilters()
+            await _platformToolTenantService.EnsureCurrentTenantMaterializedAsync();
+
+            var enabledToolIds = await _platformToolTenantService.GetEnabledToolIdsAsync();
+
+            var platformTools = await _unitOfWork.PlatformToolRepo
+                .GetAllAsync()
+                .OrderBy(o => o.Name)
                 .ToListAsync();
 
-            var mappedTools = platformTools.Adapt<IEnumerable<ToolDto>>().ToList();
-            mappedTools.ForEach(toolDto => toolDto.AccessLevel = ResourceAccessTypeEnum.View);
+            var mappedTools = platformTools
+                .Select(tool => ToolsHelpers.ToToolDto(
+                    tool,
+                    enabledToolIds.Contains(tool.Id),
+                    includeSchema: false)
+                )
+                .OrderByDescending(o => o.IsPopular)
+                .ToList();
 
             return serviceResponse.Update(
                 "Platform tools retrieved successfully.",
@@ -217,7 +280,22 @@ public class ToolCatalogService : IToolCatalogService
                 ResourceAccessTypeEnum.Edit,
             });
 
-    private Expression<Func<Tool, bool>> BuildUsableToolsPredicate(
+    private async Task<List<PlatformTool>> GetEnabledPlatformToolsAsync()
+    {
+        var enabledToolIds = await _platformToolTenantService.GetEnabledToolIdsAsync();
+        if (enabledToolIds.Count == 0)
+        {
+            return new List<PlatformTool>();
+        }
+
+        var toolIds = enabledToolIds.ToList();
+        return await _unitOfWork.PlatformToolRepo
+            .GetByConditionAsync(w => toolIds.Contains(w.Id) && !w.IsDisabled)
+            .OrderBy(o => o.Name)
+            .ToListAsync();
+    }
+
+    private Expression<Func<Tool, bool>> BuildCustomToolsPredicate(
         Dictionary<Guid, ResourceAccessTypeEnum> resourceAccessMap)
     {
         var currentUserId = _currentTenantService.CurrentUserId;
@@ -231,31 +309,23 @@ public class ToolCatalogService : IToolCatalogService
         return w =>
             w.IsActive &&
             !w.IsDisabled &&
-            (
-                (w.Type == ComponentTypeEnum.Platform &&
-                 w.TenantId == Guid.Empty &&
-                 w.SpaceId == null &&
-                 w.IsTenantWideAccess &&
-                 (w.CreatedByUserId == null || w.CreatedByUserId == Guid.Empty))
-                ||
-                (w.Type == ComponentTypeEnum.Custom &&
-                 w.TenantId == currentTenantId &&
-                 w.EnvType == currentEnvType &&
-                 w.SpaceId == targetSpaceId &&
-                 (w.IsTenantWideAccess ||
-                  (w.CreatedByUserId == currentUserId && !w.IsTenantWideAccess) ||
-                  resourceAccessMap.Keys.Contains(w.Id)))
-            );
+            w.Type == ComponentTypeEnum.Custom &&
+            w.TenantId == currentTenantId &&
+            w.EnvType == currentEnvType &&
+            w.SpaceId == targetSpaceId &&
+            (w.IsTenantWideAccess ||
+             (w.CreatedByUserId == currentUserId && !w.IsTenantWideAccess) ||
+             resourceAccessMap.Keys.Contains(w.Id));
     }
 
-    private string? ResolveCredentialType(Tool tool)
+    private string? ResolveCredentialType(ComponentTypeEnum? type, JsonDocument? parsedSchema)
     {
-        if (tool.Type == ComponentTypeEnum.Custom)
+        if (type == ComponentTypeEnum.Custom)
         {
             return VaultCredentialTypesEnum.CustomApiTool.ToString();
         }
 
-        var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(tool.ParsedSchema);
+        var pluginId = ToolOperationHelpers.TryGetCorsairPluginId(parsedSchema);
         return string.IsNullOrWhiteSpace(pluginId)
             ? null
             : _corsairConfigRepository.GetVaultCredentialTypeForPluginId(pluginId);

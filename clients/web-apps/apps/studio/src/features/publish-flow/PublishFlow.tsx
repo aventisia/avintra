@@ -3,6 +3,7 @@ import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import { deepParse } from "@avplatform/ui/utils";
 import { RocketIcon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +13,7 @@ import { useLocation } from "react-router-dom";
 import { FlowActionType } from "@/features/collaboration/dtos/collaboration-dtos";
 import { broadcastFlowActionEvent } from "@/features/collaboration/hooks/useCollaboration";
 import { useDirtyNodeConfigGuard } from "@/features/dynamic-config-panel/hooks/useDirtyNodeConfigGuard";
+import { formatPendingSections, useVoicePendingChecks } from "@/features/voice-builder";
 
 import { LoadFlowDto } from "../react-flow/dtos/load-flow-dto";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
@@ -46,8 +48,17 @@ const PublishFlow = () => {
   const { showCustomAlertDialog } = useShowAlertHandler();
   const guardDirtyNodeConfig = useDirtyNodeConfigGuard();
 
+  const voicePendingChecks = useVoicePendingChecks();
+
   const flowData = getCachedFlow();
-  const isDisabled = !flowData || flowData.isPublished || isPending || publishLocked;
+  const voiceBlocker =
+    flowData?.type === FlowTypesEnum.VoiceAgent &&
+    !flowData.isPublished &&
+    voicePendingChecks.length > 0
+      ? `Finish ${formatPendingSections(voicePendingChecks)} to publish`
+      : null;
+  const isDisabled =
+    !flowData || flowData.isPublished || isPending || publishLocked || !!voiceBlocker;
 
   const handlePublish = () => {
     if (!flowId || !versionId) return;
@@ -107,7 +118,7 @@ const PublishFlow = () => {
     });
   };
 
-  return (
+  const publishButton = (
     <Button
       variant="default"
       size="sm"
@@ -122,6 +133,19 @@ const PublishFlow = () => {
       )}
       Publish
     </Button>
+  );
+
+  if (!voiceBlocker) return publishButton;
+
+  return (
+    <Tooltip content={voiceBlocker} side="left">
+      <span
+        tabIndex={0}
+        className="inline-flex rounded-md focus-visible:shadow-focus focus-visible:outline-none"
+      >
+        {publishButton}
+      </span>
+    </Tooltip>
   );
 };
 

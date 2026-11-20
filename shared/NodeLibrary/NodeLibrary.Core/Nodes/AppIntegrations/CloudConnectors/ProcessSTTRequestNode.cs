@@ -52,8 +52,7 @@ public class ProcessSTTRequestNode : BaseNode
                 provider = GetStringProperty(modelConfig, "provider"),
                 model = GetStringProperty(modelConfig, "model"),
                 input = formattedFile,
-                is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credential_name = GetStringProperty(modelConfig, "credential_name") ?? GetStringProperty(modelConfig, "credential_id"),
+                credential_name = CredentialReferenceHelper.Read(modelConfig),
                 language = GetStringProperty(modelConfig, "language") ?? "en",
                 stream = false,
 
@@ -61,8 +60,7 @@ public class ProcessSTTRequestNode : BaseNode
                 ref_type = "Agent",
                 ref_id = flowMetadata.Id,
                 ref_name = flowMetadata.Name,
-                action = "AgentExecution",
-                agent_name = flowMetadata.Name,
+                action = "AgentExecution"
             };
 
             var requestJson = JsonSerializer.Serialize(requestObj);
@@ -116,28 +114,9 @@ public class ProcessSTTRequestNode : BaseNode
             : null;
     }
 
-    // Retrieves a boolean property from a JsonElement.
-    // Returns null if the property is missing or not a boolean value.
-    private static bool? GetBoolProperty(JsonElement element, string propertyName)
-    {
-        if (element.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
-            return null;
-
-        if (!element.TryGetProperty(propertyName, out var prop))
-            return null;
-
-        return prop.ValueKind switch
-        {
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            _ => null
-        };
-    }
-
     /// <summary>
     /// Converts a file reference into a format accepted by the Speech-to-Text service.
     ///
-    /// Supported input formats:
     /// - Data URLs (returned unchanged)
     /// - HTTP/HTTPS URLs (returned unchanged)
     /// - Raw Base64 strings (wrapped in a Data URL)

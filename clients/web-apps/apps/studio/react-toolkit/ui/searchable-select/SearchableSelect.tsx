@@ -32,6 +32,8 @@ type SearchableSelectProps = {
   size?: FormFieldSizeType;
   className?: string;
   isLoading?: boolean;
+  /** Accessible name for the trigger, since it is not a native form control. */
+  ariaLabel?: string;
   /** Rendered in place of the icon for options whose `icon` is not set. */
   fallbackIcon?: React.ReactNode;
 };
@@ -53,6 +55,7 @@ export const SearchableSelect = ({
   size = "base",
   className,
   isLoading,
+  ariaLabel,
   fallbackIcon,
 }: SearchableSelectProps) => {
   const [open, setOpen] = React.useState(false);
@@ -85,11 +88,12 @@ export const SearchableSelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="field"
           role="combobox"
           disabled={disabled}
+          aria-label={ariaLabel}
           aria-expanded={open}
-          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
+          className={cn("w-full justify-between", sizeClasses[size], className)}
         >
           <span className="flex items-center gap-2 truncate">
             {selectedSrc ? (

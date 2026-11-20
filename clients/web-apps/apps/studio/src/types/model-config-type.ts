@@ -1,5 +1,4 @@
-export interface ModelConfigType {
-  is_byok_enabled: boolean;
+export type ModelConfigType = {
   provider: string;
   credential_name: string;
   model: string;
@@ -8,22 +7,21 @@ export interface ModelConfigType {
   is_json_output: boolean;
   max_output_tokens: number;
   reasoning_effort?: string;
-}
+};
 
-export interface VoiceConfigType {
+export type VoiceConfigType = {
   language: string;
   voice: string;
   speed: number;
-  // pitch: number;
-}
+};
 
-export interface KBConfigType {
+export type KBConfigType = {
   knowledgeBase: string[];
   retrievalType: string;
   sourceThreshold: number;
   numberOfChunks: number;
-}
+};
 
-export interface SkillsConfigType {
+export type SkillsConfigType = {
   skills: string[];
-}
+};

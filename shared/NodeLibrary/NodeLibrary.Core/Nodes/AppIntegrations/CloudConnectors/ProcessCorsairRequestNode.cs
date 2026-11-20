@@ -1,5 +1,4 @@
 using System.IO;
-using System.Net;
 
 namespace NodeLibrary.CloudConnectorNodes;
 
@@ -72,7 +71,7 @@ public class ProcessCorsairRequestNode : BaseNode
 
             if (!response.IsSuccessStatusCode)
             {
-                StatusMessage.Set(context, BuildErrorStatus(response.StatusCode, responseContent));
+                StatusMessage.Set(context, ConnectorNodeErrors.BuildErrorStatus(response.StatusCode, responseContent, "Corsair"));
                 IsSuccess.Set(context, false);
                 return;
             }
@@ -91,40 +90,10 @@ public class ProcessCorsairRequestNode : BaseNode
         }
         catch (Exception ex)
         {
-            StatusMessage.Set(context, $"Error: {ex.GetBaseException().Message}");
+            StatusMessage.Set(context, $"Error: {NodeLogHelper.ScrubSecretPatterns(ex.GetBaseException().Message)}");
             IsSuccess.Set(context, false);
         }
     }
-
-    private static string BuildErrorStatus(HttpStatusCode statusCode, string responseContent)
-    {
-        try
-        {
-            using var document = JsonDocument.Parse(responseContent);
-            var root = document.RootElement;
-            var error = GetString(root, "error") ?? GetNestedString(root, "data", "error");
-            var details = GetString(root, "details") ?? GetNestedString(root, "data", "details");
-            var message = GetString(root, "message");
-            var detail = string.Join("; ", new[] { error, details, message }.Where(value => !string.IsNullOrWhiteSpace(value)).Distinct());
-            return string.IsNullOrWhiteSpace(detail)
-                ? $"Error: Corsair request failed with HTTP {(int)statusCode} ({statusCode})."
-                : $"Error: Corsair request failed with HTTP {(int)statusCode} ({statusCode}): {detail}";
-        }
-        catch (JsonException)
-        {
-            return $"Error: Corsair request failed with HTTP {(int)statusCode} ({statusCode}).";
-        }
-    }
-
-    private static string? GetString(JsonElement element, string propertyName) =>
-        element.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
-            ? property.GetString()
-            : null;
-
-    private static string? GetNestedString(JsonElement element, string parentName, string propertyName) =>
-        element.TryGetProperty(parentName, out var parent) && parent.ValueKind == JsonValueKind.Object
-            ? GetString(parent, propertyName)
-            : null;
 
     private static object? ParsePayload(string? payloadString)
     {

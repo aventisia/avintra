@@ -16,13 +16,11 @@ export interface TTSRequestDto {
   stream: boolean;
 
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
 
   ref_type: string;
   ref_id: string;
   ref_name: string;
   action: string;
-  agent_name?: string | null;
 }
 
 /**
@@ -38,11 +36,10 @@ export interface TTSResponseDto {
   stream: boolean;
 
   credential_name?: string | null;
-  is_byok_enabled?: boolean;
 
   ref_id?: string | null;
   ref_type?: string | null;
-  agent_name?: string | null;
+  ref_name?: string | null;
   action?: string | null;
 
   token_count?: number | null;

@@ -87,6 +87,8 @@ type PluginMeta = {
     authUrl?: string;
     tokenUrl?: string;
   };
+  options?: { authType?: string };
+  authConfig?: Record<string, unknown>;
 };
 
 /** Return every registered plugin that ships an oauthConfig. */
@@ -106,6 +108,20 @@ export function getPluginMeta(pluginId: string): PluginMeta | undefined {
   return plugins
     .map((p) => p as unknown as PluginMeta)
     .find((p) => p.id === pluginId.toLowerCase());
+}
+
+/**
+ * True if the plugin declares an OAuth 2 auth mode. Mirrors the catalog generator's
+ * `authType` derivation (`dcp-generator/plugin-metadata.ts`), so this set agrees with the
+ * catalog's `defaultAuthMode: "oauth_2"` entries.
+ */
+export function isOAuthTwoPlugin(pluginId: string): boolean {
+  const meta = getPluginMeta(pluginId);
+  if (!meta) return false;
+  const modes = Object.keys(meta.authConfig ?? {});
+  return modes.length > 0
+    ? modes.includes("oauth_2")
+    : meta.options?.authType === "oauth_2";
 }
 
 /**

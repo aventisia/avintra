@@ -14,7 +14,7 @@ from app.core.logger import logger, log_exception
 from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.core.byok_usage_manager import ByokUsageManager
-from app.features.litellm.core.credentials import resolve_credential_name
+from app.features.litellm.core.credentials import is_byok, resolve_credential_name
 from app.utils.file_converter_utils import file_to_base64
 from app.features.auth.authenticated_user import User
 from app.features.stt_providers.stt_providers_schema import (
@@ -24,6 +24,12 @@ from app.features.stt_providers.stt_providers_schema import (
 )
 from app.features.stt_providers.stt_providers_base import BaseSpeechToTextProvider
 from app.features.stt_providers.stt_providers_manager import active_stt_jobs
+
+STT_MODEL_MAP = {
+    "scribe_v2": "ElevenLabsScribeV2",
+    "scribe_v2_realtime": "ElevenLabsScribeV2Realtime",
+    "scribe_v1": "ElevenLabsScribeV1",
+}
 
 
 class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
@@ -198,7 +204,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                                 is_final=False,
                                 ref_id=stt_request.ref_id,
                                 ref_type=stt_request.ref_type,
-                                agent_name=stt_request.agent_name,
                                 action=stt_request.action
                             ).model_dump_json() + "\n"
 
@@ -220,7 +225,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                                 is_final=True,
                                 ref_id=stt_request.ref_id,
                                 ref_type=stt_request.ref_type,
-                                agent_name=stt_request.agent_name,
                                 action=stt_request.action
                             ).model_dump_json() + "\n"
 
@@ -256,7 +260,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         Handles BYOK or credit validation
         """
 
-        if req.is_byok_enabled and req.credential_name:
+        if is_byok(req.credential_name):
             vault_credential = VaultCredentialManager()
 
             credential = vault_credential.get_vault_credential_secret_by_name(
@@ -333,10 +337,9 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             stream=req.stream,
             language=req.language,
             credential_name=req.credential_name,
-            is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
-            agent_name=req.agent_name,
+            ref_name=req.ref_name,
             action=req.action,
             error=None
         )
@@ -360,26 +363,17 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         base_response.time_taken = round(end_time - start_time, 2)
         base_response.token_count = self.get_audio_duration(req.input)
 
-        # CREDIT USAGE (NON-BYOK)
-        if not req.is_byok_enabled and not req.credential_name:
+        # CREDIT USAGE (PLATFORM)
+        if not is_byok(req.credential_name):
             try:
                 credit_manager = CreditManagerService()
-                
-                # Mapping of request model names to internal service type identifiers
-                # This ensures consistent naming for billing/reporting
-                STT_MODEL_MAP = {
-                    "scribe_v2", "ElevenLabsScribeV2",
-                    "scribe_v2_realtime", "ElevenLabsScribeV2Realtime",
-                    "scribe_v1", "ElevenLabsScribeV1",
-                }
 
-                # Resolve the internal service type based on requested model
                 service_type = STT_MODEL_MAP.get(req.model)
-                
+
                 # Validate model support to avoid silent billing errors
                 if not service_type:
-                    raise ValueError(f"Unsupported TTS model: {req.model}")
-                
+                    raise ValueError(f"Unsupported STT model: {req.model}")
+
                 credit_usage = {
                     "ServiceType": service_type,
                     "ConsumedUnit": base_response.token_count,
@@ -387,38 +381,27 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                     "SpaceId": space_id,
                 }
 
                 credit_manager.post_credit_usage(
                     task="elevenlabs",
-                    request=credit_usage,
+                    request=[credit_usage],
                     jwt=jwt
                 )
 
                 logger.debug(f"STT credit usage posted | ref_id={req.ref_id}")
 
             except Exception as e:
-                logger.error(f"Failed to post STT credit usage | error={str(e)}")
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Failed to post credit usage: {str(e)}"
-                )
+                # The transcript already exists; a billing failure must not fail the request.
+                logger.warning(f"Failed to post STT credit usage | error={str(e)}")
 
         # BYOK USAGE (caller's own key)
-        elif req.is_byok_enabled and req.credential_name:
+        else:
             try:
                 byok_manager = ByokUsageManager()
 
-                # Mapping of request model names to internal service type identifiers
-                STT_MODEL_MAP = {
-                    "scribe_v2": "ElevenLabsScribeV2",
-                    "scribe_v2_realtime": "ElevenLabsScribeV2Realtime",
-                    "scribe_v1": "ElevenLabsScribeV1",
-                }
-
-                # Resolve the internal service type based on requested model
                 service_type = STT_MODEL_MAP.get(req.model)
 
                 # Validate model support to avoid silent recording errors
@@ -439,13 +422,13 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "RefId": req.ref_id,
                     "RefName": req.ref_name,
                     "Action": req.action,
-                    "TriggeredByAgent": req.agent_name,
+                    "TriggeredByAgent": req.ref_name,
                     "SpaceId": space_id,
                 }
 
                 byok_manager.post_byok_usage(
                     task="elevenlabs",
-                    request=byok_usage,
+                    request=[byok_usage],
                     jwt=jwt
                 )
 

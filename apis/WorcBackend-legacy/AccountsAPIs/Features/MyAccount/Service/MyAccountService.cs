@@ -463,22 +463,31 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Check if old password is correct
-            var result = await _userManager.CheckPasswordAsync(user, pwdUpdateDto.OldPwd);
-
-            // Old password is incorrect
-            if (!result)
+            // A passwordless account sets its first password only when it signs in with a social provider
+            if (user.PasswordHash != null)
             {
-                // Increase lockout count
-                user.AccessFailedCount++;
-                user.LockoutEnd = user.AccessFailedCount >= _environmentConfig.LockoutMaxFailedAccessAttempts
-                    ? DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.DefaultLockoutTimeSpanInMinutes)
-                    : user.LockoutEnd;
+                // Check if old password is correct
+                var result = await _userManager.CheckPasswordAsync(user, pwdUpdateDto.OldPwd);
 
-                // Update user
-                await _userManager.UpdateAsync(user);
+                // Old password is incorrect
+                if (!result)
+                {
+                    // Increase lockout count
+                    user.AccessFailedCount++;
+                    user.LockoutEnd = user.AccessFailedCount >= _environmentConfig.LockoutMaxFailedAccessAttempts
+                        ? DateTimeOffset.UtcNow.AddMinutes(_environmentConfig.DefaultLockoutTimeSpanInMinutes)
+                        : user.LockoutEnd;
 
-                serviceResponse.Message = "Old password is incorrect";
+                    // Update user
+                    await _userManager.UpdateAsync(user);
+
+                    serviceResponse.Message = "Old password is incorrect";
+                    return serviceResponse;
+                }
+            }
+            else if (await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user) == null)
+            {
+                serviceResponse.Message = "This account signs in with your organization's provider, so it cannot set a password";
                 return serviceResponse;
             }
 
@@ -503,8 +512,10 @@ public class MyAccountService : IMyAccountService
                 return serviceResponse;
             }
 
-            // Update password
-            var pwdRemoveResult = await _userManager.RemovePasswordAsync(user);
+            // A passwordless account has nothing to remove, so only add the new password
+            var pwdRemoveResult = user.PasswordHash == null
+                ? IdentityResult.Success
+                : await _userManager.RemovePasswordAsync(user);
             var addNewPwdResult = await _userManager.AddPasswordAsync(user, pwdUpdateDto.NewPwd);
 
             // Reset-NewPwd job failed
@@ -1080,6 +1091,7 @@ public class MyAccountService : IMyAccountService
             }
 
             serviceResponse.Data = userProfileDto;
+            serviceResponse.Data.HasPassword = user.PasswordHash != null;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been updated successfully";
         }
@@ -1124,7 +1136,8 @@ public class MyAccountService : IMyAccountService
                 DateOfBirth = user.DateOfBirth,
                 PhoneNumber = user.PhoneNumber,
                 Gender = user.Gender,
-                Country = user.Country
+                Country = user.Country,
+                HasPassword = user.PasswordHash != null
             };
 
             // Task successful

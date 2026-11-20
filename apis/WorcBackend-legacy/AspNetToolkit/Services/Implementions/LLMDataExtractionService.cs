@@ -232,7 +232,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 is_json_output = llmRequest.IsJsonOutput,
                 json_schema = llmRequest.JsonSchema,
                 max_output_tokens = llmRequest.MaxOutputTokens,
-                is_byok_enabled = llmRequest.IsBYOKEnabled,
                 credential_name = llmRequest.CredentialName,
                 temperature = llmRequest.Temperature,
                 top_p = llmRequest.TopP,
@@ -240,8 +239,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 ref_type = llmRequest.RefType,
                 ref_id = llmRequest.RefId,
                 ref_name = llmRequest.RefName,
-                action = llmRequest.Action,
-                agent_name = llmRequest.AgentName
+                action = llmRequest.Action
             };
 
             // Add authorization header using the JWT

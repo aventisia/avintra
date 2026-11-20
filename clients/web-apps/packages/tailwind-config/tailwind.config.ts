@@ -139,6 +139,8 @@ const config = {
         line: {
           DEFAULT: withAlpha("var(--line)"),
           strong: withAlpha("var(--line-strong)"),
+          field: withAlpha("var(--line-field)"),
+          "field-hover": withAlpha("var(--line-field-hover)"),
         },
         ink: {
           DEFAULT: withAlpha("var(--ink)"),

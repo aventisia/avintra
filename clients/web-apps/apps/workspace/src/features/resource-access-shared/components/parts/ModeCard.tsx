@@ -1,4 +1,10 @@
-import { cn } from "@avplatform/ui/lib";
+import {
+  OPTION_CARD,
+  OPTION_CARD_FOCUS,
+  OPTION_CARD_IDLE,
+  OPTION_CARD_SELECTED,
+  cn,
+} from "@avplatform/ui/lib";
 import { BuildingsIcon, ShieldCheckIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 
@@ -36,10 +42,10 @@ export const ModeCard = ({
       data-autofocus={autoFocusTarget || undefined}
       onClick={() => onSelect(mode)}
       className={cn(
-        "flex flex-col gap-3 rounded-md p-4 text-left outline-none transition-[background-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
-        isChecked
-          ? "bg-focus/[0.06] ring-1 ring-focus"
-          : "bg-popover ring-1 ring-border hover:bg-hover hover:ring-line-strong",
+        OPTION_CARD,
+        OPTION_CARD_FOCUS,
+        "flex flex-col gap-3 p-4 text-left",
+        isChecked ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
       )}
     >
       <span className="flex items-center justify-between">
@@ -54,7 +60,7 @@ export const ModeCard = ({
         <span
           className={cn(
             "grid size-[18px] place-items-center rounded-full transition-colors duration-200",
-            isChecked ? "bg-focus" : "bg-surface ring-[1.5px] ring-inset ring-line-strong",
+            isChecked ? "bg-focus" : "bg-surface ring-[1.5px] ring-inset ring-line-field",
           )}
         >
           <motion.span

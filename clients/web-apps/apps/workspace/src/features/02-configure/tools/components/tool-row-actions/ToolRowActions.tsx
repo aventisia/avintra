@@ -14,6 +14,7 @@ import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { getToolDetailsPath } from "../../utils/tool-details-path.util";
 import { ToolRowDeleteAction } from "./ToolRowDeleteAction";
+import { ToolRowToggleEnabledAction } from "./ToolRowToggleEnabledAction";
 
 type ToolRowActionsProps = {
   rowId: string;
@@ -22,6 +23,7 @@ type ToolRowActionsProps = {
   isTenantWideAccess: boolean;
   isResourceAccessRestricted: boolean;
   isPlatformTool?: boolean;
+  isEnabled?: boolean;
 };
 
 export const ToolRowActions = ({
@@ -31,9 +33,9 @@ export const ToolRowActions = ({
   isTenantWideAccess,
   isResourceAccessRestricted,
   isPlatformTool = false,
+  isEnabled = false,
 }: ToolRowActionsProps) => {
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
-  // Get the query key used to invalidate the merged tools list after a mutation
   const { queryKey } = useTableTab();
   const navigate = useNavigate();
 
@@ -44,6 +46,8 @@ export const ToolRowActions = ({
         Icon={ArrowUpRightIcon}
         onClick={() => navigate(getToolDetailsPath(rowId, name, isPlatformTool))}
       />
+
+      {isPlatformTool && <ToolRowToggleEnabledAction toolId={rowId} isEnabled={isEnabled} />}
 
       {!isPlatformTool && actions?.update && (
         <CrudRowAction rowId={rowId} crudAction="update" entity="tool" />
@@ -68,12 +72,16 @@ export const ToolRowActions = ({
         />
       )}
 
-      <DropdownMenuSeparator />
+      {!isPlatformTool && (
+        <>
+          <DropdownMenuSeparator />
 
-      {!isPlatformTool && resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
+          {resourceActions.delete && <ToolRowDeleteAction rowId={rowId} />}
 
-      {!isPlatformTool && accessLevel !== ResourceAccessTypeEnum.Owner && (
-        <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+          {accessLevel !== ResourceAccessTypeEnum.Owner && (
+            <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />
+          )}
+        </>
       )}
     </TableCNRowActionsMenu>
   );

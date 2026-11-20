@@ -3,7 +3,7 @@ import { type Dispatch, type SetStateAction, forwardRef, useState } from "react"
 
 import { Input, type InputProps } from "@/ui/components";
 import { Badge } from "@/ui/components/badge";
-import { cn } from "@/ui/lib";
+import { FIELD_CONTAINER, FIELD_CONTAINER_DISABLED, cn } from "@/ui/lib";
 
 type TagInputProps = InputProps & {
   value: string[];
@@ -25,10 +25,9 @@ const TagInput = forwardRef<HTMLInputElement, TagInputProps>(
     return (
       <div
         className={cn(
-          "flex min-h-8 flex-wrap items-center gap-1.5 rounded-md border border-line-strong bg-surface p-1 text-body text-ink transition-[border-color,box-shadow] duration-[120ms] ease-out focus-within:border-focus focus-within:ring-[3px] focus-within:ring-focus/[0.28] motion-reduce:transition-none",
-          disabled
-            ? "cursor-not-allowed border-line bg-sunken text-muted-foreground"
-            : "cursor-auto",
+          FIELD_CONTAINER,
+          "flex min-h-8 flex-wrap items-center gap-1.5 p-1 text-body",
+          disabled ? FIELD_CONTAINER_DISABLED : "cursor-auto",
         )}
       >
         {value.map((item, index) => (

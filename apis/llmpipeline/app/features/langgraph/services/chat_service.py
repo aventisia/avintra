@@ -43,7 +43,10 @@ from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.langgraph.tools.tool_config_utils import expand_tool_config
 from app.features.langgraph.tools.tool_resolver import (
     register_configured_custom_tools,
+    resolve_configured_platform_tools,
 )
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
+from app.features.litellm.core.credentials import is_byok
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
     LLMChunkResponse,
@@ -96,10 +99,17 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
-            await self._load_custom_tools(request, user, db_session)
+            claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
+            await self._load_platform_tools(
+                request,
+                user,
+                db_session,
+                claimed_roots,
+            )
 
         graph = self._graph(
             request=request,
@@ -172,10 +182,17 @@ class ChatService:
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
 
-        # Load custom tools and custom skills from DB before building the graph
+        # IMPORTANT NOTE: platform resolution rewrites request.tool_config and must run
+        # before the graph is built for this turn.
         if db_session is not None:
-            await self._load_custom_tools(request, user, db_session)
+            claimed_roots = await self._load_custom_tools(request, user, db_session)
             await self._load_custom_skills(user, db_session)
+            await self._load_platform_tools(
+                request,
+                user,
+                db_session,
+                claimed_roots,
+            )
 
         graph = self._graph(
             request=request,
@@ -437,8 +454,14 @@ class ChatService:
             )
         else:
             if db_session is not None:
-                await self._load_custom_tools(request, user, db_session)
+                claimed_roots = await self._load_custom_tools(request, user, db_session)
                 await self._load_custom_skills(user, db_session)
+                await self._load_platform_tools(
+                    request,
+                    user,
+                    db_session,
+                    claimed_roots,
+                )
 
             graph = self._graph(
                 request=request,
@@ -956,18 +979,41 @@ class ChatService:
         request: LLMRequest,
         user: User,
         db_session: AsyncSession,
-    ) -> None:
+    ) -> set[str]:
         """Load the request's configured custom tools and register them.
 
         Delegates to the shared resolver so the realtime voice bridge loads the
         same tools with the same environment and space scoping.
+
+        Returns the casefolded names of the custom store rows that were
+        selected; platform resolution lets those win a shared name.
         """
 
-        await register_configured_custom_tools(
+        return await register_configured_custom_tools(
             request,
             user,
             db_session,
             self.tool_registry,
+        )
+
+    async def _load_platform_tools(
+        self,
+        request: LLMRequest,
+        user: User,
+        db_session: AsyncSession,
+        custom_claimed_roots: set[str],
+    ) -> None:
+        """Resolve platform candidates against the tenant's library catalog.
+
+        IMPORTANT NOTE: resolution rewrites request.tool_config in place, so it must
+        run before the graph is built for this turn.
+        """
+
+        await resolve_configured_platform_tools(
+            request,
+            user,
+            db_session,
+            custom_claimed_roots,
         )
 
     async def _load_custom_skills(
@@ -1312,7 +1358,7 @@ class ChatService:
         A client that lost the approval widget must not dead-end the thread:
         pending calls are denied (never executed) and the new message proceeds.
         Returns the frames to emit and whether the pause was cleared. When it
-        was not cleared the caller MUST abort the new turn — invoking a graph
+        was not cleared the caller MUST abort the new turn â€” invoking a graph
         with a pending interrupt re-enters the pause.
 
         IMPORTANT NOTE: the auto-deny continuation is persisted silently (it
@@ -1513,7 +1559,6 @@ class ChatService:
             stream=request.stream,
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
-            is_byok_enabled=request.is_byok_enabled,
             credential_name=request.credential_name,
             error=None,
             conversation_id=request.conversation_id,
@@ -1571,17 +1616,21 @@ class ChatService:
             "output_token_details", {}
         ).get("reasoning", 0)
 
-        if (
-            self.credit_usage_service
-            and not request.is_byok_enabled
-            and not request.credential_name
-        ):
-            self.credit_usage_service.post_usage(
-                request=request,
-                response=response,
-                jwt=jwt,
-                space_id=space_id,
-            )
+        if self.credit_usage_service:
+            if is_byok(request.credential_name):
+                self.credit_usage_service.post_byok_usage(
+                    request=request,
+                    response=response,
+                    jwt=jwt,
+                    space_id=space_id,
+                )
+            elif not agent_has_fixed_credits(request.ref_id, jwt):
+                self.credit_usage_service.post_usage(
+                    request=request,
+                    response=response,
+                    jwt=jwt,
+                    space_id=space_id,
+                )
 
         return response
 

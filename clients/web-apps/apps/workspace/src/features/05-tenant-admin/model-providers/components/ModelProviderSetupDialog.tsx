@@ -1,7 +1,7 @@
 import { Switch } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { crudDialogFieldClasses } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import {
   Select,
   SelectContent,
@@ -160,14 +160,21 @@ export const ModelProviderSetupDialog = () => {
 
     if (!credentialName && !credentialId) return;
 
-    const sendEnabledModels = config?.enabledModels != null || enabledModels.length > 0;
+    const enabledModelsToSave = enabledModelIds.map((modelId): EnabledModelDto => {
+      const storedCapability = enabledModels.find((m) => m.modelId === modelId)?.capability;
+      const catalogCapability = providerModels.find((m) => m.id === modelId)?.capability;
+      return {
+        modelId,
+        capability: storedCapability ?? toModelCapability(catalogCapability),
+      };
+    });
 
     upsertMutation.mutate({
       providerType: provider.value,
       credentialName,
       credentialId,
       enabledModelIds,
-      enabledModels: sendEnabledModels ? enabledModels : undefined,
+      enabledModels: enabledModelsToSave,
       isDisabled,
     });
   };
@@ -317,7 +324,12 @@ export const ModelProviderSetupDialog = () => {
             </div>
           ) : (
             <>
-              <div className="relative flex h-control-lg items-center rounded-md bg-popover ring-1 ring-border transition-shadow focus-within:ring-focus">
+              <div
+                className={cn(
+                  FIELD_CONTAINER,
+                  "relative flex h-control-lg items-center bg-popover",
+                )}
+              >
                 <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 size-4 text-muted-foreground" />
                 <input
                   value={modelSearch}

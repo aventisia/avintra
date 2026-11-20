@@ -211,7 +211,6 @@ class VoiceCatalogService:
         try:
             resolution = resolve_credentials(
                 "elevenlabs",
-                bool(cleaned),
                 cleaned or None,
                 user,
             )

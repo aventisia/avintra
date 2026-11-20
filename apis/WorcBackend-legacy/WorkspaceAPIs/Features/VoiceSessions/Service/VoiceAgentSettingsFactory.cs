@@ -125,8 +125,7 @@ public static class VoiceAgentSettingsFactory
         {
             Provider = GetString(config, "provider"),
             Model = GetString(config, "model"),
-            CredentialName = ReadCredential(config),
-            IsByokEnabled = GetBool(config, "is_byok_enabled") == true,
+            CredentialName = CredentialReferenceUtil.Resolve(config),
             Temperature = GetDouble(config, "temperature") ?? 1,
             TopP = GetDouble(config, "top_p") ?? 1,
             MaxOutputTokens = GetInt(config, "max_output_tokens"),
@@ -179,7 +178,7 @@ public static class VoiceAgentSettingsFactory
             tools.Add(new VoiceToolSettingsDto
             {
                 Tool = toolName,
-                CredentialName = ReadCredential(tool),
+                CredentialName = CredentialReferenceUtil.Resolve(tool),
                 Actions = actions,
             });
         }
@@ -276,12 +275,6 @@ public static class VoiceAgentSettingsFactory
             return stringValue;
 
         return value.ToString();
-    }
-
-    private static string? ReadCredential(JsonNode? node)
-    {
-        var credentialName = GetString(node, "credential_name");
-        return !string.IsNullOrWhiteSpace(credentialName) ? credentialName : GetString(node, "credential_id");
     }
 
     private static bool? GetBool(JsonNode? node, string key)

@@ -15,7 +15,6 @@ type VoicePreviewRequest = {
   language?: string;
   speed?: number;
   credentialName?: string;
-  isByokEnabled?: boolean;
   pronunciations?: Array<{ term: string; pronunciation: string }>;
 };
 
@@ -32,7 +31,6 @@ export const useVoicePreview = ({
   language,
   speed,
   credentialName,
-  isByokEnabled,
   pronunciations,
 }: VoicePreviewRequest) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -93,12 +91,10 @@ export const useVoicePreview = ({
           pronunciations: pronunciations && pronunciations.length > 0 ? pronunciations : null,
           stream: false,
           credential_name: credentialName || null,
-          is_byok_enabled: isByokEnabled ?? false,
           ref_type: "",
           ref_id: "",
           ref_name: "",
           action: "voice-preview",
-          agent_name: null,
         });
 
         if (audioRef.current !== audio) return;
@@ -128,7 +124,6 @@ export const useVoicePreview = ({
     language,
     speed,
     credentialName,
-    isByokEnabled,
     pronunciations,
     stopPreview,
   ]);

@@ -140,6 +140,15 @@ public class AuthService : IAuthService
                 return serviceResponse;
             }
 
+            // A user linked to a social provider is offered it first, whether or not a password exists
+            var socialLoginProvider = await SocialAuthHelpers.GetLinkedProviderAsync(_userManager, user);
+            if (socialLoginProvider != null
+                && (!SocialAuthHelpers.IsSocialOffered(_environmentConfig)
+                    || !SocialAuthHelpers.IsSocialConfigured(_environmentConfig, SocialAuthHelpers.ParseProvider(socialLoginProvider))))
+            {
+                socialLoginProvider = null;
+            }
+
             // Variable to hold tenant information for the response
             TenantInfoDto? tenantInfoDto = null;
 
@@ -171,7 +180,9 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = user.Tenant.IsDefault ? "default" : user.Tenant.Name,
                     TenantId = user.Tenant.Id,
-                    SSOConfigJson = azureLoginUrl
+                    SSOConfigJson = azureLoginUrl,
+                    SocialLoginProvider = socialLoginProvider,
+                    HasPassword = user.PasswordHash != null
                 };
             }
             else
@@ -181,7 +192,9 @@ public class AuthService : IAuthService
                     UserName = user.UserName,
                     Name = "NA",
                     TenantId = Guid.Empty,
-                    SSOConfigJson = null
+                    SSOConfigJson = null,
+                    SocialLoginProvider = socialLoginProvider,
+                    HasPassword = user.PasswordHash != null
                 };
             }
 
@@ -667,8 +680,8 @@ public class AuthService : IAuthService
             // Create 6 secret code
             string secretCode = new Random().Next(100000, 999999).ToString();
 
-            // Delete VerificationCodes (all expired + active for current userName and userAgent)
-            await _authHelperService.DeleteVerificationCodes(userName, userAgent);
+            // Delete VerificationCodes (all expired + active of this type for current userName and userAgent)
+            await _authHelperService.DeleteVerificationCodes(userName, userAgent, requestType);
 
             // Create code's ExpiresOn
             var codeExpiresOn = DateTimeOffset.UtcNow.AddMinutes(

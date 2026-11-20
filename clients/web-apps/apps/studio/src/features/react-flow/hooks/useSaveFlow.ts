@@ -81,6 +81,8 @@ export const useSaveFlow = () => {
       // that save's own onSuccess baselines the fresher snapshot.
       if (!persisted || persisted.sequence !== saveSequenceRef.current) return;
 
+      useReactFlowExtStore.getState().setLastSaveFailed(false);
+
       // Capture the exact state that was persisted to the database
       useReactFlowExtStore.getState().setSavedSnapshot(persisted.snapshot);
 
@@ -112,6 +114,7 @@ export const useSaveFlow = () => {
       });
     },
     onError: (error) => {
+      useReactFlowExtStore.getState().setLastSaveFailed(true);
       toast.error(error.toString());
     },
     onSettled: () => {

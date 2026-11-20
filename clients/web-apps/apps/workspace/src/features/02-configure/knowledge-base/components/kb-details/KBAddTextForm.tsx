@@ -25,6 +25,7 @@ import {
 import { kbAddTextSchema } from "../../constants/kb-add-text-zod-schema";
 import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 import { useDefineKBAddTextForm } from "../../hooks/useDefineKBAddTextForm";
+import { assertEmbeddingCredentialAvailable } from "../../utils/embedding-credential-guard.util";
 import FileUploadDisclaimer from "./FileUploadDisclaimer";
 
 /**
@@ -72,6 +73,8 @@ export const KBAddTextForm = ({
       if (!knowledgeBase) {
         throw new Error("Knowledge base configuration is not available");
       }
+
+      assertEmbeddingCredentialAvailable(knowledgeBase);
 
       const fileName = generateFileNameFromText(data.textContent, 5);
 

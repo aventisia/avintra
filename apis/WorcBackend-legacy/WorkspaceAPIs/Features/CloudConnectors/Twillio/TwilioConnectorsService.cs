@@ -1,5 +1,6 @@
 using Microsoft.CSharp.RuntimeBinder;
 using Twilio;
+using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 namespace WorkspaceAPIs.Features.CloudConnectors.Twilio;
@@ -31,14 +32,18 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             StatusCode = 400
         };
 
+        string? accountSid = null;
+        string? authToken = null;
         try
         {
             // Get AccountSid and AuthToken 
-            var twilioCreds = await GetTwilioAccountSidAndAuthTokenAsync(cloudConnectorReqDto.CredentialName);
-            if (twilioCreds == null)
+            var twilioCredential = await GetTwilioAccountSidAndAuthTokenAsync(cloudConnectorReqDto.CredentialName);
+            accountSid = twilioCredential.AccountSid;
+            authToken = twilioCredential.AuthToken;
+            if (twilioCredential.Failure != null)
             {
                 _logger.LogWarning("Failed to obtain Twilio credentials for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
-                serviceResponse.Message = "Failed to retrieve Twilio AccountSid and AuthToken.";
+                serviceResponse.Message = twilioCredential.Failure;
                 return serviceResponse;
             }
 
@@ -51,7 +56,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             }
 
             // Take action as per enum
-            var twilioResponse = await TakeTwilioActionAsync(twilioAction, cloudConnectorReqDto.Payload, twilioCreds.Value.AccountSid, twilioCreds.Value.AuthToken
+            var twilioResponse = await TakeTwilioActionAsync(twilioAction, cloudConnectorReqDto.Payload, accountSid!, authToken!
             );
 
             if (twilioResponse == null)
@@ -89,43 +94,66 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             }
 
         }
+        catch (ApiException ex) when (ex.Status is 401 or 403)
+        {
+            _logger.LogWarning("Twilio rejected credential {CredentialName} with status {Status}.", CloudConnectorLogRedactor.SanitizeForLog(cloudConnectorReqDto.CredentialName), ex.Status);
+            serviceResponse.StatusCode = 400;
+            serviceResponse.Message = CredentialResolution.ToLogMessage(
+                CredentialResolutionReason.RejectedUpstream,
+                cloudConnectorReqDto.CredentialName,
+                CloudConnectorLogRedactor.RedactProviderReason(ex.Message, authToken));
+            serviceResponse.Data.Response = new
+            {
+                Error = CloudConnectorLogRedactor.RedactProviderReason(ex.Message, authToken),
+                AuthFailed = true
+            };
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while invoking Twilio connector.");
             serviceResponse.StatusCode = 500;
-            serviceResponse.Message = $"Error: {ex.Message}";
-            serviceResponse.Data.Response = $"Error: {ex.Message}";
+            serviceResponse.Message = $"Error: {CloudConnectorLogRedactor.RedactProviderReason(ex.Message, authToken)}";
+            serviceResponse.Data.Response = serviceResponse.Message;
         }
 
         return serviceResponse;
     }
 
     // Get twilio auth token and accountSid.
-    private async Task<(string AccountSid, string AuthToken)?> GetTwilioAccountSidAndAuthTokenAsync(string credentialName)
+    private async Task<(string? AccountSid, string? AuthToken, string? Failure)> GetTwilioAccountSidAndAuthTokenAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultCredentialService.GetVaultCredentialAsync(credentialName);
-        if (vaultCredential == null)
+        var resolution = await _cloudConnectorsVaultCredentialService.ResolveVaultCredentialAsync(credentialName);
+        if (!resolution.IsSuccess)
         {
-            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
-            return null;
+            return (null, null, resolution.FailureMessage);
         }
 
-        if (vaultCredential.Data == null ||
-            !vaultCredential.Data.TryGetValue("AccountSid", out var sidValue) ||
-            !vaultCredential.Data.TryGetValue("AuthToken", out var tokenValue))
+        var credentialData = resolution.Credential!.Data;
+        if (credentialData == null ||
+            !credentialData.TryGetValue("AccountSid", out var sidValue) ||
+            !credentialData.TryGetValue("AuthToken", out var tokenValue))
         {
-            _logger.LogWarning("No 'AccountSid' or 'AuthToken' found in vault credential Data for Name: {CredentialName}", credentialName);
-            return null;
+            var missingField = credentialData == null || !credentialData.ContainsKey("AccountSid") ? "AccountSid" : "AuthToken";
+            _logger.LogWarning("No '{Field}' value in vault credential Data for Name: {CredentialName}", missingField, CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, missingField));
         }
+
         string? accountSid = sidValue?.ToString();
         string? authToken = tokenValue?.ToString();
 
-        if (string.IsNullOrWhiteSpace(accountSid) || string.IsNullOrWhiteSpace(authToken))
+        if (string.IsNullOrWhiteSpace(accountSid))
         {
-            _logger.LogWarning("AccountSid or AuthToken is null or whitespace for credential Name: {CredentialName}", credentialName);
-            return null;
+            _logger.LogWarning("AccountSid is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "AccountSid"));
         }
-        return (accountSid, authToken);
+
+        if (string.IsNullOrWhiteSpace(authToken))
+        {
+            _logger.LogWarning("AuthToken is null or whitespace for credential Name: {CredentialName}", CloudConnectorLogRedactor.SanitizeForLog(credentialName));
+            return (null, null, CredentialResolution.ToLogMessage(CredentialResolutionReason.MissingValue, credentialName, "AuthToken"));
+        }
+
+        return (accountSid, authToken, null);
     }
 
     //  Take twilio actions as per the enum.
@@ -288,10 +316,16 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             }
         }
 
+        catch (ApiException ex) when (ex.Status is 401 or 403)
+        {
+            // IMPORTANT NOTE: a rejected credential must reach the invoke path, which alone knows the
+            // credential name needed for the execution-log message.
+            throw;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception while sending twilio message");
-            return new { Error = ex.Message };
+            return new { Error = CloudConnectorLogRedactor.RedactProviderReason(ex.Message, authToken) };
         }
     }
 }

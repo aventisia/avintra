@@ -2,7 +2,7 @@ import { CircleIcon } from "@phosphor-icons/react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import * as React from "react";
 
-import { cn } from "@/ui/lib";
+import { CHECKABLE_BORDER, cn } from "@/ui/lib";
 import { type FormFieldSizeType } from "@/ui/types";
 
 const RadioGroup = React.forwardRef<
@@ -24,7 +24,8 @@ const RadioGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "aspect-square shrink-0 rounded-full border-[1.5px] border-line-strong bg-surface text-primary-foreground transition-colors duration-[120ms] ease-out focus:outline-none focus-visible:shadow-focus disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken data-[state=checked]:border-indicator data-[state=checked]:bg-indicator disabled:data-[state=checked]:border-fill disabled:data-[state=checked]:bg-fill disabled:data-[state=checked]:text-muted-foreground motion-reduce:transition-none",
+        CHECKABLE_BORDER,
+        "aspect-square shrink-0 rounded-full border-[1.5px] bg-surface text-primary-foreground transition-colors duration-[120ms] ease-out focus:outline-none focus-visible:shadow-focus disabled:cursor-not-allowed disabled:border-line disabled:bg-sunken data-[state=checked]:border-indicator data-[state=checked]:hover:border-indicator data-[state=checked]:bg-indicator disabled:data-[state=checked]:border-fill disabled:data-[state=checked]:bg-fill disabled:data-[state=checked]:text-muted-foreground motion-reduce:transition-none",
         size === "xs" && "h-3 w-3",
         size === "sm" && "h-3.5 w-3.5",
         size === "base" && "h-4 w-4",

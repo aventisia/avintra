@@ -72,11 +72,11 @@ export const PromptSelect = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="field"
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
+          className={cn("w-full justify-between", sizeClasses[size], className)}
         >
           <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
           <CaretDownIcon className={cn("ml-2 h-4 w-4 opacity-50")} />

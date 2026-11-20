@@ -1,0 +1,28 @@
+meta {
+  name: Social login URL rejects an encoded protocol-relative redirect
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/login-url?provider=Google&redirect=%2F%2Fevil.example%2Fsteal
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("refuses the encoded protocol-relative redirect", function() {
+    expect(res.getBody()).to.contain("The redirect URL is not allowed.");
+  });
+}
+
+docs {
+  > The value is percent-decoded once before it is judged, so an encoded protocol-relative path
+  > (`%2F%2F`), a backslash form (`%2F%5C`) and a control character are refused exactly like their
+  > plain spellings. This is the same rule the accounts app applies after decoding, so the server
+  > never stores a return path the client would later follow off-origin.
+}

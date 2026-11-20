@@ -22,7 +22,6 @@ export type AssistantVoiceContextValue = {
   /** Envelope fields shared with the chat execution request. */
   refId: string;
   refName: string;
-  agentName: string | null;
 };
 
 export const AssistantVoiceContext = createContext<AssistantVoiceContextValue | null>(null);

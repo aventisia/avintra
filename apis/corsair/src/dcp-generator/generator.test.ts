@@ -15,6 +15,8 @@ import path from "node:path";
 import { createCorsair } from "corsair";
 import { plugins } from "../plugins.js";
 import { PLUGIN_DISPLAY_NAMES } from "./plugin-metadata.js";
+import { PLUGIN_DESCRIPTIONS } from "../plugin-descriptions.js";
+import { generateToolMetadata } from "../generate-tool-metadata.js";
 import { humanizeFieldKey } from "./schema-to-fields.js";
 import { generateDcpFiles } from "./index.js";
 
@@ -163,6 +165,54 @@ async function main() {
     assert(unknownIds.length === 0, `PLUGIN_DISPLAY_NAMES has unknown plugin ids: ${unknownIds.join(", ")}`);
     const categoryLabels = appIntegrations.actionCategories.map((c: any) => c.label);
     assert(new Set(categoryLabels).size === categoryLabels.length, "App Integrations has duplicate category labels");
+
+    // 5d. Every installed plugin has a committed description unless its upstream
+    //     text is still generic, and the entries flow into the action selector mapping.
+    const genericUpstreamDescriptionIds = new Set(["googleanalytics"]);
+    for (const id of genericUpstreamDescriptionIds) {
+      assert(pluginIds.has(id), `genericUpstreamDescriptionIds has unknown plugin id '${id}'`);
+      assert(
+        !(id in PLUGIN_DESCRIPTIONS),
+        `plugin '${id}' now has a description; remove it from genericUpstreamDescriptionIds`,
+      );
+    }
+    for (const id of pluginIds) {
+      assert(
+        id in PLUGIN_DESCRIPTIONS || genericUpstreamDescriptionIds.has(id),
+        `PLUGIN_DESCRIPTIONS is missing plugin '${id}'; add its catalog description or list it as generic upstream`,
+      );
+    }
+    for (const id of Object.keys(PLUGIN_DESCRIPTIONS)) {
+      const description = PLUGIN_DESCRIPTIONS[id] ?? "";
+      assert(pluginIds.has(id), `PLUGIN_DESCRIPTIONS has unknown plugin id '${id}'`);
+      assert(description.trim().length > 0, `PLUGIN_DESCRIPTIONS['${id}'] is empty`);
+      assert(
+        !/corsair/i.test(description),
+        `PLUGIN_DESCRIPTIONS['${id}'] exposes Corsair branding`,
+      );
+    }
+    const githubCategory = appIntegrations.actionCategories.find((c: any) => c.label === "GitHub");
+    assert(
+      githubCategory?.description === PLUGIN_DESCRIPTIONS.github,
+      "action selector category does not use the curated plugin description",
+    );
+
+    // 5e. Seeded tools use the curated description, falling back to today's
+    //     "<Provider> connector" text when the catalog has nothing better.
+    const generatedTools = await generateToolMetadata(plugins, corsair);
+    const githubTool = generatedTools.find((tool) => tool.pluginId === "github");
+    assert(
+      githubTool?.description === PLUGIN_DESCRIPTIONS.github,
+      "generated tool does not use the curated plugin description",
+    );
+    const uncoveredId = [...pluginIds].find((id) => !(id in PLUGIN_DESCRIPTIONS));
+    if (uncoveredId) {
+      assert(
+        generatedTools.find((tool) => tool.pluginId === uncoveredId)?.description ===
+          `${PLUGIN_DISPLAY_NAMES[uncoveredId]} connector`,
+        "generated tool without a curated description lost its fallback text",
+      );
+    }
 
     const catalog = JSON.parse(fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"));
     const microsoftEntries = catalog.filter((entry: any) =>

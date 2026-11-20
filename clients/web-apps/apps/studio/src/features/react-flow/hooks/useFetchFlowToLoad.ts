@@ -7,7 +7,6 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { normalizeChatAgentGraph } from "@/features/react-flow/utils/chat-agent-graph.util";
 import { normalizeVoiceAgentGraph } from "@/features/react-flow/utils/voice-agent-graph.util";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
@@ -68,8 +67,6 @@ export const useFetchFlowToLoad = () => {
   // Get react flow hook for fitView / setViewport
   const { fitView, setViewport } = useReactFlow();
 
-  const { isImport } = useImportStore(useShallow((state) => ({ isImport: state.upload })));
-
   // Ensures hydration runs only once
   const hasHydratedRef = useRef(false);
 
@@ -103,7 +100,7 @@ export const useFetchFlowToLoad = () => {
 
   // One-time hydration from server data
   useEffect(() => {
-    if (!data?.data || (hasHydratedRef.current && !!isImport)) return;
+    if (!data?.data || hasHydratedRef.current) return;
 
     hasHydratedRef.current = true;
 

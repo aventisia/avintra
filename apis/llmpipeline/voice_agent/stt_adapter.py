@@ -73,7 +73,6 @@ def _build_streaming_stt(request: STTRequest, user: User) -> stt.STT:
     try:
         credentials = resolve_credentials(
             request.provider,
-            request.is_byok_enabled,
             request.credential_name,
             user,
         )
@@ -109,12 +108,10 @@ def build_stt_request(claims: VoiceJobClaims, agent_settings: dict) -> STTReques
         input="",
         language=(agent_settings.get("ttsVoice") or {}).get("language"),
         credential_name=stt_settings.get("credentialName") or None,
-        is_byok_enabled=bool(stt_settings.get("isByokEnabled")),
         ref_type="Agent",
         ref_id=str(claims.flow_id),
         ref_name=agent_name,
         action="AgentExecution",
-        agent_name=agent_name or None,
     )
 
 

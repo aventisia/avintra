@@ -70,4 +70,12 @@ public interface IToolService
     /// <param name="isActive"><c>true</c> to activate; <c>false</c> to deactivate.</param>
     /// <returns>The updated tool.</returns>
     Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive);
+
+    /// <summary>
+    /// Enables or disables a library tool for the current tenant.
+    /// </summary>
+    /// <param name="toolId">The library tool identifier.</param>
+    /// <param name="isEnabled"><c>true</c> to enable; <c>false</c> to disable.</param>
+    /// <returns>The updated library tool.</returns>
+    Task<ServiceResponse<ToolDto>> SetToolEnabledStateAsync(Guid toolId, bool isEnabled);
 }

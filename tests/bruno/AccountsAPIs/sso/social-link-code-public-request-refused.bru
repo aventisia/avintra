@@ -1,0 +1,35 @@
+meta {
+  name: Create code refuses the internal social link type
+  type: http
+  seq: 21
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/create-code
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "someone@example.com",
+    "requestType": "LinkSocialLogin"
+  }
+}
+
+tests {
+  test("responds with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+
+  test("names the request type as the reason", function() {
+    expect(res.getBody()).to.contain("Request type is not allowed");
+  });
+}
+
+docs {
+  > The one-time account-link code is minted only by the social callback, because only that path holds the
+  > provider identity the code confirms. The public create-code endpoint therefore refuses `LinkSocialLogin`
+  > with the same 403 it answers for `TwoFA` and `UpdatePwd`, so an unauthenticated caller cannot send
+  > unsolicited "confirm your code" emails for an arbitrary address.
+}

@@ -165,4 +165,4 @@ const RightContainer = (props: RightContainerProps) => {
   );
 };
 
-export { RightContainer };
+export { RightContainer, type RightContainerProps };

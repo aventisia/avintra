@@ -2,16 +2,21 @@ import { cn } from "@/ui/lib";
 
 interface LoadingSpinnerProps {
   className?: string;
+  /** Accessible name announced while the spinner shows. */
+  label?: string;
 }
 
 /**
  * LoadingSpinner component
  * @param {string} className - Additional classes for the spinner
+ * @param {string} label - Accessible name announced while the spinner shows
  * @returns {JSX.Element} LoadingSpinner component
  */
-function LoadingSpinner({ className = "h-8 w-8" }: LoadingSpinnerProps) {
+function LoadingSpinner({ className = "h-8 w-8", label }: LoadingSpinnerProps) {
   return (
     <svg
+      role={label ? "status" : undefined}
+      aria-label={label}
       className={cn("origin-center animate-spin motion-reduce:animate-none", className)}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"

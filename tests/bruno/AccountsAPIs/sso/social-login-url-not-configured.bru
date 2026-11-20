@@ -1,0 +1,28 @@
+meta {
+  name: Social login URL needs provider credentials
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/social/login-url?provider=Google
+  body: none
+  auth: none
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("says social sign-in is not configured", function() {
+    expect(res.getBody()).to.contain("Social sign-in is not configured.");
+  });
+}
+
+docs {
+  > Precondition: the deployment runs WITHOUT `GOOGLE_OAUTH_CLIENT_ID` and
+  > `GOOGLE_OAUTH_CLIENT_SECRET`. That is the default local stack state; the buttons still render
+  > and this provider answers "not configured" until the pair is set. With the two variables set,
+  > this request returns 200 with the authorization URL instead.
+}

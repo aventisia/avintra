@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DotSeparator, EmptyState } from "@avplatform/ui";
-import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import {
-  DotsNineIcon,
+  CheckIcon,
+  KeyIcon,
+  LightningIcon,
   PencilSimpleIcon,
+  PlusIcon,
   TrashIcon,
   WarningIcon,
   WrenchIcon,
+  XIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import { CustomToolIcon } from "@/features/action-selector/components/CustomToolIcon";
@@ -24,16 +26,22 @@ import { useRegisterPendingFieldFlush } from "../../hooks/useRegisterFormFlush";
 import { useUsableToolOperations, useUsableTools } from "../../hooks/useTools.hook";
 import { APPROVAL_OPTIONS } from "../../stores/platform-tools";
 import { normalizeToolOperations } from "../../utils/normalize-tool-operations.util";
-import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
+import { ConfigFieldCard, ConfigFieldCount } from "./ConfigFieldCard";
 import { VaultCredentialSelectField } from "./VaultCredentialSelectField";
 
 type ToolsConfigFieldProps = {
   name: string;
   /** Locks the approval picker to auto; voice calls cannot pause for approval. */
   lockApprovalToAuto?: boolean;
+  /** Renders the body without its card, for a host that frames it. */
+  hideGroup?: boolean;
 };
 
-export function ToolsConfigField({ name, lockApprovalToAuto = false }: ToolsConfigFieldProps) {
+export function ToolsConfigField({
+  name,
+  lockApprovalToAuto = false,
+  hideGroup = false,
+}: ToolsConfigFieldProps) {
   const { control, setValue, getValues } = useFormContext();
 
   const defaultApproval = lockApprovalToAuto ? "auto" : "human";
@@ -53,6 +61,8 @@ export function ToolsConfigField({ name, lockApprovalToAuto = false }: ToolsConf
   const [initialEditTool, setInitialEditTool] = useState<string | null>(null);
 
   const [duplicateAttempted, setDuplicateAttempted] = useState<boolean>(false);
+
+  const [isComposerOpen, setIsComposerOpen] = useState(false);
 
   const fieldNames = useMemo(
     () => ({
@@ -213,6 +223,7 @@ export function ToolsConfigField({ name, lockApprovalToAuto = false }: ToolsConf
     }
 
     handleResetField();
+    setIsComposerOpen(false);
   };
 
   // IMPORTANT NOTE: a flush must commit an in-progress builder entry at panel-close, node-switch and before Save boundaries; incomplete or edit-mode entries are intentionally skipped.
@@ -268,171 +279,311 @@ export function ToolsConfigField({ name, lockApprovalToAuto = false }: ToolsConf
     });
   };
 
-  return (
-    <GroupedFieldsWrapper groupName="Configure tools">
-      <div className="space-y-4">
-        <SearchableSelectField
-          name={fieldNames.tool}
-          label="Select tool"
-          selectOptions={toolOptions}
-          size="sm"
-          placeholder="Select tool"
-          isLoading={isUsableToolsLoading}
-          disabled={isUsableToolsLoading}
-          fallbackIcon={<WrenchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />}
-        />
+  const isEditing = editingIndex !== null;
+  const showComposer = fields.length === 0 || isComposerOpen || isEditing || isFieldDirty;
 
-        <VaultCredentialSelectField
-          name={fieldNames.credential_name}
-          label="Select credential"
-          size="sm"
-          modelProvider={credentialType}
-          disabled={!currentTool || isToolOperationsLoading}
-          placeholder="Select credential"
-        />
+  const closeComposer = () => {
+    handleResetField();
+    setIsComposerOpen(false);
+  };
 
-        <MultiSelectField
-          name={fieldNames.actions}
-          label="Select actions"
-          options={availableActionsForTool}
-          placeholder="Select actions"
-          isRequired
-          fieldSize="sm"
-          disabled={!currentTool || isToolOperationsLoading || availableActionsForTool.length === 0}
-          actionSelect={{
-            options: approvalOptions,
-            value: currentApproval,
-            onChange: (val) => setValue(fieldNames.approval, val, { shouldValidate: true }),
-          }}
-        />
+  const toolList = fields.length > 0 && (
+    <ul aria-label="Configured tools" className="space-y-2">
+      {fields.map((field: any, index) => {
+        const toolConfigInfo = toolByName.get(field.tool);
+        const actionNames: string[] = field.actions.map((a: any) => a.action);
+        const approval = field.actions[0]?.approval || defaultApproval;
+        const credentialName = field.credential_name || "";
+        const shownActions = actionNames.slice(0, 4);
+        const extraCount = actionNames.length - shownActions.length;
+        const isRowEditing = editingIndex === index;
 
-        {currentTool && !isToolOperationsLoading && availableActionsForTool.length === 0 && (
-          <p className="text-2xs ml-1.5 font-medium text-muted-foreground">
-            No operations found for this tool.
-          </p>
-        )}
-
-        {duplicateAttempted && isDuplicate && (
-          <p className="text-2xs ml-1.5 font-medium text-destructive">
-            A configuration for this tool with{" "}
-            <span className="capitalize">'{currentApproval}'</span> approval already exists.
-          </p>
-        )}
-
-        <div className="flex gap-2 items-center justify-end ">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="text-primary hover:text-primary bg-accent hover:bg-hover"
-            onClick={handleSaveConfig}
-            disabled={isAddDisabled}
+        return (
+          <li
+            key={field.id}
+            className={cn(
+              "group/tool flex items-start gap-3 rounded-md border bg-surface p-3 transition-colors duration-150 animate-in fade-in",
+              isRowEditing
+                ? "border-primary shadow-[inset_0_0_0_1px_var(--primary-base)]"
+                : "border-line hover:border-line-strong/60",
+            )}
           >
-            {editingIndex !== null ? "Save changes" : "Add tool"}
-          </Button>
+            <span className="grid size-8 shrink-0 place-items-center rounded-md bg-sunken ring-1 ring-inset ring-line">
+              <CustomToolIcon icon={toolConfigInfo?.icon} iconUrl={toolConfigInfo?.iconUrl} />
+            </span>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleResetField}
-            className="shrink-0"
-          >
-            {editingIndex !== null ? "Cancel" : "Reset"}
-          </Button>
-        </div>
-      </div>
-
-      <hr className="my-6 border-border" />
-
-      <div className="space-y-2.5">
-        {fields.length === 0 ? (
-          <EmptyState
-            primaryMessage="No tools added"
-            Icon={DotsNineIcon}
-            secondaryMessage="You have no tool configurations added."
-          />
-        ) : (
-          fields.map((field: any, index) => {
-            const toolConfigInfo = toolByName.get(field.tool);
-            const actionNames = field.actions.map((a: any) => a.action);
-            const approval = field.actions[0]?.approval || defaultApproval;
-            const credentialName = field.credential_name || "";
-
-            const displayActions = actionNames.slice(0, 3).join(", ");
-            const extraCount = actionNames.length > 3 ? actionNames.length - 3 : 0;
-
-            return (
-              <div
-                key={field.id}
-                className={cn(
-                  "flex items-center justify-between rounded-lg border bg-background p-2.5  transition-colors",
-                  editingIndex === index ? "border-primary " : "border-border",
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                <h4 className="truncate text-body-sm font-semibold text-ink">
+                  {toolConfigInfo?.name || field.tool}
+                </h4>
+                {!toolConfigInfo && !isUsableToolsLoading && (
+                  <span className="flex h-5 items-center gap-1 rounded-sm border border-bad/30 px-1.5 font-mono text-label uppercase text-bad">
+                    <WarningIcon aria-hidden="true" className="size-3" />
+                    Unavailable
+                  </span>
                 )}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted">
-                    <CustomToolIcon icon={toolConfigInfo?.icon} iconUrl={toolConfigInfo?.iconUrl} />
-                  </div>
-                  <div className="flex min-w-0 flex-col">
-                    <div className="flex items-center gap-2">
-                      <h4 className="truncate text-2xs font-medium ">
-                        {toolConfigInfo?.name || field.tool}
-                      </h4>
-                      {!toolConfigInfo && (
-                        <Badge className="shrink-0 gap-1 rounded-full px-2 py-px text-[0.625rem] font-medium bg-destructive/10 text-destructive">
-                          <WarningIcon className="h-3 w-3" />
-                          Unavailable
-                        </Badge>
-                      )}
-                      <Badge className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium  bg-muted text-muted-foreground">
-                        {credentialName}
-                      </Badge>
-                    </div>
-
-                    <div className="mt-0.5 flex items-center gap-1.5 text-[0.65rem] text-muted-foreground">
-                      <p className="truncate">{displayActions}</p>
-                      {extraCount > 0 && (
-                        <span className="shrink-0 rounded bg-muted px-1 py-0.5 text-[9px] font-medium text-muted-foreground">
-                          +{extraCount}
-                        </span>
-                      )}
-                      <DotSeparator className="mx-1" />
-                      <Badge
-                        className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium capitalize "
-                        variant={"outline"}
-                      >
-                        {approval + " Approval"}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="ml-2 flex shrink-0 items-center gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size={"icon7"}
-                    onClick={() => onEditClick(index)}
-                    disabled={editingIndex !== null && editingIndex !== index}
-                  >
-                    <PencilSimpleIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="caution"
-                    size={"icon7"}
-                    onClick={() => onDeleteClick(index)}
-                    disabled={editingIndex === index}
-                  >
-                    <TrashIcon className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                {isRowEditing && (
+                  <span className="flex h-5 items-center rounded-sm border border-[color-mix(in_srgb,var(--primary-base)_32%,transparent)] px-1.5 font-mono text-label uppercase text-primary-text">
+                    Editing
+                  </span>
+                )}
               </div>
-            );
-          })
+
+              <ul aria-label="Actions" className="flex flex-wrap gap-1">
+                {shownActions.map((action) => (
+                  <li
+                    key={action}
+                    className="max-w-full truncate rounded-sm bg-sunken px-1.5 py-0.5 font-mono text-[11.5px] leading-4 text-ink-2"
+                  >
+                    {action}
+                  </li>
+                ))}
+                {extraCount > 0 && (
+                  <li
+                    title={actionNames.slice(shownActions.length).join(", ")}
+                    className="rounded-sm px-1.5 py-0.5 font-mono text-[11.5px] leading-4 text-muted-foreground"
+                  >
+                    +{extraCount} more
+                  </li>
+                )}
+              </ul>
+
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-hint text-muted-foreground">
+                {credentialName && (
+                  <span className="flex min-w-0 items-center gap-1">
+                    <KeyIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                    <span className="truncate">{credentialName}</span>
+                  </span>
+                )}
+                {!lockApprovalToAuto && (
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "size-1.5 rounded-full",
+                        approval === "auto" ? "bg-ok" : "bg-warn",
+                      )}
+                    />
+                    {approval === "auto" ? "Runs automatically" : "Asks a person first"}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-0.5 opacity-70 transition-opacity group-hover/tool:opacity-100 group-focus-within/tool:opacity-100">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon6"
+                aria-label={`Edit ${toolConfigInfo?.name || field.tool}`}
+                onClick={() => onEditClick(index)}
+                disabled={isEditing && !isRowEditing}
+                className="text-muted-foreground"
+              >
+                <PencilSimpleIcon aria-hidden="true" className="size-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon6"
+                aria-label={`Remove ${toolConfigInfo?.name || field.tool}`}
+                onClick={() => onDeleteClick(index)}
+                disabled={isRowEditing}
+                className="text-muted-foreground hover:bg-bad/10 hover:text-bad"
+              >
+                <TrashIcon aria-hidden="true" className="size-3.5" />
+              </Button>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  const composer = showComposer ? (
+    <div className="overflow-hidden rounded-md border border-line bg-surface animate-in fade-in duration-150">
+      <div className="flex items-center gap-2 border-b border-line bg-sunken/50 px-3 py-2">
+        <span className="font-mono text-label uppercase text-muted-foreground">
+          {isEditing ? "Edit" : "New"}
+        </span>
+        <span className="min-w-0 flex-1 truncate text-body-sm font-semibold text-ink">
+          {isEditing
+            ? currentTool || "Tool"
+            : fields.length === 0
+              ? "Give the agent its first tool"
+              : "Add a tool"}
+        </span>
+        {fields.length > 0 && !isEditing && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon6"
+            aria-label="Close"
+            onClick={closeComposer}
+            className="text-muted-foreground"
+          >
+            <XIcon aria-hidden="true" className="size-3.5" />
+          </Button>
         )}
       </div>
-    </GroupedFieldsWrapper>
+
+      <ol className="space-y-3 p-3">
+        <ComposerStep step={1} isDone={Boolean(currentTool)}>
+          <SearchableSelectField
+            name={fieldNames.tool}
+            label="Tool"
+            selectOptions={toolOptions}
+            size="sm"
+            placeholder="Pick a tool"
+            isLoading={isUsableToolsLoading}
+            disabled={isUsableToolsLoading}
+            fallbackIcon={<WrenchIcon className="h-4 w-4 shrink-0 text-muted-foreground" />}
+          />
+        </ComposerStep>
+
+        <ComposerStep step={2} isDone={!requiresCredential || Boolean(currentCredential)}>
+          <VaultCredentialSelectField
+            name={fieldNames.credential_name}
+            label="Credential"
+            size="sm"
+            modelProvider={credentialType}
+            disabled={!currentTool || isToolOperationsLoading}
+            placeholder={requiresCredential ? "Pick a credential" : "Not needed for this tool"}
+          />
+        </ComposerStep>
+
+        <ComposerStep step={3} isDone={currentActions.length > 0} isLast>
+          <MultiSelectField
+            name={fieldNames.actions}
+            label="Actions"
+            options={availableActionsForTool}
+            placeholder="Pick what it may do"
+            isRequired
+            fieldSize="sm"
+            disabled={
+              !currentTool || isToolOperationsLoading || availableActionsForTool.length === 0
+            }
+            actionSelect={
+              lockApprovalToAuto
+                ? undefined
+                : {
+                    options: approvalOptions,
+                    value: currentApproval,
+                    onChange: (val) => setValue(fieldNames.approval, val, { shouldValidate: true }),
+                  }
+            }
+          />
+          {currentTool && !isToolOperationsLoading && availableActionsForTool.length === 0 && (
+            <p className="mt-1.5 text-hint text-muted-foreground">
+              This tool has no actions to offer.
+            </p>
+          )}
+          {lockApprovalToAuto && (
+            <p className="mt-1.5 flex items-center gap-1.5 text-hint text-muted-foreground">
+              <LightningIcon aria-hidden="true" className="size-3.5 shrink-0" />
+              Calls can't pause for approval, so actions run automatically.
+            </p>
+          )}
+        </ComposerStep>
+      </ol>
+
+      {duplicateAttempted && isDuplicate && (
+        <p role="alert" className="px-3 pb-2 text-hint text-bad">
+          {lockApprovalToAuto ? (
+            "This tool is already added. Edit it in the list above."
+          ) : (
+            <>
+              This tool already has a {currentApproval === "auto" ? "automatic" : "human-approved"}{" "}
+              entry.
+            </>
+          )}
+        </p>
+      )}
+
+      <div className="flex items-center justify-end gap-2 border-t border-line px-3 py-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={fields.length > 0 && !isEditing ? closeComposer : handleResetField}
+          disabled={!isEditing && !isFieldDirty && fields.length === 0}
+        >
+          {isEditing || fields.length > 0 ? "Cancel" : "Clear"}
+        </Button>
+        <Button type="button" size="sm" onClick={handleSaveConfig} disabled={isAddDisabled}>
+          {isEditing ? "Save changes" : "Add tool"}
+        </Button>
+      </div>
+    </div>
+  ) : (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={() => setIsComposerOpen(true)}
+      className="w-full border-dashed text-muted-foreground"
+    >
+      <PlusIcon aria-hidden="true" className="mr-1.5 size-3.5" />
+      Add a tool
+    </Button>
+  );
+
+  const body = (
+    <div className="space-y-3">
+      {toolList}
+      {composer}
+    </div>
+  );
+
+  if (hideGroup) return body;
+
+  return (
+    <ConfigFieldCard
+      Icon={WrenchIcon}
+      tone="primary"
+      label="Can do"
+      title="Tools"
+      description="Actions the agent can take in other apps."
+      aside={
+        <ConfigFieldCount count={fields.length} noun={fields.length === 1 ? "tool" : "tools"} />
+      }
+    >
+      {body}
+    </ConfigFieldCard>
   );
 }
+
+/** One numbered step of the tool composer, on a short wire to the next step. */
+const ComposerStep = ({
+  step,
+  isDone,
+  isLast = false,
+  children,
+}: {
+  step: number;
+  isDone: boolean;
+  isLast?: boolean;
+  children: ReactNode;
+}) => (
+  <li className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2.5">
+    <span aria-hidden="true" className="flex flex-col items-center pt-0.5">
+      <span
+        className={cn(
+          "grid size-5 shrink-0 place-items-center rounded-full font-mono text-[10px] transition-colors duration-150",
+          isDone ? "bg-ok text-surface" : "border border-line-strong text-muted-foreground",
+        )}
+      >
+        {isDone ? <CheckIcon weight="bold" className="size-2.5" /> : step}
+      </span>
+      {!isLast && (
+        <span
+          className={cn(
+            "mt-1 w-px flex-1",
+            isDone ? "bg-[color-mix(in_srgb,var(--ok)_55%,var(--line))]" : "bg-line",
+          )}
+        />
+      )}
+    </span>
+    <div className="min-w-0">{children}</div>
+  </li>
+);

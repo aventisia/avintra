@@ -85,6 +85,12 @@ public static class EnvironmentConfigurationExtension
         var GOOGLE_SSO_CLIENT_ID = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_ID") ?? string.Empty;
         var GOOGLE_SSO_CLIENT_SECRET = Environment.GetEnvironmentVariable("GOOGLE_SSO_CLIENT_SECRET") ?? string.Empty;
 
+        // Social sign-in environment variables
+        var GOOGLE_OAUTH_CLIENT_ID = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_CLIENT_ID") ?? string.Empty;
+        var GOOGLE_OAUTH_CLIENT_SECRET = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_CLIENT_SECRET") ?? string.Empty;
+        var GITHUB_OAUTH_CLIENT_ID = Environment.GetEnvironmentVariable("GITHUB_OAUTH_CLIENT_ID") ?? string.Empty;
+        var GITHUB_OAUTH_CLIENT_SECRET = Environment.GetEnvironmentVariable("GITHUB_OAUTH_CLIENT_SECRET") ?? string.Empty;
+
         // SMTP environment variables
         var SMTP_HOST = Environment.GetEnvironmentVariable("SMTP_HOST") ?? string.Empty;
         var SMTP_PORT = Environment.GetEnvironmentVariable("SMTP_PORT") ?? "0";
@@ -322,6 +328,10 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:MicrosoftSsoClientSecret", MICROSOFT_SSO_CLIENT_SECRET },
                     { "EnvironmentConfig:GoogleSsoClientId", GOOGLE_SSO_CLIENT_ID },
                     { "EnvironmentConfig:GoogleSsoClientSecret", GOOGLE_SSO_CLIENT_SECRET },
+                    { "EnvironmentConfig:GoogleOAuthClientId", GOOGLE_OAUTH_CLIENT_ID },
+                    { "EnvironmentConfig:GoogleOAuthClientSecret", GOOGLE_OAUTH_CLIENT_SECRET },
+                    { "EnvironmentConfig:GitHubOAuthClientId", GITHUB_OAUTH_CLIENT_ID },
+                    { "EnvironmentConfig:GitHubOAuthClientSecret", GITHUB_OAUTH_CLIENT_SECRET },
                     { "EnvironmentConfig:SsoAllowed", SSO_ALLOWED.ToString() },
                     { "EnvironmentConfig:BrandingAllowed", BRANDING_ALLOWED.ToString() },
 

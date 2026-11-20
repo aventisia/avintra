@@ -1,3 +1,4 @@
+import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { Toggle } from "@avplatform/ui/toggle";
 import { LinkIcon } from "@heroicons/react/24/outline";
@@ -26,7 +27,7 @@ const RichTextLinkButton = ({ editor }: { editor: Editor }) => {
       </PopoverTrigger>
       <PopoverContent align="start" className="w-72 p-2">
         <input
-          className="h-7 w-full rounded-md border border-input bg-transparent px-2 text-xs outline-none"
+          className={cn(FIELD_SURFACE, "h-7 w-full px-2 text-xs")}
           placeholder="https://example.com"
           value={url}
           onChange={(e) => setUrl(e.target.value)}

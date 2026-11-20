@@ -9,8 +9,9 @@ const hasControlCharacter = (value: string): boolean =>
  * otherwise.
  *
  * @remarks
- * Absolute URLs, protocol-relative paths, backslash tricks and control characters are rejected
- * so a crafted `redirect` query parameter can never send the user to another site.
+ * An absolute URL is accepted only when it points at `origin`; it is then reduced to its path.
+ * Protocol-relative paths, backslash tricks and control characters are rejected so a crafted
+ * `redirect` query parameter can never send the user to another site.
  */
 const getSameOriginRedirectPath = (redirect: string | null, origin: string): string | null => {
   if (!redirect) return null;
@@ -22,8 +23,20 @@ const getSameOriginRedirectPath = (redirect: string | null, origin: string): str
     return null;
   }
 
-  if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("/\\")) return null;
   if (hasControlCharacter(path)) return null;
+
+  if (!path.startsWith("/")) {
+    try {
+      const absolute = new URL(path);
+      return absolute.origin === origin
+        ? `${absolute.pathname}${absolute.search}${absolute.hash}`
+        : null;
+    } catch {
+      return null;
+    }
+  }
+
+  if (path.startsWith("//") || path.startsWith("/\\")) return null;
 
   try {
     const url = new URL(path, origin);

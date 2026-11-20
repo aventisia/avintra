@@ -1,5 +1,5 @@
 import { FormControl } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
+import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import { EditorContent, useEditor } from "@tiptap/react";
 import * as React from "react";
 import { ControllerRenderProps, FieldValues } from "react-hook-form";
@@ -63,12 +63,7 @@ const RichTextEditor = ({ field, label, disabled, onUnsupportedValue }: RichText
       <div className="group relative">
         <VariablesTrigger name={field.name} className="-top-5" />
         <FormControl>
-          <div
-            className={cn(
-              "rounded-md border border-input bg-transparent focus-within:ring-1 focus-within:ring-ring",
-              disabled && "opacity-50",
-            )}
-          >
+          <div className={cn(FIELD_CONTAINER, disabled && "opacity-50")}>
             {!disabled && <RichTextToolbar editor={editor} />}
             <EditorContent editor={editor} />
           </div>
