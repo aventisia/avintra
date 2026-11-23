@@ -119,13 +119,6 @@ public static class SharedServicesExtension
         services.AddSingleton<IPermissionValidator, PermissionValidator>();
     }
 
-    // Extension method to register the LLM data extraction service
-    public static void AddLLMExtractionService(this IServiceCollection services)
-    {
-        // Registers LLMDataExtractionService as a scoped implementation of ILLMDataExtractionService
-        services.AddScoped<ILLMDataExtractionService, LLMDataExtractionService>();
-    }
-
     // Method to add the Azure Blob Storage service to the service collection
     public static void AddAzureBlobStorageService(this IServiceCollection services)
     {
