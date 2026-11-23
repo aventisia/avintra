@@ -81,6 +81,28 @@ class VoiceConversationLifecycle:
         self._claims = claims
         self._finished = False
 
+    async def touch(self) -> None:
+        """Refresh the conversation heartbeat so a live call is not reconciled away."""
+
+        if self._finished:
+            return
+
+        try:
+            async with get_db_session_context(
+                settings.POSTGRESQL_WORKSPACE_DB_NAME
+            ) as session:
+                await conversation_service.touch_voice_conversation(
+                    db_session=session,
+                    conversation_id=self._claims.conversation_id,
+                    user_id=self._claims.user_id,
+                )
+                await session.commit()
+        except Exception:
+            logger.exception(
+                "[voice-agent] conversation heartbeat failed conversation=%s",
+                self._claims.conversation_id,
+            )
+
     async def finish(self, *, failed: bool) -> None:
         if self._finished:
             return

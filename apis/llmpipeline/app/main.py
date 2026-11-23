@@ -21,12 +21,14 @@ from app.features.tts_providers.tts_providers_routes import router as tts_router
 from app.features.stt_providers.stt_providers_routes import router as stt_router
 from app.features.custom_tools.routes import router as custom_tools_router
 from app.features.voice_sessions.router import router as voice_sessions_router
+from app.features.voice_sessions.reconciler import start_reconciler, stop_reconciler
 from app.core.logger import logger
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     voice_worker = None
     stop_voice_worker = None
+    reconciler = None
 
     try:
         from voice_agent.agent import start_voice_worker, stop_voice_worker
@@ -36,6 +38,13 @@ async def lifespan(_: FastAPI):
         logger.exception("[voice-agent] failed to start; chat remains available.")
 
     try:
+        reconciler = start_reconciler()
+    except Exception:
+        logger.exception(
+            "[voice-reconciler] failed to start; voice sessions remain available."
+        )
+
+    try:
         yield
     finally:
         if voice_worker is not None and stop_voice_worker is not None:
@@ -43,6 +52,11 @@ async def lifespan(_: FastAPI):
                 await stop_voice_worker(voice_worker)
             except Exception:
                 logger.exception("[voice-agent] failed to stop cleanly.")
+        if reconciler is not None:
+            try:
+                await stop_reconciler(reconciler)
+            except Exception:
+                logger.exception("[voice-reconciler] failed to stop cleanly.")
         await dispose_all_db_engines()
 
 
