@@ -159,7 +159,7 @@ public class LoginWithExternalAuthController : BaseApiController
             return ResultHelper(createUserSessionResult);
 
         return ResultHelper(ServiceResponse<SocialCallbackDto>.Create(
-            "Signed in.",
+            createUserSessionResult.Message,
             200,
             new SocialCallbackDto
             {
