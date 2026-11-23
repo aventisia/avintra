@@ -22,8 +22,10 @@ copy, so both pages always agree.
 - **Step marks**: success, failed, killed, aborted and not reached. A step's state is derived,
   never stored: a log for the selected loop iteration (its `isSuccess`) decides success or
   failure; on a Killed, Aborted or Failed run the last log — the list arrives ordered by
-  `executedAt` — is the step the run stopped at; a node with no log on such a run shows as not
-  reached. A completed run leaves unlogged nodes looking unstarted.
+  `executedAt` — is the step the run stopped at, but only in the view that contains the run's
+  final log; a sub-flow that finished before the run failed elsewhere keeps its own marks. A
+  node with no log on such a run shows as not reached. A completed run leaves unlogged nodes
+  looking unstarted.
 - **End step**: the executor never logs the flow's `flowEndNode` (visual terminator); the
   End step stays unmarked and the last executed node remains the visible end.
 - **Loop badge**: shows `current / total` for the selected iteration; the selected loop index
