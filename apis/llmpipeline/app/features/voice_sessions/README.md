@@ -215,8 +215,8 @@ in production.
 
 | Variable | Used by | Purpose |
 | --- | --- | --- |
-| `LIVEKIT_HTTP_URL` | llmpipeline | LiveKit HTTP API URL (room and dispatch); derived from `LIVEKIT_WS_URL` when unset. |
-| `LIVEKIT_WS_URL` | llmpipeline, worker | WebSocket URL returned to the caller and used by the worker; derived from `LIVEKIT_HTTP_URL` when unset. |
+| `LIVEKIT_HTTP_URL` | llmpipeline, worker | Server-side LiveKit URL: rooms, dispatch, and the worker's registration (as `ws://`/`wss://`). Set it to an internal address, such as `http://livekit:7880` in Docker, so the worker joins the server that hosts the rooms. Derived from `LIVEKIT_WS_URL` when unset. |
+| `LIVEKIT_WS_URL` | llmpipeline | WebSocket URL returned to the caller; derived from `LIVEKIT_HTTP_URL` when unset. |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | llmpipeline, worker | LiveKit API credentials. Never expose these to the browser. |
 | `LIVEKIT_AGENT_NAME` | llmpipeline, worker | Dispatch/registration name; defaults to `avintra-voice-agent`. |
 | `WORKSPACE_API_URL` | worker | WorkspaceAPIs base including `/workspace/api`; defaults to `https://<APP_BASE_URL>/workspace/api`. |

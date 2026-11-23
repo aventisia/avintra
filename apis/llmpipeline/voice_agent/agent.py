@@ -31,7 +31,7 @@ from livekit.agents import (
 )
 from livekit.plugins import silero
 
-from app.core.config import env, livekit_ws_url, settings
+from app.core.config import env, livekit_server_ws_url, settings
 from app.core.logger import logger
 
 from .metadata import VoiceSessionRejected, parse_job_metadata, validate_job
@@ -181,7 +181,7 @@ def voice_worker_configured() -> bool:
     return all(
         (value or "").strip()
         for value in (
-            livekit_ws_url(),
+            livekit_server_ws_url(),
             settings.LIVEKIT_API_KEY,
             settings.LIVEKIT_API_SECRET,
         )
@@ -196,7 +196,7 @@ def worker_options() -> WorkerOptions:
             "A LiveKit URL (LIVEKIT_WS_URL or LIVEKIT_HTTP_URL), LIVEKIT_API_KEY, and "
             "LIVEKIT_API_SECRET are required to run the voice worker."
         )
-    ws_url = livekit_ws_url()
+    ws_url = livekit_server_ws_url()
     logger.info("[voice-agent] starting worker '%s' for %s", settings.LIVEKIT_AGENT_NAME, ws_url)
 
     return WorkerOptions(
