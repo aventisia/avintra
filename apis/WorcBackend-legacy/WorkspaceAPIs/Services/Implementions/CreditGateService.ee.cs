@@ -12,8 +12,9 @@ public class CreditGateService : ICreditGateService
     /// </summary>
     public const string InsufficientCreditsRemark = "Insufficient credits";
 
-    // Mirrors the threshold used by the LLM credit gate (AspNetToolkit.LLMDataExtractionService)
-    // and the Studio execution guard so Runner jobs are gated consistently with LLM calls.
+    // IMPORTANT NOTE: mirrors the threshold used by AccountsAPIs CreditManagerService
+    // (the gate llmpipeline's LLM credit check delegates to) and by the Studio execution
+    // guard, so Runner jobs are gated consistently with LLM calls.
     private const double MinimumRequiredCredits = 10;
 
     private readonly ILogger<CreditGateService> _logger;
