@@ -9,8 +9,12 @@ import type { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import type * as z from "zod";
 
-import { hasPlanIntent, resolvePostLoginDestination } from "@/constants/post-login-destination";
-import { ADD_TENANT } from "@/constants/variables";
+import {
+  buildOnboardingUrl,
+  hasPlanIntent,
+  resolvePostLoginDestination,
+} from "@/constants/post-login-destination";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
 import { checkTwoFAVerificationCode, createAccount } from "../apis/auth.apis";
 import { resendSocialChallenge, verifySocialLink } from "../apis/social-sign-in.apis";
@@ -82,16 +86,25 @@ const useCodeChallenge = (form: UseFormReturn<CodeFormValues>) => {
 
   const checkTwoFACodeMutation = useMutation({
     mutationFn: checkTwoFAVerificationCode,
-    onSuccess: ({ data }) => {
+    onSuccess: ({ data, message }) => {
       const { codeChallenge } = useAuthStore.getState();
-      markFreshLogin();
-      const userSession = setUserSessionLocally(data);
 
       if (codeChallenge?.purpose === "social-two-fa") {
         rememberSignInMethod(codeChallenge.provider);
+
+        if (message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+          window.location.assign(buildOnboardingUrl(codeChallenge.hasPlanIntent));
+          return;
+        }
+
+        markFreshLogin();
+        const userSession = setUserSessionLocally(data);
         window.location.assign(getSocialSignInDestination(codeChallenge, userSession.email));
         return;
       }
+
+      markFreshLogin();
+      const userSession = setUserSessionLocally(data);
 
       rememberSignInMethod("email");
       reset();
@@ -102,7 +115,7 @@ const useCodeChallenge = (form: UseFormReturn<CodeFormValues>) => {
 
   const verifySocialLinkMutation = useMutation({
     mutationFn: verifySocialLink,
-    onSuccess: ({ data }) => completeSocialSignIn(data),
+    onSuccess: ({ data, message }) => completeSocialSignIn(data, message),
     onError: rejectCode,
   });
 

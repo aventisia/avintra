@@ -13,8 +13,8 @@ export const useValidateSocialCallbackMutation = () => {
   const { mutate: validateSocialCallbackMutation } = useMutation({
     mutationFn: ({ code, state }: { code: string; state: string | null }) =>
       validateSocialCallback(code, state),
-    onSuccess: ({ data }) => {
-      completeSocialSignIn(data);
+    onSuccess: ({ data, message }) => {
+      completeSocialSignIn(data, message);
     },
     onError: (error) => setSocialCallbackError(error),
   });
