@@ -177,40 +177,31 @@ Log in to your container registry if you push images:
 sudo docker login <registry>
 ```
 
-### 1. Install and build legacy web clients
+### 1. Build Docker images from the repository root
+
+The images build the web apps themselves. The full list of images and build commands is in `.claude/skills/build-docker-images/SKILL.md`; the common ones:
 
 ```sh
-npm --prefix clients/web-apps/apps/accounts install
-npm --prefix clients/web-apps/apps/workspace install
-# Studio is now part of the web-apps turborepo (see clients/web-apps/README.md)
-npm --prefix clients/web-apps install
-
-npm --prefix clients/web-apps/apps/accounts run build --mode=production
-npm --prefix clients/web-apps/apps/workspace run build --mode=production
-npx --prefix clients/web-apps turbo run build --filter=studio -- --mode=production
-```
-
-### 2. Build Docker images from the repository root
-
-```sh
-# Nginx frontend
-sudo docker build -f deploy/nginx/Dockerfile -t <registry>/avplatform/frontend:0.4.0 .
+# Edge nginx: web apps over HTTPS, proxying the APIs (amd64 only)
+sudo docker build --platform linux/amd64 -f deploy/docker/web.Dockerfile --target edge -t <registry>/avplatform/edge:<tag> .
 
 # Legacy .NET APIs
-sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t <registry>/avplatform/accounts-apis:0.1.0 .
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t <registry>/avplatform/workspace-apis:0.1.0 .
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t <registry>/avplatform/accounts-apis:<tag> .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t <registry>/avplatform/workspace-apis:<tag> .
 
-# LLM Pipeline
-cd apis/llmpipeline && sudo docker build -t <registry>/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
+# LLM Pipeline and Corsair
+sudo docker build -f apis/llmpipeline/Dockerfile -t <registry>/avplatform/llmpipeline-apis:<tag> apis/llmpipeline
+sudo docker build -f apis/corsair/Dockerfile -t <registry>/avplatform/corsair:<tag> apis/corsair
 ```
 
-### 3. Push images
+### 2. Push images
 
 ```sh
-sudo docker push <registry>/avplatform/frontend:0.4.0
-sudo docker push <registry>/avplatform/accounts-apis:0.1.0
-sudo docker push <registry>/avplatform/workspace-apis:0.1.0
-sudo docker push <registry>/avplatform/llmpipeline-apis:0.1.0
+sudo docker push <registry>/avplatform/edge:<tag>
+sudo docker push <registry>/avplatform/accounts-apis:<tag>
+sudo docker push <registry>/avplatform/workspace-apis:<tag>
+sudo docker push <registry>/avplatform/llmpipeline-apis:<tag>
+sudo docker push <registry>/avplatform/corsair:<tag>
 ```
 
 ## Network Setup

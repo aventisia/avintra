@@ -3,11 +3,14 @@ FROM node:22-slim AS builder
 WORKDIR /build
 
 COPY package.json package-lock.json* ./
-RUN npm ci
+# IMPORTANT NOTE: --force is required; the @corsair-dev plugins have conflicting zod peer ranges (same as Jenkins).
+RUN npm ci --force
 
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
+
+RUN CORSAIR_CONFIG_DIR=/seed/corsair-configs npm run generate:configs
 
 # Stage 2: Final runtime stage
 FROM node:22-slim
@@ -22,9 +25,11 @@ ENV PYTHONUNBUFFERED=1
 # POSTGRESQL_* values must be provided by the orchestrator/deployment.
 
 COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --force
 
 COPY --from=builder /build/dist ./dist
+
+COPY --from=builder /seed/corsair-configs /seed/corsair-configs
 
 # Read by dist/seed-corsair-tools.js when seeding runs inside this image.
 COPY src/data/popular-tools.json ./dist/data/popular-tools.json
@@ -36,9 +41,5 @@ COPY migration.sql ./
 EXPOSE 4006
 
 # Run the (idempotent) migration, then start the app.
-# NOTE: Corsair config artifacts are generated in the monorepo (npm run
-# generate:configs). The mapping + sibling artifacts are committed into the
-# Workspace API codebase ConfigFiles folder and deploy with the Workspace API;
-# the thousands of per-plugin configs are rsynced to the shared server files
-# path by Jenkins. The sidecar container does not generate them at runtime.
-CMD ["sh", "-c", "node dist/migrate.js && node dist/main.js"]
+# IMPORTANT NOTE: exec lets node receive SIGTERM from docker stop.
+CMD ["sh", "-c", "node dist/migrate.js && exec node dist/main.js"]

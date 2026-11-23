@@ -15,6 +15,10 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 FROM python:3.12-slim
 WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr ffmpeg pandoc \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy only the installed packages from the builder
 COPY --from=builder /install /usr/local
 COPY . .
