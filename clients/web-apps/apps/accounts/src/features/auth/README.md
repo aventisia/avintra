@@ -32,9 +32,11 @@ Tauri webview. The button this browser last signed in with carries a "Last used"
 The provider returns to `/accounts/sso-redirect`, whose `state` starts with `social.`. `SsoRedirectMain`
 calls `GET auth/social/callback` and `useCompleteSocialSignIn` routes the answer:
 
-- `SignedIn`: the session is stored and the browser goes to onboarding when a paid plan was chosen,
-  otherwise to the same-origin page it started from, or the default app.
-- `TwoFARequired` and `LinkCodeRequired`: the `code` step on `/login`.
+- `SignedIn`: the session is stored and the browser goes to onboarding when the session reports a
+  pending tenant setup or no active subscription, or when a paid plan was chosen; otherwise to the
+  same-origin page it started from, or the default app.
+- `TwoFARequired` and `LinkCodeRequired`: the `code` step on `/login`; a verified code lands like
+  `SignedIn`.
 - `SsoRequired`: the browser goes to the tenant's single sign-on URL.
 
 A failure shows the backend's own message. A provider `error` is always reported as the neutral
