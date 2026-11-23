@@ -19,10 +19,15 @@ import { DCPForm, useDCPNavigationGuard, useDynamicConfigPanelStore } from "..";
 import { DCP_PANEL_ID } from "../stores/dcp-store";
 import DCPDialogHeader from "./DCPDialogHeader";
 
+type DCPDialogProps = React.PropsWithChildren<{
+  /** Close when the open node leaves the canvas. Editor mount only. */
+  closeWhenNodeRemoved?: boolean;
+}>;
+
 // Memoized: now mounted inside ReactFlowExt's canvas tree (which re-renders on
 // every nodes/edges change), so skip parent-driven re-renders. Store
 // subscriptions still update it when relevant.
-export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
+export const DCPDialog = memo(({ children, closeWhenNodeRemoved = false }: DCPDialogProps) => {
   // Get state and actions from the DynamicConfigPanel store
   const {
     showDialog,
@@ -97,6 +102,34 @@ export const DCPDialog = memo(({ children }: React.PropsWithChildren) => {
       }
     }
   }, [nodeId, showDialog, setShowViewer, clearAllFiles]);
+
+  // IMPORTANT NOTE: removal paths (delete, cross-tab cut-paste, undo/redo,
+  // remote edits) never close the panel themselves, so watch the editor node
+  // list instead. Skip the form flush: the target node is gone.
+  useEffect(() => {
+    if (!closeWhenNodeRemoved || !showDialog || !nodeId) return;
+
+    const closeIfNodeGone = () => {
+      const panel = useDynamicConfigPanelStore.getState();
+      if (!panel.showDialog || !panel.nodeId) return;
+      if (useReactFlowExtStore.getState().nodes.some((node) => node.id === panel.nodeId)) return;
+      setShowViewer(false);
+      clearAllFiles();
+      closeNodeConfig();
+      closePanel(DCP_PANEL_ID);
+    };
+
+    closeIfNodeGone();
+    return useReactFlowExtStore.subscribe((state) => state.nodes, closeIfNodeGone);
+  }, [
+    closeWhenNodeRemoved,
+    showDialog,
+    nodeId,
+    setShowViewer,
+    clearAllFiles,
+    closeNodeConfig,
+    closePanel,
+  ]);
 
   // Guarded Escape: Panel's own closeOnEscape stays off so dirty edits flush
   // (always persisted, even incomplete/invalid) instead of vanishing, and the
