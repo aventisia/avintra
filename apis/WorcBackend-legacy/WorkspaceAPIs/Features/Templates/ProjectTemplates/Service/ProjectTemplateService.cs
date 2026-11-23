@@ -6,7 +6,6 @@ namespace WorkspaceAPIs.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAutoNotificationService _autoNotificationService;
         private readonly IUserManagementGuardService _userManagementGuardService;
-        private readonly ILLMDataExtractionService _llmDataExtractionService;
         private readonly EnvironmentConfig _environmentConfig;
         private readonly Guid _userId;
         private readonly Guid _tenantId;
@@ -20,7 +19,6 @@ namespace WorkspaceAPIs.Services
             ICurrentTenantService currentTenantService,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
-            ILLMDataExtractionService llmDataExtractionService,
             EnvironmentConfig environmentConfig)
         {
             // Set _userId
@@ -35,7 +33,6 @@ namespace WorkspaceAPIs.Services
             _unitOfWork = unitOfWork;
             _autoNotificationService = autoNotificationService;
             _userManagementGuardService = userManagementGuardService;
-            _llmDataExtractionService = llmDataExtractionService;
             _environmentConfig = environmentConfig;
         }
 
@@ -1079,129 +1076,6 @@ namespace WorkspaceAPIs.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating flow from project template ID: {TemplateId}.", trendingTemplateDto.Id);
-            }
-
-            return serviceResponse;
-        }
-
-        // Generates a new project template using an LLM (Large Language Model) based on the provided template data.
-        public async Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(GenereateProjectInstructionRequestDto generateProjectInstructionRequestDto)
-        {
-            // Initialize a default failure response
-            var serviceResponse = new ServiceResponse<string>
-            {
-                Data = null,
-                Message = "Failed to generate documentation. Please try again later."
-            };
-
-            // Check for credits availability
-            var hasSufficientCredits = await _llmDataExtractionService.HasSufficientCreditsAsync();
-            if (!hasSufficientCredits.Data)
-            {
-                serviceResponse.Message = "Unable to generate documentation due to insufficient credits.";
-                return serviceResponse;
-            }
-
-            // Determine the prompt file name from the requested target, falling back to the
-            // RefType-based template prompts.
-            var promptFileName = generateProjectInstructionRequestDto.PromptTarget switch
-            {
-                PromptGenerationTargetsEnum.ChatAgentSystemPrompt =>
-                    string.IsNullOrWhiteSpace(generateProjectInstructionRequestDto.Payload)
-                        ? "GenerateChatAgentPromptInstructions.txt"
-                        : "ImproveChatAgentPromptInstructions.txt",
-                PromptGenerationTargetsEnum.VoiceAgentSystemPrompt =>
-                    string.IsNullOrWhiteSpace(generateProjectInstructionRequestDto.Payload)
-                        ? "GenerateVoiceAgentPromptInstructions.txt"
-                        : "ImproveVoiceAgentPromptInstructions.txt",
-                _ => generateProjectInstructionRequestDto.RefType switch
-                {
-                    UsageSourceTypesEnum.Agent => "GenerateAgentTemplateDescriptionPrompt.txt",
-                    UsageSourceTypesEnum.Platform => "ImprovedPromptInstructions.txt",
-                    _ => "NA"
-                }
-            };
-
-            // Build the full path to the prompt file using the current directory and subdirectories
-            var file = new FileInfo(Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "StaticFiles",
-                "Prompts",
-                promptFileName
-            ));
-
-            string promptTemplate;
-            try
-            {
-                promptTemplate = await File.ReadAllTextAsync(file.FullName);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to read LLM prompt template from {PromptFilePath}", file.FullName);
-                serviceResponse.Message = "Failed to read prompt template. Please contact support.";
-                return serviceResponse;
-            }
-
-            var prompt = promptTemplate.Replace(
-                "{{PAYLOAD_CONTENT}}",
-                generateProjectInstructionRequestDto.Payload ?? string.Empty);
-            var model = "gpt-4o-mini";
-            var provider = "openai";
-            // ChatAgent and VoiceAgent prompt work is more deterministic so intent and formatting hold.
-            var temperature = generateProjectInstructionRequestDto.PromptTarget is
-                (PromptGenerationTargetsEnum.ChatAgentSystemPrompt or PromptGenerationTargetsEnum.VoiceAgentSystemPrompt)
-                ? 0.4
-                : 1;
-
-            try
-            {
-                // Call the LLM service to generate the documentation
-                // var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
-                //     prompt: prompt,
-                //     llmModel: model,
-                //     modelTemperature: temperature,
-                //     generateProjectInstructionRequestDto.RefType,
-                //     generateProjectInstructionRequestDto.RefId,
-                //     generateProjectInstructionRequestDto.RefName,
-                //     ActionTypesEnum.TemplateDescriptionGeneration,
-                //     null, // This will never be triggered by an agent
-                //     null, // No ollama output schema needed
-                //     false // No json output required
-                // );
-
-                // Create a request object to send to the LLM service for data extraction
-                var llmRequest = new LLMRequest()
-                {
-                    Model = model,
-                    Input = prompt,
-                    Provider = provider,
-                    Temperature = temperature,
-                    Stream = false,
-                    RefType = generateProjectInstructionRequestDto.RefType.ToString(),
-                    RefId = generateProjectInstructionRequestDto.RefId.ToString(),
-                    RefName = generateProjectInstructionRequestDto.RefName,
-                    Action = ActionTypesEnum.TemplateDescriptionGeneration.ToString(),
-                };
-
-                // Call the service to extract data asynchronously, passing in the LLM request
-                var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(llmRequest);
-
-                // Handle null or empty response
-                if (generatedOutput.Data == null)
-                {
-                    serviceResponse.Message = "LLM response was empty. Please try again later.";
-                    _logger.LogWarning("LLM returned null data while generating instructions/documentation. Check input payload or prompt.");
-                }
-
-                // Populate the successful response
-                serviceResponse.Data = generatedOutput.Data;
-                serviceResponse.StatusCode = 200;
-                serviceResponse.Message = "Documentation and instructions generated successfully.";
-            }
-            catch (Exception ex)
-            {
-                // Log any exceptions that occur during the LLM call
-                _logger.LogError(ex, "An error occurred while generating documentation using LLM model: {Model}", model);
             }
 
             return serviceResponse;

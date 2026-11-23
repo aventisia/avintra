@@ -1,0 +1,57 @@
+meta {
+  name: v2 llm prompts - foreign space id stays scoped
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/v2/llm/prompts/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+headers {
+  X-Space-Id: {{$guid}}
+}
+
+body:json {
+  {
+    "refType": "Agent",
+    "promptTarget": "ChatAgentSystemPrompt",
+    "refId": "9fcd9b3d-0674-421c-a21e-58befafd329f",
+    "refName": "bruno foreign space reference",
+    "payload": ""
+  }
+}
+
+script:pre-request {
+  if (process.env.LLM_DEPLOYMENT_TYPE === "Community") {
+    bru.runner.skipRequest();
+  }
+}
+
+script:post-response {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("answer comes from the request payload only", function() {
+    expect(res.getBody().data).to.be.a("string").and.not.equal("");
+  });
+}
+
+docs {
+  Requires a Commercial deployment (set LLM_DEPLOYMENT_TYPE=Commercial in
+  tests/bruno/.env); skipped on Community. Sends an X-Space-Id that belongs to
+  no space plus a refId the caller does not own. The endpoint does no workspace
+  lookup, so it bills the header space and answers from the request payload
+  only; foreign data in the body would be a leak.
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
