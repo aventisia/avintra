@@ -24,11 +24,11 @@ else
 fi
 
 # Replace placeholders in config files
-sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/aventisia.avplatform.conf
-sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/common_headers.conf
-sed -i "s|\${CSP_SCRIPT_SRC}|$CSP_SCRIPT_SRC|g" /etc/nginx/conf.d/common_headers.conf
-sed -i "s|\${CSP_FRAME_SRC}|$CSP_FRAME_SRC|g" /etc/nginx/conf.d/common_headers.conf
-sed -i "s|\${CSP_CONNECT_SRC}|$CSP_CONNECT_SRC|g" /etc/nginx/conf.d/common_headers.conf
+sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/conf.d/avintra.app.conf
+sed -i "s|\${APP_BASE_URL}|$APP_BASE_URL|g" /etc/nginx/snippets/common_headers.conf
+sed -i "s|\${CSP_SCRIPT_SRC}|$CSP_SCRIPT_SRC|g" /etc/nginx/snippets/common_headers.conf
+sed -i "s|\${CSP_FRAME_SRC}|$CSP_FRAME_SRC|g" /etc/nginx/snippets/common_headers.conf
+sed -i "s|\${CSP_CONNECT_SRC}|$CSP_CONNECT_SRC|g" /etc/nginx/snippets/common_headers.conf
 
 # Execute the default nginx entrypoint
 exec /docker-entrypoint.sh "$@"
