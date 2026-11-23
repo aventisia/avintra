@@ -3,7 +3,7 @@ name: build-docker-images
 description: Build the platform's Docker images (web frontends, docs, Accounts/Workspace/Global Admin APIs, LLM Pipeline, Corsair) tagged for a container registry. Use when asked to build or tag images.
 ---
 
-Build from the repo root. Images live under the `aventisia` Docker Hub namespace. Take `<tag>` from the request, and ask for it when missing. The names match what `.github/workflows/docker-images.yml` pushes on every `main` commit as `sha-<7-char commit>`, so never reuse a `sha-` tag for a local build. Every web image (`web.Dockerfile`, `docs.Dockerfile`) needs `--platform linux/amd64`: the lockfiles carry only x64 native binaries, so Apple Silicon builds run under emulation. Pass `--build-arg BUILD_MODE=staging` for a staging build of those images.
+Build from the repo root. Images live under the `aventisia` Docker Hub namespace. Take `<tag>` from the request, and ask for it when missing. The names match what `.github/workflows/docker-images.yml` pushes on every `main` commit as `sha-<7-char commit>` and every `uat` commit as `uat-sha-<7-char commit>`, so never reuse a `sha-` or `uat-sha-` tag for a local build. Every web image (`web.Dockerfile`, `docs.Dockerfile`) needs `--platform linux/amd64`: the lockfiles carry only x64 native binaries, so Apple Silicon builds run under emulation. Pass `--build-arg BUILD_MODE=staging` for a staging build of those images.
 
 ```sh
 # Web apps (one Dockerfile, one target per image)
