@@ -15,10 +15,14 @@ from livekit.api import (
     LiveKitAPI,
     VideoGrants,
 )
+from sqlalchemy import func, select
 
 from app.core.config import livekit_http_url, livekit_ws_url, settings
+from app.core.database import get_db_session_context
 from app.core.logger import logger
+from app.core.space_utils import normalize_space_id
 from app.features.auth.authenticated_user import User
+from app.features.langgraph.checkpoint.models import Conversation
 
 from .schemas import (
     DISPATCH_METADATA_VERSION,
@@ -71,11 +75,42 @@ def build_dispatch_metadata(
     )
 
 
+async def verify_voice_conversation(request: VoiceSessionRequest, user: User) -> None:
+    """Reject a conversation the caller does not own, or one that is not an active voice thread."""
+
+    # IMPORTANT NOTE: a conversation is space-scoped like the WorkspaceAPIs cap count,
+    # so a room dispatched for space B cannot run a conversation filed under space A.
+    space_id = normalize_space_id(user.space_id)
+    space_scope = (
+        Conversation.space_id.is_(None)
+        if space_id is None
+        else Conversation.space_id == space_id
+    )
+    async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as db:
+        found = await db.scalar(
+            select(Conversation.id).where(
+                Conversation.id == request.conversation_id,
+                Conversation.tenant_id == user.tenant_id,
+                Conversation.user_id == user.user_id,
+                Conversation.flow_version_id == request.flow_version_id,
+                func.lower(Conversation.status) == "active",
+                func.lower(Conversation.channel) == "voice",
+                space_scope,
+            )
+        )
+
+    # IMPORTANT NOTE: missing and foreign conversations share one 404 so the
+    # endpoint cannot be used to probe conversation ids.
+    if found is None:
+        raise VoiceSessionError("Voice session conversation was not found.", 404)
+
+
 async def create_session(request: VoiceSessionRequest, user: User) -> VoiceSessionResponse:
     """Creates one room, dispatches the bound worker, and returns the caller's join token."""
 
     started_at = time.perf_counter()
     http_url, ws_url, api_key, api_secret = livekit_config()
+    await verify_voice_conversation(request, user)
     room_name = f"voice-{request.conversation_id}-{uuid4().hex[:8]}"
     metadata = build_dispatch_metadata(
         request,

@@ -72,6 +72,11 @@ class Conversation(WorkspaceBase, _BaseEntityMixin):
         nullable=False,
         index=True,
     )
+    space_id: Mapped[uuid.UUID | None] = mapped_column(
+        "SpaceId",
+        UUID(as_uuid=True),
+        nullable=True,
+    )
     status: Mapped[str] = mapped_column(
         "Status",
         String(50),

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from collections.abc import Awaitable
 from dataclasses import dataclass, field
 
 from livekit.agents import (
@@ -59,6 +60,8 @@ from .tts_adapter import LiteLLMTTS, build_tts_request
 from .usage import RealtimeUsageRecorder, StreamingSTTUsageRecorder
 
 USAGE_FLUSH_INTERVAL_SECONDS = 60.0
+CALLER_JOIN_TIMEOUT_SECONDS = 30.0
+MAX_CALL_DURATION_SECONDS = 3600.0
 
 
 def introduction_for(agent_settings: dict) -> str | None:
@@ -147,7 +150,7 @@ class VoiceSession:
     started_at: float
     events: VoiceSessionEvents
     lifecycle: VoiceConversationLifecycle
-    caller: RemoteParticipant
+    caller_identity: str
     agent_session: AgentSession | None = None
     realtime_usage: RealtimeUsageRecorder | None = None
     stt_usage: StreamingSTTUsageRecorder | None = None
@@ -245,7 +248,7 @@ class VoiceSession:
         self.mark_closed(reason, error=event.error is not None or reason == "error")
 
 
-async def _delete_room(ctx: JobContext) -> None:
+async def delete_room(ctx: JobContext) -> None:
     try:
         await ctx.delete_room()
     except Exception:
@@ -268,29 +271,53 @@ async def _reject(
     events.error(code, message)
     events.close("error", error=True, code=code)
     await events.aclose()
-    await _delete_room(ctx)
+    await delete_room(ctx)
     await lifecycle.finish(failed=True)
     ctx.shutdown(message)
 
 
 async def _join(
-    ctx: JobContext,
-    claims: VoiceJobClaims,
-    events: VoiceSessionEvents,
-    lifecycle: VoiceConversationLifecycle,
+    session: VoiceSession,
     started_at: float,
-) -> RemoteParticipant:
+) -> bool:
+    """Wait for the bound caller, tearing the session down when they never arrive."""
+
+    ctx = session.ctx
+    claims = session.claims
+    events = session.events
+    lifecycle = session.lifecycle
     try:
         await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
-        participant = await ctx.wait_for_participant(identity=f"user-{claims.user_id}")
+        await asyncio.wait_for(
+            ctx.wait_for_participant(identity=session.caller_identity),
+            timeout=CALLER_JOIN_TIMEOUT_SECONDS,
+        )
         logger.info(
             "[voice-timing] participant ready room=%s total_ms=%d",
             ctx.room.name,
             round((time.perf_counter() - started_at) * 1000),
         )
-        return participant
+        return True
     except asyncio.CancelledError:
         raise
+    except TimeoutError:
+        logger.warning(
+            "[voice-agent] caller did not join conversation=%s",
+            claims.conversation_id,
+        )
+        events.error(
+            error_code_for_source(None),
+            "The caller did not join the voice session.",
+        )
+        events.close("error", error=True)
+        await events.aclose()
+        await delete_room(ctx)
+        await lifecycle.finish(failed=True)
+        logger.info(
+            "[voice-agent] ended conversation=%s", claims.conversation_id
+        )
+        ctx.shutdown("caller did not join")
+        return False
     except Exception:
         logger.exception(
             "[voice-agent] join failed conversation=%s",
@@ -299,14 +326,14 @@ async def _join(
         events.error(error_code_for_source(None), "The voice session could not start.")
         events.close("error", error=True)
         await events.aclose()
-        await _delete_room(ctx)
+        await delete_room(ctx)
         await lifecycle.finish(failed=True)
         raise
 
 
 def _room_options(session: VoiceSession) -> RoomOptions:
     return RoomOptions(
-        participant_identity=session.caller.identity,
+        participant_identity=session.caller_identity,
         audio_output=True,
     )
 
@@ -317,6 +344,27 @@ def _wire_agent_session(session: VoiceSession, agent_session: AgentSession) -> N
     agent_session.on("user_input_transcribed", session.on_user_input_transcribed)
     agent_session.on("error", session.on_session_error)
     agent_session.on("close", session.on_session_close)
+
+
+async def _start_agent_session(
+    session: VoiceSession, start: Awaitable[None]
+) -> bool:
+    """Start the agent session unless the caller leaves while it is starting."""
+
+    # IMPORTANT NOTE: RoomIO waits for a linked participant without a timeout, so
+    # a hang-up between the join wait and its participant scan would hang the job.
+    start_task = asyncio.create_task(start)
+    left_task = asyncio.create_task(session.disconnected.wait())
+    done, pending = await asyncio.wait(
+        {start_task, left_task}, return_when=asyncio.FIRST_COMPLETED
+    )
+    for task in pending:
+        task.cancel()
+    await asyncio.gather(*pending, return_exceptions=True)
+    if start_task not in done:
+        return False
+    start_task.result()
+    return True
 
 
 async def run_session(
@@ -350,8 +398,6 @@ async def run_session(
             await _reject(ctx, claims, events, lifecycle, code, message)
             return
 
-    caller = await _join(ctx, claims, events, lifecycle, started_at)
-
     session = VoiceSession(
         ctx=ctx,
         claims=claims,
@@ -359,8 +405,23 @@ async def run_session(
         started_at=started_at,
         events=events,
         lifecycle=lifecycle,
-        caller=caller,
+        caller_identity=f"user-{claims.user_id}",
     )
+
+    def _on_participant_disconnected(participant: RemoteParticipant) -> None:
+        if participant.identity == session.caller_identity:
+            session.mark_closed("participant_disconnected")
+
+    async def _on_shutdown(_reason: str) -> None:
+        session.mark_closed("job_shutdown")
+
+    # IMPORTANT NOTE: the handler is registered before the join wait, so a caller
+    # who connects and leaves while the agent is still starting cannot be missed.
+    ctx.room.on("participant_disconnected", _on_participant_disconnected)
+    ctx.add_shutdown_callback(_on_shutdown)
+
+    if not await _join(session, started_at):
+        return
 
     logger.info(
         "[voice-agent] joined room=%s conversation=%s flow_version=%s agent=%s",
@@ -370,18 +431,13 @@ async def run_session(
         agent_settings.get("agentName"),
     )
 
-    def _on_participant_disconnected(participant: RemoteParticipant) -> None:
-        if participant.identity == caller.identity:
-            session.mark_closed("participant_disconnected")
-
-    async def _on_shutdown(_reason: str) -> None:
-        session.mark_closed("job_shutdown")
-
-    ctx.room.on("participant_disconnected", _on_participant_disconnected)
-    ctx.add_shutdown_callback(_on_shutdown)
-
     try:
-        if realtime_model is None:
+        if session.disconnected.is_set():
+            logger.info(
+                "[voice-agent] caller left before the session started conversation=%s",
+                claims.conversation_id,
+            )
+        elif realtime_model is None:
             await run_pipeline_session(session)
         else:
             await run_realtime_session(session, realtime_model)
@@ -454,11 +510,15 @@ async def run_pipeline_session(session: VoiceSession) -> None:
     session.agent_session.on("metrics_collected", session.on_metrics_collected)
 
     try:
-        await session.agent_session.start(
-            agent=Agent(instructions=""),
-            room=session.ctx.room,
-            room_options=_room_options(session),
-        )
+        if not await _start_agent_session(
+            session,
+            session.agent_session.start(
+                agent=Agent(instructions=""),
+                room=session.ctx.room,
+                room_options=_room_options(session),
+            ),
+        ):
+            return
         logger.info(
             "[voice-timing] session started engine=pipeline room=%s total_ms=%d",
             session.ctx.room.name,
@@ -528,15 +588,19 @@ async def run_realtime_session(
         )
 
     try:
-        await session.agent_session.start(
-            agent=Agent(
-                instructions=instructions,
-                chat_ctx=chat_ctx,
-                tools=tools,
+        if not await _start_agent_session(
+            session,
+            session.agent_session.start(
+                agent=Agent(
+                    instructions=instructions,
+                    chat_ctx=chat_ctx,
+                    tools=tools,
+                ),
+                room=session.ctx.room,
+                room_options=_room_options(session),
             ),
-            room=session.ctx.room,
-            room_options=_room_options(session),
-        )
+        ):
+            return
         logger.info(
             "[voice-timing] session started engine=realtime room=%s total_ms=%d",
             session.ctx.room.name,
@@ -580,27 +644,34 @@ async def _realtime_chat_context(session: VoiceSession) -> llm.ChatContext | Non
 
 
 async def _wait_for_disconnect(session: VoiceSession) -> None:
-    """Wait for the call, posting accumulated usage periodically while it lasts."""
+    """Wait for the call, flushing usage and refreshing its heartbeat while it lasts."""
 
     recorders = [
         recorder
         for recorder in (session.realtime_usage, session.stt_usage)
         if recorder is not None
     ]
-    if not recorders:
-        await session.disconnected.wait()
-        return
+    deadline = session.started_at + MAX_CALL_DURATION_SECONDS
 
-    while True:
+    while not session.disconnected.is_set():
+        remaining = deadline - time.perf_counter()
+        if remaining <= 0:
+            logger.info(
+                "[voice-agent] call reached the maximum duration conversation=%s",
+                session.claims.conversation_id,
+            )
+            session.mark_closed("max_duration")
+            return
         try:
             await asyncio.wait_for(
                 session.disconnected.wait(),
-                timeout=USAGE_FLUSH_INTERVAL_SECONDS,
+                timeout=min(USAGE_FLUSH_INTERVAL_SECONDS, remaining),
             )
             return
         except TimeoutError:
             for recorder in recorders:
                 await recorder.flush()
+            await session.lifecycle.touch()
 
 
 async def _finish(session: VoiceSession) -> None:
@@ -618,7 +689,7 @@ async def _finish(session: VoiceSession) -> None:
         code=session.close_code,
     )
     await session.events.aclose()
-    await _delete_room(session.ctx)
+    await delete_room(session.ctx)
     await session.lifecycle.finish(failed=session.failed or session.close_failed)
     logger.info(
         "[voice-agent] ended conversation=%s",
