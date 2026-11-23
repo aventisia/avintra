@@ -115,6 +115,47 @@ def test_lifecycle_closes_the_conversation_row_created_by_the_api(monkeypatch):
     assert session.commits == 1
 
 
+def test_lifecycle_touches_the_conversation_until_it_finishes(monkeypatch):
+    session, _context = _patch_session(monkeypatch)
+    touch = AsyncMock()
+    monkeypatch.setattr(
+        persistence.conversation_service, "touch_voice_conversation", touch
+    )
+    finish = AsyncMock()
+    monkeypatch.setattr(
+        persistence.conversation_service, "finish_voice_conversation", finish
+    )
+    claims = _claims()
+    lifecycle = VoiceConversationLifecycle(claims)
+
+    async def run() -> None:
+        await lifecycle.touch()
+        await lifecycle.finish(failed=False)
+        await lifecycle.touch()
+
+    asyncio.run(run())
+
+    touch.assert_awaited_once_with(
+        db_session=session,
+        conversation_id=claims.conversation_id,
+        user_id=USER_ID,
+    )
+    assert session.commits == 2
+
+
+def test_a_failed_heartbeat_does_not_end_the_call(monkeypatch):
+    _patch_session(monkeypatch)
+    touch = AsyncMock(side_effect=RuntimeError("database is down"))
+    monkeypatch.setattr(
+        persistence.conversation_service, "touch_voice_conversation", touch
+    )
+    lifecycle = VoiceConversationLifecycle(_claims())
+
+    asyncio.run(lifecycle.touch())
+
+    touch.assert_awaited_once()
+
+
 def test_turn_timing_is_saved_through_the_conversation_service(monkeypatch):
     session, _context = _patch_session(monkeypatch)
     save = AsyncMock()

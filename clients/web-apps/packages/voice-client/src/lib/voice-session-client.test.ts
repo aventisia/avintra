@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { VoiceCallSnapshot } from "../types/voice-session.type";
+import type { VoiceCallSnapshot, VoiceSessionResponse } from "../types/voice-session.type";
 import { VoiceSessionClient } from "./voice-session-client";
 
 const { FakeRoom, fakeRooms } = vi.hoisted(() => {
@@ -62,6 +62,7 @@ const SESSION = {
 } as const;
 
 const RESUME_DELAY_MS = 300;
+const START_TIMEOUT_MS = 45_000;
 
 const emitState = (room: (typeof fakeRooms)[number], state: string): void => {
   const event = new TextEncoder().encode(
@@ -164,6 +165,58 @@ describe("VoiceSessionClient call timer", () => {
 
     expect(snapshots.at(-1)?.state).toBe("error");
     expect(snapshots.at(-1)?.callMs).toBe(0);
+
+    await client.end();
+  });
+});
+
+describe("VoiceSessionClient start timeout", () => {
+  it("fails a call that never reaches the worker", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: () => new Promise(() => {}),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    void client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(snapshots.at(-1)?.state).toBe("error");
+    expect(snapshots.at(-1)?.isActive).toBe(false);
+    expect(snapshots.at(-1)?.error?.message).toBe("The voice session did not start.");
+  });
+
+  it("ignores a session that arrives after the start timeout", async () => {
+    let resolveSession: (session: VoiceSessionResponse) => void = () => {};
+    const client = new VoiceSessionClient({
+      createSession: () =>
+        new Promise<VoiceSessionResponse>((resolve) => {
+          resolveSession = resolve;
+        }),
+      onSnapshot: () => undefined,
+    });
+
+    void client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+    resolveSession({ ...SESSION });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(fakeRooms).toHaveLength(0);
+  });
+
+  it("keeps a call that reached the worker before the deadline", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    emitState(fakeRooms[0], "listening");
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(snapshots.at(-1)?.state).toBe("listening");
+    expect(snapshots.at(-1)?.isActive).toBe(true);
 
     await client.end();
   });

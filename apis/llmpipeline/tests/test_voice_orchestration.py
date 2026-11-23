@@ -49,6 +49,8 @@ from voice_agent.session_runtime import (
 )
 from voice_agent.tts_adapter import LiteLLMTTS
 
+from .voice_test_helpers import FakeConversationLifecycle
+
 FLOW_VERSION_ID = UUID("44444444-4444-4444-4444-444444444444")
 FLOW_ID = UUID("33333333-3333-3333-3333-333333333333")
 TENANT_ID = UUID("11111111-1111-1111-1111-111111111111")
@@ -110,33 +112,19 @@ class _FakeTurnTimingRecorder:
         self.turns.append((turn_id, timing))
 
 
-class _FakeConversationLifecycle:
-    instances: list["_FakeConversationLifecycle"] = []
-
-    def __init__(self, claims: VoiceJobClaims) -> None:
-        self.claims = claims
-        self.calls = 0
-        self.failed: bool | None = None
-        self.instances.append(self)
-
-    async def finish(self, *, failed: bool) -> None:
-        self.calls += 1
-        self.failed = failed
-
-
 @pytest.fixture(autouse=True)
 def voice_persistence(monkeypatch):
     _FakeTurnTimingRecorder.instances = []
-    _FakeConversationLifecycle.instances = []
+    FakeConversationLifecycle.instances = []
     monkeypatch.setattr(
         session_runtime, "VoiceTurnTimingRecorder", _FakeTurnTimingRecorder
     )
     monkeypatch.setattr(
-        session_runtime, "VoiceConversationLifecycle", _FakeConversationLifecycle
+        session_runtime, "VoiceConversationLifecycle", FakeConversationLifecycle
     )
     return SimpleNamespace(
         recorders=_FakeTurnTimingRecorder.instances,
-        lifecycles=_FakeConversationLifecycle.instances,
+        lifecycles=FakeConversationLifecycle.instances,
     )
 
 
@@ -951,6 +939,85 @@ def test_join_failure_marks_the_conversation_failed_and_deletes_the_room(
     assert ctx.deleted_rooms == 1
 
 
+def test_caller_that_never_joins_is_torn_down_after_the_join_timeout(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch)
+
+    async def never_joins(*_args, **_kwargs):
+        await asyncio.Event().wait()
+
+    ctx.wait_for_participant = never_joins
+    monkeypatch.setattr(session_runtime, "CALLER_JOIN_TIMEOUT_SECONDS", 0.01)
+
+    asyncio.run(run_session(ctx, _claims(), _settings()))
+
+    assert fake_session.instances == []
+    assert ctx.shutdowns == ["caller did not join"]
+    assert ctx.deleted_rooms == 1
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is True
+    events = _payloads(ctx)
+    [error] = _of_type(events, "error")
+    assert error["code"] == ERROR_CODE_UPSTREAM
+    [closed] = _of_type(events, "session.closed")
+    assert closed["reason"] == "error"
+    assert closed["code"] == WS_CLOSE_UPSTREAM_FAILURE
+
+
+def test_caller_leaving_before_the_session_starts_skips_the_agent_session(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch)
+
+    async def leaves_while_joining(*, identity):
+        assert identity == f"user-{USER_ID}"
+        ctx.room.handlers["participant_disconnected"](ctx.caller)
+        return ctx.caller
+
+    ctx.wait_for_participant = leaves_while_joining
+
+    asyncio.run(run_session(ctx, _claims(), _settings()))
+
+    assert fake_session.instances == []
+    assert ctx.shutdowns == []
+    assert ctx.deleted_rooms == 1
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    [closed] = _of_type(_payloads(ctx), "session.closed")
+    assert closed["reason"] == "participant_disconnected"
+    assert closed["code"] == WS_CLOSE_NORMAL
+
+
+def test_caller_leaving_during_the_session_start_cancels_it(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+
+    async def hang_up_during_start(_fake):
+        ctx.room.handlers["participant_disconnected"](ctx.caller)
+        await asyncio.Event().wait()
+
+    fake_session = _fake_agent_session(monkeypatch, on_start=hang_up_during_start)
+
+    asyncio.run(run_session(ctx, _claims(), _settings()))
+
+    [instance] = fake_session.instances
+    assert instance.calls == ["start", "aclose"]
+    assert instance.closed is True
+    assert ctx.deleted_rooms == 1
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    [closed] = _of_type(_payloads(ctx), "session.closed")
+    assert closed["reason"] == "participant_disconnected"
+    assert closed["code"] == WS_CLOSE_NORMAL
+
+
 def test_other_participants_leaving_does_not_end_the_call(
     monkeypatch, voice_persistence
 ):
@@ -972,6 +1039,93 @@ def test_other_participants_leaving_does_not_end_the_call(
     assert ctx.shutdowns == []
     assert voice_persistence.lifecycles[0].failed is False
     assert ctx.deleted_rooms == 1
+
+
+def test_call_stops_at_the_maximum_duration(monkeypatch, voice_persistence):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(monkeypatch)
+    monkeypatch.setattr(session_runtime, "MAX_CALL_DURATION_SECONDS", 0.01)
+
+    asyncio.run(run_session(ctx, _claims(), _settings(firstSpeaker="human")))
+
+    [instance] = fake_session.instances
+    assert instance.calls == ["start", "aclose"]
+    assert ctx.deleted_rooms == 1
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    [closed] = _of_type(_payloads(ctx), "session.closed")
+    assert closed["reason"] == "max_duration"
+    assert closed["code"] == WS_CLOSE_NORMAL
+
+
+def test_call_refreshes_its_heartbeat_while_it_waits(monkeypatch, voice_persistence):
+    ctx = _FakeJobContext()
+    monkeypatch.setattr(session_runtime, "USAGE_FLUSH_INTERVAL_SECONDS", 0.01)
+
+    async def on_start(_session) -> None:
+        async def hang_up() -> None:
+            await asyncio.sleep(0.05)
+            ctx.room.handlers["participant_disconnected"](ctx.caller)
+
+        asyncio.create_task(hang_up())
+
+    _fake_agent_session(monkeypatch, on_start=on_start)
+
+    asyncio.run(run_session(ctx, _claims(), _settings(firstSpeaker="human")))
+
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.touches >= 1
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    [closed] = _of_type(_payloads(ctx), "session.closed")
+    assert closed["reason"] == "participant_disconnected"
+
+
+def test_wait_for_disconnect_flushes_usage_and_touches_on_the_interval(monkeypatch):
+    class _Recorder:
+        def __init__(self) -> None:
+            self.flushes = 0
+
+        async def flush(self) -> None:
+            self.flushes += 1
+
+    class _Lifecycle:
+        def __init__(self) -> None:
+            self.touches = 0
+
+        async def touch(self) -> None:
+            self.touches += 1
+
+    class _FakeVoiceSession:
+        def __init__(self) -> None:
+            self.realtime_usage = _Recorder()
+            self.stt_usage = None
+            self.started_at = asyncio.get_running_loop().time()
+            self.claims = SimpleNamespace(conversation_id="conversation-1")
+            self.disconnected = asyncio.Event()
+            self.lifecycle = _Lifecycle()
+            self.reasons: list[str] = []
+
+        def mark_closed(self, reason: str) -> None:
+            self.reasons.append(reason)
+            self.disconnected.set()
+
+    monkeypatch.setattr(session_runtime, "USAGE_FLUSH_INTERVAL_SECONDS", 0.01)
+
+    async def run() -> _FakeVoiceSession:
+        session = _FakeVoiceSession()
+        task = asyncio.create_task(session_runtime._wait_for_disconnect(session))
+        await asyncio.sleep(0.035)
+        session.disconnected.set()
+        await task
+        return session
+
+    session = asyncio.run(run())
+
+    assert session.realtime_usage.flushes >= 1
+    assert session.lifecycle.touches == session.realtime_usage.flushes
+    assert session.reasons == []
 
 
 def test_session_failure_closes_with_the_upstream_failure_code(

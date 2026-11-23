@@ -12,6 +12,7 @@ from app.features.langgraph.checkpoint.persistence import (
     load_messages,
     save_message as _save_message,
     save_transcript as _save_transcript,
+    touch_conversation as _touch_conversation,
     truncate_messages,
     update_conversation_status as _update_conversation_status,
 )
@@ -217,6 +218,22 @@ class ConversationService:
                 "Failed to finish voice conversation. conversation_id=%s",
                 conversation_id,
             )
+
+    async def touch_voice_conversation(
+        self,
+        db_session: AsyncSession,
+        conversation_id: str,
+        *,
+        user_id: UUID | None = None,
+    ) -> None:
+        """Refresh the heartbeat of a voice conversation that is still active."""
+
+        await _touch_conversation(
+            session=db_session,
+            conversation_id=conversation_id,
+            audit_user_id=user_id,
+        )
+        await db_session.flush()
 
     def build_request_messages(
         self,

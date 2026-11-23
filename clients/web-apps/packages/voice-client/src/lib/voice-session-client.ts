@@ -11,6 +11,10 @@ import { applyVoiceEvent, parseVoiceEvent } from "./voice-events";
 
 const TIMER_INTERVAL_MS = 500;
 
+// IMPORTANT NOTE: a worker that never joins leaves the caller in `connecting`
+// with no feedback, so the client gives up on its own.
+const SESSION_START_TIMEOUT_MS = 45_000;
+
 // IMPORTANT NOTE: the browser can still play buffered agent audio after the worker reports `listening`.
 const MIC_RESUME_DELAY_MS = 300;
 
@@ -67,6 +71,7 @@ export class VoiceSessionClient {
   private _micGated = false;
   private _generation = 0;
   private _startedAt = 0;
+  private _workerStarted = false;
   private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
   private _disposed = false;
   private readonly _prepare: VoiceSessionClientOptions["prepare"];
@@ -84,6 +89,7 @@ export class VoiceSessionClient {
 
     const generation = ++this._generation;
     await this._releaseRoom();
+    this._workerStarted = false;
     this._setSnapshot(createVoiceCallSnapshot());
 
     try {
@@ -228,6 +234,7 @@ export class VoiceSessionClient {
     const event = parseVoiceEvent(payload, topic);
     if (!event) return;
 
+    this._workerStarted = true;
     this._setSnapshot(applyVoiceEvent(this._snapshot, event));
     if (event.type === "session.closed") void this._releaseRoom();
   }
@@ -299,7 +306,19 @@ export class VoiceSessionClient {
     this._stopTimer();
     this._timer = setInterval(() => {
       if (!this._snapshot.isActive) return;
-      this._update({ callMs: Date.now() - this._startedAt });
+
+      const elapsed = Date.now() - this._startedAt;
+      this._update({ callMs: elapsed });
+
+      if (
+        !this._workerStarted &&
+        this._snapshot.state === "connecting" &&
+        elapsed >= SESSION_START_TIMEOUT_MS
+      ) {
+        ++this._generation;
+        this._fail(new Error("The voice session did not start."));
+        void this._releaseRoom();
+      }
     }, TIMER_INTERVAL_MS);
   }
 

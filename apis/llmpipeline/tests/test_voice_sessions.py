@@ -10,6 +10,7 @@ from uuid import UUID
 
 import jwt
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from app.core.config import livekit_http_url, livekit_ws_url, settings
 from app.features.auth.authenticated_user import User
@@ -29,6 +30,7 @@ FLOW_ID = UUID("33333333-3333-3333-3333-333333333333")
 FLOW_VERSION_ID = UUID("44444444-4444-4444-4444-444444444444")
 CONVERSATION_ID = UUID("55555555-5555-5555-5555-555555555555")
 OTHER_CONVERSATION_ID = UUID("66666666-6666-6666-6666-666666666666")
+SPACE_ID = UUID("77777777-7777-7777-7777-777777777777")
 AGENT_NAME = "avintra-voice-agent"
 ROOM_NAME = f"voice-{CONVERSATION_ID}"
 
@@ -52,6 +54,10 @@ def _request(mode: str = "live") -> VoiceSessionRequest:
         conversation_id=CONVERSATION_ID,
         mode=mode,
     )
+
+
+async def _allow_conversation(*_args, **_kwargs) -> None:
+    return None
 
 
 def _worker_token(ttl_seconds: int = 300, **overrides) -> str:
@@ -247,12 +253,129 @@ class _FakeLiveKitAPI:
         return False
 
 
+class _FakeDbSession:
+    def __init__(self, found) -> None:
+        self._found = found
+
+    async def scalar(self, _statement):
+        return self._found
+
+
+class _FakeDbContext:
+    def __init__(self, found) -> None:
+        self._found = found
+
+    async def __aenter__(self) -> _FakeDbSession:
+        return _FakeDbSession(self._found)
+
+    async def __aexit__(self, *_exc) -> bool:
+        return False
+
+
+def test_verify_voice_conversation_accepts_the_callers_own_conversation(monkeypatch):
+    monkeypatch.setattr(
+        session_service,
+        "get_db_session_context",
+        lambda _name: _FakeDbContext(CONVERSATION_ID),
+    )
+
+    asyncio.run(session_service.verify_voice_conversation(_request(), _user()))
+
+
+def test_verify_voice_conversation_rejects_an_unknown_conversation(monkeypatch):
+    monkeypatch.setattr(
+        session_service,
+        "get_db_session_context",
+        lambda _name: _FakeDbContext(None),
+    )
+
+    with pytest.raises(session_service.VoiceSessionError) as error:
+        asyncio.run(session_service.verify_voice_conversation(_request(), _user()))
+
+    assert error.value.status_code == 404
+
+
+def _verification_sql(monkeypatch, user) -> str:
+    statements = []
+
+    class _CapturingDbSession:
+        async def scalar(self, statement):
+            statements.append(statement)
+            return CONVERSATION_ID
+
+    class _CapturingDbContext:
+        async def __aenter__(self) -> _CapturingDbSession:
+            return _CapturingDbSession()
+
+        async def __aexit__(self, *_exc) -> bool:
+            return False
+
+    monkeypatch.setattr(
+        session_service,
+        "get_db_session_context",
+        lambda _name: _CapturingDbContext(),
+    )
+
+    asyncio.run(session_service.verify_voice_conversation(_request(), user))
+
+    [statement] = statements
+    return str(
+        statement.compile(
+            dialect=postgresql.dialect(),
+            compile_kwargs={"literal_binds": True},
+        )
+    )
+
+
+def test_verify_voice_conversation_requires_an_active_voice_thread(monkeypatch):
+    sql = _verification_sql(monkeypatch, _user(str(SPACE_ID)))
+
+    assert "lower(\"run_Conversations\".\"Status\") = 'active'" in sql
+    assert "lower(\"run_Conversations\".\"Channel\") = 'voice'" in sql
+
+
+def test_verify_voice_conversation_scopes_to_the_callers_space(monkeypatch):
+    sql = _verification_sql(monkeypatch, _user(str(SPACE_ID)))
+
+    assert f"\"SpaceId\" = '{SPACE_ID}'" in sql
+
+
+def test_verify_voice_conversation_scopes_a_central_call_to_central_rows(monkeypatch):
+    sql = _verification_sql(monkeypatch, _user(None))
+
+    assert '"SpaceId" IS NULL' in sql
+
+
+def test_create_session_rejects_a_foreign_conversation_before_creating_a_room(monkeypatch):
+    monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "http://livekit.test")
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://livekit.test")
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "test-key")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "test-secret")
+    monkeypatch.setattr(
+        session_service,
+        "get_db_session_context",
+        lambda _name: _FakeDbContext(None),
+    )
+    _FakeLiveKitAPI.last_instance = None
+
+    async def run():
+        with patch.object(session_service, "LiveKitAPI", _FakeLiveKitAPI):
+            await session_service.create_session(_request(), _user())
+
+    with pytest.raises(session_service.VoiceSessionError) as error:
+        asyncio.run(run())
+
+    assert error.value.status_code == 404
+    assert _FakeLiveKitAPI.last_instance is None
+
+
 def test_create_session_dispatches_the_bound_worker(monkeypatch):
     monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", "http://livekit.test")
     monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://livekit.test")
     monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "test-key")
     monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "test-secret")
     monkeypatch.setattr(settings, "LIVEKIT_AGENT_NAME", AGENT_NAME)
+    monkeypatch.setattr(session_service, "verify_voice_conversation", _allow_conversation)
 
     async def run():
         with patch.object(session_service, "LiveKitAPI", _FakeLiveKitAPI):
@@ -305,6 +428,7 @@ def test_create_session_deletes_the_room_when_dispatch_fails(monkeypatch):
     monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "test-key")
     monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "test-secret")
     monkeypatch.setattr(settings, "LIVEKIT_AGENT_NAME", AGENT_NAME)
+    monkeypatch.setattr(session_service, "verify_voice_conversation", _allow_conversation)
 
     class _FailingLiveKitAPI(_FakeLiveKitAPI):
         def __init__(self, **kwargs) -> None:
