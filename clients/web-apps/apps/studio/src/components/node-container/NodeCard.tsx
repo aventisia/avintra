@@ -109,7 +109,7 @@ export const NodeCardContent = ({
           {title}
         </span>
       </span>
-      <NodeStateMark state={runState} />
+      {runState !== "idle" && <NodeStateMark state={runState} />}
     </>
   ) : (
     <>
