@@ -1,4 +1,4 @@
-# Aventisia's production stack for one bare-metal host (server 2), run by deploy.sh next to the host's own nginx,
+# Aventisia's stack for one host (UAT, then production server 2), run by deploy.sh next to the host's own nginx,
 # avdb Postgres and Azure Blob; images come from .github/workflows/docker-images.yml. Setup: README.md.
 # /opt/avintra/.env (template: .env.example) fills the ${...} values below; env/*.env hold each container's own settings.
 # IMPORTANT NOTE: Docker-published ports bypass UFW, so every port binds to 127.0.0.1 except LiveKit's media ports.

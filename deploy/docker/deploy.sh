@@ -14,10 +14,17 @@ cd "$DIR"
 exec 9>"$DIR/.deploy.lock"
 flock -n 9 || { echo "another deploy is running" >&2; exit 3; }
 
-PREVIOUS_TAG="$(sed -n 's/^AVINTRA_TAG=\([^[:space:]#]*\).*/\1/p' .env)"
+env_value() { sed -n "s/^$1=\([^[:space:]#]*\).*/\1/p" .env; }
+
+PREVIOUS_TAG="$(env_value AVINTRA_TAG)"
 [ -n "$PREVIOUS_TAG" ] || { echo ".env has no AVINTRA_TAG= line" >&2; exit 2; }
+TAG_PREFIX="$(env_value AVINTRA_TAG_PREFIX)"
+case "$TAG_PREFIX" in
+  '' | uat-) ;;
+  *) echo "AVINTRA_TAG_PREFIX must be empty (production) or uat-" >&2; exit 2 ;;
+esac
 # IMPORTANT NOTE: the exported tag overrides .env, which keeps the last good tag until this deploy succeeds.
-export AVINTRA_TAG="sha-${SHA:0:7}"
+export AVINTRA_TAG="${TAG_PREFIX}sha-${SHA:0:7}"
 compose_file=compose.next.yml
 changes_started=0
 
@@ -34,6 +41,7 @@ files_run() {
 
 # IMPORTANT NOTE: the copy lands beside the live folder and is renamed in, so readers never see a partial tree, only a missing one between the two renames.
 sync_seed_folder() {
+  # shellcheck disable=SC2016
   files_run "$1" '
     mkdir -p "$(dirname "/files/$2")"
     rm -rf "/files/$2.new" "/files/$2.old"

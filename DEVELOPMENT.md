@@ -171,7 +171,7 @@ self-hosted compose file above is local-only and must not run in production.
 
 ## Docker Build & Push
 
-Every push to `main` builds and pushes all images to Docker Hub through `.github/workflows/docker-images.yml`, tagged `sha-<7-char commit>`; server 2 deploys them (`deploy/docker/README.md`). To build by hand, log in to Docker Hub if you push:
+Every push to `main` or `uat` builds and pushes all images to Docker Hub through `.github/workflows/docker-images.yml`, tagged `sha-<7-char commit>` from `main` and `uat-sha-<7-char commit>` (staging web builds) from `uat`; UAT runs the `uat` images, and server 2 will run `main`'s (`deploy/docker/README.md`). To build by hand, log in to Docker Hub if you push:
 
 ```sh
 sudo docker login -u aventisia
