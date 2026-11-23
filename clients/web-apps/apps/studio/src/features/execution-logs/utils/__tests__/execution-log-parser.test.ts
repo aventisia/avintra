@@ -68,6 +68,49 @@ describe("mapLogsToFlow", () => {
     expect(result.stoppedAt).toEqual({ nodeId: "inner", pathKey: "global" });
   });
 
+  it("does not claim a stop that happened outside the viewed sub-flow", () => {
+    const afterSubFlow = [
+      log({ nodeExecutionId: "block", nodeId: "block" }),
+      log({ nodeExecutionId: "inner", nodeId: "inner", callerReferenceId: "block" }),
+      log({ nodeExecutionId: "after", nodeId: "after", isSuccess: false }),
+    ];
+    const siblingFailure = [
+      log({ nodeExecutionId: "block-a", nodeId: "block-a" }),
+      log({ nodeExecutionId: "inner-a", nodeId: "inner", callerReferenceId: "block-a" }),
+      log({ nodeExecutionId: "block-b", nodeId: "block-b" }),
+      log({
+        nodeExecutionId: "inner-b",
+        nodeId: "inner",
+        callerReferenceId: "block-b",
+        isSuccess: false,
+      }),
+    ];
+
+    expect(mapLogsToFlow(afterSubFlow, innerNodes, [], "block").stoppedAt).toBeNull();
+    expect(mapLogsToFlow(siblingFailure, innerNodes, [], "block-a").stoppedAt).toBeNull();
+  });
+
+  it("marks a nested caller when the stop is inside the viewed sub-flow", () => {
+    const nodes: Node[] = [
+      ...innerNodes,
+      { id: "nested", type: "blockNode", position: { x: 0, y: 0 }, data: {} },
+    ];
+    const logs = [
+      log({ nodeExecutionId: "block", nodeId: "block" }),
+      log({ nodeExecutionId: "nested", nodeId: "nested", callerReferenceId: "block" }),
+      log({
+        nodeExecutionId: "deep",
+        nodeId: "deep",
+        callerReferenceId: "nested",
+        isSuccess: false,
+      }),
+    ];
+
+    const result = mapLogsToFlow(logs, nodes, [], "block");
+
+    expect(result.stoppedAt).toEqual({ nodeId: "nested", pathKey: "global" });
+  });
+
   it("keys the stopped step to the iteration that produced the last log", () => {
     const logs = [
       log({
@@ -110,6 +153,33 @@ describe("mapLogsToFlow", () => {
     const result = mapLogsToFlow([], loopNodes, []);
 
     expect(result.stoppedAt).toBeNull();
+  });
+
+  it("keeps the edges of a conditional break/continue that falls through", () => {
+    const nodes: Node[] = [
+      { id: "before", type: "activityNode", position: { x: 0, y: 0 }, data: {} },
+      { id: "break", type: "breakLoopNode", position: { x: 0, y: 0 }, data: {} },
+      { id: "after", type: "activityNode", position: { x: 0, y: 0 }, data: {} },
+    ];
+    const edges = [
+      { id: "before-break", source: "before", target: "break" },
+      { id: "break-after", source: "break", target: "after" },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ].map((e) => ({ ...e }) as any);
+    const logs = [
+      log({ nodeExecutionId: "before", nodeId: "before" }),
+      log({
+        nodeExecutionId: "break",
+        nodeId: "break",
+        outputs: { Action: "passthrough", ConditionsResult: "False" },
+      }),
+      log({ nodeExecutionId: "after", nodeId: "after" }),
+    ];
+
+    const result = mapLogsToFlow(logs, nodes, edges);
+
+    expect(result.traversedEdges["before-break"]?.global).toBe(true);
+    expect(result.traversedEdges["break-after"]?.global).toBe(true);
   });
 
   it("keys a loop merge to global despite the executor stamping it with the exited loop", () => {

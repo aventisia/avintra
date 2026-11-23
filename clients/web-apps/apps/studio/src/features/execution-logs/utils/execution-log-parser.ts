@@ -116,6 +116,21 @@ export const mapLogsToFlow = (
   // Structural nodes are 1px invisible anchors with no frame to mark, so they are skipped.
   let stoppedAt: { nodeId: string; pathKey: string } | null = null;
 
+  // A stopped step belongs only to the view that contains the run's final log. A sub-flow
+  // that completed before the run failed elsewhere must not claim the stop, so walk the
+  // caller chain from the final log to the selected caller.
+  const callerOfNode: Record<string, string> = {};
+  logs.forEach((entry) => {
+    if (entry.callerReferenceId) callerOfNode[entry.nodeId] = entry.callerReferenceId;
+  });
+  const stopCallers = new Set<string>();
+  let stopCaller = logs[logs.length - 1]?.callerReferenceId ?? "";
+  while (stopCaller && !stopCallers.has(stopCaller)) {
+    stopCallers.add(stopCaller);
+    stopCaller = callerOfNode[stopCaller] ?? "";
+  }
+  const stopIsInView = !callerId || stopCallers.has(callerId);
+
   const updateLoopTotal = (loopId: string, idx: number) => {
     if (!loopRegistry[loopId]) loopRegistry[loopId] = { total: 0 };
     loopRegistry[loopId].total = Math.max(loopRegistry[loopId].total, idx + 1);
@@ -302,7 +317,7 @@ export const mapLogsToFlow = (
       if (!skippedLoops[nodeId]) skippedLoops[nodeId] = {};
       skippedLoops[nodeId][pathKey] = true;
     }
-    if (!MARKLESS_NODE_TYPES.has(node.type ?? "")) {
+    if (stopIsInView && !MARKLESS_NODE_TYPES.has(node.type ?? "")) {
       stoppedAt = { nodeId, pathKey };
     }
 
@@ -316,11 +331,14 @@ export const mapLogsToFlow = (
     // A loop exit log sits between the last body node and the loop's merge node but has no
     // graph edge to either, so it is transparent for adjacency: retaining the previous body
     // node lets the branchEnd → merge edge resolve. A skip log is a real hop through the loop
-    // node (nothing ran inside it), so it is kept and draws loop → merge.
+    // node (nothing ran inside it), so it is kept and draws loop → merge. Only a loop's own
+    // log can be an exit: a conditional break/continue also reports `ConditionsResult`
+    // "False" when it falls through, and is a visible hop that must keep its edges.
     const exitStatus = (entry.outputs as Record<string, unknown> | undefined)?.LoopStatus;
     const isExitEntry =
       exitStatus === "exit" ||
-      (exitStatus === undefined &&
+      (isLoopLog &&
+        exitStatus === undefined &&
         (entry.outputs as Record<string, unknown> | undefined)?.ConditionsResult === "False");
     if (!isExitEntry) {
       if (previousNodeId && previousNodeId !== nodeId) {
