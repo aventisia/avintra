@@ -171,10 +171,10 @@ self-hosted compose file above is local-only and must not run in production.
 
 ## Docker Build & Push
 
-Log in to your container registry if you push images:
+Every push to `main` builds and pushes all images to Docker Hub through `.github/workflows/docker-images.yml`, tagged `sha-<7-char commit>`; server 2 deploys them (`deploy/docker/README.md`). To build by hand, log in to Docker Hub if you push:
 
 ```sh
-sudo docker login <registry>
+sudo docker login -u aventisia
 ```
 
 ### 1. Build Docker images from the repository root
@@ -183,25 +183,25 @@ The images build the web apps themselves. The full list of images and build comm
 
 ```sh
 # Edge nginx: web apps over HTTPS, proxying the APIs (amd64 only)
-sudo docker build --platform linux/amd64 -f deploy/docker/web.Dockerfile --target edge -t <registry>/avplatform/edge:<tag> .
+sudo docker build --platform linux/amd64 -f deploy/docker/web.Dockerfile --target edge -t aventisia/avintra-edge:<tag> .
 
 # Legacy .NET APIs
-sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t <registry>/avplatform/accounts-apis:<tag> .
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t <registry>/avplatform/workspace-apis:<tag> .
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t aventisia/avintra-accounts-api:<tag> .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t aventisia/avintra-workspace-api:<tag> .
 
 # LLM Pipeline and Corsair
-sudo docker build -f apis/llmpipeline/Dockerfile -t <registry>/avplatform/llmpipeline-apis:<tag> apis/llmpipeline
-sudo docker build -f apis/corsair/Dockerfile -t <registry>/avplatform/corsair:<tag> apis/corsair
+sudo docker build -f apis/llmpipeline/Dockerfile -t aventisia/avintra-llmpipeline-api:<tag> apis/llmpipeline
+sudo docker build -f apis/corsair/Dockerfile -t aventisia/avintra-corsair-api:<tag> apis/corsair
 ```
 
 ### 2. Push images
 
 ```sh
-sudo docker push <registry>/avplatform/edge:<tag>
-sudo docker push <registry>/avplatform/accounts-apis:<tag>
-sudo docker push <registry>/avplatform/workspace-apis:<tag>
-sudo docker push <registry>/avplatform/llmpipeline-apis:<tag>
-sudo docker push <registry>/avplatform/corsair:<tag>
+sudo docker push aventisia/avintra-edge:<tag>
+sudo docker push aventisia/avintra-accounts-api:<tag>
+sudo docker push aventisia/avintra-workspace-api:<tag>
+sudo docker push aventisia/avintra-llmpipeline-api:<tag>
+sudo docker push aventisia/avintra-corsair-api:<tag>
 ```
 
 ## Network Setup

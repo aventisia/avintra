@@ -1,6 +1,8 @@
-"""Worker pool options for the voice agent.
+"""Worker options for the voice agent: its process pool and the LiveKit URL it registers on.
 
-Production keeps a prewarmed process so the first caller does not wait for the
+The worker registers on the server-side LiveKit URL, not the browser URL, so
+with several servers behind one public address it joins the one hosting its
+rooms. Production keeps a prewarmed process so the first caller does not wait for the
 pipeline import and VAD load. Development registers before spawning so a fresh
 API process never races its first dispatch. These tests pin that floor until
 broader worker scaling is designed.
@@ -10,6 +12,7 @@ Run from ``apis/llmpipeline``:
     ./.venv/Scripts/python.exe -m pytest tests/test_voice_worker_processes.py -q
 """
 
+import pytest
 from livekit.agents import JobExecutorType
 from livekit.agents.worker import ServerEnvOption
 
@@ -28,3 +31,22 @@ def test_worker_spawns_on_demand_in_dev_and_keeps_a_floor_in_prod(monkeypatch):
     assert ServerEnvOption.getvalue(options.num_idle_processes, devmode=False) == 4
     assert options.initialize_process_timeout == 30
     assert options.job_executor_type == JobExecutorType.PROCESS
+
+
+@pytest.mark.parametrize(
+    ("http_url", "ws_url", "expected_ws_url"),
+    [
+        ("http://livekit:7880", "wss://avintra.example.com/livekit", "ws://livekit:7880"),
+        ("https://test.livekit.cloud", "wss://test.livekit.cloud", "wss://test.livekit.cloud"),
+        ("", "wss://test.livekit.cloud", "wss://test.livekit.cloud"),
+    ],
+)
+def test_worker_registers_on_the_server_side_livekit_url(
+    monkeypatch, http_url, ws_url, expected_ws_url
+):
+    monkeypatch.setattr(settings, "LIVEKIT_HTTP_URL", http_url)
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", ws_url)
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "key")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+
+    assert worker_options().ws_url == expected_ws_url
