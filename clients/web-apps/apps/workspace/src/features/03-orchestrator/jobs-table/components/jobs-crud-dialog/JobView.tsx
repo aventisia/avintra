@@ -50,6 +50,7 @@ import {
   AgentTypeAvatar,
   AgentVersion,
 } from "@/components/AgentIdentity";
+import { fetchParentFlow } from "@/features/01-build/flow-builder";
 import { getFlowTypeLabel } from "@/features/01-build/flows-table/utils/flow-type-label.util";
 
 import { getJob } from "../../apis/jobs-table-apis";
@@ -137,10 +138,20 @@ export const JobView = ({ rowId }: JobViewProps) => {
   const job = response?.data as JobRecordDto | undefined;
   useCrudDialogRecordView(job && `${job.flowName}_${job.flowVersionNumber}_${job.id}`);
 
+  // IMPORTANT NOTE: FetchParentFlowAsync resolves any FlowVersion id to its flow, so this doubles as the version-to-flow lookup for the log URL.
+  const { data: parentFlow } = useQuery({
+    queryKey: ["job-parent-flow", job?.flowVersionId],
+    queryFn: () => fetchParentFlow(job?.flowVersionId ?? ""),
+    enabled: !!job?.flowVersionId,
+  });
+
   if (isLoading) return <RecordSheetLoading label="Loading job details..." />;
   if (!job) return <RecordSheetUnavailable Icon={BriefcaseIcon} recordLabel="Job" />;
 
-  const executionLogUrl = `${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
+  const flowId = parentFlow?.data?.flowId;
+  const executionLogUrl = flowId
+    ? `${import.meta.env.VITE_STUDIO_PATH}execution-log?f=${flowId}&v=${job.flowVersionId}&j=${job.id}&rf=${flowId}&rv=${job.flowVersionId}`
+    : `${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
   const status = STATUS_DISPLAY[job.status] ?? { tone: "neutral", Icon: BriefcaseIcon };
   const { description, detail } = getTimeline(job);
 
