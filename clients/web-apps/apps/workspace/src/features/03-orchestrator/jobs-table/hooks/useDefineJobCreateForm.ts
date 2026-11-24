@@ -90,7 +90,6 @@ export const useDefineJobCreateForm = ({
 
   return {
     form,
-    isDirty,
     isValid,
     refineFormData,
   };
