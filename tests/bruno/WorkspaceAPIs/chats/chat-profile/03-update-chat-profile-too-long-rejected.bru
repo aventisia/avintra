@@ -1,0 +1,29 @@
+meta {
+  name: Update chat profile too long rejected
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "customInstructions": "x", "memoryNotes": "" }
+}
+
+script:pre-request {
+  req.setBody({ customInstructions: "x".repeat(1501), memoryNotes: "" });
+}
+
+script:post-response {
+  test("instructions over 1500 characters are rejected", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

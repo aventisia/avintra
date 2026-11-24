@@ -45,7 +45,7 @@ const NO_DESTINATIONS: readonly ChatDestinationOption[] = [];
 const ScrollToLatest = () => (
   <ThreadPrimitive.ScrollToBottom
     aria-label="Scroll to latest message"
-    className="absolute -top-12 left-1/2 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink-2 shadow-[0_4px_16px_-6px_rgb(0_0_0/0.2)] transition-opacity hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:invisible disabled:opacity-0 dark:bg-fill"
+    className="absolute -top-12 left-1/2 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-lg border border-line bg-surface text-ink-2 shadow-[0_4px_16px_-6px_rgb(0_0_0/0.2)] transition-opacity hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:invisible disabled:opacity-0 dark:bg-fill"
   >
     <ArrowDownIcon weight="bold" className="size-4" />
   </ThreadPrimitive.ScrollToBottom>
@@ -57,7 +57,7 @@ const ThreadSkeleton = () => (
     aria-label="Loading chat"
     className="mx-auto w-full max-w-[var(--chat-column)] flex-1 space-y-8 pt-8 delay-300 duration-300 animate-in fade-in-0 fill-mode-backwards"
   >
-    <Skeleton className="ml-auto h-11 w-2/5 rounded-3xl" />
+    <Skeleton className="ml-auto h-11 w-2/5 rounded-xl" />
     <div className="space-y-2.5">
       <Skeleton className="h-4 w-11/12 rounded" />
       <Skeleton className="h-4 w-4/5 rounded" />

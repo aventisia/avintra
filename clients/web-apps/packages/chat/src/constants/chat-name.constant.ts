@@ -1,0 +1,3 @@
+export const CHAT_TITLE_MAX_LENGTH = 200;
+
+export const PROJECT_NAME_MAX_LENGTH = 100;

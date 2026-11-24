@@ -204,50 +204,27 @@ public class ConversationService : IConversationService
         return serviceResponse.Update(null, 200, conversations);
     }
 
-    // Retrieves a specific conversation by its unique identifier.
     public async Task<ServiceResponse<ConversationDto>> GetByIdAsync(Guid conversationId)
     {
-        // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<ConversationDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve conversation. Please try again."
-        };
+        var serviceResponse = ServiceResponse<ConversationDto>.Create("Failed to retrieve conversation", 500);
 
         try
         {
-            // Fetch conversation by id and ensure ownership
             var conversation = await _unitOfWork.ConversationRepo
-                .GetByConditionAsync(w =>
-                    w.Id == conversationId &&
-                    w.UserId == _userId)
+                .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId)
                 .ProjectToType<ConversationDto>()
                 .SingleOrDefaultAsync();
 
-            // Validate existence
             if (conversation == null)
-            {
-                _logger.LogWarning(
-                    "[GetConversationById] Conversation not found or access denied. ConversationId: {ConversationId}, UserId: {UserId}",
-                    conversationId,
-                    _userId);
+                return serviceResponse.Update("Conversation not found", 404);
 
-                serviceResponse.Message = "Conversation not found.";
-                return serviceResponse;
-            }
-
-            // Assign success response
-            serviceResponse.Data = conversation;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Conversation retrieved successfully.";
+            return serviceResponse.Update(null, 200, conversation);
         }
         catch (Exception ex)
         {
-            // Log failure with context
-            _logger.LogError(ex, "[GetConversationById] Failed for ConversationId {ConversationId}", conversationId);
+            _logger.LogError(ex, "Error retrieving conversation {conversationId} for User ID {userId}.", conversationId, _userId);
+            return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
     // Creates a new conversation.
@@ -817,48 +794,30 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
-    // Gets a shared conversation by its read-only token.
     public async Task<ServiceResponse<ConversationDto>> GetSharedAsync(string shareToken)
     {
-        // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<ConversationDto>
-        {
-            Data = null,
-            Message = "Failed to retrieve shared conversation. Please try again."
-        };
+        var serviceResponse = ServiceResponse<ConversationDto>.Create("Failed to retrieve shared conversation", 500);
 
         try
         {
-            // A blank token never matches
             if (string.IsNullOrWhiteSpace(shareToken))
-            {
-                serviceResponse.Message = "Shared conversation not found.";
-                return serviceResponse;
-            }
+                return serviceResponse.Update("Shared conversation not found", 404);
 
             var conversation = await _unitOfWork.ConversationRepo
                 .GetByConditionAsync(w => w.ShareToken == shareToken)
                 .ProjectToType<ConversationDto>()
                 .SingleOrDefaultAsync();
 
-            // Validate existence
             if (conversation == null)
-            {
-                serviceResponse.Message = "Shared conversation not found.";
-                return serviceResponse;
-            }
+                return serviceResponse.Update("Shared conversation not found", 404);
 
-            // Assign success response
-            serviceResponse.Data = conversation;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Shared conversation retrieved successfully.";
+            return serviceResponse.Update(null, 200, conversation);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[GetSharedConversation] Failed for share token.");
+            _logger.LogError(ex, "Error retrieving shared conversation.");
+            return serviceResponse;
         }
-
-        return serviceResponse;
     }
 
     // Archives multiple conversations.

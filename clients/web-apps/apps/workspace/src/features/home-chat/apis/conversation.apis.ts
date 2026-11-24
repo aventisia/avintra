@@ -26,6 +26,14 @@ export const getLandingConversations = (params: {
     })
     .then((res) => res.data);
 
+/** Gets one of the user's conversations by its ID. */
+export const getConversation = (conversationId: string) =>
+  axiosInstance
+    .get<IHttpResponse<ConversationDto>>(`${baseAPIURL}/${conversationId}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
 /** Creates a new agent-less landing conversation. */
 export const createConversation = () =>
   axiosInstance

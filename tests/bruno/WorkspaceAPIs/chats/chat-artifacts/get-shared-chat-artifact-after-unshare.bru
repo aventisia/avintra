@@ -1,0 +1,19 @@
+meta {
+  name: Get shared chat artifact after unshare
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-artifacts/shared/{{CHAT_ARTIFACT_SHARE_TOKEN}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the old link no longer opens", function() { expect(res.getStatus()).to.equal(404); });
+}

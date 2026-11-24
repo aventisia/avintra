@@ -16,7 +16,7 @@ export const ChatDestination = ({ args }: { args: unknown }) => {
       type="button"
       aria-label={`Open ${destination.label} in ${destination.section}`}
       onClick={() => onNavigate(destination.route)}
-      className="group/destination my-3 flex w-full items-center gap-3.5 rounded-2xl border border-line bg-surface px-4 py-3 text-left shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] transition-colors duration-200 animate-in fade-in-0 slide-in-from-bottom-1 hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:animate-none dark:bg-fill/40"
+      className="group/destination my-3 flex w-full items-center gap-3.5 rounded-xl border border-line bg-surface px-4 py-3 text-left shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] transition-colors duration-200 animate-in fade-in-0 slide-in-from-bottom-1 hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus motion-reduce:animate-none dark:bg-fill/40"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
         <Icon className="size-5" />

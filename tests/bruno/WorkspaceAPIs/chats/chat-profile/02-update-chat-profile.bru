@@ -1,0 +1,31 @@
+meta {
+  name: Update chat profile
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "customInstructions": "bruno", "memoryNotes": "bruno" }
+}
+
+script:pre-request {
+  req.setBody({ customInstructions: "Bruno instructions", memoryNotes: "Bruno memory" });
+}
+
+script:post-response {
+  test("profile is saved", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.customInstructions).to.equal("Bruno instructions");
+    expect(res.getBody().data.memoryNotes).to.equal("Bruno memory");
+  });
+}

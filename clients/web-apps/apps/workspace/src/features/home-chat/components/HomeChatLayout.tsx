@@ -1,10 +1,4 @@
-import {
-  ChatHistory,
-  type ChatHistoryItem,
-  ChatTitle,
-  printChat,
-  toChatMarkdown,
-} from "@avplatform/chat";
+import { ChatHistory, ChatTitle, printChat, toChatMarkdown } from "@avplatform/chat";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { downloadBlob } from "@avplatform/ui/utils";
 import { useState } from "react";
@@ -13,10 +7,12 @@ import { toast } from "sonner";
 
 import { getMessages } from "../apis/conversation-message.apis";
 import { shareConversation, unshareConversation } from "../apis/conversation.apis";
+import { useHomeChatActiveChat } from "../hooks/useHomeChatActiveChat.hook";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatHistoryPanel } from "../hooks/useHomeChatHistoryPanel.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
+import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { buildSharedChatLink } from "../utils/shared-link.util";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
@@ -41,7 +37,7 @@ const stopSharing = async (id: string) => {
   }
 };
 
-const exportChat = async ({ id, title }: ChatHistoryItem) => {
+const exportChat = async ({ id, title }: HomeChatActiveChat) => {
   try {
     const markdown = toChatMarkdown(title, (await getMessages(id)).data);
     const fileName = `${title.replace(/[\\/:*?"<>|]+/g, "-").trim() || "Chat"}.md`;
@@ -60,7 +56,7 @@ export const HomeChatLayout = () => {
   const titles = useHomeChatHistory(false);
   const { renameChat } = useHomeChatHistoryActions();
   const { props: historyProps, confirmDelete } = useHomeChatHistoryPanel();
-  const activeChat = titles.items.find((item) => item.id === session.conversationId);
+  const activeChat = useHomeChatActiveChat(session.conversationId, titles.items, titles.isLoading);
 
   return (
     <>
@@ -69,7 +65,6 @@ export const HomeChatLayout = () => {
         onNewChat={() => navigate("/")}
         onOpenPreferences={() => setIsPreferencesOpen(true)}
         header={
-          // shortcut: the title comes from the loaded history pages, so a chat outside them shows no title; add a get-conversation endpoint if that matters.
           activeChat && (
             <ChatTitle
               key={activeChat.id}

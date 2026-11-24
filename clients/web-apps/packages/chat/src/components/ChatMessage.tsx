@@ -224,7 +224,7 @@ const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
       </div>
       {hasText && (
         <>
-          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
+          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-xl bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
             <MessagePrimitive.Parts />
           </div>
           {!readOnly && (
@@ -247,7 +247,7 @@ const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
 
 const EditComposer = () => (
   <MessagePrimitive.Root className="mx-auto flex w-full max-w-[var(--chat-column)] flex-col items-end pb-2 pt-6">
-    <ComposerPrimitive.Root className="flex w-full max-w-[85%] flex-col rounded-[1.25rem] border border-line bg-surface focus-within:border-line-strong">
+    <ComposerPrimitive.Root className="flex w-full max-w-[85%] flex-col rounded-xl border border-line bg-surface focus-within:border-line-strong">
       <ComposerPrimitive.Input
         autoFocus
         aria-label="Edit message"

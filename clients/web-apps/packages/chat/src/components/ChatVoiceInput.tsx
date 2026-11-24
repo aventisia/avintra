@@ -114,7 +114,7 @@ export const ChatVoiceInput = ({ transcribe }: ChatVoiceInputProps) => {
       <ChatIconButton
         label="Stop recording"
         onClick={stop}
-        className="w-auto gap-1.5 rounded-full bg-bad/10 px-3 text-bad hover:bg-bad/15 hover:text-bad"
+        className="w-auto gap-1.5 rounded-lg bg-bad/10 px-3 text-bad hover:bg-bad/15 hover:text-bad"
       >
         <StopIcon weight="fill" />
         <span className="text-xs tabular-nums">{formatSeconds(seconds)}</span>
@@ -126,7 +126,7 @@ export const ChatVoiceInput = ({ transcribe }: ChatVoiceInputProps) => {
       label={status === "transcribing" ? "Transcribing…" : "Dictate"}
       disabled={status === "transcribing"}
       onClick={() => void start()}
-      className="size-9 rounded-full"
+      className="size-9 rounded-lg"
     >
       {status === "transcribing" ? (
         <CircleNotchIcon className="animate-spin" />

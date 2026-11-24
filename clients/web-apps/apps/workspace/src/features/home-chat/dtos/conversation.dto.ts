@@ -9,7 +9,7 @@ export interface ConversationDto {
   /** Related flow version; null for agent-less landing conversations. */
   flowVersionId: string | null;
 
-  /** Title taken from the first words of the latest message. */
+  /** Stored title for landing chats (empty until the first turn), else the latest message. */
   title: string;
 
   /** Conversation lifecycle status. */

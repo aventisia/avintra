@@ -33,6 +33,15 @@ public class ChatProjectController : BaseApiController
     }
 
     /// <summary>
+    /// Updates an existing chat project.
+    /// </summary>
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<ChatProjectDto>>> UpdateChatProject([FromBody] UpdateChatProjectDto updateChatProjectDto)
+    {
+        return ResultHelper(await _chatProjectService.UpdateChatProjectAsync(updateChatProjectDto));
+    }
+
+    /// <summary>
     /// Deletes a chat project; its chats stay in the history, ungrouped.
     /// </summary>
     [HttpDelete("{chatProjectId}")]

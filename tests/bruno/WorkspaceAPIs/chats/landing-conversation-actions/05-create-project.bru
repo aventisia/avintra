@@ -1,0 +1,24 @@
+meta {
+  name: Create project for the conversation
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "name": "Bruno assign project" }
+}
+
+script:post-response {
+  test("project is created", function() { expect(res.getStatus()).to.equal(201); });
+  if (res.getStatus() == 201) bru.setVar("ACTIONS_PROJECT_ID", res.getBody().data.id);
+}

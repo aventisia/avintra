@@ -1,0 +1,26 @@
+meta {
+  name: Assign conversation to project
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/project
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "id": "{{ACTIONS_CONVERSATION_ID}}", "projectId": "{{ACTIONS_PROJECT_ID}}" }
+}
+
+script:post-response {
+  test("conversation is assigned", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}

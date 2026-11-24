@@ -1,0 +1,21 @@
+meta {
+  name: Delete chat project again not found
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("a deleted project is not found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

@@ -1,3 +1,4 @@
+import { type IHttpResponse } from "@avplatform/ui/dtos";
 import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -8,7 +9,11 @@ import {
   updateLandingConversationProject,
   updateLandingConversationTitle,
 } from "../apis/conversation.apis";
-import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
+import {
+  HOME_CHAT_CONVERSATION_QUERY_KEY,
+  HOME_CHAT_HISTORY_QUERY_KEY,
+} from "../constants/home-chat.constant";
+import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
 
@@ -17,8 +22,10 @@ type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 /** Renames (shown at once), pins, archives and deletes Home chats, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
-  const refreshHistory = () =>
-    queryClient.invalidateQueries({ queryKey: HOME_CHAT_HISTORY_QUERY_KEY });
+  const refreshHistory = () => {
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_CONVERSATION_QUERY_KEY });
+    return queryClient.invalidateQueries({ queryKey: HOME_CHAT_HISTORY_QUERY_KEY });
+  };
 
   const rename = useMutation({
     mutationFn: updateLandingConversationTitle,
@@ -33,6 +40,11 @@ export const useHomeChatHistoryActions = () => {
               ),
             }
           : data,
+      );
+      queryClient.setQueriesData<IHttpResponse<ConversationDto>>(
+        { queryKey: HOME_CHAT_CONVERSATION_QUERY_KEY },
+        (response) =>
+          response?.data?.id === id ? { ...response, data: { ...response.data, title } } : response,
       );
     },
     onError: () => toast.error("Couldn't rename that chat"),

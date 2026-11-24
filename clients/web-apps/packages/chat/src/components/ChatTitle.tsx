@@ -13,9 +13,11 @@ import {
   LinkSimpleIcon,
   PencilSimpleIcon,
 } from "@phosphor-icons/react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import { ChatTitleInput } from "./ChatTitleInput";
+import { CHAT_TITLE_MAX_LENGTH } from "../constants/chat-name.constant";
+import { useInlineEditFocusGuard } from "../hooks/useInlineEditFocusGuard.hook";
+import { ChatNameInput } from "./ChatNameInput";
 
 type ChatTitleProps = {
   title: string;
@@ -40,13 +42,15 @@ export const ChatTitle = ({
   onStopSharing,
 }: ChatTitleProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
-  const isRenamingRef = useRef(false);
+  const focusGuard = useInlineEditFocusGuard();
 
   if (isRenaming)
     return (
       <div className="w-full max-w-sm">
-        <ChatTitleInput
-          title={title}
+        <ChatNameInput
+          initialName={title}
+          label="Chat title"
+          maxLength={CHAT_TITLE_MAX_LENGTH}
           onDone={(next) => {
             setIsRenaming(false);
             if (next && next !== title) onRename(next);
@@ -68,17 +72,13 @@ export const ChatTitle = ({
         <DropdownMenuContent
           align="start"
           className="flex min-w-36 flex-col"
-          onCloseAutoFocus={(event) => {
-            // The rename input takes focus instead of the menu trigger.
-            if (isRenamingRef.current) event.preventDefault();
-            isRenamingRef.current = false;
-          }}
+          onCloseAutoFocus={focusGuard.onCloseAutoFocus}
         >
           <SimpleDDMenuItem
             content="Rename"
             Icon={PencilSimpleIcon}
             onSelect={() => {
-              isRenamingRef.current = true;
+              focusGuard.markEditing();
               setIsRenaming(true);
             }}
           />

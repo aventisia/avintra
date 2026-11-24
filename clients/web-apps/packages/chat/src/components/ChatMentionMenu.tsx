@@ -36,7 +36,7 @@ export const ChatMentionMenu = ({ mentions }: ChatMentionMenuProps) => {
       char="@"
       adapter={mention.adapter}
       aria-label="Mentions"
-      className="absolute inset-x-0 bottom-full z-20 mb-2 max-h-72 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-lg"
+      className="absolute inset-x-0 bottom-full z-20 mb-2 max-h-72 overflow-y-auto rounded-xl border border-line bg-surface p-1.5 shadow-lg"
     >
       <ComposerPrimitive.TriggerPopover.Directive {...mention.directive} />
       <ComposerPrimitive.TriggerPopoverItems>

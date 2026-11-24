@@ -19,6 +19,12 @@ public interface IChatProjectService
     Task<ServiceResponse<ChatProjectDto>> InsertChatProjectAsync(InsertChatProjectDto insertChatProjectDto);
 
     /// <summary>
+    /// Updates an existing chat project.
+    /// </summary>
+    /// <param name="updateChatProjectDto">The project identifier and its new name.</param>
+    Task<ServiceResponse<ChatProjectDto>> UpdateChatProjectAsync(UpdateChatProjectDto updateChatProjectDto);
+
+    /// <summary>
     /// Deletes one of the signed-in user's projects. Its chats stay in the history, ungrouped.
     /// </summary>
     /// <param name="chatProjectId">The unique identifier of the project.</param>

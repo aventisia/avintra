@@ -35,6 +35,7 @@ import {
   resolveHomeChatModel,
   saveHomeChatModelKey,
 } from "../utils/home-chat-model-preference.util";
+import { HomeChatNoModelNotice } from "./HomeChatNoModelNotice";
 import { HomeChatPreview } from "./HomeChatPreview";
 import { HomeChatWelcome } from "./HomeChatWelcome";
 
@@ -48,7 +49,13 @@ type HomeChatThreadProps = {
 
 /** One Home conversation, from its first message or its saved history. */
 export const HomeChatThread = (props: HomeChatThreadProps) => {
-  const { models, groups, speechModel } = useHomeChatModels();
+  const {
+    models,
+    groups,
+    speechModel,
+    hasUsableModel,
+    isSuccess: areModelsLoaded,
+  } = useHomeChatModels();
   const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "");
   const [pickedModelKey, setPickedModelKey] = useState<string | null>(null);
@@ -186,7 +193,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             mentions={mentions}
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
-              groups.length > 0 && (
+              groups.length > 0 ? (
                 <div className="flex min-w-0 items-center gap-0.5">
                   <ChatModelPicker
                     groups={groups}
@@ -198,6 +205,8 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
                     <ChatEffortPicker value={effort} onChange={setEffort} />
                   )}
                 </div>
+              ) : (
+                areModelsLoaded && !hasUsableModel && <HomeChatNoModelNotice />
               )
             }
           />

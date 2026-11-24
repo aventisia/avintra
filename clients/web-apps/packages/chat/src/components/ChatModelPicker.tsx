@@ -115,7 +115,7 @@ export const ChatModelPicker = ({
     <Popover open={isOpen} onOpenChange={openChange}>
       <PopoverTrigger
         aria-label={`Model: ${chipLabel}`}
-        className="inline-flex h-8 min-w-0 max-w-56 items-center gap-1.5 rounded-full px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
+        className="inline-flex h-8 min-w-0 max-w-56 items-center gap-1.5 rounded-lg px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
       >
         {value === null && allowAuto && (
           <SparkleIcon weight="fill" className="size-3.5 shrink-0 text-primary" />

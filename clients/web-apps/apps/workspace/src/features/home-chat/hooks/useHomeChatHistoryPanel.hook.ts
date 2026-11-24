@@ -1,9 +1,10 @@
-import { type ChatHistoryItem, type ChatSidebarHistoryProps } from "@avplatform/chat";
+import { type ChatHistoryProject, type ChatSidebarHistoryProps } from "@avplatform/chat";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useState } from "react";
 import { useHref, useMatch, useNavigate } from "react-router-dom";
 
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
+import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { useChatProjects } from "./useChatProjects.hook";
 import { useHomeChatHistory } from "./useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "./useHomeChatHistoryActions.hook";
@@ -31,7 +32,7 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     if (id === activeId) navigate("/", { replace: true });
   };
 
-  const confirmDelete = (item: ChatHistoryItem) =>
+  const confirmDelete = (item: HomeChatActiveChat) =>
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete chat?",
@@ -41,6 +42,19 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
       confirmActionFn: async () => {
         await deleteChat(item.id);
         leaveIfOpen(item.id);
+      },
+    });
+
+  const confirmDeleteProject = (project: ChatHistoryProject) =>
+    showCustomAlertDialog({
+      isDestructive: true,
+      title: "Delete project?",
+      description: `“${project.name}” will be deleted. Its chats stay in your history, ungrouped.`,
+      confirmBtnText: "Delete",
+      showLoadingOnConfirm: true,
+      confirmActionFn: async () => {
+        await chatProjects.deleteProject(project.id);
+        if (project.id === projectId) setProjectId(null);
       },
     });
 
@@ -65,6 +79,8 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     activeProjectId: showArchived ? null : projectId,
     onProjectFilterChange: setProjectId,
     onCreateProject: (name) => chatProjects.createProject(name, setProjectId),
+    onRenameProject: chatProjects.renameProject,
+    onDeleteProject: confirmDeleteProject,
     onMoveToProject: (item, nextProjectId) => moveToProject(item.id, nextProjectId),
     search: history.search,
     onSearchChange: history.setSearch,

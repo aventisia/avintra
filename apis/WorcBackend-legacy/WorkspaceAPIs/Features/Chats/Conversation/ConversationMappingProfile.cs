@@ -29,6 +29,11 @@ namespace WorkspaceAPIs.MappingProfiles
 
           private static string ConversationTitle(Conversation conversation)
           {
+               if (conversation.FlowVersionId == null)
+               {
+                    return conversation.Title ?? string.Empty;
+               }
+
                var content = conversation.Messages?
                     .OrderByDescending(message => message.CreatedOn)
                     .Select(message => message.Content)

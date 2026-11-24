@@ -1,0 +1,23 @@
+meta {
+  name: Assign conversation to unknown project not found
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/project
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "id": "{{ACTIONS_CONVERSATION_ID}}", "projectId": "00000000-0000-0000-0000-000000000001" }
+}
+
+script:post-response {
+  test("an unknown project is not found", function() { expect(res.getStatus()).to.equal(404); });
+}

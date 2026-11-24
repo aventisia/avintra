@@ -22,16 +22,18 @@ import {
   MagnifyingGlassIcon,
   NotePencilIcon,
   PencilSimpleIcon,
-  PlusIcon,
   PushPinIcon,
   PushPinSlashIcon,
   SidebarSimpleIcon,
 } from "@phosphor-icons/react";
 import { type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
+import { CHAT_TITLE_MAX_LENGTH } from "../constants/chat-name.constant";
+import { useInlineEditFocusGuard } from "../hooks/useInlineEditFocusGuard.hook";
 import { type ChatHistoryItem, groupHistoryByDate } from "../utils/history-groups.util";
 import { ChatIconButton } from "./ChatIconButton";
-import { ChatTitleInput } from "./ChatTitleInput";
+import { ChatNameInput } from "./ChatNameInput";
+import { ChatProjectFilter } from "./ChatProjectFilter";
 
 const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
 const NEW_CHAT_SHORTCUT_LABEL = IS_MAC ? "⌘⇧O" : "Ctrl+Shift+O";
@@ -73,6 +75,10 @@ export type ChatHistoryProps = {
   onProjectFilterChange?: (projectId: string | null) => void;
   /** Creates a project from the filter row's name field; the plus button is hidden without it. */
   onCreateProject?: (name: string) => void;
+  /** Renames a project from the filter row's menu; the rename item is hidden without it. */
+  onRenameProject?: (projectId: string, name: string) => void;
+  /** Deletes a project from the filter row's menu; the delete item is hidden without it. */
+  onDeleteProject?: (project: ChatHistoryProject) => void;
   /** Files a chat under a project, or ungroups it with null; the move menu is hidden without it. */
   onMoveToProject?: (item: ChatHistoryItem, projectId: string | null) => void;
 };
@@ -106,6 +112,8 @@ export const ChatHistory = ({
   activeProjectId = null,
   onProjectFilterChange,
   onCreateProject,
+  onRenameProject,
+  onDeleteProject,
   onMoveToProject,
 }: ChatHistoryProps) => {
   const groups = useMemo(() => groupHistoryByDate(items), [items]);
@@ -163,11 +171,13 @@ export const ChatHistory = ({
       </div>
 
       {!showArchived && onProjectFilterChange && (
-        <ProjectFilter
+        <ChatProjectFilter
           projects={projects}
           activeProjectId={activeProjectId}
           onChange={onProjectFilterChange}
           onCreate={onCreateProject}
+          onRename={onRenameProject}
+          onDelete={onDeleteProject}
         />
       )}
 
@@ -199,8 +209,10 @@ export const ChatHistory = ({
                 {group.items.map((item) => (
                   <li key={item.id}>
                     {renamingId === item.id ? (
-                      <ChatTitleInput
-                        title={item.title}
+                      <ChatNameInput
+                        initialName={item.title}
+                        label="Chat title"
+                        maxLength={CHAT_TITLE_MAX_LENGTH}
                         onDone={(title) => {
                           setRenamingId(null);
                           if (title && title !== item.title) onRename(item.id, title);
@@ -280,7 +292,7 @@ export const ChatHistoryRow = ({
   projects,
   onMove,
 }: ChatHistoryRowProps) => {
-  const isRenamingRef = useRef(false);
+  const focusGuard = useInlineEditFocusGuard();
   const isSidebar = variant === "sidebar";
 
   return (
@@ -330,17 +342,13 @@ export const ChatHistoryRow = ({
         <DropdownMenuContent
           align="start"
           className="flex min-w-36 flex-col"
-          onCloseAutoFocus={(event) => {
-            // The rename input takes focus instead of the menu trigger.
-            if (isRenamingRef.current) event.preventDefault();
-            isRenamingRef.current = false;
-          }}
+          onCloseAutoFocus={focusGuard.onCloseAutoFocus}
         >
           <SimpleDDMenuItem
             content="Rename"
             Icon={PencilSimpleIcon}
             onSelect={() => {
-              isRenamingRef.current = true;
+              focusGuard.markEditing();
               onRename();
             }}
           />
@@ -387,99 +395,6 @@ export const ChatHistoryRow = ({
     </div>
   );
 };
-
-const ProjectFilter = ({
-  projects,
-  activeProjectId,
-  onChange,
-  onCreate,
-}: {
-  projects: readonly ChatHistoryProject[];
-  activeProjectId: string | null;
-  onChange: (projectId: string | null) => void;
-  onCreate?: (name: string) => void;
-}) => {
-  const [draft, setDraft] = useState<string | null>(null);
-  const doneRef = useRef(false);
-
-  // Enter and blur can both fire for one name, so only the first one counts.
-  const finish = (name: string | null) => {
-    if (doneRef.current) return;
-    doneRef.current = true;
-    setDraft(null);
-    if (name && onCreate) onCreate(name);
-  };
-
-  return (
-    <div
-      role="group"
-      aria-label="Filter by project"
-      className="flex items-center gap-1.5 overflow-x-auto px-3 pb-3 [scrollbar-width:none]"
-    >
-      <FilterPill active={activeProjectId === null} onClick={() => onChange(null)}>
-        All chats
-      </FilterPill>
-      {projects.map((project) => (
-        <FilterPill
-          key={project.id}
-          active={activeProjectId === project.id}
-          onClick={() => onChange(project.id)}
-        >
-          {project.name}
-        </FilterPill>
-      ))}
-      {onCreate &&
-        (draft === null ? (
-          <button
-            type="button"
-            aria-label="New project"
-            title="New project"
-            onClick={() => {
-              doneRef.current = false;
-              setDraft("");
-            }}
-            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-line text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-          >
-            <PlusIcon className="size-3.5" />
-          </button>
-        ) : (
-          <Input
-            autoFocus
-            value={draft}
-            maxLength={100}
-            aria-label="Project name"
-            placeholder="Project name"
-            onChange={(event) => setDraft(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") finish(draft.trim() || null);
-              if (event.key === "Escape") finish(null);
-            }}
-            onBlur={() => finish(draft.trim() || null)}
-            className="h-7 w-32 shrink-0 rounded-full px-2.5 text-xs"
-          />
-        ))}
-    </div>
-  );
-};
-
-const FilterPill = ({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) => (
-  <button
-    type="button"
-    aria-pressed={active}
-    onClick={onClick}
-    className="h-7 max-w-40 shrink-0 truncate rounded-full border border-line px-2.5 text-xs text-ink-2 transition-colors hover:bg-hover aria-pressed:border-ink aria-pressed:font-medium aria-pressed:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
-  >
-    {children}
-  </button>
-);
 
 /** Loads the next page when it scrolls into view; `scrollsWithPage` watches the viewport instead of its own scroll box. */
 export const LoadMoreSentinel = ({

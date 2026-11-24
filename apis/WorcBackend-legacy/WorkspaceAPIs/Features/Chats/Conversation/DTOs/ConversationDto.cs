@@ -22,8 +22,8 @@ public class ConversationDto
     public Guid? FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the conversation title, taken from the most recent message content
-    /// and truncated to 120 characters. Defaults to "Untitled Conversation" if no message content is available.
+    /// Gets or sets the conversation title. Landing conversations use their stored title, empty until the first turn titles them;
+    /// agent conversations use the most recent message content truncated to 120 characters, or "Untitled Conversation".
     /// </summary>
     public string Title { get; set; } = "Untitled Conversation";
 

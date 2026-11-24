@@ -18,3 +18,15 @@ export const createChatProject = (name: string) =>
   axiosInstance
     .post<IHttpResponse<ChatProjectDto>>(baseAPIURL, { name }, { headers: getSpaceHeaders() })
     .then((res) => res.data);
+
+/** Renames a Home chat project. */
+export const updateChatProject = (id: string, name: string) =>
+  axiosInstance
+    .put<IHttpResponse<ChatProjectDto>>(baseAPIURL, { id, name }, { headers: getSpaceHeaders() })
+    .then((res) => res.data);
+
+/** Deletes a Home chat project; its chats stay in the history, ungrouped. */
+export const deleteChatProject = (id: string) =>
+  axiosInstance
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
+    .then((res) => res.data);

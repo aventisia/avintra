@@ -1,0 +1,19 @@
+meta {
+  name: Get shared conversation after unshare
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/shared/{{ACTIONS_SHARE_TOKEN}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the old link no longer opens", function() { expect(res.getStatus()).to.equal(404); });
+}

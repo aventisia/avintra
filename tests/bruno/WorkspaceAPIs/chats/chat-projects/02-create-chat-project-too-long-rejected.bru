@@ -1,0 +1,29 @@
+meta {
+  name: Create chat project too long rejected
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "name": "x" }
+}
+
+script:pre-request {
+  req.setBody({ name: "x".repeat(101) });
+}
+
+script:post-response {
+  test("a name over 100 characters is rejected", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

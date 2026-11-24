@@ -1,5 +1,5 @@
 export { ChatHistory } from "./components/ChatHistory";
-export type { ChatHistoryProps } from "./components/ChatHistory";
+export type { ChatHistoryProject, ChatHistoryProps } from "./components/ChatHistory";
 export { ChatSidebarHistory } from "./components/ChatSidebarHistory";
 export type { ChatSidebarHistoryProps } from "./components/ChatSidebarHistory";
 export { ChatTitle } from "./components/ChatTitle";

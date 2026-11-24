@@ -67,6 +67,35 @@ public class ChatProjectService : IChatProjectService
         }
     }
 
+    public async Task<ServiceResponse<ChatProjectDto>> UpdateChatProjectAsync(UpdateChatProjectDto updateChatProjectDto)
+    {
+        var serviceResponse = ServiceResponse<ChatProjectDto>.Create("Failed to rename chat project", 500);
+
+        try
+        {
+            var name = updateChatProjectDto.Name.Trim();
+            if (name.Length == 0)
+                return serviceResponse.Update("Name is required", 400);
+
+            var updated = await _unitOfWork.ChatProjectRepo
+                .GetByConditionAsync(w => w.Id == updateChatProjectDto.Id && w.UserId == _userId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(p => p.Name, name)
+                    .SetProperty(p => p.LastModifiedByUserId, _userId)
+                    .SetProperty(p => p.LastModifiedOn, DateTimeOffset.UtcNow));
+
+            if (updated == 0)
+                return serviceResponse.Update("Chat project not found", 404);
+
+            return serviceResponse.Update("Chat project renamed", 200, new ChatProjectDto { Id = updateChatProjectDto.Id, Name = name });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error renaming chat project {chatProjectId} for User ID {userId}.", updateChatProjectDto.Id, _userId);
+            return serviceResponse;
+        }
+    }
+
     public async Task<ServiceResponse<bool>> DeleteChatProjectAsync(Guid chatProjectId)
     {
         var serviceResponse = ServiceResponse<bool>.Create("Failed to delete chat project", 500);

@@ -1,6 +1,7 @@
 import { Input, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
+  DeleteDDMenuItem,
   DropdownMenu,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -18,16 +19,28 @@ import {
   FadersHorizontalIcon,
   FolderPlusIcon,
   MagnifyingGlassIcon,
+  PencilSimpleIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { type ReactNode, useRef, useState } from "react";
+import { type ReactNode, useState } from "react";
 
-import { type ChatHistoryProps, ChatHistoryRow, LoadMoreSentinel } from "./ChatHistory";
-import { ChatTitleInput } from "./ChatTitleInput";
+import { CHAT_TITLE_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH } from "../constants/chat-name.constant";
+import { useInlineEditFocusGuard } from "../hooks/useInlineEditFocusGuard.hook";
+import {
+  type ChatHistoryProject,
+  type ChatHistoryProps,
+  ChatHistoryRow,
+  LoadMoreSentinel,
+} from "./ChatHistory";
+import { ChatNameInput } from "./ChatNameInput";
 
 export type ChatSidebarHistoryProps = Omit<ChatHistoryProps, "onNewChat" | "onCollapse">;
 
 const ALL_CHATS = "all";
+
+type ProjectEdit = { mode: "create" } | { mode: "rename"; project: ChatHistoryProject };
+
+const SIDEBAR_INPUT_CLASS = "h-8 rounded-sm px-[11px] text-body-sm";
 
 /**
  * Chats as a section of the app sidebar: a quiet label with search and a
@@ -57,10 +70,13 @@ export const ChatSidebarHistory = ({
   activeProjectId = null,
   onProjectFilterChange,
   onCreateProject,
+  onRenameProject,
+  onDeleteProject,
   onMoveToProject,
 }: ChatSidebarHistoryProps) => {
   const [isSearching, setIsSearching] = useState(search !== "");
-  const [projectDraft, setProjectDraft] = useState<string | null>(null);
+  const [projectEdit, setProjectEdit] = useState<ProjectEdit | null>(null);
+  const projectMenuFocusGuard = useInlineEditFocusGuard();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const activeProject = projects.find((project) => project.id === activeProjectId);
   const canFilter = !!onProjectFilterChange || !!onShowArchivedChange;
@@ -113,7 +129,11 @@ export const ChatSidebarHistory = ({
             >
               <FadersHorizontalIcon className="size-3.5" />
             </DropdownMenuTrigger>
-            <MenuContent align="end" className="w-56">
+            <MenuContent
+              align="end"
+              className="w-56"
+              onCloseAutoFocus={projectMenuFocusGuard.onCloseAutoFocus}
+            >
               {onProjectFilterChange && (
                 <>
                   <MenuLabel>Projects</MenuLabel>
@@ -134,8 +154,24 @@ export const ChatSidebarHistory = ({
                     <SimpleDDMenuItem
                       content="New project"
                       Icon={FolderPlusIcon}
-                      onSelect={() => setProjectDraft("")}
+                      onSelect={() => {
+                        projectMenuFocusGuard.markEditing();
+                        setProjectEdit({ mode: "create" });
+                      }}
                     />
+                  )}
+                  {activeProject && onRenameProject && (
+                    <SimpleDDMenuItem
+                      content="Rename project"
+                      Icon={PencilSimpleIcon}
+                      onSelect={() => {
+                        projectMenuFocusGuard.markEditing();
+                        setProjectEdit({ mode: "rename", project: activeProject });
+                      }}
+                    />
+                  )}
+                  {activeProject && onDeleteProject && (
+                    <DeleteDDMenuItem onSelect={() => onDeleteProject(activeProject)} />
                   )}
                 </>
               )}
@@ -173,13 +209,24 @@ export const ChatSidebarHistory = ({
         </div>
       )}
 
-      {projectDraft !== null && onCreateProject && (
-        <ProjectNameInput
-          onDone={(name) => {
-            setProjectDraft(null);
-            if (name) onCreateProject(name);
-          }}
-        />
+      {projectEdit && (
+        <div className="px-0.5 pb-1">
+          <ChatNameInput
+            key={projectEdit.mode === "rename" ? projectEdit.project.id : projectEdit.mode}
+            initialName={projectEdit.mode === "rename" ? projectEdit.project.name : ""}
+            label={projectEdit.mode === "rename" ? "Rename project" : "Project name"}
+            maxLength={PROJECT_NAME_MAX_LENGTH}
+            placeholder="Name the project, then press Enter"
+            className={SIDEBAR_INPUT_CLASS}
+            onDone={(name) => {
+              setProjectEdit(null);
+              if (!name) return;
+              if (projectEdit.mode === "create") onCreateProject?.(name);
+              else if (name !== projectEdit.project.name)
+                onRenameProject?.(projectEdit.project.id, name);
+            }}
+          />
+        </div>
       )}
 
       {isLoading ? (
@@ -206,8 +253,10 @@ export const ChatSidebarHistory = ({
           {items.map((item) => (
             <li key={item.id}>
               {renamingId === item.id ? (
-                <ChatTitleInput
-                  title={item.title}
+                <ChatNameInput
+                  initialName={item.title}
+                  label="Chat title"
+                  maxLength={CHAT_TITLE_MAX_LENGTH}
                   onDone={(title) => {
                     setRenamingId(null);
                     if (title && title !== item.title) onRename(item.id, title);
@@ -281,37 +330,6 @@ const SectionButton = ({
     {children}
   </button>
 );
-
-const ProjectNameInput = ({ onDone }: { onDone: (name: string | null) => void }) => {
-  const [name, setName] = useState("");
-  const doneRef = useRef(false);
-
-  // Enter and blur can both fire for one name, so only the first one counts.
-  const finish = (value: string | null) => {
-    if (doneRef.current) return;
-    doneRef.current = true;
-    onDone(value);
-  };
-
-  return (
-    <div className="px-0.5 pb-1">
-      <Input
-        autoFocus
-        value={name}
-        maxLength={100}
-        aria-label="Project name"
-        placeholder="Name the project, then press Enter"
-        onChange={(event) => setName(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") finish(name.trim() || null);
-          if (event.key === "Escape") finish(null);
-        }}
-        onBlur={() => finish(name.trim() || null)}
-        className="h-8 rounded-sm text-body-sm"
-      />
-    </div>
-  );
-};
 
 const SidebarNote = ({ children }: { children: ReactNode }) => (
   <p className="flex flex-wrap items-center gap-x-1.5 px-2 py-1.5 text-body-sm text-muted-foreground">
