@@ -23,6 +23,9 @@ interface FormProps<T extends FieldValues> extends React.FormHTMLAttributes<HTML
 
   /** CRUD dialog title for forms without a `name` field; defaults to the live `name` value. */
   recordName?: string;
+
+  /** Classes for the `<form>` element itself; `className` styles the inner fieldset. */
+  formClassName?: string;
 }
 
 interface DirtyFormBlockerProps {
@@ -103,6 +106,7 @@ const Form = <T extends FieldValues>({
   checkDirtyForm = true,
   recordName,
   className,
+  formClassName,
   children,
   onSubmit,
 }: FormProps<T>) => {
@@ -144,7 +148,7 @@ const Form = <T extends FieldValues>({
   return (
     <FormProvider {...methods}>
       <FormIdProvider value={formId}>
-        <form id={formId} className="w-full" onSubmit={onSubmit}>
+        <form id={formId} className={cn("w-full", formClassName)} onSubmit={onSubmit}>
           <fieldset
             disabled={disabled}
             className={cn(
