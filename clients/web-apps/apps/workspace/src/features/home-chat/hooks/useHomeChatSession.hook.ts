@@ -1,7 +1,10 @@
 import { useCallback, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_TEMPORARY_PARAM,
+} from "../constants/home-chat.constant";
 
 type HomeChatSession = {
   key: number;
@@ -12,11 +15,14 @@ type HomeChatSession = {
 /**
  * Decides which thread Home shows. Every navigation starts a fresh thread,
  * except the URL update that follows this thread creating its conversation.
+ * A new chat opened with `?temporary=1` is temporary: it is never saved.
  */
 export const useHomeChatSession = () => {
   const { conversationId: routeConversationId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isTemporary = !routeConversationId && searchParams.get(HOME_CHAT_TEMPORARY_PARAM) === "1";
   const [session, setSession] = useState<HomeChatSession>({
     key: 0,
     conversationId: routeConversationId,
@@ -45,6 +51,7 @@ export const useHomeChatSession = () => {
   return {
     sessionKey: session.key,
     conversationId: session.conversationId,
+    isTemporary,
     onConversationCreated,
     onConversationMissing,
   };

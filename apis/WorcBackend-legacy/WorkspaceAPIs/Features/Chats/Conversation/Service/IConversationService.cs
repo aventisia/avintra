@@ -40,9 +40,9 @@ public interface IConversationService
     Task<ServiceResponse<IEnumerable<ConversationDto>>> GetLandingArchivedConversationsAsync();
 
     /// <summary>
-    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title and project; archived ones when asked.
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by project or by text in the title or messages; archived ones when asked, or every shared one, archived or not.
     /// </summary>
-    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take);
+    Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, bool shared, int skip, int take);
 
     /// <summary>
     /// Files one of the current user's landing conversations under a project, or ungroups it when the project is null.
@@ -151,12 +151,9 @@ public interface IConversationService
     Task<ServiceResponse<bool>> DeleteAsync(Guid conversationId);
 
     /// <summary>
-    /// Deletes multiple conversations in a single operation.
-    /// This operation should be used cautiously as conversations are typically retained for audit and billing purposes.
+    /// Deletes multiple conversations by their IDs, skipping any the current user does not own.
     /// </summary>
-    /// <param name="conversationIds">A collection of conversation identifiers.</param>
-    /// <returns>
-    /// A service response indicating whether all conversations were deleted successfully.
-    /// </returns>
-    Task<ServiceResponse<bool>> DeleteBulkAsync(IEnumerable<Guid> conversationIds);
+    /// <param name="conversationIds">The conversations to delete.</param>
+    /// <returns>A service response containing the number of conversations deleted.</returns>
+    Task<ServiceResponse<int>> DeleteMultipleConversationsAsync(IEnumerable<Guid> conversationIds);
 }

@@ -144,7 +144,8 @@ axiosInstance.interceptors.response.use(
     let errorMessage = "";
 
     // If error response data is string
-    if (typeof error.response.data == "string") {
+    // IMPORTANT NOTE: a gateway (nginx 502/504) answers with an HTML page, which must not become toast text.
+    if (typeof error.response.data == "string" && !/^\s*</.test(error.response.data)) {
       errorMessage = error.response.data;
     }
 

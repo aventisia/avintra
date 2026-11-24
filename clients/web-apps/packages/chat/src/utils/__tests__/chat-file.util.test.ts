@@ -27,6 +27,20 @@ describe("findChatFile", () => {
     expect(findChatFile(svg)?.name).toBe("Intake flow.svg");
     expect(findChatFile(md)?.name).toBe("Vendor checklist.md");
     expect(findChatFile("```csv\na,b\n```")?.name).toBe("Data.csv");
+    expect(findChatFile("```svg\n<svg></svg>\n```")?.name).toBe("Diagram.svg");
+  });
+
+  it("names a file after the name on its fence line, adding the type's extension", () => {
+    const named =
+      "Saved as packing-list.md:\n```markdown packing-list.md\n# Weekend trip\n- socks\n```";
+    expect(findChatFile(named)).toMatchObject({
+      name: "packing-list.md",
+      body: "# Weekend trip\n- socks",
+    });
+    expect(textBeforeChatFile(named)).toBe("Saved as packing-list.md:");
+    expect(findChatFile("```csv sales q3\na,b\n```")?.name).toBe("sales q3.csv");
+    const longName = `${"a".repeat(79)} b`;
+    expect(findChatFile(`\`\`\`csv ${longName}\na,b\n\`\`\``)?.name).toBe(`${"a".repeat(79)}.csv`);
   });
 
   it("marks a fence that is still streaming as incomplete and hides it", () => {

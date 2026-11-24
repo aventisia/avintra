@@ -25,6 +25,8 @@ import { withMentionedFiles } from "../utils/mentioned-files.util";
 
 type HomeChatRuntimeInput = {
   conversationId?: string;
+  /** A temporary chat sends its earlier turns with each message and is never saved. */
+  isTemporary?: boolean;
   onConversationCreated: (conversationId: string) => void;
   onConversationMissing: () => void;
   /** Read on every send; null lets the server pick the tenant's default model. */
@@ -44,6 +46,7 @@ type HomeChatRuntimeInput = {
  */
 export const useHomeChatRuntime = ({
   conversationId,
+  isTemporary = false,
   onConversationCreated,
   onConversationMissing,
   getModelSelection,
@@ -91,10 +94,11 @@ export const useHomeChatRuntime = ({
       withAttachmentText(
         createAssistantUIModelAdapter({
           getConversationId,
+          isTempChat: isTemporary,
           getExtraHeaders: getSpaceHeaders,
           getModelSelection,
           getDestinations,
-          getKeepUserTurns,
+          getKeepUserTurns: isTemporary ? undefined : getKeepUserTurns,
           onTextDelta: () => refreshHistory(true),
           onTextComplete: onReplyComplete,
           onRunFinished: () => refreshHistory(false),

@@ -32,6 +32,8 @@ export { createConversationIdAllocator } from "./utils/conversation-id-allocator
 export type { ConversationIdAllocatorInput } from "./utils/conversation-id-allocator.util";
 export { ChatFileCard } from "./components/ChatFileCard";
 export { ChatFilePreview } from "./components/ChatFilePreview";
+export { ChatNameInput } from "./components/ChatNameInput";
+export { appendToComposerDraft } from "./utils/composer-draft.util";
 export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";

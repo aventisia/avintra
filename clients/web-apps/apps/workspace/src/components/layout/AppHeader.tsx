@@ -16,12 +16,14 @@ import {
   RocketIcon,
   UserIcon,
 } from "@phosphor-icons/react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useHelpPanelStore } from "@/components/help/help-panel.store";
 import { ROLE_TA } from "@/constants/roles";
 import { DESKTOP_DOWNLOAD_ROUTE } from "@/features/desktop-download";
+import { useHomeChatPaletteChats } from "@/features/home-chat";
 import { useAccountDialogUrlState } from "@/features/my-account";
 import { NOTIFICATIONS_ROUTE } from "@/react-toolkit/features/unread-notifications/constants/constants";
 import { SidebarAccountMenu } from "@/react-toolkit/features/user-account/SidebarAccountMenu";
@@ -45,6 +47,9 @@ const AppHeader: React.FC = () => {
   const { openAccountDialog } = useAccountDialogUrlState();
   const openGetStartedGuide = useOnboardingStore((state) => state.openGuide);
   const navigate = useNavigate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const paletteChats = useHomeChatPaletteChats(isSearchOpen, search);
 
   return (
     <Header className="h-14 shrink-0 gap-4 bg-surface pl-3 pr-4 md:pl-[22px]">
@@ -68,6 +73,10 @@ const AppHeader: React.FC = () => {
       </div>
       <SearchBox
         className="h-[34px] w-full max-w-[380px] flex-1"
+        placeholder="Search pages, actions and chats…"
+        results={paletteChats}
+        onOpenChange={setIsSearchOpen}
+        onSearchChange={setSearch}
         actions={[
           { label: "My account", Icon: UserIcon, onSelect: openAccountDialog },
           {

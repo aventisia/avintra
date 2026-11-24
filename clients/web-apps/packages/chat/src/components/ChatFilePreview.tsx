@@ -1,13 +1,17 @@
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
+import { toast } from "@avplatform/ui/sonner";
+import { downloadBlob } from "@avplatform/ui/utils";
 import {
+  ArrowCounterClockwiseIcon,
   ArrowSquareOutIcon,
   CodeIcon,
   CornersInIcon,
   CornersOutIcon,
   DownloadSimpleIcon,
   EyeIcon,
+  FileImageIcon,
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
   PencilSimpleIcon,
@@ -29,6 +33,7 @@ import { chatProseComponents } from "../constants/chat-prose.constant";
 import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.util";
 import { openHtmlInPreviewTab } from "../utils/chat-preview-host.util";
 import { printArtifact } from "../utils/print-chat.util";
+import { pngFileName, svgToPngBlob } from "../utils/svg-image.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 import { ChatHtmlPreviewFrame } from "./ChatHtmlPreviewFrame";
@@ -243,6 +248,17 @@ export const ChatFilePreview = ({
   const saveDraft = () => {
     if (draft !== null) void onSaveVersion?.(draft);
   };
+  const latestVersion = versions.reduce<ChatPreviewVersion | null>(
+    (latest, version) =>
+      !latest || version.versionNumber > latest.versionNumber ? version : latest,
+    null,
+  );
+  const canRestore = canEdit && !!latestVersion && latestVersion.id !== activeVersionId;
+  const isSvg = loadable?.contentType.toLowerCase() === "image/svg+xml" && body !== null;
+  const downloadPng = async () => {
+    if (!loadable || body === null) return;
+    downloadBlob(await svgToPngBlob(body), pngFileName(loadable.name));
+  };
   const [sourceShownFor, setSourceShownFor] = useState<string | null>(null);
   const showsSource = source !== null && sourceShownFor === loadable?.url;
   const isPrintable =
@@ -319,6 +335,19 @@ export const ChatFilePreview = ({
           </>
         ) : (
           <>
+            {canRestore && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 [&_svg]:size-3.5"
+                title="Save this version again as the latest"
+                disabled={isSavingVersion}
+                onClick={() => void onSaveVersion?.(body!)}
+              >
+                <ArrowCounterClockwiseIcon />
+                {isSavingVersion ? "Restoring…" : "Restore"}
+              </Button>
+            )}
             {canEdit && (
               <ChatIconButton label="Edit file" onClick={() => setDraft(body)}>
                 <PencilSimpleIcon />
@@ -368,6 +397,16 @@ export const ChatFilePreview = ({
                 >
                   <DownloadSimpleIcon />
                 </a>
+                {isSvg && (
+                  <ChatIconButton
+                    label="Download as PNG"
+                    onClick={() =>
+                      void downloadPng().catch(() => toast.error("Couldn't create the PNG."))
+                    }
+                  >
+                    <FileImageIcon />
+                  </ChatIconButton>
+                )}
                 <a
                   href="about:blank"
                   target="_blank"

@@ -36,6 +36,8 @@ export type ChatThreadProps = {
   onNavigate?: (route: string) => void;
   /** Turns files in replies into cards; without it they render as code. */
   files?: ChatFileHandlers;
+  /** Keeps unsent text across reloads under this key; without it the draft is not kept. */
+  draftKey?: string;
 };
 
 const columnStyle = { "--chat-column": "46rem" } as CSSProperties;
@@ -92,6 +94,7 @@ export const ChatThread = ({
   destinations = NO_DESTINATIONS,
   onNavigate,
   files,
+  draftKey,
 }: ChatThreadProps) => {
   const [mountedAt] = useState(Date.now);
   const aui = useAui();
@@ -144,6 +147,7 @@ export const ChatThread = ({
                     transcribe={transcribe}
                     commands={commands}
                     mentions={mentions}
+                    draftKey={draftKey}
                   />
                 </ThreadPrimitive.ViewportFooter>
               )}

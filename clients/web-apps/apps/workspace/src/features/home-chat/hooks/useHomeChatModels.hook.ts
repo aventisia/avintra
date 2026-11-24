@@ -58,6 +58,12 @@ export type HomeChatModelGroup = {
   models: HomeChatModel[];
 };
 
+const NON_CHAT_MODEL_ID =
+  /embed|tts|whisper|transcribe|dall-e|imagen|image|realtime|moderation|rerank|scribe|eleven_/i;
+
+const isChatModel = ({ modelId, capability }: { modelId: string; capability?: string | null }) =>
+  capability ? capability === ModelCapabilityEnum.Text : !NON_CHAT_MODEL_ID.test(modelId);
+
 const toPipelineProvider = (providerName: string) =>
   PIPELINE_PROVIDERS[providerName.trim().toLowerCase()] ?? null;
 
@@ -122,10 +128,8 @@ export const useHomeChatModels = () => {
 
       const credentialName = provider.credentialName?.trim() || null;
       const enabledModelIds = provider.enabledModels?.length
-        ? provider.enabledModels
-            .filter((model) => !model.capability || model.capability === ModelCapabilityEnum.Text)
-            .map((model) => model.modelId)
-        : provider.enabledModelIds;
+        ? provider.enabledModels.filter(isChatModel).map((model) => model.modelId)
+        : provider.enabledModelIds.filter((modelId) => isChatModel({ modelId }));
 
       for (const rawModelId of enabledModelIds) {
         const model = createModel(pipelineProvider, rawModelId, credentialName);

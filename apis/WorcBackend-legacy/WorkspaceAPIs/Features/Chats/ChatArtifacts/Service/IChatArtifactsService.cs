@@ -40,6 +40,13 @@ public interface IChatArtifactsService
     Task<ServiceResponse<ChatArtifactDto>> GenerateFromSpecAsync(GenerateFromSpecDto generateFromSpecDto);
 
     /// <summary>
+    /// Updates an existing chat artifact.
+    /// </summary>
+    /// <param name="updateChatArtifactDto">The artifact and its new name, applied to every version.</param>
+    /// <returns>A service response containing the renamed artifact.</returns>
+    Task<ServiceResponse<ChatArtifactDto>> UpdateChatArtifactAsync(UpdateChatArtifactDto updateChatArtifactDto);
+
+    /// <summary>
     /// Deletes an existing chat artifact.
     /// </summary>
     /// <param name="chatArtifactId">The unique identifier of the artifact to delete.</param>

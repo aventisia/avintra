@@ -1,4 +1,4 @@
-import { Input, Skeleton } from "@avplatform/ui";
+import { Checkbox, Input, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import {
   DeleteDDMenuItem,
@@ -15,17 +15,20 @@ import { cn } from "@avplatform/ui/lib";
 import {
   ArchiveIcon,
   ArrowLeftIcon,
+  CheckSquareIcon,
   CircleNotchIcon,
   FadersHorizontalIcon,
   FolderPlusIcon,
   MagnifyingGlassIcon,
   PencilSimpleIcon,
+  TrashIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { CHAT_TITLE_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH } from "../constants/chat-name.constant";
 import { useInlineEditFocusGuard } from "../hooks/useInlineEditFocusGuard.hook";
+import { groupHistoryByDate } from "../utils/history-groups.util";
 import {
   type ChatHistoryProject,
   type ChatHistoryProps,
@@ -44,8 +47,9 @@ const SIDEBAR_INPUT_CLASS = "h-8 rounded-sm px-[11px] text-body-sm";
 
 /**
  * Chats as a section of the app sidebar: a quiet label with search and a
- * project/archive filter, then pinned chats and recent chats as menu rows
- * that scroll with the sidebar and load more on the way down.
+ * project/archive filter, then chats as menu rows grouped into Pinned, Today,
+ * Yesterday, Last 7 days and Older, which scroll with the sidebar and load
+ * more on the way down. Select mode swaps the rows for checkboxes to archive or delete several chats.
  */
 export const ChatSidebarHistory = ({
   items,
@@ -54,6 +58,8 @@ export const ChatSidebarHistory = ({
   onOpen,
   onRename,
   onDelete,
+  onArchiveMany,
+  onDeleteMany,
   onTogglePin,
   showArchived = false,
   onShowArchivedChange,
@@ -78,12 +84,40 @@ export const ChatSidebarHistory = ({
   const [projectEdit, setProjectEdit] = useState<ProjectEdit | null>(null);
   const projectMenuFocusGuard = useInlineEditFocusGuard();
   const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<ReadonlySet<string> | null>(null);
+  const isSelecting = selectedIds !== null;
+  const visibleSelectedIds = items
+    .filter((item) => selectedIds?.has(item.id))
+    .map((item) => item.id);
+  const [isArchivingMany, setIsArchivingMany] = useState(false);
+  const groups = useMemo(() => groupHistoryByDate(items), [items]);
   const activeProject = projects.find((project) => project.id === activeProjectId);
   const canFilter = !!onProjectFilterChange || !!onShowArchivedChange;
 
   const closeSearch = () => {
     setIsSearching(false);
     onSearchChange("");
+  };
+
+  const toggleSelected = (id: string, isSelected: boolean) =>
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (isSelected) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+
+  const archiveSelected = async () => {
+    if (!onArchiveMany) return;
+    setIsArchivingMany(true);
+    try {
+      await onArchiveMany(visibleSelectedIds);
+      setSelectedIds(null);
+    } catch {
+      // The caller reports the failure; the selection stays for another try.
+    } finally {
+      setIsArchivingMany(false);
+    }
   };
 
   const heading = showArchived ? "Archived" : (activeProject?.name ?? "Chats");
@@ -111,11 +145,21 @@ export const ChatSidebarHistory = ({
         <SectionButton
           label="Search chats"
           isPressed={isSearching}
-          className="opacity-0 group-hover/chats:opacity-100 aria-pressed:opacity-100"
+          className="opacity-0 focus-visible:opacity-100 group-hover/chats:opacity-100 aria-pressed:opacity-100 [@media(hover:none)]:opacity-100"
           onClick={() => (isSearching ? closeSearch() : setIsSearching(true))}
         >
           <MagnifyingGlassIcon />
         </SectionButton>
+        {onDeleteMany && items.length > 0 && (
+          <SectionButton
+            label={isSelecting ? "Stop selecting" : "Select chats"}
+            isPressed={isSelecting}
+            className="opacity-0 focus-visible:opacity-100 group-hover/chats:opacity-100 aria-pressed:opacity-100 [@media(hover:none)]:opacity-100"
+            onClick={() => setSelectedIds(isSelecting ? null : new Set())}
+          >
+            <CheckSquareIcon />
+          </SectionButton>
+        )}
         {canFilter && !showArchived && (
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -123,7 +167,7 @@ export const ChatSidebarHistory = ({
               title="Filter chats"
               className={cn(
                 SECTION_BUTTON_CLASS,
-                "opacity-0 group-hover/chats:opacity-100 data-[state=open]:bg-hover data-[state=open]:text-ink data-[state=open]:opacity-100",
+                "opacity-0 focus-visible:opacity-100 group-hover/chats:opacity-100 [@media(hover:none)]:opacity-100 data-[state=open]:bg-hover data-[state=open]:text-ink data-[state=open]:opacity-100",
                 activeProject && "opacity-100",
               )}
             >
@@ -229,6 +273,34 @@ export const ChatSidebarHistory = ({
         </div>
       )}
 
+      {isSelecting && onDeleteMany && (
+        <div className="flex items-center gap-1 px-2 pb-1">
+          <span className="mr-auto text-body-sm text-muted-foreground" aria-live="polite">
+            {visibleSelectedIds.length} selected
+          </span>
+          {onArchiveMany && (
+            <SectionButton
+              label="Archive selected chats"
+              disabled={visibleSelectedIds.length === 0 || isArchivingMany}
+              onClick={() => void archiveSelected()}
+            >
+              <ArchiveIcon />
+            </SectionButton>
+          )}
+          <SectionButton
+            label="Delete selected chats"
+            disabled={visibleSelectedIds.length === 0}
+            className="hover:text-bad"
+            onClick={() => onDeleteMany(visibleSelectedIds, () => setSelectedIds(null))}
+          >
+            <TrashIcon />
+          </SectionButton>
+          <SectionButton label="Stop selecting" onClick={() => setSelectedIds(null)}>
+            <XIcon />
+          </SectionButton>
+        </div>
+      )}
+
       {isLoading ? (
         <SidebarSkeleton />
       ) : isError ? (
@@ -249,42 +321,58 @@ export const ChatSidebarHistory = ({
                 : "Your chats show up here."}
         </SidebarNote>
       ) : (
-        <ul className="flex flex-col gap-px">
-          {items.map((item) => (
-            <li key={item.id}>
-              {renamingId === item.id ? (
-                <ChatNameInput
-                  initialName={item.title}
-                  label="Chat title"
-                  maxLength={CHAT_TITLE_MAX_LENGTH}
-                  onDone={(title) => {
-                    setRenamingId(null);
-                    if (title && title !== item.title) onRename(item.id, title);
-                  }}
-                />
-              ) : (
-                <ChatHistoryRow
-                  variant="sidebar"
-                  item={item}
-                  isActive={item.id === activeId}
-                  href={getHref(item.id)}
-                  onOpen={onOpen}
-                  onRename={() => setRenamingId(item.id)}
-                  onDelete={() => onDelete(item)}
-                  onTogglePin={!showArchived && onTogglePin ? () => onTogglePin(item) : undefined}
-                  archiveLabel={showArchived ? "Unarchive" : "Archive"}
-                  onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
-                  projects={projects}
-                  onMove={
-                    !showArchived && onMoveToProject
-                      ? (projectId) => onMoveToProject(item, projectId)
-                      : undefined
-                  }
-                />
-              )}
-            </li>
-          ))}
-        </ul>
+        groups.map((group) => (
+          <section key={group.label} aria-label={group.label} className="pt-2 first:pt-0">
+            <h4 className="px-2 pb-0.5 text-body-sm text-muted-foreground">{group.label}</h4>
+            <ul className="flex flex-col gap-px">
+              {group.items.map((item) => (
+                <li key={item.id}>
+                  {isSelecting ? (
+                    <label className="flex h-8 cursor-pointer items-center gap-2 rounded-sm px-2 text-body-sm text-ink-2 hover:bg-hover">
+                      <Checkbox
+                        checked={selectedIds.has(item.id)}
+                        onCheckedChange={(checked) => toggleSelected(item.id, checked === true)}
+                        aria-label={`Select ${item.title}`}
+                      />
+                      <span className="min-w-0 truncate">{item.title}</span>
+                    </label>
+                  ) : renamingId === item.id ? (
+                    <ChatNameInput
+                      initialName={item.title}
+                      label="Chat title"
+                      maxLength={CHAT_TITLE_MAX_LENGTH}
+                      onDone={(title) => {
+                        setRenamingId(null);
+                        if (title && title !== item.title) onRename(item.id, title);
+                      }}
+                    />
+                  ) : (
+                    <ChatHistoryRow
+                      variant="sidebar"
+                      item={item}
+                      isActive={item.id === activeId}
+                      href={getHref(item.id)}
+                      onOpen={onOpen}
+                      onRename={() => setRenamingId(item.id)}
+                      onDelete={() => onDelete(item)}
+                      onTogglePin={
+                        !showArchived && onTogglePin ? () => onTogglePin(item) : undefined
+                      }
+                      archiveLabel={showArchived ? "Unarchive" : "Archive"}
+                      onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
+                      projects={projects}
+                      onMove={
+                        !showArchived && onMoveToProject
+                          ? (projectId) => onMoveToProject(item, projectId)
+                          : undefined
+                      }
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
       )}
       {hasMore && !isLoading && (
         // Remounting after each page re-checks visibility when a page doesn't fill the sidebar.
@@ -306,12 +394,14 @@ const SectionButton = ({
   label,
   onClick,
   isPressed,
+  disabled,
   className,
   children,
 }: {
   label: string;
   onClick: () => void;
   isPressed?: boolean;
+  disabled?: boolean;
   className?: string;
   children: ReactNode;
 }) => (
@@ -320,10 +410,11 @@ const SectionButton = ({
     aria-label={label}
     title={label}
     aria-pressed={isPressed}
+    disabled={disabled}
     onClick={onClick}
     className={cn(
       SECTION_BUTTON_CLASS,
-      "[&>svg]:size-3.5 aria-pressed:bg-hover aria-pressed:text-ink",
+      "[&>svg]:size-3.5 aria-pressed:bg-hover aria-pressed:text-ink disabled:pointer-events-none disabled:opacity-40",
       className,
     )}
   >

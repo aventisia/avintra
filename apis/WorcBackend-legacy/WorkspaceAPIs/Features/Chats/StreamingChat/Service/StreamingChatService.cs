@@ -47,6 +47,8 @@ public class StreamingChatService : IStreamingChatService
 
     // Landing turns run without a Chat Agent flow: a fixed prompt plus the UI
     // skills the custom-UI generation path relies on.
+    private const int MaxPromptFileNames = 20;
+
     private const string LandingSystemPrompt =
         "You are the Avintra assistant. Answer questions and help the user create files from natural language: custom interfaces, images, spreadsheets, and documents. " +
         "When the user asks for an interface, produce a complete self-contained HTML document using the available ui-* skills: inline CSS, plus optional inline plain JavaScript for interactivity. " +
@@ -54,6 +56,7 @@ public class StreamingChatService : IStreamingChatService
         "Load any library only from cdn.jsdelivr.net, unpkg.com or cdnjs.cloudflare.com with an exact version, and fonts only from Google Fonts. " +
         "The preview blocks network requests and form submission, so never call fetch or post a form to a server: handle submit in JavaScript and show the outcome on the page. " +
         "Deliver a file as exactly one fenced block tagged html, svg, csv, tsv, or markdown, with a sentence of reasoning outside the fence; the chat stores that block as a file the user can preview and download. " +
+        "When the user names the file, put that name after the tag on the fence line, as in ```markdown packing-list.md, and keep the same name when you revise the file; otherwise give an html or svg file a <title> and a markdown file a # heading, which names it. " +
         "For a real Word, Excel or PowerPoint file instead of a text file, deliver exactly one spec block: ```doc-spec with the document's markdown for a .docx file, ```sheet-spec with JSON {\"title\", \"columns\": [...], \"rows\": [[...], ...]} for a .xlsx file, or ```slide-spec with JSON {\"title\", \"slides\": [{\"title\", \"bullets\": [...], \"layout\": \"title-bullets\"}]} for a .pptx file; the chat builds the binary from the spec. " +
         "Show code (scripts, queries, config) in ordinary fenced code blocks tagged with their language; those stay inline and are not stored. " +
         "To show a chart inline, write a fenced block tagged chart holding only JSON: {\"type\": \"bar\" | \"line\" | \"area\" | \"pie\", \"title\": string, \"x\": the key of each row's category, \"series\": the numeric keys to plot (at most 8; a pie plots the first), \"data\": an array of flat rows}. Use one y-scale per chart; split measures with different units into separate charts. " +
@@ -252,10 +255,11 @@ public class StreamingChatService : IStreamingChatService
 
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
         var profilePrompt = await BuildUserChatProfilePromptAsync(cancellationToken);
+        var filesPrompt = await BuildConversationFilesPromptAsync(request.ConversationId, cancellationToken);
         var replyText = new StringBuilder();
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
-            BuildLandingLlmPayload(request, modelSelection, profilePrompt),
+            BuildLandingLlmPayload(request, modelSelection, filesPrompt, profilePrompt),
             currentSpaceId == Guid.Empty ? null : currentSpaceId,
             _currentTenantService.CurrentEnvType == ConfigureEnvironmentType.Prod ? "prod" : "dev",
             cancellationToken))
@@ -796,6 +800,24 @@ public class StreamingChatService : IStreamingChatService
         };
     }
 
+    private async Task<string?> BuildConversationFilesPromptAsync(Guid? conversationId, CancellationToken cancellationToken)
+    {
+        if (conversationId is null)
+            return null;
+
+        var names = await _unitOfWork.ChatArtifactRepo
+            .GetByConditionAsync(w => w.ConversationId == conversationId && w.Origin == "Generated" && w.Conversation!.UserId == _userId)
+            .GroupBy(w => w.Name)
+            .OrderByDescending(g => g.Max(w => w.CreatedOn))
+            .Select(g => g.Key)
+            .Take(MaxPromptFileNames)
+            .ToListAsync(cancellationToken);
+
+        return names.Count == 0
+            ? null
+            : $"Files saved in this chat, by their current names (the user may have renamed them); when you revise one, put that exact name on the fence line:\n{string.Join("\n", names.Select(name => $"- {name}"))}";
+    }
+
     /// <summary>
     /// Builds the agent-less landing LLMGenerationRequest: default prompt plus the UI skills
     /// on the selected model, attributed to the "LandingChat" reference.
@@ -816,12 +838,14 @@ public class StreamingChatService : IStreamingChatService
         return sections.Count == 0 ? null : string.Join("\n\n", sections);
     }
 
-    private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection, string? profilePrompt)
+    private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection, string? filesPrompt, string? profilePrompt)
     {
         var destinationsPrompt = StreamingChatHelpers.BuildLandingDestinationsPrompt(request.Destinations);
         var systemPrompt = LandingSystemPrompt;
         if (destinationsPrompt is not null)
             systemPrompt = $"{systemPrompt}\n\n{destinationsPrompt}";
+        if (filesPrompt is not null)
+            systemPrompt = $"{systemPrompt}\n\n{filesPrompt}";
         if (profilePrompt is not null)
             systemPrompt = $"{systemPrompt}\n\n{profilePrompt}";
         var messages = new List<object> { new { role = "system", content = systemPrompt } };
@@ -847,7 +871,7 @@ public class StreamingChatService : IStreamingChatService
             files = request.Files,
             is_chat_agent = false,
             stream = true,
-            is_temp_chat = false,
+            is_temp_chat = request.IsTempChat && request.ConversationId is null,
             conversation_id = request.ConversationId?.ToString(),
             keep_user_turns = request.KeepUserTurns,
             temperature = 1.0,

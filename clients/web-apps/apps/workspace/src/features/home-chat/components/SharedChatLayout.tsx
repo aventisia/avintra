@@ -1,10 +1,10 @@
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { ChatThread } from "@avplatform/chat";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { Link } from "react-router-dom";
 
 import { useSharedChat } from "../hooks/useSharedChat.hook";
 import { HomeChatSkeleton } from "./HomeChatSkeleton";
+import { SharedLinkUnavailable } from "./SharedLinkUnavailable";
 
 /** A shared Home chat as a read-only transcript for signed-in members. */
 export const SharedChatLayout = ({ shareToken }: { shareToken: string }) => {
@@ -13,17 +13,7 @@ export const SharedChatLayout = ({ shareToken }: { shareToken: string }) => {
 
   if (isLoading) return <HomeChatSkeleton label="Loading shared chat" />;
 
-  if (isError || !title)
-    return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-2 p-6 text-center">
-        <h1 className="text-base font-medium text-ink">
-          This link is invalid or sharing was stopped
-        </h1>
-        <Link to="/" className="text-sm text-muted-foreground underline">
-          Back to Home
-        </Link>
-      </div>
-    );
+  if (isError || !title) return <SharedLinkUnavailable kind="chat" />;
 
   return (
     <div className="flex h-full min-h-0 flex-col">

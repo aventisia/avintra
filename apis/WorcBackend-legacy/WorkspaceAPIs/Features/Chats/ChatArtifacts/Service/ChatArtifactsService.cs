@@ -208,6 +208,74 @@ public class ChatArtifactsService : IChatArtifactsService
         }
     }
 
+    public async Task<ServiceResponse<ChatArtifactDto>> UpdateChatArtifactAsync(UpdateChatArtifactDto updateChatArtifactDto)
+    {
+        var serviceResponse = ServiceResponse<ChatArtifactDto>.Create("Failed to rename chat artifact", 500);
+
+        try
+        {
+            var newName = updateChatArtifactDto.Name.Trim();
+            if (!IsValidFileName(newName))
+                return serviceResponse.Update("Enter a file name without \\ / : * ? \" < > | or #.", 400);
+
+            var artifact = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.Id == updateChatArtifactDto.Id)
+                .SingleOrDefaultAsync();
+
+            if (artifact == null)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            var ownsConversation = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(w => w.Id == artifact.ConversationId && w.UserId == _userId)
+                .AnyAsync();
+
+            if (!ownsConversation)
+                return serviceResponse.Update("Chat artifact not found", 404);
+
+            if (!string.Equals(Path.GetExtension(newName), Path.GetExtension(artifact.Name), StringComparison.OrdinalIgnoreCase))
+                return serviceResponse.Update($"Keep the {Path.GetExtension(artifact.Name)} extension.", 400);
+
+            if (string.Equals(newName, artifact.Name, StringComparison.Ordinal))
+                return serviceResponse.Update(null, 200, artifact.Adapt<ChatArtifactDto>());
+
+            var currentName = artifact.Name.ToLower();
+            var isNameTaken = !string.Equals(newName, artifact.Name, StringComparison.OrdinalIgnoreCase) &&
+                await _unitOfWork.ChatArtifactRepo
+                    .GetByConditionAsync(w => w.ConversationId == artifact.ConversationId && w.Name.ToLower() == newName.ToLower())
+                    .AnyAsync();
+
+            if (isNameTaken)
+                return serviceResponse.Update("Another file in this chat already has that name.", 409);
+
+            var versions = await _unitOfWork.ChatArtifactRepo
+                .GetByConditionAsync(w => w.ConversationId == artifact.ConversationId && w.Name.ToLower() == currentName)
+                .ToListAsync();
+
+            foreach (var version in versions)
+            {
+                version.Name = newName;
+                version.LastModifiedByUserId = _userId;
+                _unitOfWork.ChatArtifactRepo.Update(version);
+            }
+
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("An error occurred while saving changes.", 500);
+
+            return serviceResponse.Update("Chat artifact renamed", 200, artifact.Adapt<ChatArtifactDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while renaming chat artifact {chatArtifactId}", updateChatArtifactDto?.Id);
+            return serviceResponse;
+        }
+    }
+
+    private static bool IsValidFileName(string name) =>
+        Path.GetFileNameWithoutExtension(name).Trim().Length > 0 &&
+        !ChatArtifactsHelpers.HasUnsafeNameCharacters(name) &&
+        !name.Any(char.IsControl) &&
+        name.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+
     public async Task<ServiceResponse<bool>> DeleteChatArtifactAsync(Guid chatArtifactId)
     {
         var serviceResponse = ServiceResponse<bool>.Create("Failed to delete chat artifact", 500);

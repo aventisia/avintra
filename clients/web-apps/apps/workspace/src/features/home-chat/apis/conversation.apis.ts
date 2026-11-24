@@ -11,11 +11,12 @@ import { type UpdateConversationTitleDto } from "../dtos/update-conversation-tit
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 
-/** Lists a page of the user's titled Home conversations, pinned then most recent first. */
+/** Lists a page of the user's titled Home conversations, pinned then most recent first; with `shared`, every shared one, archived or not. */
 export const getLandingConversations = (params: {
   search?: string;
   archived: boolean;
   projectId?: string;
+  shared?: boolean;
   skip: number;
   take: number;
 }) =>
@@ -78,6 +79,14 @@ export const setConversationArchived = ({ id, archived }: { id: string; archived
     )
     .then((res) => res.data);
 
+/** Archives several of the user's conversations. */
+export const archiveConversations = (conversationIds: string[]) =>
+  axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/bulk/archive`, conversationIds, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
 /** Deletes one of the user's conversations with its messages. */
 export const deleteConversation = (conversationId: string) =>
   axiosInstance
@@ -110,6 +119,14 @@ export const unshareConversation = (conversationId: string) =>
 export const getSharedConversation = (shareToken: string) =>
   axiosInstance
     .get<IHttpResponse<ConversationDto>>(`${baseAPIURL}/shared/${shareToken}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
+/** Deletes several of the user's conversations with their messages. */
+export const deleteMultipleConversations = (conversationIds: string[]) =>
+  axiosInstance
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, conversationIds, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

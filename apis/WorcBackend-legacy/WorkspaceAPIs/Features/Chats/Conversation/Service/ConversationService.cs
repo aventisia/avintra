@@ -2,6 +2,8 @@ namespace WorkspaceAPIs.Services;
 
 public class ConversationService : IConversationService
 {
+    private const int MinMessageSearchLength = 3;
+
     private readonly ILogger<ConversationService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IResourceUserAccessService _resourceUserAccessService;
@@ -170,26 +172,35 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, int skip, int take)
+    public async Task<ServiceResponse<IEnumerable<LandingConversationDto>>> GetLandingConversationsAsync(string? search, bool archived, Guid? projectId, bool shared, int skip, int take)
     {
         var serviceResponse = ServiceResponse<IEnumerable<LandingConversationDto>>.Create("Failed to retrieve conversations", 500);
 
         var query = _unitOfWork.ConversationRepo.GetByConditionAsync(w =>
             w.FlowVersionId == null &&
             w.UserId == _userId &&
-            (w.Status == ConversationStatusEnum.Archived) == archived &&
+            (shared || (w.Status == ConversationStatusEnum.Archived) == archived) &&
             w.Title != null);
 
         var trimmedSearch = search?.Trim();
         if (!string.IsNullOrEmpty(trimmedSearch))
         {
             var pattern = $"%{SearchByQueryHelpers.EscapeLikePattern(trimmedSearch)}%";
-            query = query.Where(w => EF.Functions.ILike(w.Title!, pattern, "\\"));
+            query = trimmedSearch.Length < MinMessageSearchLength
+                ? query.Where(w => EF.Functions.ILike(w.Title!, pattern, "\\"))
+                : query.Where(w =>
+                    EF.Functions.ILike(w.Title!, pattern, "\\") ||
+                    w.Messages.Any(m => EF.Functions.ILike(m.Content, pattern, "\\")));
         }
 
         if (projectId.HasValue)
         {
             query = query.Where(w => w.ProjectId == projectId.Value);
+        }
+
+        if (shared)
+        {
+            query = query.Where(w => w.ShareToken != null);
         }
 
         var conversations = await query
@@ -968,71 +979,34 @@ public class ConversationService : IConversationService
         return serviceResponse;
     }
 
-    // Deletes multiple conversations.
-    public async Task<ServiceResponse<bool>> DeleteBulkAsync(IEnumerable<Guid> conversationIds)
+    public async Task<ServiceResponse<int>> DeleteMultipleConversationsAsync(IEnumerable<Guid> conversationIds)
     {
-        // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to delete conversations. Please try again."
-        };
+        var serviceResponse = ServiceResponse<int>.Create("Failed to delete conversations", 500);
 
         try
         {
-            // Validate input
-            if (conversationIds == null || !conversationIds.Any())
-            {
-                _logger.LogWarning("[DeleteBulkConversation] Empty or null input received. UserId: {UserId}", _userId);
-                serviceResponse.Message = "No conversation ids provided.";
-                return serviceResponse;
-            }
+            var distinctIds = conversationIds?.Distinct().ToList() ?? [];
+            if (distinctIds.Count == 0)
+                return serviceResponse.Update("No conversation ids provided.", 400);
 
-            // Fetch conversations
             var conversations = await _unitOfWork.ConversationRepo
-                .GetByConditionAsync(w => conversationIds.Contains(w.Id) && w.UserId == _userId)
+                .GetByConditionAsync(w => distinctIds.Contains(w.Id) && w.UserId == _userId)
                 .ToListAsync();
 
-            // Validate existence
-            if (!conversations.Any())
-            {
-                _logger.LogWarning(
-                    "[DeleteBulkConversation] No matching conversations found. UserId: {UserId}, RequestedCount: {Count}",
-                    _userId,
-                    conversationIds.Count());
+            if (conversations.Count == 0)
+                return serviceResponse.Update("Conversations not found", 404);
 
-                serviceResponse.Message = "No conversations found.";
-                return serviceResponse;
-            }
-
-            // Delete entities
             _unitOfWork.ConversationRepo.Delete(conversations);
 
-            // Persist changes
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError(
-                    "[DeleteBulkConversation] Failed to persist delete. UserId: {UserId}, Count: {Count}",
-                    _userId,
-                    conversations.Count);
+                return serviceResponse.Update("An error occurred while saving changes.", 500);
 
-                return serviceResponse;
-            }
-
-            // Assign success response
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"{conversations.Count} conversations deleted successfully.";
+            return serviceResponse.Update($"{conversations.Count} conversations deleted", 200, conversations.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "[DeleteBulkConversation] Unexpected error. UserId: {UserId}, RequestedCount: {Count}",
-                _userId,
-                conversationIds?.Count());
+            _logger.LogError(ex, "Error occurred while deleting conversations for UserId {UserId}", _userId);
+            return serviceResponse;
         }
-
-        return serviceResponse;
     }
 }

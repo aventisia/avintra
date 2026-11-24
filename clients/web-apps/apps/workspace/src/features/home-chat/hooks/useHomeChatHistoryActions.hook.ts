@@ -3,7 +3,9 @@ import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-
 import { toast } from "sonner";
 
 import {
+  archiveConversations,
   deleteConversation,
+  deleteMultipleConversations,
   setConversationArchived,
   shareConversation,
   unshareConversation,
@@ -14,6 +16,7 @@ import {
 import {
   HOME_CHAT_CONVERSATION_QUERY_KEY,
   HOME_CHAT_HISTORY_QUERY_KEY,
+  HOME_CHAT_SHARED_CHATS_QUERY_KEY,
 } from "../constants/home-chat.constant";
 import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
@@ -22,11 +25,12 @@ import { buildSharedChatLink } from "../utils/shared-link.util";
 
 type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 
-/** Renames (shown at once), pins, archives, shares and deletes Home chats, refreshing the history afterwards. */
+/** Renames (shown at once), pins, archives, shares and deletes Home chats, one or several at a time, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
   const refreshHistory = () => {
     void queryClient.invalidateQueries({ queryKey: HOME_CHAT_CONVERSATION_QUERY_KEY });
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_SHARED_CHATS_QUERY_KEY });
     return queryClient.invalidateQueries({ queryKey: HOME_CHAT_HISTORY_QUERY_KEY });
   };
 
@@ -77,6 +81,16 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const archiveMany = useMutation({
+    mutationFn: archiveConversations,
+    onSuccess: (_, ids) =>
+      toast.success(ids.length === 1 ? "Chat archived" : `${ids.length} chats archived`, {
+        className: "sonner-toaster-sm",
+      }),
+    onError: () => toast.error("Couldn't archive those chats"),
+    onSettled: refreshHistory,
+  });
+
   const share = useMutation({
     mutationFn: shareConversation,
     onSettled: refreshHistory,
@@ -106,6 +120,16 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const removeMany = useMutation({
+    mutationFn: deleteMultipleConversations,
+    onSuccess: (_, ids) =>
+      toast.success(ids.length === 1 ? "Chat deleted" : `${ids.length} chats deleted`, {
+        className: "sonner-toaster-sm",
+      }),
+    onError: () => toast.error("Couldn't delete those chats"),
+    onSettled: refreshHistory,
+  });
+
   return {
     renameChat: (id: string, title: string) => rename.mutate({ id, title }),
     togglePin: ({ id, isPinned }: { id: string; isPinned?: boolean }) =>
@@ -115,5 +139,7 @@ export const useHomeChatHistoryActions = () => {
     copyShareLink,
     stopSharing: (id: string) => unshare.mutate(id),
     deleteChat: remove.mutateAsync,
+    archiveChats: archiveMany.mutateAsync,
+    deleteChats: removeMany.mutateAsync,
   };
 };

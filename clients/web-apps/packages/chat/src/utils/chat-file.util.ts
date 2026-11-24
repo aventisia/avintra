@@ -16,7 +16,7 @@ export const SYNTHESIZED_FILE_TYPES = [DOCX_TYPE, XLSX_TYPE, PPTX_TYPE];
 
 const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
   html: { name: "Generated UI.html", contentType: "text/html" },
-  svg: { name: "Image.svg", contentType: "image/svg+xml" },
+  svg: { name: "Diagram.svg", contentType: "image/svg+xml" },
   csv: { name: "Data.csv", contentType: "text/csv" },
   tsv: { name: "Data.tsv", contentType: "text/tab-separated-values" },
   markdown: { name: "Document.md", contentType: "text/markdown" },
@@ -28,7 +28,7 @@ const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
 
 // Code, ```chart and ```blueprint fences stay inline; only these languages are stored as files.
 const FILE_FENCE_PATTERN =
-  /^```(html|svg|csv|tsv|markdown|md)[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/im;
+  /^```(html|svg|csv|tsv|markdown|md)(?:[ \t]+[^\n`]*)?[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/im;
 // IMPORTANT NOTE: mirrors the backend spec match; doc-spec bodies hold markdown that can
 // itself contain fenced code blocks, so the reply's last fence closes a doc-spec.
 const SPEC_FENCE_PATTERN =
@@ -53,14 +53,25 @@ const specTitle = (body: string, contentType: string) => {
   }
 };
 
+const UNSAFE_NAME_CHARACTERS = /[\\/:*?"<>|#]/g;
+const FENCE_NAME_PATTERN = /^```\S+[ \t]+([^\n`]*\S)/;
+
+const nameFromFence = (text: string, index: number, fallbackName: string) => {
+  const name = FENCE_NAME_PATTERN.exec(text.slice(index))?.[1]
+    ?.replace(UNSAFE_NAME_CHARACTERS, "")
+    .trim()
+    .slice(0, 80)
+    .trim();
+  if (!name) return null;
+  const extension = fallbackName.slice(fallbackName.lastIndexOf("."));
+  return name.toLowerCase().endsWith(extension) ? name : name + extension;
+};
+
 const nameFromContent = (body: string, fallback: { name: string; contentType: string }) => {
   const rawTitle = SYNTHESIZED_FILE_TYPES.includes(fallback.contentType)
     ? specTitle(body, fallback.contentType)
     : (TITLE_PATTERNS[fallback.contentType]?.exec(body)?.[1] ?? "");
-  const title = rawTitle
-    .replace(/[\\/:*?"<>|#]/g, "")
-    .trim()
-    .slice(0, 60);
+  const title = rawTitle.replace(UNSAFE_NAME_CHARACTERS, "").trim().slice(0, 60);
   return title ? title + fallback.name.slice(fallback.name.lastIndexOf(".")) : fallback.name;
 };
 
@@ -109,7 +120,7 @@ export const findChatFile = (text: string): ChatFile | null => {
   const fence = match && FILE_FENCES[match.kind.toLowerCase()];
   if (!match || !fence) return null;
   return {
-    name: nameFromContent(match.body, fence),
+    name: nameFromFence(text, match.index, fence.name) ?? nameFromContent(match.body, fence),
     contentType: fence.contentType,
     body: match.body,
     isComplete: match.isComplete,

@@ -22,6 +22,7 @@ import { transcribeSpeech } from "../apis/speech.apis";
 import {
   HOME_CHAT_FILES_QUERY_KEY,
   HOME_CHAT_FILE_QUERY_KEY,
+  HOME_CHAT_NEW_DRAFT_KEY,
 } from "../constants/home-chat.constant";
 import { useHomeChatCommands } from "../hooks/useHomeChatCommands.hook";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
@@ -43,6 +44,7 @@ const PREVIEW_PARAM = "file";
 
 type HomeChatThreadProps = {
   conversationId?: string;
+  isTemporary?: boolean;
   onConversationCreated: (conversationId: string) => void;
   onConversationMissing: () => void;
 };
@@ -187,13 +189,25 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         <div className="min-w-0 flex-1">
           <ChatThread
             placeholder={`Ask ${companyName ?? "anything"}…`}
-            welcome={<HomeChatWelcome isSavedChat={!!props.conversationId} />}
+            welcome={
+              <HomeChatWelcome
+                isSavedChat={!!props.conversationId}
+                isTemporary={props.isTemporary}
+              />
+            }
             starters={starters}
             destinations={destinations}
             onNavigate={navigate}
             files={files.handlers}
             commands={commands}
             mentions={mentions}
+            draftKey={
+              props.isTemporary
+                ? undefined
+                : props.conversationId
+                  ? `home:${props.conversationId}`
+                  : HOME_CHAT_NEW_DRAFT_KEY
+            }
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
               groups.length > 0 ? (

@@ -7,6 +7,7 @@ import { ChatArtifactDto } from "../dtos/chat-artifact.dto";
 import { ConversationDto } from "../dtos/conversation.dto";
 import { GenerateFromSpecDto } from "../dtos/generate-from-spec.dto";
 import { InsertChatArtifactDto } from "../dtos/insert-chat-artifact.dto";
+import { UpdateChatArtifactDto } from "../dtos/update-chat-artifact.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 const artifactAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chat-artifacts`;
@@ -89,6 +90,17 @@ export const generateFromSpec = (generateFromSpecDto: GenerateFromSpecDto) => {
         headers: getSpaceHeaders(),
       },
     )
+    .then((res) => res.data);
+};
+
+/**
+ * Updates an existing chat artifact.
+ */
+export const updateChatArtifact = (updateChatArtifactDto: UpdateChatArtifactDto) => {
+  return axiosInstance
+    .put<IHttpResponse<ChatArtifactDto>>(artifactAPIURL, updateChatArtifactDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

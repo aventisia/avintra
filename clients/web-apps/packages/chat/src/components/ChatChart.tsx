@@ -1,3 +1,7 @@
+import { toast } from "@avplatform/ui/sonner";
+import { downloadBlob } from "@avplatform/ui/utils";
+import { DownloadSimpleIcon } from "@phosphor-icons/react";
+import { useRef } from "react";
 import {
   Area,
   AreaChart,
@@ -17,6 +21,8 @@ import {
 } from "recharts";
 
 import { type ChartSpec } from "../utils/chart-spec.util";
+import { elementToSvg, pngFileName, svgToPngBlob } from "../utils/svg-image.util";
+import { ChatIconButton } from "./ChatIconButton";
 
 // Validated categorical palette (light / dark), assigned in this fixed order.
 const PALETTE_CLASS =
@@ -132,17 +138,33 @@ const PieView = ({ spec }: { spec: ChartSpec }) => (
   </ResponsiveContainer>
 );
 
-/** Draws a chart fence's spec as a bar, line, area or pie chart. */
-export const ChatChart = ({ spec }: { spec: ChartSpec }) => (
-  <figure
-    className={`${PALETTE_CLASS} mt-5 rounded-xl border border-line bg-surface p-4`}
-    aria-label={spec.title ?? `${spec.type} chart`}
-  >
-    {spec.title && (
-      <figcaption className="mb-3 text-sm font-medium text-ink">{spec.title}</figcaption>
-    )}
-    <div className="h-72 w-full">
-      {spec.type === "pie" ? <PieView spec={spec} /> : <CartesianChart spec={spec} />}
-    </div>
-  </figure>
-);
+/** Draws a chart fence's spec as a bar, line, area or pie chart, with a PNG download. */
+export const ChatChart = ({ spec }: { spec: ChartSpec }) => {
+  const figureRef = useRef<HTMLElement>(null);
+  const downloadPng = async () => {
+    if (!figureRef.current) return;
+    const png = await svgToPngBlob(elementToSvg(figureRef.current));
+    downloadBlob(png, pngFileName(spec.title ?? "Chart"));
+  };
+  return (
+    <figure
+      ref={figureRef}
+      className={`${PALETTE_CLASS} group/chart relative mt-5 rounded-xl border border-line bg-surface p-4`}
+      aria-label={spec.title ?? `${spec.type} chart`}
+    >
+      {spec.title && (
+        <figcaption className="mb-3 pr-8 text-sm font-medium text-ink">{spec.title}</figcaption>
+      )}
+      <ChatIconButton
+        label="Download chart as PNG"
+        className="absolute right-2 top-2 opacity-0 focus-visible:opacity-100 group-hover/chart:opacity-100 [@media(hover:none)]:opacity-100"
+        onClick={() => void downloadPng().catch(() => toast.error("Couldn't create the PNG."))}
+      >
+        <DownloadSimpleIcon />
+      </ChatIconButton>
+      <div className="h-72 w-full">
+        {spec.type === "pie" ? <PieView spec={spec} /> : <CartesianChart spec={spec} />}
+      </div>
+    </figure>
+  );
+};

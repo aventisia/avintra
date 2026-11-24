@@ -11,6 +11,7 @@ import {
   SimpleDDMenuItem,
 } from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
+import { IS_APPLE_PLATFORM } from "@avplatform/ui/utils";
 import {
   ArchiveIcon,
   ArrowLeftIcon,
@@ -35,8 +36,7 @@ import { ChatIconButton } from "./ChatIconButton";
 import { ChatNameInput } from "./ChatNameInput";
 import { ChatProjectFilter } from "./ChatProjectFilter";
 
-const IS_MAC = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.userAgent);
-const NEW_CHAT_SHORTCUT_LABEL = IS_MAC ? "⌘⇧O" : "Ctrl+Shift+O";
+const NEW_CHAT_SHORTCUT_LABEL = IS_APPLE_PLATFORM ? "⌘⇧O" : "Ctrl+Shift+O";
 
 export type ChatHistoryProject = { id: string; name: string };
 
@@ -49,6 +49,10 @@ export type ChatHistoryProps = {
   onNewChat: () => void;
   onRename: (id: string, title: string) => void;
   onDelete: (item: ChatHistoryItem) => void;
+  /** Archives the selected chats in select mode; the archive button is hidden without it. */
+  onArchiveMany?: (ids: string[]) => Promise<unknown>;
+  /** Deletes the selected chats in select mode, calling `onDone` once they are gone; select mode is unavailable without it. */
+  onDeleteMany?: (ids: string[], onDone: () => void) => void;
   /** Pins or unpins a chat; the menu item is hidden without it. */
   onTogglePin?: (item: ChatHistoryItem) => void;
   /** Lists archived chats instead of the active ones. */

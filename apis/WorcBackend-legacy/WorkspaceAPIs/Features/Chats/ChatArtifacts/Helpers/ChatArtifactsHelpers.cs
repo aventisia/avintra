@@ -27,7 +27,7 @@ public static class ChatArtifactsHelpers
     private static readonly Dictionary<string, (string Name, string ContentType)> FileFences = new(StringComparer.OrdinalIgnoreCase)
     {
         ["html"] = ("Generated UI.html", "text/html"),
-        ["svg"] = ("Image.svg", "image/svg+xml"),
+        ["svg"] = ("Diagram.svg", "image/svg+xml"),
         ["csv"] = ("Data.csv", "text/csv"),
         ["tsv"] = ("Data.tsv", "text/tab-separated-values"),
         ["markdown"] = ("Document.md", "text/markdown"),
@@ -36,7 +36,7 @@ public static class ChatArtifactsHelpers
 
     // IMPORTANT NOTE: mirrors findChatFile in @avplatform/chat; the browser matches a stored file to its reply by type and UTF-8 size, so both must extract the same body.
     private static readonly Regex FileFencePattern = new(
-        @"^```(html|svg|csv|tsv|markdown|md)[ \t]*\n([\s\S]*?)^```[ \t]*$",
+        @"^```(html|svg|csv|tsv|markdown|md)(?:[ \t]+([^\n`]*\S))?[ \t]*\n([\s\S]*?)^```[ \t]*$",
         RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
     private static readonly Regex BareHtmlPattern = new(@"^(<!doctype html|<html[\s>])[\s\S]*</html>$", RegexOptions.IgnoreCase);
@@ -102,6 +102,12 @@ public static class ChatArtifactsHelpers
     /// <param name="extension">File extension including the leading dot.</param>
     /// <returns></returns>
     public static bool IsAllowedExtension(string extension) => AllowedExtensions.Contains(extension);
+
+    /// <summary>
+    /// Checks whether a file name contains a character that generated file names never carry (path, wildcard, or URL-fragment characters).
+    /// </summary>
+    /// <param name="name">The file name to check.</param>
+    public static bool HasUnsafeNameCharacters(string name) => UnsafeNameCharacters.IsMatch(name);
 
     /// <summary>
     /// Checks a file extension against the generated-artifact allowlist.
@@ -217,8 +223,20 @@ public static class ChatArtifactsHelpers
             return null;
 
         var fence = FileFences[match.Groups[1].Value];
-        var body = match.Groups[2].Value.Trim();
-        return new GeneratedChatFile(NameFromContent(body, fence), fence.ContentType, body);
+        var body = match.Groups[3].Value.Trim();
+        return new GeneratedChatFile(NameFromFence(match.Groups[2].Value, fence.Name) ?? NameFromContent(body, fence), fence.ContentType, body);
+    }
+
+    private static string? NameFromFence(string fenceName, string fallbackName)
+    {
+        var name = UnsafeNameCharacters.Replace(fenceName, string.Empty).Trim();
+        if (name.Length > 80)
+            name = name[..80].Trim();
+        if (name.Length == 0)
+            return null;
+
+        var extension = Path.GetExtension(fallbackName);
+        return name.EndsWith(extension, StringComparison.OrdinalIgnoreCase) ? name : name + extension;
     }
 
     private static string NameFromContent(string body, (string Name, string ContentType) fence)

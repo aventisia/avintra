@@ -23,8 +23,15 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
   const [showArchived, setShowArchived] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
-  const { renameChat, togglePin, setArchived, deleteChat, moveToProject } =
-    useHomeChatHistoryActions();
+  const {
+    renameChat,
+    togglePin,
+    setArchived,
+    deleteChat,
+    archiveChats,
+    deleteChats,
+    moveToProject,
+  } = useHomeChatHistoryActions();
   const chatProjects = useChatProjects();
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -36,12 +43,31 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete chat?",
-      description: `“${item.title}” and its messages will be deleted. This can't be undone.`,
+      description: `“${item.title}”, its messages and the files made in it will be deleted. This can't be undone.`,
       confirmBtnText: "Delete",
       showLoadingOnConfirm: true,
       confirmActionFn: async () => {
         await deleteChat(item.id);
         leaveIfOpen(item.id);
+      },
+    });
+
+  const leaveIfOpenAmong = (ids: string[]) => {
+    if (activeId && ids.includes(activeId)) navigate("/", { replace: true });
+  };
+
+  const confirmDeleteMany = (ids: string[], onDone: () => void) =>
+    showCustomAlertDialog({
+      isDestructive: true,
+      title: ids.length === 1 ? "Delete 1 chat?" : `Delete ${ids.length} chats?`,
+      description:
+        "Their messages and the files made in them will be deleted. This can't be undone.",
+      confirmBtnText: "Delete",
+      showLoadingOnConfirm: true,
+      confirmActionFn: async () => {
+        await deleteChats(ids);
+        leaveIfOpenAmong(ids);
+        onDone();
       },
     });
 
@@ -75,6 +101,13 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
       if (!showArchived) leaveIfOpen(id);
     },
     onDelete: confirmDelete,
+    onArchiveMany: showArchived
+      ? undefined
+      : async (ids) => {
+          await archiveChats(ids);
+          leaveIfOpenAmong(ids);
+        },
+    onDeleteMany: confirmDeleteMany,
     projects: chatProjects.projects,
     activeProjectId: showArchived ? null : projectId,
     onProjectFilterChange: setProjectId,

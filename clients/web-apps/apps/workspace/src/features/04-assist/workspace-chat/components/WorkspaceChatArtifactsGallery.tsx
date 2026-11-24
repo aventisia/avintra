@@ -1,4 +1,4 @@
-import { ChatFilePreview, toDataUrl } from "@avplatform/chat";
+import { ChatFilePreview, appendToComposerDraft, toDataUrl } from "@avplatform/chat";
 import { Input, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
@@ -10,15 +10,19 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { MagnifyingGlassIcon, TrashIcon } from "@phosphor-icons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import {
   HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_FILES_QUERY_KEY,
+  HOME_CHAT_NEW_DRAFT_KEY,
   buildSharedFileLink,
   useIsHomeChatAvailable,
 } from "@/features/home-chat";
@@ -60,7 +64,7 @@ export const WorkspaceChatArtifactsGallery = () => {
       userSession: state.userSession,
     })),
   );
-  const { all, deleteArtifact, deleteArtifacts } = useWorkspaceChatArtifacts();
+  const { all, renameArtifact, deleteArtifact, deleteArtifacts } = useWorkspaceChatArtifacts();
   const artifacts = useMemo(() => latestArtifacts(all.data?.data ?? []), [all.data]);
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<ArtifactKind>("all");
@@ -103,6 +107,7 @@ export const WorkspaceChatArtifactsGallery = () => {
   const queryClient = useQueryClient();
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const isHomeChatAvailable = useIsHomeChatAvailable();
+  const navigate = useNavigate();
 
   const saveVersion = async (body: string) => {
     const current = previewArtifact.data;
@@ -162,6 +167,27 @@ export const WorkspaceChatArtifactsGallery = () => {
       toast.error("Couldn't stop sharing");
     }
     void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+  };
+
+  const renameFile = async (artifactId: string, name: string) => {
+    const original = artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "";
+    const extension = original.match(/\.[^.]+$/)?.[0] ?? "";
+    const fullName =
+      extension && !/\.[a-z][a-z0-9]{0,9}$/i.test(name) ? `${name}${extension}` : name;
+    try {
+      await renameArtifact.mutateAsync({ id: artifactId, name: fullName });
+      void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+      toast.success("File renamed");
+    } catch (error) {
+      toast.error(getMutationErrorMessage(error));
+    }
+  };
+
+  const startChatWithFile = (artifactId: string) => {
+    const name = artifacts.find((artifact) => artifact.id === artifactId)?.name;
+    if (!name) return;
+    appendToComposerDraft(HOME_CHAT_NEW_DRAFT_KEY, `@${name} `);
+    navigate("/");
   };
 
   const confirmDeleteArtifact = (artifactId: string) =>
@@ -343,8 +369,11 @@ export const WorkspaceChatArtifactsGallery = () => {
                             : undefined
                         }
                         onPreview={setPreviewArtifactId}
+                        onRename={(id, name) => void renameFile(id, name)}
+                        onUseInNewChat={isHomeChatAvailable ? startChatWithFile : undefined}
                         onDelete={confirmDeleteArtifact}
                         onCopyShareLink={(id) => void copyShareLink(id)}
+                        isShared={artifact.isShared}
                         onStopSharing={artifact.isShared ? (id) => void stopSharing(id) : undefined}
                       />
                     ))}

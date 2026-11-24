@@ -47,6 +47,7 @@ def create_model_node(
             response = AIMessage(content=json.dumps(response, ensure_ascii=False))
 
         if isinstance(response, AIMessage):
+            response = _with_text_blocks(response)
             logger.debug(
                 "LLM response generated. tool_calls=%s",
                 bool(response.tool_calls),
@@ -57,6 +58,35 @@ def create_model_node(
         }
 
     return call_model
+
+
+def _with_text_blocks(response: AIMessage) -> AIMessage:
+    # IMPORTANT NOTE: a model that thinks while the request sets no thinking
+    # option streams text as bare strings beside dict thinking blocks, so the
+    # merged content reads ["", {thinking}, "text"]. Persistence drops bare
+    # strings, and Anthropic rejects an empty or whitespace-only text block
+    # with a 400 on the next turn.
+    if not isinstance(response.content, list):
+        return response
+    blocks = [
+        block
+        for block in (
+            {"type": "text", "text": part} if isinstance(part, str) else part
+            for part in response.content
+        )
+        if not _is_blank_text_block(block)
+    ]
+    if blocks == response.content:
+        return response
+    return response.model_copy(update={"content": blocks})
+
+
+def _is_blank_text_block(block) -> bool:
+    return (
+        isinstance(block, dict)
+        and block.get("type") == "text"
+        and not str(block.get("text") or "").strip()
+    )
 
 
 def _inject_skill_prompt(messages, skill_prompt: str) -> list:

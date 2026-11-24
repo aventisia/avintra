@@ -23,7 +23,11 @@ export const getMutationErrorMessage = (error: unknown): string => {
   ) {
     const responseData = (error.response as { data: unknown }).data;
 
-    if (typeof responseData === "string" && responseData.trim().length > 0) {
+    if (
+      typeof responseData === "string" &&
+      responseData.trim().length > 0 &&
+      !responseData.trimStart().startsWith("<")
+    ) {
       return responseData;
     }
 

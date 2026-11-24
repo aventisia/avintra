@@ -6,6 +6,7 @@ import {
   ErrorPrimitive,
   MessagePrimitive,
   type PartState,
+  useAui,
   useAuiState,
 } from "@assistant-ui/react";
 import { ThinkingIndicator } from "@avplatform/assistant-chat";
@@ -18,6 +19,8 @@ import {
   CheckIcon,
   CopyIcon,
   PencilSimpleIcon,
+  SpeakerHighIcon,
+  StopIcon,
   ThumbsDownIcon,
   ThumbsUpIcon,
   WarningCircleIcon,
@@ -26,6 +29,7 @@ import { useContext } from "react";
 
 import { ChatFileContext } from "../constants/chat-file.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { useReadAloud } from "../hooks/useReadAloud.hook";
 import {
   chatFileSize,
   findChatFile,
@@ -34,6 +38,7 @@ import {
 } from "../utils/chat-file.util";
 import { NAVIGATE_TOOL_NAME } from "../utils/chat-intent.util";
 import { formatMessageTime } from "../utils/message-time.util";
+import { toSpeechText } from "../utils/speech-text.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
@@ -78,6 +83,28 @@ const MessageCopy = () => (
     </ChatIconButton>
   </ActionBarPrimitive.Copy>
 );
+
+const MessageReadAloud = () => {
+  const aui = useAui();
+  const { isAvailable, isSpeaking, toggle } = useReadAloud();
+  if (!isAvailable) return null;
+  const readMessage = () =>
+    toggle(
+      aui.message
+        .getState()
+        .content.flatMap((part) => (part.type === "text" ? [toSpeechText(part.text)] : []))
+        .join("\n\n"),
+    );
+  return (
+    <ChatIconButton
+      label={isSpeaking ? "Stop reading" : "Read aloud"}
+      aria-pressed={isSpeaking}
+      onClick={readMessage}
+    >
+      {isSpeaking ? <StopIcon /> : <SpeakerHighIcon />}
+    </ChatIconButton>
+  );
+};
 
 const MessageRegenerate = () => (
   <ActionBarPrimitive.Reload asChild>
@@ -141,14 +168,22 @@ const MessageBranches = () => (
   </BranchPickerPrimitive.Root>
 );
 
-const MessageError = () => (
+const MessageError = ({ canRetry }: { canRetry: boolean }) => (
   <MessagePrimitive.Error>
     <ErrorPrimitive.Root
       role="alert"
       className="mt-3 flex items-start gap-2.5 rounded-xl border border-bad/25 bg-bad/5 px-4 py-3 text-sm leading-6 text-bad"
     >
       <WarningCircleIcon weight="bold" className="mt-1 size-4 shrink-0" />
-      <ErrorPrimitive.Message className="line-clamp-4" />
+      <ErrorPrimitive.Message className="line-clamp-4 flex-1" />
+      {canRetry && (
+        <ActionBarPrimitive.Reload asChild>
+          <Button variant="outline" size="sm" className="-my-0.5 shrink-0">
+            <ArrowClockwiseIcon className="size-4" />
+            Try again
+          </Button>
+        </ActionBarPrimitive.Reload>
+      )}
     </ErrorPrimitive.Root>
   </MessagePrimitive.Error>
 );
@@ -160,8 +195,8 @@ const AssistantText = ({ text }: { text: string }) => {
   if (!files || !file) return text.trim() ? <ChatMarkdown /> : null;
 
   const state = file.isComplete ? files.resolveFile(file) : "saving";
-  // A file that never got stored shows as code, so nothing is lost.
-  if (state === null && !isRunning) return <ChatMarkdown />;
+  // A file that never got stored, or was cut off by Stop, shows as code, so nothing is lost.
+  if ((state === null || !file.isComplete) && !isRunning) return <ChatMarkdown />;
 
   const card =
     state && state !== "saving" ? (
@@ -302,7 +337,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         </MessagePrimitive.GroupedParts>
         <ChatApprovalBulkBar />
       </div>
-      <MessageError />
+      <MessageError canRetry={!readOnly && isLast} />
       {!readOnly && (hasText || isLast) && (
         <ActionBarPrimitive.Root
           data-chat-print-hide
@@ -314,6 +349,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         >
           {hasText && <MessageBranches />}
           {hasText && <MessageCopy />}
+          {hasText && <MessageReadAloud />}
           {hasText && <MessageFeedback />}
           {isLast && <MessageRegenerate />}
           {hasText && <MessageTime />}

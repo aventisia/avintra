@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { useComposerDraft } from "../hooks/useComposerDraft.hook";
 import { CHAT_ATTACHMENT_LIMIT } from "../utils/chat-attachment-adapter.util";
 import { ChatAttachment } from "./ChatAttachment";
 import { type ChatCommand, ChatCommandMenu } from "./ChatCommandMenu";
@@ -26,6 +27,8 @@ type ChatComposerProps = {
   commands?: readonly ChatCommand[];
   /** Offered when the message contains `@`. */
   mentions?: readonly ChatMention[];
+  /** Keeps unsent text across reloads under this key; without it the draft is not kept. */
+  draftKey?: string;
 };
 
 const UNSUPPORTED_FILE =
@@ -47,8 +50,10 @@ export const ChatComposer = ({
   transcribe,
   commands,
   mentions,
+  draftKey,
 }: ChatComposerProps) => {
   const aui = useAui();
+  useComposerDraft(draftKey);
   const attachmentCount = useAuiState((s) => s.composer.attachments.length);
   const isOverLimit = attachmentCount > CHAT_ATTACHMENT_LIMIT;
   const [attachmentError, setAttachmentError] = useState<string>();
