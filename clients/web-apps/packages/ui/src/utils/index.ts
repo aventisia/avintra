@@ -5,6 +5,7 @@ export * from "./enum-to-array";
 export * from "./http-method.util";
 export * from "./error-message-list";
 export * from "./ip-formatter";
+export * from "./job-status.util";
 export * from "./mutation-error";
 export * from "./model-capability.util";
 export * from "./onboarding.util";

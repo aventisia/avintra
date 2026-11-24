@@ -14,27 +14,83 @@ public static class FlowProcessorMatrixTestHarness
         failures += RunCase("OuterLoopCallsBlockWithInnerLoop", BuildOuterLoopWithInnerLoop, AssertOuterLoopWithInnerLoop);
         failures += RunCase("BlockContainsRouterBranch", BuildBlockWithRouter, AssertBlockWithRouter);
         failures += RunCase("NestedBlockCalls", BuildNestedBlocks, AssertNestedBlocks);
+
+        failures += RunCase(
+            "FailedSubFlowMarksCallerFailed",
+            BuildBrokenSubFlow,
+            AssertCallerFlipped,
+            FlowExecutionStatus.Failed);
+
+        failures += RunCase(
+            "FailedSubFlowKeepsInnerStatus",
+            BuildSubFlowWithFailingNode,
+            AssertCallerKeepsInnerStatus,
+            FlowExecutionStatus.Failed,
+            new FailingNodeProcessor("broken-work"));
+
+        failures += RunCase(
+            "FailedNestedSubFlowDoesNotDoublePrefix",
+            BuildNestedBlocksWithMissingInner,
+            AssertNestedFailurePrefix,
+            FlowExecutionStatus.Failed);
+
+        var abortCts = new CancellationTokenSource();
+        failures += RunCase(
+            "AbortMarksInFlightNode",
+            BuildSimpleFlow,
+            AssertAbortMarker,
+            FlowExecutionStatus.Aborted,
+            new CancellingNodeProcessor(abortCts, "work"),
+            abortCts.Token);
+
+        var abortCallerCts = new CancellationTokenSource();
+        failures += RunCase(
+            "AbortMarksOpenSubFlowCaller",
+            BuildBlockCallingCancelFlow,
+            AssertAbortMarksCaller,
+            FlowExecutionStatus.Aborted,
+            new CancellingNodeProcessor(abortCallerCts, "work"),
+            abortCallerCts.Token);
+
+        var abortLoadCts = new CancellationTokenSource();
+        var abortLoadScenario = BuildBlockCallingCancelFlow();
+        failures += RunCase(
+            "AbortDuringSubFlowLoadMarksCallerOnce",
+            () => abortLoadScenario,
+            AssertAbortMarksCaller,
+            FlowExecutionStatus.Aborted,
+            null,
+            abortLoadCts.Token,
+            new CancellingOnLoadFlowProvider(abortLoadScenario.SubFlows, abortLoadCts));
+
+        failures += RunCase("CallAgentInLoopCarriesLoopContext", BuildOuterLoopCallingAgent, AssertCallAgentLoopContext);
+
         return failures;
     }
 
     private static int RunCase(
         string name,
         Func<(ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows)> build,
-        Action<FlowExecutionResult> assert)
+        Action<FlowExecutionResult> assert,
+        FlowExecutionStatus expectedStatus = FlowExecutionStatus.Completed,
+        INodeProcessor? nodeProcessor = null,
+        CancellationToken cancellationToken = default,
+        IFlowGraphProvider? providerOverride = null)
     {
         try
         {
             var scenario = build();
-            var provider = new DictionaryFlowProvider(scenario.SubFlows);
-            var processor = new ExecutorLibrary.FlowProcessor.FlowProcessor(new RecordingNodeProcessor(), provider);
+            var provider = providerOverride ?? new DictionaryFlowProvider(scenario.SubFlows);
+            var processor = new ExecutorLibrary.FlowProcessor.FlowProcessor(nodeProcessor ?? new RecordingNodeProcessor(), provider);
             var result = processor.ExecuteAsync(
                 scenario.Main,
-                new Dictionary<string, object?> { ["items"] = new[] { 1, 2, 3 } })
+                new Dictionary<string, object?> { ["items"] = new[] { 1, 2, 3 } },
+                cancellationToken)
                 .GetAwaiter()
                 .GetResult();
 
-            if (!result.IsSuccess)
-                throw new InvalidOperationException(result.ErrorMessage ?? "Flow failed.");
+            if (result.Status != expectedStatus)
+                throw new InvalidOperationException($"Expected status {expectedStatus}, got {result.Status}: {result.ErrorMessage}");
 
             assert(result);
             Console.WriteLine($"  PASS: {name}");
@@ -123,6 +179,111 @@ public static class FlowProcessorMatrixTestHarness
         AssertEqual("inner-block", workLog.CallerReferenceId, "deep node caller reference");
         AssertTrue(logs.ToList().IndexOf(outerLog) < logs.ToList().IndexOf(innerLog), "outer block must precede nested block");
         AssertTrue(logs.ToList().IndexOf(innerLog) < logs.ToList().IndexOf(workLog), "nested block must precede deep work");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildSimpleFlow()
+        => (CreateSimpleActivityFlow("work"), new Dictionary<Guid, ReactFlowDataModel>());
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildBrokenSubFlow()
+        => (CreateMainBlockFlow("call-missing-block", Guid.NewGuid()), new Dictionary<Guid, ReactFlowDataModel>());
+
+    private static void AssertCallerFlipped(FlowExecutionResult result)
+    {
+        var callerLog = result.NodeLogs.Single(log => log.NodeId == "call-missing-block");
+        AssertTrue(!callerLog.IsSuccess, "block caller log must be marked failed");
+        AssertTrue(callerLog.Outputs.TryGetValue("Status", out var status) && status.Contains("failed"), "caller log must carry a failure status");
+        AssertTrue(result.ErrorMessage?.Contains("Sub-flow graph not found") == true, "flow must fail with the sub-flow error");
+    }
+
+    private static void AssertAbortMarker(FlowExecutionResult result)
+    {
+        var marker = result.NodeLogs.Single(log => log.NodeId == "work");
+        AssertTrue(!marker.IsSuccess, "in-flight node marker must be unsuccessful");
+        AssertEqual("Execution aborted.", marker.Outputs["Status"], "abort marker status");
+        AssertEqual(0, result.NodeLogs.Count(log => log.NodeId == "simple-end"), "aborted flow must not log the End node");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildSubFlowWithFailingNode()
+    {
+        var blockVersion = Guid.NewGuid();
+        var main = CreateMainBlockFlow("call-broken-block", blockVersion);
+        var block = CreateSimpleActivityFlow("broken-work");
+        return (main, new Dictionary<Guid, ReactFlowDataModel> { [blockVersion] = block });
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildBlockCallingCancelFlow()
+    {
+        var blockVersion = Guid.NewGuid();
+        var main = CreateMainBlockFlow("call-cancel-block", blockVersion);
+        var block = CreateSimpleActivityFlow("work");
+        return (main, new Dictionary<Guid, ReactFlowDataModel> { [blockVersion] = block });
+    }
+
+    private static void AssertAbortMarksCaller(FlowExecutionResult result)
+    {
+        var callerLog = result.NodeLogs.Single(log => log.NodeId == "call-cancel-block");
+        AssertTrue(!callerLog.IsSuccess, "open sub-flow caller must be marked aborted");
+        AssertEqual("Sub-flow execution aborted.", callerLog.Outputs["Status"], "caller abort status");
+        AssertEqual(0, result.NodeLogs.Count(log => log.NodeId == "main-end"), "aborted flow must not log the End node");
+    }
+
+    private static void AssertCallerKeepsInnerStatus(FlowExecutionResult result)
+    {
+        var callerLog = result.NodeLogs.Single(log => log.NodeId == "call-broken-block");
+        AssertTrue(!callerLog.IsSuccess, "block caller log must be marked failed");
+        AssertTrue(callerLog.Outputs["Status"].Contains("boom"), "caller log must carry the failing node's status");
+        var brokenLog = result.NodeLogs.Single(log => log.NodeId == "broken-work");
+        AssertTrue(!brokenLog.IsSuccess, "failing node log must be unsuccessful");
+        AssertTrue(
+            result.NodeLogs.ToList().IndexOf(brokenLog) > result.NodeLogs.ToList().IndexOf(callerLog),
+            "failing node log must follow the caller log so the remark names the failing node");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildNestedBlocksWithMissingInner()
+    {
+        var outerVersion = Guid.NewGuid();
+        var innerVersion = Guid.NewGuid();
+        var main = CreateMainBlockFlow("outer-block", outerVersion);
+        var outer = CreateMainBlockFlow("inner-block", innerVersion);
+        return (main, new Dictionary<Guid, ReactFlowDataModel> { [outerVersion] = outer });
+    }
+
+    private static void AssertNestedFailurePrefix(FlowExecutionResult result)
+    {
+        var outer = result.NodeLogs.Single(log => log.NodeId == "outer-block");
+        var status = outer.Outputs["Status"];
+        AssertTrue(status.Contains("Sub-flow graph not found"), "outer caller must carry the inner failure");
+        AssertTrue(
+            !status.StartsWith("Node execution has failed: Node execution has failed:", StringComparison.Ordinal),
+            "nested caller status must be prefixed once");
+    }
+
+    private static (ReactFlowDataModel Main, Dictionary<Guid, ReactFlowDataModel> SubFlows) BuildOuterLoopCallingAgent()
+    {
+        var agentVersion = Guid.NewGuid();
+        var main = CreateLinearLoopFlow("main-loop", "items", "call-agent", agentVersion);
+        var body = main.Nodes.Single(node => node.Id == "call-agent");
+        body.Type = "callAgentNode";
+        body.Data.SelectedBlock = null;
+        body.Data.SelectedAgent = JsonDocument.Parse($"{{\"id\":\"{agentVersion}\"}}").RootElement;
+        var agent = CreateSimpleActivityFlow("agent-work");
+        return (main, new Dictionary<Guid, ReactFlowDataModel> { [agentVersion] = agent });
+    }
+
+    private static void AssertCallAgentLoopContext(FlowExecutionResult result)
+    {
+        var callerLogs = result.NodeLogs.Where(log => log.NodeId == "call-agent").ToList();
+        AssertEqual(3, callerLogs.Count, "loop invocations of the agent");
+        for (var i = 0; i < callerLogs.Count; i++)
+        {
+            AssertEqual("main-loop-loop", callerLogs[i].LoopReferenceId, $"agent caller {i} loop reference");
+            AssertEqual(i, callerLogs[i].LoopIterationIndex, $"agent caller {i} iteration");
+            AssertEqual(string.Empty, callerLogs[i].CallerReferenceId, $"agent caller {i} caller reference");
+
+            var workLog = result.NodeLogs.First(log => log.NodeId == "agent-work" && log.LoopIterationIndex == i);
+            AssertEqual("call-agent", workLog.CallerReferenceId, $"agent work {i} caller reference");
+            AssertEqual("main-loop-loop", workLog.LoopReferenceId, $"agent work {i} loop reference");
+        }
     }
 
     private static ReactFlowDataModel CreateLinearLoopFlow(string prefix, string listVariable, string bodyNodeId, Guid? blockVersion)
@@ -252,6 +413,20 @@ public static class FlowProcessorMatrixTestHarness
             => Task.FromResult(flows.TryGetValue(flowVersionId, out var flow) ? flow : null);
     }
 
+    // Cancels the run while the sub-flow graph is being loaded: the caller log has already been
+    // written and flipped at that moment, so this exercises the single-row abort path.
+    private sealed class CancellingOnLoadFlowProvider(
+        Dictionary<Guid, ReactFlowDataModel> flows,
+        CancellationTokenSource cts) : IFlowGraphProvider
+    {
+        public Task<ReactFlowDataModel?> GetFlowGraphAsync(Guid flowVersionId, CancellationToken cancellationToken = default)
+        {
+            cts.Cancel();
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(flows.TryGetValue(flowVersionId, out var flow) ? flow : null);
+        }
+    }
+
     private sealed class RecordingNodeProcessor : INodeProcessor
     {
         public Task<NodeExecutionResult> ExecuteAsync(ReactFlowNodeModel node, FlowExecutionContext context, CancellationToken cancellationToken = default)
@@ -265,6 +440,47 @@ public static class FlowProcessorMatrixTestHarness
                     NodeName = node.Data.Label,
                     NodeUniqueName = node.Data.Name,
                     IsSuccess = true,
+                    CallerReferenceId = context.CallerReferenceId,
+                    LoopReferenceId = context.LoopReferenceId,
+                    LoopIterationIndex = context.LoopIterationIndex
+                }
+            });
+        }
+    }
+
+    private sealed class CancellingNodeProcessor(CancellationTokenSource cts, string nodeId) : INodeProcessor
+    {
+        private readonly RecordingNodeProcessor _inner = new();
+
+        public Task<NodeExecutionResult> ExecuteAsync(ReactFlowNodeModel node, FlowExecutionContext context, CancellationToken cancellationToken = default)
+        {
+            if (node.Id == nodeId)
+            {
+                cts.Cancel();
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            return _inner.ExecuteAsync(node, context, cancellationToken);
+        }
+    }
+
+    private sealed class FailingNodeProcessor(string nodeId) : INodeProcessor
+    {
+        public Task<NodeExecutionResult> ExecuteAsync(ReactFlowNodeModel node, FlowExecutionContext context, CancellationToken cancellationToken = default)
+        {
+            var isTarget = node.Id == nodeId;
+            return Task.FromResult(new NodeExecutionResult
+            {
+                IsSuccess = !isTarget,
+                NodeLog = new NodeExecutionLog
+                {
+                    NodeId = node.Id,
+                    NodeName = node.Data.Label,
+                    NodeUniqueName = node.Data.Name,
+                    IsSuccess = !isTarget,
+                    Outputs = isTarget
+                        ? new Dictionary<string, string> { ["Status"] = "boom: failing node" }
+                        : new Dictionary<string, string>(),
                     CallerReferenceId = context.CallerReferenceId,
                     LoopReferenceId = context.LoopReferenceId,
                     LoopIterationIndex = context.LoopIterationIndex

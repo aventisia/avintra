@@ -36,6 +36,7 @@ export const groupHistoryByDay = (data: JobExecutionLogDto[] | undefined): DaySe
       id: item.id,
       time,
       duration: item.duration,
+      hasEndTime: !!item.endTime,
       status: item.status,
       user: {
         name: "Unknown",

@@ -667,6 +667,23 @@ public class RunnerAppService : BackgroundService
                 _ => workerFlowResult?.Status ?? FlowExecutionStatus.Failed,
             };
 
+            // A killed job is already terminal server-side, so the close below is rejected with
+            // 409 and would drop these logs. Upload them first through the status-agnostic
+            // endpoint so a killed or aborted run keeps the steps it captured.
+            if (flowStatus != FlowExecutionStatus.Completed && nodeLogs.Count > 0)
+            {
+                try
+                {
+                    await backendClient.InsertNodeExecutionLogsAsync(targetJobId, nodeLogs, cancellationToken);
+                    jobLog.Info($"Uploaded {nodeLogs.Count} node logs for job {targetJobId} before closing.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to upload node logs for job {JobId}.", targetJobId);
+                    jobLog.Warn($"Failed to upload node logs for job {targetJobId}: {ex.Message}");
+                }
+            }
+
             _logger.LogInformation("Closing job {JobId} with status {Status}.", targetJobId, outcome);
             jobLog.Info($"Closing job {targetJobId} with status {outcome}.");
             try

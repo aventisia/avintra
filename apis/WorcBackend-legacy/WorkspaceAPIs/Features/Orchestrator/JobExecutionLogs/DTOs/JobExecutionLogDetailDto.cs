@@ -42,9 +42,24 @@ public class JobExecutionLogDetailDto
     public JobPriorityEnum Priority { get; set; } = JobPriorityEnum.Normal;
 
     /// <summary>
+    /// Gets or sets the timestamp indicating when the job execution started.
+    /// </summary>
+    public DateTimeOffset? StartTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp indicating when the job execution completed. Null if the job is still running.
+    /// </summary>
+    public DateTimeOffset? EndTime { get; set; }
+
+    /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
     public JobStatusEnum Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional remarks or execution details related to the job status.
+    /// </summary>
+    public string? Remark { get; set; }
 
     /// <summary>
     /// Gets or sets the version number of the flow record associated with the job.

@@ -1,3 +1,9 @@
+/**
+ * Canonical job status names, mirroring `AspNetToolkit/Enums/JobStatusEnum.cs`.
+ *
+ * IMPORTANT NOTE: Keep the members and their order in sync with the back-end enum; the
+ * per-status label, icon and tone live in `STATUS_DISPLAY`.
+ */
 export enum JobStatusEnum {
   /** Indicates that the job has been created but has not started running yet. */
   Created = "Created",

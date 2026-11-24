@@ -1,3 +1,4 @@
+import type { JobStatusEnum } from "@avplatform/ui/enums";
 import { Edge, Node } from "@xyflow/react";
 
 export type NodeExecutionLogType = {
@@ -28,6 +29,8 @@ export interface ExecutionState {
   executionHistoryMap: Record<string, Record<string, NodeExecutionLogType[]>>; // nodeId -> pathKey -> All attempts
   branchStats: Record<string, number>; // Total success counts for badges
   loopRegistry: Record<string, { total: number }>;
+  /** Loops that were skipped, per parent path (loopId -> pathKey -> true). */
+  skippedLoops: Record<string, Record<string, true>>;
   nodeToParentStack: Record<string, string[]>; // IDs of loops wrapping a node
   activeIteration: Record<string, number>; // Selected index for each loop ID
   /**
@@ -42,8 +45,20 @@ export interface ExecutionState {
   /** edgeId -> pathKey -> true. Only edges the execution actually followed are present. */
   traversedEdges: Record<string, Record<string, boolean>>;
 
+  /** Node + path of the last log in the selected view; the step a killed/aborted run stopped at. */
+  stoppedAt: { nodeId: string; pathKey: string } | null;
+
+  /** Status of the run being viewed, for the killed/aborted/not-reached canvas states. */
+  runStatus: JobStatusEnum | null;
+
   showBranchStats: boolean;
 }
+
+/** What the parser derives from a run's logs and flow graph. */
+export type MappedExecution = Omit<
+  ExecutionState,
+  "activeIteration" | "activeCallerId" | "nodeTypes" | "runStatus" | "showBranchStats"
+>;
 
 export interface ExecutionActions {
   initLogs: (
@@ -53,6 +68,9 @@ export interface ExecutionActions {
     callerId?: string | null,
   ) => void;
   setIteration: (loopId: string, index: number) => void;
+  /** Clears the selected pass of every loop, e.g. when the viewed run changes. */
+  resetIterations: () => void;
   setCaller: (callerId: string | null) => void;
+  setRunStatus: (status: JobStatusEnum | null) => void;
   toggleBranchStats: () => void;
 }

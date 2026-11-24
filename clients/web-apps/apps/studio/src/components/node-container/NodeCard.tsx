@@ -1,7 +1,8 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
-import { CheckIcon, XIcon } from "@phosphor-icons/react";
+import { CheckIcon, MinusIcon, StopIcon, XIcon } from "@phosphor-icons/react";
 
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { CustomNodeType } from "@/types/custom-node-type";
 
 import { NodeHeading } from "./node-header/NodeHeading";
@@ -29,6 +30,9 @@ const runStateLabel: Record<NodeRunState, string> = {
   running: "Running",
   success: "Completed",
   failed: "Failed",
+  killed: "Killed",
+  aborted: "Aborted",
+  "not-reached": "Not reached",
 };
 
 export type NodeShape = "square" | "circle" | "wide";
@@ -53,19 +57,26 @@ export const NodeCard = ({
   shape = "square",
   className,
   ...props
-}: NodeCardProps) => (
-  <div
-    className={cn(
-      "custom-drag-handle relative flex border border-line-strong bg-surface text-ink",
-      shapeClass[shape],
-      runState === "running" && "border-live",
-      runState === "failed" && "border-bad",
-      selected && "shadow-select",
-      className,
-    )}
-    {...props}
-  />
-);
+}: NodeCardProps) => {
+  // The success border belongs to the run canvas; the live build canvas keeps its frame.
+  const isExecutionLog = useIsExecutionLogsRoute();
+
+  return (
+    <div
+      className={cn(
+        "custom-drag-handle relative flex border border-line-strong bg-surface text-ink",
+        shapeClass[shape],
+        runState === "running" && "border-live",
+        (runState === "failed" || runState === "killed") && "border-bad",
+        runState === "aborted" && "border-warn",
+        isExecutionLog && runState === "success" && "border-ok",
+        selected && "shadow-select",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
 
 interface NodeCardContentProps {
   glyph: React.ReactNode;
@@ -98,7 +109,7 @@ export const NodeCardContent = ({
           {title}
         </span>
       </span>
-      <NodeStateMark state={runState} />
+      {runState !== "idle" && <NodeStateMark state={runState} />}
     </>
   ) : (
     <>
@@ -109,7 +120,7 @@ export const NodeCardContent = ({
       {runState !== "idle" && (
         <NodeStateMark
           state={runState}
-          className="absolute -right-1.5 -top-1.5 size-4 bg-surface"
+          className="absolute -right-1.5 -top-1.5 size-4 ring-2 ring-surface"
         />
       )}
     </>
@@ -131,11 +142,16 @@ export const NodeStateMark = ({
       state === "success" && "bg-ok text-surface",
       state === "failed" && "bg-bad text-on-bad",
       state === "running" && "text-live",
+      state === "killed" && "bg-bad text-on-bad",
+      state === "aborted" && "bg-warn text-surface",
+      state === "not-reached" && "border-[1.5px] border-dashed border-line-strong opacity-60",
       className,
     )}
   >
     {state === "running" && <LoadingSpinner className="size-3.5" />}
     {state === "success" && <CheckIcon className="size-3" weight="bold" />}
     {state === "failed" && <XIcon className="size-3" weight="bold" />}
+    {state === "killed" && <StopIcon className="size-3" weight="fill" />}
+    {state === "aborted" && <MinusIcon className="size-3" weight="bold" />}
   </span>
 );

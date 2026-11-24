@@ -1,7 +1,7 @@
 import { deepParse } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
@@ -55,11 +55,13 @@ export const useReactFlowViewData = () => {
     })),
   );
 
-  const { initLogs, activeCallerId, setCaller } = useExecutionStore(
+  const { initLogs, activeCallerId, setCaller, setRunStatus, resetIterations } = useExecutionStore(
     useShallow((state) => ({
       initLogs: state.initLogs,
       activeCallerId: state.activeCallerId,
       setCaller: state.setCaller,
+      setRunStatus: state.setRunStatus,
+      resetIterations: state.resetIterations,
     })),
   );
 
@@ -151,6 +153,21 @@ export const useReactFlowViewData = () => {
     }
   }, [jobId]);
 
+  // The canvas states (killed/aborted/not-reached) are derived from the run status, so it must
+  // be in the store before the logs are mapped onto the graph.
+  useEffect(() => {
+    setRunStatus(data?.status ?? null);
+  }, [data, setRunStatus]);
+
+  // A selected pass belongs to the run it was chosen in, so switching runs starts again from
+  // each loop's last pass instead of reusing the previous run's `li` selection.
+  const viewedJobRef = useRef(jobId);
+  useEffect(() => {
+    if (viewedJobRef.current === jobId) return;
+    viewedJobRef.current = jobId;
+    resetIterations();
+  }, [jobId, resetIterations]);
+
   useEffect(() => {
     if (!isFlowMetaOnly || !flowData?.data) return;
     setVersionMeta({ name: flowData.data.name, versionNumber: flowData.data.versionNumber });
@@ -221,5 +238,5 @@ export const useReactFlowViewData = () => {
     }
   }, [data, flowData, isSubFlowView, isFlowFetched, activeCallerId]);
 
-  return { isFetching: isFetching || isFlowFetching, isSubFlowView };
+  return { isFetching: isFetching || isFlowFetching, isSubFlowView, runDetail: data };
 };
