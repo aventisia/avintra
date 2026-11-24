@@ -341,7 +341,7 @@ export const ChatHistoryRow = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="flex min-w-36 flex-col"
+          className="flex min-w-36 max-w-xs flex-col"
           onCloseAutoFocus={focusGuard.onCloseAutoFocus}
         >
           <SimpleDDMenuItem

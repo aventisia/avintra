@@ -6,36 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { getMessages } from "../apis/conversation-message.apis";
-import { shareConversation, unshareConversation } from "../apis/conversation.apis";
 import { useHomeChatActiveChat } from "../hooks/useHomeChatActiveChat.hook";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatHistoryPanel } from "../hooks/useHomeChatHistoryPanel.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
 import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
-import { buildSharedChatLink } from "../utils/shared-link.util";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
 import { HomeChatThread } from "./HomeChatThread";
-
-const copyShareLink = async (id: string) => {
-  try {
-    const token = (await shareConversation(id)).data;
-    await navigator.clipboard.writeText(buildSharedChatLink(token));
-    toast.success("Read-only link copied");
-  } catch {
-    toast.error("Couldn't create the share link");
-  }
-};
-
-const stopSharing = async (id: string) => {
-  try {
-    await unshareConversation(id);
-    toast.success("Sharing stopped");
-  } catch {
-    toast.error("Couldn't stop sharing");
-  }
-};
 
 const exportChat = async ({ id, title }: HomeChatActiveChat) => {
   try {
@@ -54,7 +33,7 @@ export const HomeChatLayout = () => {
   const navigate = useNavigate();
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const titles = useHomeChatHistory(false);
-  const { renameChat } = useHomeChatHistoryActions();
+  const { renameChat, copyShareLink, stopSharing } = useHomeChatHistoryActions();
   const { props: historyProps, confirmDelete } = useHomeChatHistoryPanel();
   const activeChat = useHomeChatActiveChat(session.conversationId, titles.items, titles.isLoading);
 
@@ -75,7 +54,7 @@ export const HomeChatLayout = () => {
                 printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
               }
               onCopyShareLink={() => void copyShareLink(activeChat.id)}
-              onStopSharing={() => void stopSharing(activeChat.id)}
+              onStopSharing={activeChat.isShared ? () => stopSharing(activeChat.id) : undefined}
               onDelete={() => confirmDelete(activeChat)}
             />
           )

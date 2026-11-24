@@ -23,6 +23,7 @@ export type { ChatBlueprint, ChatDestinationOption } from "./utils/chat-intent.u
 export { withAttachmentText } from "./utils/attachment-text.util";
 export { printArtifact, printChat } from "./utils/print-chat.util";
 export { createChatAttachmentAdapter } from "./utils/chat-attachment-adapter.util";
+export { extractOfficeText } from "./utils/office-text.util";
 export {
   createConversationHistoryAdapter,
   toChatMarkdown,

@@ -32,7 +32,7 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     if (id === activeId) navigate("/", { replace: true });
   };
 
-  const confirmDelete = (item: HomeChatActiveChat) =>
+  const confirmDelete = (item: Pick<HomeChatActiveChat, "id" | "title">) =>
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete chat?",

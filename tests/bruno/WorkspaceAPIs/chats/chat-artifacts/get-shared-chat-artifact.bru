@@ -19,4 +19,7 @@ script:post-response {
     expect(res.getStatus()).to.equal(200);
     expect(res.getBody().data.id).to.equal(bru.getVar("CHAT_ARTIFACT_ID"));
   });
+  test("the file reports that it is shared", function() {
+    expect(res.getBody().data.isShared).to.equal(true);
+  });
 }

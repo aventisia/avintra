@@ -14,4 +14,7 @@ export interface ConversationDto {
 
   /** Conversation lifecycle status. */
   status: string;
+
+  /** Whether the conversation has a live read-only share link. */
+  isShared: boolean;
 }

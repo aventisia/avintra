@@ -1,27 +1,17 @@
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { ChatThread } from "@avplatform/chat";
-import { Skeleton } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Link } from "react-router-dom";
 
 import { useSharedChat } from "../hooks/useSharedChat.hook";
+import { HomeChatSkeleton } from "./HomeChatSkeleton";
 
 /** A shared Home chat as a read-only transcript for signed-in members. */
 export const SharedChatLayout = ({ shareToken }: { shareToken: string }) => {
   const { runtime, title, isLoading, isError } = useSharedChat(shareToken);
   useDocumentTitle(title ?? "Shared chat");
 
-  if (isLoading)
-    return (
-      <div
-        role="status"
-        aria-label="Loading shared chat"
-        className="mx-auto w-full max-w-3xl space-y-3 p-6"
-      >
-        <Skeleton className="h-6 w-1/2 rounded" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-      </div>
-    );
+  if (isLoading) return <HomeChatSkeleton label="Loading shared chat" />;
 
   if (isError || !title)
     return (

@@ -29,4 +29,9 @@ public class LandingConversationDto
     /// Gets or sets the project the conversation is filed under, or null when ungrouped.
     /// </summary>
     public Guid? ProjectId { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the conversation has a live read-only share link.
+    /// </summary>
+    public bool IsShared { get; set; }
 }

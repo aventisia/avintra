@@ -46,4 +46,9 @@ public class ConversationDto
     /// Gets or sets the date and time when the conversation was last modified.
     /// </summary>
     public DateTimeOffset LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the conversation has a live read-only share link.
+    /// </summary>
+    public bool IsShared { get; set; }
 }

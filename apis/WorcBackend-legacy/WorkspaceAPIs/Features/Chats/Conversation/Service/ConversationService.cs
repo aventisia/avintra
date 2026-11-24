@@ -198,7 +198,7 @@ public class ConversationService : IConversationService
             .ThenByDescending(o => o.Id)
             .Skip(Math.Max(skip, 0))
             .Take(Math.Clamp(take, 1, 100))
-            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned, ProjectId = s.ProjectId })
+            .Select(s => new LandingConversationDto { Id = s.Id, Title = s.Title!, LastModifiedOn = s.LastModifiedOn, IsPinned = s.IsPinned, ProjectId = s.ProjectId, IsShared = s.ShareToken != null })
             .ToListAsync();
 
         return serviceResponse.Update(null, 200, conversations);

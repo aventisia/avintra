@@ -84,6 +84,8 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   destinationsRef.current = destinations;
   const starters = useHomeChatStarters(destinations);
   const mentions = useHomeChatMentions();
+  const mentionsRef = useRef(mentions);
+  mentionsRef.current = mentions;
   const navigate = useNavigate();
   const commands = useHomeChatCommands();
 
@@ -132,6 +134,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         route,
         label: `${section} › ${label}`,
       })),
+    getMentions: () => mentionsRef.current,
     onReplyComplete: files.refreshAfterReply,
   });
   const { companyName } = useBranding();

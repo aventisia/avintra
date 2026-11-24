@@ -35,4 +35,7 @@ export interface ChatArtifactDto {
 
   /** Title of the conversation that produced the artifact. */
   conversationTitle: string | null;
+
+  /** Whether the artifact has a live read-only share link. */
+  isShared: boolean;
 }

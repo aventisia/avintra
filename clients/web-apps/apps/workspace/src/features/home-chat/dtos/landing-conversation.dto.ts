@@ -14,4 +14,7 @@ export interface LandingConversationDto {
 
   /** The project the chat is filed under, or null when ungrouped. */
   projectId: string | null;
+
+  /** Whether the chat has a live read-only share link. */
+  isShared: boolean;
 }

@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import {
   deleteConversation,
   setConversationArchived,
+  shareConversation,
+  unshareConversation,
   updateLandingConversationPin,
   updateLandingConversationProject,
   updateLandingConversationTitle,
@@ -16,10 +18,11 @@ import {
 import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
+import { buildSharedChatLink } from "../utils/shared-link.util";
 
 type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 
-/** Renames (shown at once), pins, archives and deletes Home chats, refreshing the history afterwards. */
+/** Renames (shown at once), pins, archives, shares and deletes Home chats, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
   const refreshHistory = () => {
@@ -74,6 +77,28 @@ export const useHomeChatHistoryActions = () => {
     onSettled: refreshHistory,
   });
 
+  const share = useMutation({
+    mutationFn: shareConversation,
+    onSettled: refreshHistory,
+  });
+
+  const unshare = useMutation({
+    mutationFn: unshareConversation,
+    onSuccess: () => toast.success("Sharing stopped"),
+    onError: () => toast.error("Couldn't stop sharing"),
+    onSettled: refreshHistory,
+  });
+
+  const copyShareLink = async (id: string) => {
+    try {
+      const token = (await share.mutateAsync(id)).data;
+      await navigator.clipboard.writeText(buildSharedChatLink(token));
+      toast.success("Read-only link copied");
+    } catch {
+      toast.error("Couldn't create the share link");
+    }
+  };
+
   const remove = useMutation({
     mutationFn: deleteConversation,
     onSuccess: () => toast.success("Chat deleted", { className: "sonner-toaster-sm" }),
@@ -87,6 +112,8 @@ export const useHomeChatHistoryActions = () => {
       pin.mutate({ id, isPinned: !isPinned }),
     moveToProject: (id: string, projectId: string | null) => moveProject.mutate({ id, projectId }),
     setArchived: (id: string, archived: boolean) => archive.mutate({ id, archived }),
+    copyShareLink,
+    stopSharing: (id: string) => unshare.mutate(id),
     deleteChat: remove.mutateAsync,
   };
 };

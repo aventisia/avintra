@@ -1,4 +1,8 @@
-import { ComposerPrimitive, unstable_useMentionAdapter } from "@assistant-ui/react";
+import {
+  ComposerPrimitive,
+  type DirectiveFormatter,
+  unstable_useMentionAdapter,
+} from "@assistant-ui/react";
 import { type Icon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
@@ -10,6 +14,12 @@ export type ChatMention = {
   label: string;
   description: string;
   icon: Icon;
+};
+
+/** Inserts a picked file as readable `@name` text instead of the default `:file[name]{name=id}` directive. */
+const plainMentionFormatter: DirectiveFormatter = {
+  serialize: (item) => `@${item.label}`,
+  parse: (text) => [{ kind: "text", text }],
 };
 
 type ChatMentionMenuProps = {
@@ -29,6 +39,7 @@ export const ChatMentionMenu = ({ mentions }: ChatMentionMenuProps) => {
         })),
       [mentions],
     ),
+    formatter: plainMentionFormatter,
   });
 
   return (

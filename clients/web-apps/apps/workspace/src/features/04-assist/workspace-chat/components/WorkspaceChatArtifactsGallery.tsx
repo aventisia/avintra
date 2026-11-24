@@ -151,6 +151,7 @@ export const WorkspaceChatArtifactsGallery = () => {
     } catch {
       toast.error("Couldn't create the share link");
     }
+    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
   };
 
   const stopSharing = async (artifactId: string) => {
@@ -160,6 +161,7 @@ export const WorkspaceChatArtifactsGallery = () => {
     } catch {
       toast.error("Couldn't stop sharing");
     }
+    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
   };
 
   const confirmDeleteArtifact = (artifactId: string) =>
@@ -343,7 +345,7 @@ export const WorkspaceChatArtifactsGallery = () => {
                         onPreview={setPreviewArtifactId}
                         onDelete={confirmDeleteArtifact}
                         onCopyShareLink={(id) => void copyShareLink(id)}
-                        onStopSharing={(id) => void stopSharing(id)}
+                        onStopSharing={artifact.isShared ? (id) => void stopSharing(id) : undefined}
                       />
                     ))}
                   </div>

@@ -159,7 +159,7 @@ public class ChatArtifactsService : IChatArtifactsService
                 .GetByConditionAsync(w => w.ConversationId == artifact.ConversationId && w.Name.ToLower() == artifact.Name.ToLower())
                 .OrderByDescending(o => o.VersionNumber)
                 .AsNoTracking()
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
             artifact.VersionNumber = (latest?.VersionNumber ?? 0) + 1;
             artifact.PreviousVersionId = latest?.Id;
 
@@ -425,8 +425,8 @@ public class ChatArtifactsService : IChatArtifactsService
                 .GetByConditionAsync(w => w.ConversationId == conversationId && w.Name.ToLower() == file.Name.ToLower())
                 .OrderByDescending(o => o.VersionNumber)
                 .AsNoTracking()
-                .SingleOrDefaultAsync();
-            if (latest is not null && latest.ContentType == file.ContentType && latest.SizeBytes == bytes.Length)
+                .FirstOrDefaultAsync();
+            if (latest is not null && await IsSameContentAsync(latest, file.ContentType, bytes))
                 return;
 
             var artifact = new ChatArtifact
@@ -473,8 +473,8 @@ public class ChatArtifactsService : IChatArtifactsService
                 .GetByConditionAsync(w => w.ConversationId == conversationId && w.Name.ToLower() == file.Name.ToLower())
                 .OrderByDescending(o => o.VersionNumber)
                 .AsNoTracking()
-                .SingleOrDefaultAsync();
-            if (latest is not null && latest.ContentType == file.ContentType && latest.SizeBytes == file.Bytes.Length)
+                .FirstOrDefaultAsync();
+            if (latest is not null && await IsSameContentAsync(latest, file.ContentType, file.Bytes))
                 return latest;
 
             var artifact = new ChatArtifact
@@ -535,6 +535,20 @@ public class ChatArtifactsService : IChatArtifactsService
         using var buffer = new MemoryStream();
         await content.CopyToAsync(buffer);
         return ToDataUrl(contentType, buffer.ToArray());
+    }
+
+    private async Task<bool> IsSameContentAsync(ChatArtifact latest, string contentType, byte[] bytes)
+    {
+        if (latest.ContentType != contentType || latest.SizeBytes != bytes.Length)
+            return false;
+
+        var dataUrl = latest.BlobPath.StartsWith(ChatArtifactsHelpers.BlobPrefix, StringComparison.Ordinal)
+            ? await ReadBlobAsDataUrlAsync(latest.BlobPath, latest.ContentType)
+            : latest.BlobPath;
+        var comma = dataUrl.IndexOf(',');
+        return comma >= 0
+            && dataUrl[..comma].EndsWith(";base64", StringComparison.OrdinalIgnoreCase)
+            && Convert.FromBase64String(dataUrl[(comma + 1)..]).AsSpan().SequenceEqual(bytes);
     }
 
     private static string ToDataUrl(string contentType, byte[] bytes) =>
