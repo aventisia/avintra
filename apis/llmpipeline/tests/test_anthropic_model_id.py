@@ -49,6 +49,8 @@ def test_omits_sampling_params_because_api_version_2026_10_21_rejects_them():
         temperature=1.0,
         top_p=1.0,
         max_output_tokens=1024,
+        reasoning_effort=None,
+        action="",
     )
     user = SimpleNamespace(access_token="jwt", env_type=None, tenant_id=None, space_id=None)
     credential = {"data": {"ApiKey": "sk-test", "Url": "https://api.anthropic.com/v1"}}

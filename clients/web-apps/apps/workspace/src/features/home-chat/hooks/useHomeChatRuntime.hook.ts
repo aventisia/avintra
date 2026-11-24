@@ -37,6 +37,8 @@ type HomeChatRuntimeInput = {
   getMentions: () => readonly ChatMention[];
   /** Receives each finished reply's full text. */
   onReplyComplete: (text: string) => void;
+  /** Receives the suggested next messages for the latest reply; an empty list clears them. */
+  onSuggestions: (suggestions: readonly string[]) => void;
 };
 
 /**
@@ -53,6 +55,7 @@ export const useHomeChatRuntime = ({
   getDestinations,
   getMentions,
   onReplyComplete,
+  onSuggestions,
 }: HomeChatRuntimeInput) => {
   const isMountedRef = useRef(false);
   useEffect(() => {
@@ -101,6 +104,9 @@ export const useHomeChatRuntime = ({
           getKeepUserTurns: isTemporary ? undefined : getKeepUserTurns,
           onTextDelta: () => refreshHistory(true),
           onTextComplete: onReplyComplete,
+          releaseRunAtDone: true,
+          onSuggestionsUpdate: onSuggestions,
+          onRunStart: () => onSuggestions([]),
           onRunFinished: () => refreshHistory(false),
         }),
       ),

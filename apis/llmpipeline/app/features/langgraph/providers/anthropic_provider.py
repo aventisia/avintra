@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from fastapi import HTTPException
 from langchain_anthropic import ChatAnthropic
@@ -43,6 +44,47 @@ def normalize_anthropic_model_id(model: str) -> str:
 
     date_suffix = match.group(7) or ""
     return f"claude-{family}-{major}-{minor}{date_suffix}"
+
+
+# IMPORTANT NOTE: agents store a "medium" effort even when no builder chose it, so Claude gets an
+# effort only from Home chat, where the user picks it per message; agent support needs an explicit opt-in.
+HOME_CHAT_ACTION = "LandingChat"
+
+_CLAUDE_FAMILY_FIRST = re.compile(
+    r"^claude-(opus|sonnet|haiku|fable|mythos)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?$"
+)
+_CLAUDE_VERSION_FIRST = re.compile(
+    r"^claude-(\d+)(?:\.(\d+))?-(opus|sonnet|haiku|fable|mythos)(?:-\d{8})?$"
+)
+
+
+def _claude_version(model: str) -> tuple[str, int, int] | None:
+    model_id = normalize_anthropic_model_id((model or "").lower())
+    if match := _CLAUDE_FAMILY_FIRST.match(model_id):
+        return match.group(1), int(match.group(2)), int(match.group(3) or 0)
+    if match := _CLAUDE_VERSION_FIRST.match(model_id):
+        return match.group(3), int(match.group(1)), int(match.group(2) or 0)
+    return None
+
+
+def supports_anthropic_effort(model: str) -> bool:
+    """Whether the model takes adaptive thinking with Anthropic's effort setting."""
+    version = _claude_version(model)
+    if version is None:
+        return False
+    family, major, minor = version
+    if family in ("fable", "mythos"):
+        return True
+    if family == "haiku":
+        return major >= 5
+    return (major, minor) >= (4, 6)
+
+
+def anthropic_effort_kwargs(model: str, reasoning_effort: str | None) -> dict[str, Any]:
+    """ChatAnthropic arguments for the requested effort, or none when the model can't take it."""
+    if not reasoning_effort or not supports_anthropic_effort(model):
+        return {}
+    return {"thinking": {"type": "adaptive"}, "output_config": {"effort": reasoning_effort}}
 
 
 def create_anthropic_model(
@@ -158,4 +200,8 @@ def create_anthropic_model(
         stream_usage=True,
         api_key=resolved_api_key,
         base_url=normalize_anthropic_base_url(resolved_base_url),
+        **anthropic_effort_kwargs(
+            llm_request.model,
+            llm_request.reasoning_effort if llm_request.action == HOME_CHAT_ACTION else None,
+        ),
     )

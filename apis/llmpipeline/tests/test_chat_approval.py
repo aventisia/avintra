@@ -276,8 +276,8 @@ def _service() -> ChatService:
 
 def _key(conv: str, tools: tuple = ()):
     # Mirrors the cache key tuple: (provider, model, conversation_id,
-    # tool_key, skill_key, is_temp_chat).
-    return ("openai", "gpt-4o-mini", conv, tuple(sorted(tools)), ("__agent_select__",), False)
+    # tool_key, skill_key, is_temp_chat, reasoning_effort).
+    return ("openai", "gpt-4o-mini", conv, tuple(sorted(tools)), ("__agent_select__",), False, None)
 
 
 class TestGraphCache:

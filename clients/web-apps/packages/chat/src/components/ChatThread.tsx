@@ -12,6 +12,7 @@ import { ChatComposer } from "./ChatComposer";
 import { type ChatMention } from "./ChatMentionMenu";
 import { ChatMessage } from "./ChatMessage";
 import { type ChatStarterGroup, ChatStarters } from "./ChatStarters";
+import { ChatSuggestions } from "./ChatSuggestions";
 
 export type ChatThreadProps = {
   /** Shown above the composer while the thread is empty. */
@@ -38,6 +39,8 @@ export type ChatThreadProps = {
   files?: ChatFileHandlers;
   /** Keeps unsent text across reloads under this key; without it the draft is not kept. */
   draftKey?: string;
+  /** Suggested next messages shown under the latest reply; a click fills the composer. */
+  suggestions?: readonly string[];
 };
 
 const columnStyle = { "--chat-column": "46rem" } as CSSProperties;
@@ -95,6 +98,7 @@ export const ChatThread = ({
   onNavigate,
   files,
   draftKey,
+  suggestions,
 }: ChatThreadProps) => {
   const [mountedAt] = useState(Date.now);
   const aui = useAui();
@@ -134,6 +138,11 @@ export const ChatThread = ({
               <ThreadPrimitive.Messages>
                 {() => <ChatMessage readOnly={readOnly} />}
               </ThreadPrimitive.Messages>
+              {!readOnly && suggestions && suggestions.length > 0 && (
+                <AuiIf condition={(s) => !s.thread.isRunning && !s.thread.isEmpty}>
+                  <ChatSuggestions suggestions={suggestions} onPick={fillComposer} />
+                </AuiIf>
+              )}
               {!readOnly && (
                 <ThreadPrimitive.ViewportFooter
                   data-chat-print-hide

@@ -42,7 +42,7 @@ class LLMRequest(LegacyByokWarningModel):
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name') # Credential reference (unique name)
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
-    reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
+    reasoning_effort: Optional[str] = None  # OpenAI reasoning models (o1/o3/gpt-5); Claude Opus/Sonnet 4.6+, Haiku 5+, Fable, Mythos in Home chat only: low | medium | high
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
     is_voice_agent: Optional[bool] = False   # Whether the request originates from a voice agent

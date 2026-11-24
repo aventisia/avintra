@@ -18,6 +18,10 @@ from app.features.auth.authenticated_user import User
 from app.features.langgraph.checkpoint.memory import graph_memory
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
 from app.features.langgraph.services.chat_agent_text_stream import ChatAgentTextStream
+from app.features.langgraph.services.follow_up_suggestions import (
+    generate_follow_up_suggestions,
+    suggestion_request,
+)
 from app.features.langgraph.services.request_context import restore_request
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_EXPIRED,
@@ -892,6 +896,50 @@ class ChatService:
             conversation_id=conversation_id,
             metadata=self._voice_frame_metadata(request),
         )
+        async for frame in self._follow_up_frames(
+            request, user, final_text, bool(pending_calls), conversation_id
+        ):
+            yield frame
+
+    async def _follow_up_frames(
+        self,
+        request: LLMRequest,
+        user: User,
+        reply: str,
+        has_pending_approval: bool,
+        conversation_id: str | None = None,
+    ) -> AsyncIterator[LLMChunkResponse]:
+        """Home chat only: one ``followup`` frame of suggested next questions, after ``done``."""
+        if (
+            request.action != "LandingChat"
+            or request.is_temp_chat
+            or request.is_voice_agent
+            or request.channel == "voice"
+            or has_pending_approval
+            or not reply.strip()
+        ):
+            return
+
+        start_time = time.perf_counter()
+        suggestions, message = await generate_follow_up_suggestions(request, user, reply)
+        if message is not None:
+            usage_request = suggestion_request(request)
+            self._create_final_response(
+                request=usage_request,
+                response=self._create_initial_response(usage_request),
+                graph_response=message,
+                start_time=start_time,
+                jwt=user.access_token,
+                space_id=user.space_id,
+            )
+        if suggestions:
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=suggestions,
+                type="followup",
+                conversation_id=conversation_id or request.conversation_id,
+            )
 
     @staticmethod
     def _voice_frame_metadata(request: LLMRequest) -> dict | None:
@@ -1230,6 +1278,7 @@ class ChatService:
             tool_config_key,
             skill_config_key,
             request.is_temp_chat,
+            request.reasoning_effort,
         )
 
         if cache_key not in self._graphs:

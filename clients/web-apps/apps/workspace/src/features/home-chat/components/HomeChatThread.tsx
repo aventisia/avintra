@@ -128,6 +128,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
     [files.artifacts, preview.data],
   );
 
+  const [suggestions, setSuggestions] = useState<readonly string[]>([]);
   const runtime = useHomeChatRuntime({
     ...props,
     getModelSelection: () => modelSelectionRef.current,
@@ -138,6 +139,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
       })),
     getMentions: () => mentionsRef.current,
     onReplyComplete: files.refreshAfterReply,
+    onSuggestions: setSuggestions,
   });
   const { companyName } = useBranding();
   const queryClient = useQueryClient();
@@ -196,6 +198,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
               />
             }
             starters={starters}
+            suggestions={suggestions}
             destinations={destinations}
             onNavigate={navigate}
             files={files.handlers}
