@@ -24,21 +24,23 @@ export const AgentsSelector = ({
 }: AgentsSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<SearchAgentsDto[]>([]);
+  const [areLinkedAgentsLoaded, setAreLinkedAgentsLoaded] = useState(crudAction === "create");
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    if (selectedItems.length)
-      onChange(
-        selectedItems.map((item) => {
-          return {
-            id: item.id,
-            name: item.name,
-            versionNumber: item.versionNumber,
-          };
-        }),
-      );
-  }, [onChange, selectedItems]);
+    if (!areLinkedAgentsLoaded) return;
+
+    onChange(
+      selectedItems.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          versionNumber: item.versionNumber,
+        };
+      }),
+    );
+  }, [areLinkedAgentsLoaded, onChange, selectedItems]);
 
   const { data: searchData, isLoading, isError } = useFetchAgentList(debouncedSearchTerm);
 
@@ -47,16 +49,20 @@ export const AgentsSelector = ({
   useEffect(() => {
     if (triggerAgents) {
       setSelectedItems(triggerAgents.data);
+      setAreLinkedAgentsLoaded(true);
     }
   }, [triggerAgents]);
 
   const handleItemSelect = (item: SearchAgentsDto) => {
+    setAreLinkedAgentsLoaded(true);
+
     if (!selectedItems.some((i) => i.id === item.id)) {
       setSelectedItems((prev) => [...prev, item]);
     }
   };
 
   const handleItemRemove = (id: string) => {
+    setAreLinkedAgentsLoaded(true);
     setSelectedItems((prev) => prev.filter((item) => item.id !== id));
   };
 

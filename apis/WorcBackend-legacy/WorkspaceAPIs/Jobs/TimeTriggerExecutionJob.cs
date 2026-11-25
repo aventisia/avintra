@@ -109,6 +109,7 @@ public class TimeTriggerExecutionJob : IJob
                     RefId = triggerFlowVersion.TriggerId,
                     Priority = JobPriorityEnum.Normal,
                     Status = JobStatusEnum.Created,
+                    IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
                 });
             }
 

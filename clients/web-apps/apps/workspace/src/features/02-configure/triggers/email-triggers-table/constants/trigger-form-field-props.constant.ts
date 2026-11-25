@@ -80,8 +80,6 @@ const agentsLabelProps = {
   isRequired: true,
 };
 
-const LOCKED_AGENTS_DESCRIPTION = "Agents cannot be changed after creation.";
-
 const resubscribeEnabledProps: SwitchFieldProps = {
   name: "resubscribeEnabled",
   label: "Resubscribe",
@@ -101,7 +99,6 @@ export {
   expiryDateTimeProps,
   folderProps,
   isDisabledProps,
-  LOCKED_AGENTS_DESCRIPTION,
   mailboxProps,
   nameProps,
   providerProps,

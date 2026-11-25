@@ -12,14 +12,24 @@ import { useShallow } from "zustand/react/shallow";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
 import { isNameAvailable } from "../apis/triggers-table-apis";
-import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema";
+import {
+  triggerNameSchema,
+  triggerZodSchema,
+  updateTriggerZodSchema,
+} from "../constants/trigger-zod-schema";
 import { MessageTriggerDto } from "../dtos/message-trigger-dto";
 import { useTableTab } from "./useTableTab";
 
 /**
  * Custom hook for defining a trigger form.
  */
-export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: CrudActionType }) => {
+export const useDefineTriggerForm = ({
+  rowId,
+  crudAction,
+}: {
+  rowId: string;
+  crudAction?: CrudActionType;
+}) => {
   // Trigger name state for availability check
   const [triggerName, setTriggerName] = useState("");
 
@@ -38,7 +48,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
 
   // Define form with Zod schema
   const form = useForm<z.infer<typeof triggerZodSchema>>({
-    resolver: zodResolver(triggerZodSchema),
+    resolver: zodResolver(crudAction === "update" ? updateTriggerZodSchema : triggerZodSchema),
     defaultValues: {
       id: "",
       name: "",
@@ -46,15 +56,15 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
       timezone: "",
       expiryDateTime: (() => {
         const d = new Date();
-        d.setDate(d.getDate() + 30);
+        d.setHours(d.getHours() + 24);
         return d;
-      })(), // Default to 30 days ahead
+      })(),
       credentialName: "",
       resource: "/chats/getAllMessages",
       reference: "",
       provider: "M365",
       resubscribeEnabled: false,
-      resubscribeFrequency: "0",
+      resubscribeFrequency: "60",
       isDisabled: false,
     },
   });
@@ -77,8 +87,8 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
 
     // Set trigger name for availability check
     setTriggerName(triggerData?.name ?? "");
-    const datePlus30 = new Date();
-    datePlus30.setDate(datePlus30.getDate() + 30);
+    const datePlus24h = new Date();
+    datePlus24h.setHours(datePlus24h.getHours() + 24);
 
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -91,9 +101,9 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
       reference: triggerData?.reference ?? "",
       expiryDateTime: triggerData?.expiryDateTime
         ? new Date(triggerData.expiryDateTime)
-        : datePlus30,
+        : datePlus24h,
 
-      resubscribeFrequency: triggerData?.resubscribeFrequency?.toString() ?? "1",
+      resubscribeFrequency: triggerData?.resubscribeFrequency?.toString() ?? "60",
 
       credentialName: triggerData?.credentialName ?? triggerData?.credentialId ?? "",
       resource: triggerData?.resource ?? "/chats/getAllMessages",
