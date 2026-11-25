@@ -1,9 +1,10 @@
 import type { SocialCallbackDto } from "@avplatform/ui/dtos";
 import { toast } from "@avplatform/ui/sonner";
-import { setUserSessionLocally } from "@avplatform/ui/utils";
+import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useNavigate } from "react-router-dom";
 
-import { SOCIAL_SIGN_IN_STATUS } from "@/constants/variables";
+import { buildOnboardingUrl } from "@/constants/post-login-destination";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION, SOCIAL_SIGN_IN_STATUS } from "@/constants/variables";
 
 import { useAuthStore } from "../stores/auth-store";
 import { rememberSignInMethod } from "../utils/last-sign-in-method.util";
@@ -18,7 +19,7 @@ const useCompleteSocialSignIn = () => {
   const startCodeChallenge = useAuthStore((state) => state.startCodeChallenge);
   const reset = useAuthStore((state) => state.reset);
 
-  const completeSocialSignIn = (data: SocialCallbackDto) => {
+  const completeSocialSignIn = (data: SocialCallbackDto, message: string) => {
     if (data.status === SOCIAL_SIGN_IN_STATUS.SsoRequired && data.ssoLoginUrl) {
       window.location.assign(data.ssoLoginUrl);
       return;
@@ -43,9 +44,16 @@ const useCompleteSocialSignIn = () => {
     }
 
     if (data.status === SOCIAL_SIGN_IN_STATUS.SignedIn && data.userSession) {
+      if (data.provider) rememberSignInMethod(data.provider);
+
+      if (message.includes(ADD_TENANT) || message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+        window.location.assign(buildOnboardingUrl(data.hasPlanIntent));
+        return;
+      }
+
+      markFreshLogin();
       const userSession = setUserSessionLocally(data.userSession);
       reset();
-      if (data.provider) rememberSignInMethod(data.provider);
       window.location.assign(getSocialSignInDestination(data, userSession.email));
       return;
     }
