@@ -48,7 +48,7 @@ export const JobCreateForm = ({
   onSuccess,
 }: JobCreateFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
-  const { form, isDirty, isValid, refineFormData } = useDefineJobCreateForm({
+  const { form, isValid, refineFormData } = useDefineJobCreateForm({
     defaultMachineOption,
     defaultFlowVersionOption,
   });
@@ -182,7 +182,7 @@ export const JobCreateForm = ({
           primaryText="Create job"
           secondaryText="Creating..."
           isPending={isPending}
-          disabled={!isDirty || !isValid || isPending}
+          disabled={!isValid || isPending}
         />
       </CrudDialogActions>
     </Form>
