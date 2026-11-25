@@ -411,7 +411,7 @@ export const ReactFlowExt = () => {
           <CanvasNodeDetailPanel />
           {/* Non-modal node config drawer — canvas-level mount next to the other
               fixed panels so it shares their stacking context. */}
-          <DCPDialog />
+          <DCPDialog closeWhenNodeRemoved />
           <div className="pointer-events-none absolute left-1/2 top-3 z-20 flex -translate-x-1/2 flex-col items-center gap-2">
             <FlowActionLockBanner />
             <ViewOnlyBanner />
