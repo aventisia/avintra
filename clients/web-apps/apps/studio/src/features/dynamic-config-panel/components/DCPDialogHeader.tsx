@@ -68,18 +68,18 @@ const DCPDialogHeader = () => {
   // The action catalog owns the subtitle and docs link for catalog actions;
   // nodes outside the catalog (triggers, custom tools, structural nodes)
   // keep their own hardcoded text.
-  const actionSelectorData = useNodeSelectorStore((state) => state.actionSelectorData);
+  const catalogData = useNodeSelectorStore((state) => state.unfilteredActionSelectorData);
 
   const catalogEntriesByName = useMemo(
     () =>
       new Map(
-        actionSelectorData.flatMap((primary) =>
+        catalogData.flatMap((primary) =>
           primary.actionCategories.flatMap((category) =>
             (category.actions ?? []).map((action) => [action.name, action] as const),
           ),
         ),
       ),
-    [actionSelectorData],
+    [catalogData],
   );
 
   const catalogEntry = nodeData && catalogEntriesByName.get(nodeData.name);

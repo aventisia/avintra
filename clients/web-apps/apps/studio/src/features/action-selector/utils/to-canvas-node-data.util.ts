@@ -13,7 +13,7 @@ export const toCanvasNodeData = (data: NodeDataType & CatalogOwnedFields): NodeD
   const catalogNames = new Set(
     useNodeSelectorStore
       .getState()
-      .actionSelectorData.flatMap((primary) =>
+      .unfilteredActionSelectorData.flatMap((primary) =>
         primary.actionCategories.flatMap((category) =>
           (category.actions ?? []).map((action) => action.name),
         ),
