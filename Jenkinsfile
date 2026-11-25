@@ -10,6 +10,12 @@ def getTargetServers(branchName) {
     }
 }
 
+// IMPORTANT NOTE: these branches' servers run the Docker stack (deploy/docker/README.md), so Jenkins deploys only
+// Apache Camel and the Runner App there; a bare-metal service would fight the containers for their ports.
+def dockerDeployedBranches() {
+    return ['uat']
+}
+
 // Define a function to get the build mode based on the branch name (for Node.js apps)
 def getBuildMode(branchName) {
     switch(branchName) {
@@ -94,6 +100,12 @@ pipeline {
                         env.BUILD_DOCS_CLIENT = hasChangesInPath(changes, 'clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath(changes, 'clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath(changes, 'clients/RunnerApp') ? 'true' : 'false'
+                    }
+
+                    if (env.BRANCH_NAME in dockerDeployedBranches()) {
+                        echo "${env.BRANCH_NAME} runs on Docker: deploying only Apache Camel and the Runner App"
+                        ['BUILD_ACCOUNTS_API', 'BUILD_WORKSPACE_API', 'BUILD_GLOBALADMIN_API', 'BUILD_LLMPIPELINE_API',
+                         'BUILD_CORSAIR_API', 'BUILD_DOCS_CLIENT', 'BUILD_WEB_APPS'].each { flag -> env."${flag}" = 'false' }
                     }
                     
                     echo """

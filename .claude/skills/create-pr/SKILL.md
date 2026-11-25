@@ -1,6 +1,5 @@
 ---
 name: create-pr
-disable-model-invocation: true
 argument-hint: "Optional title, description, head branch, base branch, or repository URL"
 description: "Open a GitHub pull request from a committed, pushed branch, confirming any drafted title or description."
 ---

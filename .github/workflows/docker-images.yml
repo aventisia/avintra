@@ -1,0 +1,115 @@
+name: Docker images
+
+# IMPORTANT NOTE: never add pull_request_target or a self-hosted runner; this workflow holds the Docker Hub token and the server deploy keys.
+on:
+  push:
+    branches: [main, uat]
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOCKERHUB_NS: aventisia
+  # uat builds carry staging web settings and uat- tags, so they never replace main's images.
+  TAG_PREFIX: ${{ github.ref == 'refs/heads/uat' && 'uat-' || '' }}
+  BUILD_MODE: ${{ github.ref == 'refs/heads/uat' && 'staging' || 'production' }}
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  secret-scan:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/uat'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+      - run: bash scripts/install-gitleaks.sh && bash scripts/secret-scan.sh
+
+  build:
+    needs: secret-scan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { repo: avintra-frontend,        tag: '',     context: .,                file: deploy/docker/web.Dockerfile, target: frontend }
+          - { repo: avintra-global-admin,    tag: 'app-', context: .,                file: deploy/docker/web.Dockerfile, target: global-admin-app }
+          - { repo: avintra-docs,            tag: '',     context: .,                file: deploy/docker/docs.Dockerfile }
+          - { repo: avintra-accounts-api,    tag: '',     context: .,                file: apis/WorcBackend-legacy/AccountsAPIs/Dockerfile }
+          - { repo: avintra-workspace-api,   tag: '',     context: .,                file: apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile }
+          - { repo: avintra-global-admin,    tag: 'api-', context: .,                file: apis/WorcBackend-legacy/GlobalAdminAPIs/Dockerfile }
+          - { repo: avintra-llmpipeline-api, tag: '',     context: apis/llmpipeline, file: apis/llmpipeline/Dockerfile }
+          - { repo: avintra-corsair-api,     tag: '',     context: apis/corsair,     file: apis/corsair/Dockerfile }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.DOCKERHUB_NS }}/${{ matrix.repo }}
+          flavor: latest=false
+          tags: |
+            type=sha,prefix=${{ matrix.tag }}${{ env.TAG_PREFIX }}sha-
+            type=raw,value=${{ matrix.tag }}${{ github.ref_name }}
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          platforms: linux/amd64
+          pull: true
+          push: true
+          build-args: BUILD_MODE=${{ env.BUILD_MODE }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.repo }}-${{ matrix.tag }}${{ env.BUILD_MODE }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.repo }}-${{ matrix.tag }}${{ env.BUILD_MODE }}
+
+  # IMPORTANT NOTE: uat deploys on every push; main deploys server 2 only while the SERVER2_DOCKER_DEPLOY variable is true, after its reviewers approve.
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/uat' || (github.ref == 'refs/heads/main' && vars.SERVER2_DOCKER_DEPLOY == 'true')
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/uat' && 'uat' || 'production-server2' }}
+    steps:
+      - name: Run deploy.sh on the server
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ vars.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "deploy@$HOST" "$GITHUB_SHA"
+
+  # IMPORTANT NOTE: a version tag must point at a commit already built from main; this job only retags its sha- images.
+  release:
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          SHA="sha-$(git rev-parse HEAD | cut -c1-7)"
+          for repo in avintra-frontend avintra-docs avintra-accounts-api avintra-workspace-api \
+                      avintra-llmpipeline-api avintra-corsair-api; do
+            docker buildx imagetools create -t "$DOCKERHUB_NS/$repo:$VERSION" -t "$DOCKERHUB_NS/$repo:latest" "$DOCKERHUB_NS/$repo:$SHA"
+          done
+          for part in api app; do
+            docker buildx imagetools create -t "$DOCKERHUB_NS/avintra-global-admin:$part-$VERSION" "$DOCKERHUB_NS/avintra-global-admin:$part-$SHA"
+          done

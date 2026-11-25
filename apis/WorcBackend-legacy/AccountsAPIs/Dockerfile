@@ -18,21 +18,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /Publish .
 
-# Create directory for binaries
-RUN mkdir -p /var/www/aventisia.com/files/binaries
-
-# Create directory for install scripts
-RUN mkdir -p /var/www/aventisia.com/files/scripts
-
-# Copy NSIS bundle files to binaries directory
-COPY clients/desktop-app/src-tauri/target/release/bundle/nsis/ /var/www/aventisia.com/files/binaries/
-
-# Copy the runner install script to the scripts directory
-COPY clients/RunnerApp/RunnerApp.Windows/Install-AvintraRunnerService.ps1 /var/www/aventisia.com/files/scripts/Install-AvintraRunnerService.ps1
+# IMPORTANT NOTE: the shared files folder is mounted over /var/www/aventisia.com/files, so the deploy step copies this seed into its scripts/ folder.
+COPY clients/RunnerApp/RunnerApp.Windows/Install-AvintraRunnerService.ps1 /seed/scripts/Install-AvintraRunnerService.ps1
 
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4000
-ENV ASPNETCORE_ENVIRONMENT=Development
 
 # Expose port
 EXPOSE 4000

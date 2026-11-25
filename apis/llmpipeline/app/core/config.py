@@ -153,6 +153,16 @@ def livekit_ws_url() -> str:
     )
 
 
+def livekit_server_ws_url() -> str:
+    """The voice worker's registration URL, preferring ``LIVEKIT_HTTP_URL`` so it joins the server hosting the rooms."""
+
+    return _livekit_url(
+        settings.LIVEKIT_HTTP_URL,
+        settings.LIVEKIT_WS_URL,
+        {"http": "ws", "https": "wss"},
+    )
+
+
 def _livekit_url(url: str, fallback: str, scheme_map: dict[str, str]) -> str:
     source = (url or fallback).strip().rstrip("/")
     scheme, separator, rest = source.partition("://")

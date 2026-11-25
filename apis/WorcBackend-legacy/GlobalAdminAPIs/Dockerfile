@@ -19,7 +19,6 @@ COPY --from=build /Publish .
 
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4004
-ENV ASPNETCORE_ENVIRONMENT=Production
 
 # Expose port
 EXPOSE 4004

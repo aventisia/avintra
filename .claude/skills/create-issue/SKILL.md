@@ -24,28 +24,30 @@ Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository 
 
 4. **Settle the title.** Use the user's title; otherwise propose one from the brief, or ask for one for a verbatim body. Format: `[Type] Actionable and specific summary`, under about 120 characters, with `Type` from the label table below (`[Bug] React Flow nodes fail to render on initial load`). A title already in this format is used as-is.
 
-5. **Select labels** from the catalog below, spelled exactly. At least one label is required.
-   - User-supplied labels are used exactly as given. One missing from the catalog → ask the user to pick an approved label.
+5. **Select labels** from the catalog below, spelled exactly. Every issue carries exactly one `Kind/*` label, which names its project per `GITHUB.md` → Projects.
+   - User-supplied labels are used exactly as given. One missing from the catalog → ask the user to pick an approved label. No `Kind/*` among them, or several → ask which one kind applies.
    - Otherwise infer: the `Kind/*` label matching the title type, plus `Compat/*`, `Status/*`, or `Reviewed/*` only when the issue clearly meets that label's meaning. A brief always adds `Reviewed/Confirmed`. `Priority/*` stays off; the user sets priority later in the GitHub UI.
 
 6. **Collect assignees**: only usernames the user gave, as a comma-separated list. Milestones, priority, and other fields stay unset unless asked for.
 
-7. **Confirm.** For a brief, run the review in `BRIEF.md` with repo, title, labels, and assignees shown beside every revision; its approval covers them all. Otherwise show repo, title, body, labels, and assignees in one block and wait for explicit approval. Skip this only when the user supplied title, body, and labels verbatim and asked to file them as-is.
+7. **Confirm.** For a brief, run the review in `BRIEF.md` with repo, title, labels, project, and assignees shown beside every revision; its approval covers them all. Otherwise show repo, title, body, labels, project, and assignees in one block and wait for explicit approval. Skip this only when the user supplied title, body, and labels verbatim and asked to file them as-is.
 
-8. **Create the issue.** For a brief, fill `BODY` from the approved file: `BODY=$(cat "local-issues/<key>/brief.md")`. Drop the `--assignees` line when there are none.
+8. **Create the issue.** For a brief, fill `BODY` from the approved file: `BODY=$(cat "local-issues/<key>/brief.md")`. Drop the `--assignee` line when there are none. `gh issue create` prints the new issue's URL.
 
    ```bash
-   gh issue create \
+   URL=$(gh issue create \
      --repo "$REPO" \
      --title "$TITLE" \
      --body "$BODY" \
      --label "$LABELS" \
      --assignee "$ASSIGNEES"
+   )
+   ID=${URL##*/}
    ```
 
-   For a brief, then record the approval and close the Combine issues per Post in `BRIEF.md`.
+   For a brief, then record the approval and close the Combine issues per Post in `BRIEF.md`. Then place the issue per `GITHUB.md` → Projects.
 
-9. **Report** per `GITHUB.md`, with the issue number and URL, and each Combine issue closed.
+9. **Report** per `GITHUB.md`, with the issue number and URL, its project placement as `GITHUB.md` → Projects reports it, and each Combine issue closed.
 
 ## Label Catalog
 
@@ -55,7 +57,7 @@ Read [`../GITHUB.md`](../GITHUB.md) first. It governs authorization, repository 
 | `Kind/Feature`          | `Feature`       | New functionality                                    |
 | `Kind/Enhancement`      | `Enhancement`   | Improve existing functionality                       |
 | `Kind/Documentation`    | `Documentation` | Documentation changes                                |
-| `Kind/Security`         | `Security`      | Security issue                                       |
+| `Kind/Security`         | `Security`      | Security defect, not a security feature              |
 | `Kind/Testing`          | `Testing`       | Issue or pull request related to testing             |
 | `Compat/Breaking`       |                 | Breaking change that will not be backward compatible |
 | `Priority/Critical`     |                 | Critical priority                                    |
