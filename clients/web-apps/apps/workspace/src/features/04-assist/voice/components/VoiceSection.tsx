@@ -37,8 +37,8 @@ const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
   const call = useLiveVoiceCall({
     flowVersionId: agent.id,
     mode: "live",
-    createSession: async (request) => {
-      const response = await createVoiceSession({ ...request, mode: "live" });
+    createSession: async (request, signal) => {
+      const response = await createVoiceSession({ ...request, mode: "live" }, signal);
       if (!response.data)
         throw new Error(response.message || "Voice session could not be started.");
       return response.data;
