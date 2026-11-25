@@ -13,12 +13,15 @@ const toServerMessage = (error: unknown) =>
 /**
  * Creates one caller-bound LiveKit session for a VoiceAgent.
  */
-export const createVoiceSession = async (voiceSessionRequestDto: VoiceSessionRequest) => {
+export const createVoiceSession = async (
+  voiceSessionRequestDto: VoiceSessionRequest,
+  signal?: AbortSignal,
+) => {
   try {
     const response = await axiosInstance.post<IHttpResponse<VoiceSessionResponse>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/voice/sessions`,
       voiceSessionRequestDto,
-      { headers: getSpaceHeaders() },
+      { headers: getSpaceHeaders(), signal },
     );
     return response.data;
   } catch (error) {

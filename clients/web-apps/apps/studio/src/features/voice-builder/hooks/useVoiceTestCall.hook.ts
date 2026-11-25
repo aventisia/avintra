@@ -36,12 +36,15 @@ export const useVoiceTestCall = () => {
         setIsSavingDraft(false);
       }
     },
-    createSession: async (request) => {
-      const response = await createVoiceSession({
-        ...request,
-        flowVersionId: useCurrentFlowStore.getState().currentFlow.versionId,
-        mode: "test",
-      });
+    createSession: async (request, signal) => {
+      const response = await createVoiceSession(
+        {
+          ...request,
+          flowVersionId: useCurrentFlowStore.getState().currentFlow.versionId,
+          mode: "test",
+        },
+        signal,
+      );
 
       if (!response.data)
         throw new Error(response.message || "Voice session could not be started.");
