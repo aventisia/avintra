@@ -10,7 +10,7 @@ auth. Apps supply the authenticated session bootstrap.
 import { VoiceSessionClient } from "@avplatform/voice-client";
 
 const client = new VoiceSessionClient({
-  createSession: (request) => postSession(request),
+  createSession: (request, signal) => postSession(request, signal),
   onSnapshot: (snapshot) => render(snapshot),
 });
 
@@ -20,6 +20,11 @@ await client.resumeAudio();
 await client.end();
 await client.dispose();
 ```
+
+`start` cancels the previous call's pending session request through the `signal`,
+and `end` aborts it as well, so a session response that arrives after hang-up is
+never joined. Teardown stops microphone capture before disconnecting (a stalled
+signaling socket is bounded) and publishes the `ended` snapshot first.
 
 `start` bootstraps through `createSession`, joins the room, enables the default
 microphone with the capture constraints of the resolved `noiseCancellation` mode
@@ -62,5 +67,5 @@ npx turbo run typecheck --filter=@avplatform/voice-client
 npx turbo run lint --filter=@avplatform/voice-client
 ```
 
-Tests cover the pure reducer and the wrapper's speech gate against a fake room;
-the real LiveKit wrapper is browser-only.
+Tests cover the pure reducer and the wrapper's speech gate and lifecycle races
+against a fake room; the real LiveKit wrapper is browser-only.
