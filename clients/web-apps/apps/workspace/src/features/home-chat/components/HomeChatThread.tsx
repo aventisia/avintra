@@ -17,6 +17,7 @@ import {
   createChatArtifact,
   getChatArtifact,
 } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
+import { useChatArtifactText } from "@/features/04-assist/workspace-chat/hooks/useChatArtifactText.hook";
 
 import { transcribeSpeech } from "../apis/speech.apis";
 import {
@@ -143,6 +144,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   });
   const { companyName } = useBranding();
   const queryClient = useQueryClient();
+  const loadVersionText = useChatArtifactText(HOME_CHAT_FILE_QUERY_KEY);
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -239,6 +241,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             onSelectVersion={setPreviewId}
             onSaveVersion={saveVersion}
             isSavingVersion={isSavingVersion}
+            loadVersionText={loadVersionText}
             isLoading={preview.isLoading}
             onClose={() => setPreviewId(null)}
           />

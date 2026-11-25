@@ -37,6 +37,7 @@ import {
   shareChatArtifact,
   unshareChatArtifact,
 } from "../apis/workspace-chat.apis";
+import { useChatArtifactText } from "../hooks/useChatArtifactText.hook";
 import {
   WORKSPACE_CHAT_ARTIFACTS_KEY,
   useWorkspaceChatArtifacts,
@@ -97,6 +98,7 @@ export const WorkspaceChatArtifactsGallery = () => {
     queryFn: async () => (await getChatArtifact(previewArtifactId!)).data,
     enabled: !!previewArtifactId,
   });
+  const loadVersionText = useChatArtifactText(["workspace-chat-artifact"]);
   const previewVersions = useMemo(
     () =>
       previewArtifact.data
@@ -434,6 +436,7 @@ export const WorkspaceChatArtifactsGallery = () => {
                 onSelectVersion={setPreviewArtifactId}
                 onSaveVersion={saveVersion}
                 isSavingVersion={isSavingVersion}
+                loadVersionText={loadVersionText}
                 isLoading={previewArtifact.isLoading}
                 onClose={() => setPreviewArtifactId(null)}
               />

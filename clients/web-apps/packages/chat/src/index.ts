@@ -41,6 +41,7 @@ export {
   SYNTHESIZED_FILE_TYPES,
   chatFileSize,
   findChatFile,
+  readDataUrl,
   toDataUrl,
 } from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
