@@ -83,7 +83,7 @@ public class VerificationCodeService : IVerificationCodeService
             {
                 // Get user (Includes Tenant and Roles)
                 var user = await _unitOfWork.AccountUserRepo
-                        .GetByConditionAsync(w => EF.Functions.ILike(checkVerificationCodeDto.Email, w.UserName))
+                        .GetByConditionAsync(w => w.UserName.ToLower() == checkVerificationCodeDto.Email.ToLower())
                         .AsNoTracking()
                         .SingleOrDefaultAsync();
 

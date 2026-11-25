@@ -400,15 +400,14 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
-            // Retrieve all agents from the database that are linked to the provided email trigger DTO.
-            // Only include agents whose IDs are in emailTriggerDto.Agents and are marked as published.
+            // Retrieve all agents from the database that are linked to the provided time trigger DTO.
             var agentIds = timeTriggerDto.Agents?
                 .Select(a => a.Id)
                 .ToList();
 
             var agents = agentIds != null && agentIds.Any()
                 ? await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => agentIds.Contains(w.Id) && w.IsPublished)
+                    .GetByConditionAsync(w => agentIds.Contains(w.Id))
                     .ToListAsync()
                 : new List<FlowVersion>();
 
@@ -610,8 +609,8 @@ public class TimeTriggerService(
             // Handle updating the associated agents for the time trigger
             var currentAgentIds = timeTriggerDto.Agents?
                 .Select(a => a.Id)
-                .ToList() ?? null;
-            if (currentAgentIds != null && currentAgentIds.Any())
+                .ToList();
+            if (currentAgentIds != null)
             {
                 // Get the list of agent IDs currently linked to the time trigger
                 var existingAgentIds = timeTrigger.TriggerFlowVersions
@@ -646,10 +645,7 @@ public class TimeTriggerService(
                 {
                     // Get the flow versions for the new agent IDs
                     var agents = await _unitOfWork.FlowVersionRepo
-                        .GetByConditionAsync(w =>
-                            newAgentIds.Contains(w.Id) &&
-                            w.IsPublished
-                        )
+                        .GetByConditionAsync(w => newAgentIds.Contains(w.Id))
                         .ToListAsync();
 
                     if (agents.Count > 0)

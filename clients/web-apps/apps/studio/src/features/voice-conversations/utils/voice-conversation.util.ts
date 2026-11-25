@@ -11,6 +11,12 @@ import type {
 
 const TRANSCRIPT_KEY = "ui_transcript";
 const TIMING_KEY = "voice_turn_timing";
+const KB_CONTEXT_PATTERN = /\[Knowledge Base Context\][\s\S]*?\[\/Knowledge Base Context\]\s*/g;
+
+// IMPORTANT NOTE: pipeline calls saved the KB block as the caller message, so
+// calls recorded before the persistence fix still carry it in their rows. The
+// markers are duplicated from the backend kb_context_markers module.
+const toCallerText = (content: string): string => content.replace(KB_CONTEXT_PATTERN, "").trim();
 
 const toNumber = (value: unknown): number | null =>
   typeof value === "number" && Number.isFinite(value) ? value : null;
@@ -79,6 +85,7 @@ export const toVoiceConversationTurns = (
 ): VoiceCaptionTurn[] => {
   let turns: VoiceCaptionTurn[] = [];
   let pendingToolCalls: VoiceToolCall[] = [];
+  let pendingToolCreatedAt: string | undefined;
 
   for (const message of messages) {
     const latency = toLatency(message.metadata);
@@ -92,20 +99,26 @@ export const toVoiceConversationTurns = (
 
     if (message.role === ConversationMessageSenderEnum.Tool) {
       pendingToolCalls.push(toToolCall(message));
+      pendingToolCreatedAt = message.createdOn;
       continue;
     }
 
-    const text = message.content.trim();
+    const text =
+      message.role === ConversationMessageSenderEnum.User
+        ? toCallerText(message.content)
+        : message.content.trim();
     if (!text) continue;
     if (message.role === ConversationMessageSenderEnum.User) {
-      turns.push({ id: message.id, speaker: "caller", text });
+      turns.push({ id: message.id, speaker: "caller", text, createdAt: message.createdOn });
     } else if (message.role === ConversationMessageSenderEnum.Assistant) {
       const toolCalls = pendingToolCalls;
       pendingToolCalls = [];
+      pendingToolCreatedAt = undefined;
       turns.push({
         id: message.id,
         speaker: "agent",
         text,
+        createdAt: message.createdOn,
         latency,
         ...(toolCalls.length ? { toolCalls } : {}),
       });
@@ -117,6 +130,7 @@ export const toVoiceConversationTurns = (
       id: "tool-calls",
       speaker: "agent",
       text: "",
+      createdAt: pendingToolCreatedAt,
       toolCalls: pendingToolCalls,
     });
   }

@@ -17,21 +17,28 @@ type VoiceSessionClientConstructor = new (options: VoiceSessionClientOptions) =>
 export type UseLiveVoiceCallOptions = {
   flowVersionId: string;
   mode: VoiceSessionMode;
-  createSession: (request: VoiceSessionRequest) => Promise<VoiceSessionResponse>;
+  prepare?: () => Promise<void>;
+  createSession: (
+    request: VoiceSessionRequest,
+    signal: AbortSignal,
+  ) => Promise<VoiceSessionResponse>;
 };
 
 /** Runs one live voice call and mirrors the shared client's snapshot into React state. */
 export const useLiveVoiceCall = ({
   flowVersionId,
   mode,
+  prepare,
   createSession,
 }: UseLiveVoiceCallOptions): VoiceCallController => {
   const [snapshot, setSnapshot] = useState<VoiceCallSnapshot>(createVoiceCallSnapshot);
   const clientRef = useRef<VoiceSessionClient | null>(null);
   const createSessionRef = useRef(createSession);
+  const prepareRef = useRef(prepare);
   const startGenerationRef = useRef(0);
 
   createSessionRef.current = createSession;
+  prepareRef.current = prepare;
 
   const fail = useCallback((code: string, error: unknown, fallback: string) => {
     setSnapshot((current) => ({
@@ -48,7 +55,9 @@ export const useLiveVoiceCall = ({
     void (async () => {
       const previousClient = clientRef.current;
       clientRef.current = null;
-      if (previousClient) await previousClient.dispose();
+      // IMPORTANT NOTE: teardown starts synchronously and its microphone stop is
+      // immediate; awaiting it would let one stalled leave block the next call.
+      if (previousClient) void previousClient.dispose();
 
       let ClientConstructor: VoiceSessionClientConstructor;
       try {
@@ -62,7 +71,8 @@ export const useLiveVoiceCall = ({
       if (generation !== startGenerationRef.current) return;
 
       const client = new ClientConstructor({
-        createSession: (request) => createSessionRef.current(request),
+        prepare: () => prepareRef.current?.() ?? Promise.resolve(),
+        createSession: (request, signal) => createSessionRef.current(request, signal),
         onSnapshot: (next) => {
           if (generation !== startGenerationRef.current) return;
           setSnapshot(next);
@@ -75,18 +85,31 @@ export const useLiveVoiceCall = ({
       } catch (error) {
         if (generation !== startGenerationRef.current) return;
         fail("session_failed", error, "The voice call could not be started.");
+        if (clientRef.current === client) clientRef.current = null;
         await client.dispose();
       }
     })();
   }, [fail, flowVersionId, mode]);
 
   const end = useCallback(() => {
+    // IMPORTANT NOTE: bumping the generation also cancels a start that is still
+    // importing or saving the draft, so a ghost call cannot come online after end.
+    startGenerationRef.current += 1;
     const client = clientRef.current;
+    clientRef.current = null;
+
+    setSnapshot((current) => ({
+      ...current,
+      state: "ended",
+      isActive: false,
+      isMuted: false,
+      needsAudioResume: false,
+    }));
+
     if (!client) return;
 
     void (async () => {
       await client.end();
-      if (clientRef.current === client) clientRef.current = null;
       await client.dispose();
     })();
   }, []);

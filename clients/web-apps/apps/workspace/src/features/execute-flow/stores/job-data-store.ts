@@ -1,6 +1,5 @@
+import { JobStatusEnum } from "@avplatform/ui/enums";
 import { create } from "zustand";
-
-import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 
 type JobState = {
   status: JobStatusEnum;

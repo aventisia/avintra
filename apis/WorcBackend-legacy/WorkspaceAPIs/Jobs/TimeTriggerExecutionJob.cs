@@ -101,7 +101,6 @@ public class TimeTriggerExecutionJob : IJob
 
                 createdJobs.Add(new Job()
                 {
-                    Id = Guid.NewGuid(),
                     TenantId = triggerFlowVersion.TenantId,
                     SpaceId = triggerFlowVersion.FlowVersion?.SpaceId ?? triggerFlowVersion.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
                     FlowVersionId = triggerFlowVersion.FlowVersionId,
@@ -110,6 +109,7 @@ public class TimeTriggerExecutionJob : IJob
                     RefId = triggerFlowVersion.TriggerId,
                     Priority = JobPriorityEnum.Normal,
                     Status = JobStatusEnum.Created,
+                    IsPublished = triggerFlowVersion.FlowVersion.IsPublished,
                 });
             }
 

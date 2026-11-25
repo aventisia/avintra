@@ -152,6 +152,9 @@ public static class EnvironmentConfigurationExtension
         // Sales and support emails environment variable
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
 
+        // Voice session settings environment variables
+        var MAX_ACTIVE_VOICE_SESSIONS_PER_USER = Environment.GetEnvironmentVariable("MAX_ACTIVE_VOICE_SESSIONS_PER_USER") ?? config["EnvironmentConfig:MaxActiveVoiceSessionsPerUser"] ?? "2";
+
         // Identity and security settings environment variables
         var MAX_ACTIVE_SESSION_ALLOWED = Environment.GetEnvironmentVariable("MAX_ACTIVE_SESSION_ALLOWED") ?? config["EnvironmentConfig:MaxActiveSessionAllowed"] ?? "50";
         var OBSOLETE_PWD_RETAIN_LIMIT = Environment.GetEnvironmentVariable("OBSOLETE_PWD_RETAIN_LIMIT") ?? config["EnvironmentConfig:ObsoletePwdRetainLimit"] ?? "5";
@@ -388,6 +391,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:CorsairRedirectUri", CORSAIR_REDIRECT_URI },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
+
+                    { "EnvironmentConfig:MaxActiveVoiceSessionsPerUser", MAX_ACTIVE_VOICE_SESSIONS_PER_USER },
 
                     { "EnvironmentConfig:MaxActiveSessionAllowed", MAX_ACTIVE_SESSION_ALLOWED },
                     { "EnvironmentConfig:ObsoletePwdRetainLimit", OBSOLETE_PWD_RETAIN_LIMIT },

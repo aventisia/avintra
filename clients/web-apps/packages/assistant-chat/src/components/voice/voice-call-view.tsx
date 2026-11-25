@@ -91,6 +91,9 @@ export const VoiceCallView = ({
   const shownStatusLabel =
     statusLabel ??
     (call.isMuted && call.state === "listening" ? "Muted" : VOICE_CALL_STATE_LABELS[call.state]);
+  // The clock starts with connecting, so the timer is hidden only when no call time exists.
+  const showsCallTime =
+    call.state !== "idle" && call.state !== "error" && (call.state !== "ended" || call.callMs > 0);
 
   useSpaceToMute(call.isActive, call.toggleMute);
 
@@ -123,7 +126,7 @@ export const VoiceCallView = ({
             <span className={cn("font-semibold text-ink", isFull ? "text-heading" : "text-body")}>
               {shownStatusLabel}
             </span>
-            {call.state !== "idle" && (
+            {showsCallTime && (
               <span className="font-mono text-[12px] tabular-nums text-muted-foreground">
                 {formatCallTime(call.callMs)}
               </span>

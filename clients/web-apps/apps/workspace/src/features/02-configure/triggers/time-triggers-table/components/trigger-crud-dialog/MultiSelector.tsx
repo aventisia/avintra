@@ -190,7 +190,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                     onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
                   >
                     {/* Agent name */}
-                    <div className="flex flex-col">
+                    <div className="flex min-w-0 flex-1 flex-col">
                       <p className="truncate text-sm font-medium">
                         {`${result.name} -v${result.versionNumber}`}
                       </p>
@@ -198,6 +198,9 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                         {result.userName}
                       </span> */}
                     </div>
+                    <Badge variant={result.isPublished ? "completed" : "draft"}>
+                      {result.isPublished ? "Published" : "Draft"}
+                    </Badge>
                   </div>
                 ))}
               </ScrollArea>

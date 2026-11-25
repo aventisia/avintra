@@ -11,8 +11,11 @@ from app.features.auth.authenticated_user import User
 from ..core.schemas import (
     LLMGenerationRequest,
     LLMGenerationResponse,
+    PromptGenerationRequest,
+    PromptGenerationResponse,
 )
 from .generation_service import generation_service
+from .prompts.service import prompt_generation_service
 
 router = APIRouter(tags=["LiteLLM Text Generation"])
 
@@ -60,3 +63,13 @@ async def generate_llm_response_route(
             status_code=500,
             detail="The request could not be processed. Please check the request and try again.",
         )
+
+
+@router.post("/v2/llm/prompts/generate", response_model=PromptGenerationResponse)
+async def generate_prompt_route(
+    req: PromptGenerationRequest,
+    user: User = Depends(authorize()),
+):
+    """Generate or improve a Studio prompt from the platform's stored templates."""
+    return await prompt_generation_service.generate(req, user)
+

@@ -95,6 +95,7 @@ public class FlowProcessor
             ?? throw new InvalidOperationException("Start node not found in the flow.");
 
         var executedNodeVisits = 0;
+        ReactFlowNodeModel? inFlightNode = null;
 
         try
         {
@@ -117,6 +118,7 @@ public class FlowProcessor
                 if (node is null) return CreateFailedResult(startTime, logs, $"Node not found: {currentNodeId}");
 
                 onNodeProgress?.Invoke(node.Id);
+                inFlightNode = node;
 
                 var (edgeId, nextNodeId, enteredSubFlow) = await ProcessNodeAndGetNextEdgeAsync(
                     node,
@@ -128,6 +130,7 @@ public class FlowProcessor
                     executionStack,
                     cancellationToken,
                     onNodeCompleted);
+                inFlightNode = null;
 
                 if (!string.IsNullOrWhiteSpace(edgeId) && !string.IsNullOrWhiteSpace(nextNodeId))
                 {
@@ -200,10 +203,34 @@ public class FlowProcessor
         }
         catch (OperationCanceledException)
         {
+            // Stamp the node that was running when cancellation hit so the run canvas can
+            // highlight where a user abort stopped the flow. A node whose log is already
+            // unsuccessful (the sub-flow caller log, flipped by the catch below) already has
+            // its one row and must not get a second marker.
+            if (inFlightNode is not null)
+            {
+                var lastInFlightLog = logs.LastOrDefault(log => log.NodeId == inFlightNode.Id);
+                if (lastInFlightLog is null || lastInFlightLog.IsSuccess)
+                {
+                    CompleteSupportNode(inFlightNode, logs, flowExecutionContext, onNodeCompleted, new NodeExecutionLog
+                    {
+                        IsSuccess = false,
+                        Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            ["Status"] = "Execution aborted."
+                        }
+                    });
+                }
+            }
+
+            MarkOpenSubFlowCallers(executionStack, "Sub-flow execution aborted.", onNodeCompleted);
             return CreateAbortedResult(startTime, logs);
         }
         catch (Exception ex)
         {
+            // Reuse the failing node's status text so the job remark keeps the detailed reason.
+            var failureStatus = logs.LastOrDefault(log => !log.IsSuccess)?.Outputs.GetValueOrDefault("Status");
+            MarkOpenSubFlowCallers(executionStack, DescribeFailure(failureStatus, ex.Message), onNodeCompleted);
             return CreateFailedResult(startTime, logs, ex.Message);
         }
     }
@@ -312,7 +339,25 @@ public class FlowProcessor
             case "blockNode":
                 var subFlowStartLog = CreateSubFlowLog(node, flowExecutionContext);
                 logs.Add(subFlowStartLog);
-                var (subFlow, subFlowNext) = await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken, subFlowStartLog);
+                ReactFlowDataModel? subFlow;
+                string? subFlowNext;
+                try
+                {
+                    (subFlow, subFlowNext) = await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken, subFlowStartLog);
+                }
+                catch (Exception ex)
+                {
+                    // A sub-flow that throws never reaches the completion path, so flip its
+                    // caller log here; otherwise the Block/Call Agent step still reads successful.
+                    var failureStatus = logs.LastOrDefault(log => !log.IsSuccess)?.Outputs.GetValueOrDefault("Status");
+                    subFlowStartLog.IsSuccess = false;
+                    subFlowStartLog.Outputs["Status"] = ex is OperationCanceledException
+                        ? "Sub-flow execution aborted."
+                        : DescribeFailure(failureStatus, ex.Message);
+                    onNodeCompleted?.Invoke(subFlowStartLog);
+                    throw;
+                }
+
                 var subFlowEdge = string.IsNullOrWhiteSpace(subFlowNext) ? null : FindNextEdge(flow, node.Id, subFlowNext);
                 return (subFlowEdge?.Id, subFlowNext, subFlow);
 
@@ -406,6 +451,36 @@ public class FlowProcessor
             LoopIterationIndex = flowExecutionContext.LoopIterationIndex,
             ExecutedAt = DateTimeOffset.UtcNow
         };
+    }
+
+    // Keeps a nested caller's already-prefixed failure text from being prefixed twice.
+    private static string DescribeFailure(string? failureStatus, string fallback)
+    {
+        var message = failureStatus ?? fallback;
+        return message.StartsWith("Node execution has failed:", StringComparison.Ordinal)
+            ? message
+            : $"Node execution has failed: {message}";
+    }
+
+    // Marks every sub-flow caller whose frame is still open when the run fails or aborts, so a
+    // Block/Call Agent step never keeps reading successful after its sub-flow stopped short.
+    private static void MarkOpenSubFlowCallers(
+        Stack<FlowExecutionFrame> executionStack,
+        string status,
+        Action<NodeExecutionLog>? onNodeCompleted)
+    {
+        foreach (var frame in executionStack)
+        {
+            var callerLog = frame.CallerLog;
+            if (callerLog is null || !callerLog.IsSuccess)
+            {
+                continue;
+            }
+
+            callerLog.IsSuccess = false;
+            callerLog.Outputs["Status"] = status;
+            onNodeCompleted?.Invoke(callerLog);
+        }
     }
 
     private async Task<(ReactFlowDataModel? SubFlow, string? NextNodeId)> ProcessSubFlowNodeAsync(

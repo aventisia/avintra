@@ -7,6 +7,15 @@ namespace WorkspaceAPIs.Entities;
 public class Job
 {
     /// <summary>
+    /// Initializes a job as the first attempt of its own retry chain.
+    /// </summary>
+    public Job()
+    {
+        Id = Guid.NewGuid();
+        SourceJobId = Id;
+    }
+
+    /// <summary>
     /// Gets or sets the unique identifier (primary key) for the job record.
     /// </summary>
     [Key]
@@ -61,7 +70,12 @@ public class Job
     public DateTimeOffset? EndTime { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of retries attempted for the job. This value increments if the job is retried due to failure or other reasons.
+    /// Gets or sets the job ID of the first attempt of this job's retry chain; the first attempt points at itself.
+    /// </summary>
+    public Guid SourceJobId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attempt number within the retry chain, starting at 0 for the first attempt.
     /// </summary>
     public int RetryCount { get; set; }
 
@@ -79,6 +93,11 @@ public class Job
     /// Gets or sets the unique identifier of the machine where the job is running.
     /// </summary>
     public Guid? MachineId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp when a machine claimed the job, used to release a pushed job that never started.
+    /// </summary>
+    public DateTimeOffset? ClaimedOn { get; set; }
 
     /// <summary>
     /// Gets or sets the input arguments for the job in JSON format.

@@ -2,10 +2,8 @@
 
 The worker registers on the server-side LiveKit URL, not the browser URL, so
 with several servers behind one public address it joins the one hosting its
-rooms. Production keeps a prewarmed process so the first caller does not wait for the
-pipeline import and VAD load. Development registers before spawning so a fresh
-API process never races its first dispatch. These tests pin that floor until
-broader worker scaling is designed.
+rooms. Every environment keeps warm processes so the first caller does not wait for the
+pipeline import, credential setup, and VAD load in a cold process.
 
 Run from ``apis/llmpipeline``:
 
@@ -14,23 +12,68 @@ Run from ``apis/llmpipeline``:
 
 import pytest
 from livekit.agents import JobExecutorType
-from livekit.agents.worker import ServerEnvOption
 
 from app.core.config import settings
 from voice_agent.agent import worker_options
 
 
-def test_worker_spawns_on_demand_in_dev_and_keeps_a_floor_in_prod(monkeypatch):
+def test_worker_keeps_two_warm_processes_in_every_environment(monkeypatch):
     monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
     monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
     monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+    for name in (
+        "LIVEKIT_NUM_IDLE_PROCESSES",
+        "LIVEKIT_JOB_MEMORY_WARN_MB",
+        "LIVEKIT_JOB_MEMORY_LIMIT_MB",
+    ):
+        monkeypatch.delenv(name, raising=False)
 
     options = worker_options()
 
-    assert ServerEnvOption.getvalue(options.num_idle_processes, devmode=True) == 0
-    assert ServerEnvOption.getvalue(options.num_idle_processes, devmode=False) == 4
+    assert options.num_idle_processes == 2
     assert options.initialize_process_timeout == 30
     assert options.job_executor_type == JobExecutorType.PROCESS
+    assert options.job_memory_warn_mb == 1000
+    assert options.job_memory_limit_mb == 0
+
+
+def test_worker_pool_and_memory_limits_come_from_the_environment(monkeypatch):
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+    monkeypatch.setenv("LIVEKIT_NUM_IDLE_PROCESSES", "4")
+    monkeypatch.setenv("LIVEKIT_JOB_MEMORY_WARN_MB", "600")
+    monkeypatch.setenv("LIVEKIT_JOB_MEMORY_LIMIT_MB", "800")
+
+    options = worker_options()
+
+    assert options.num_idle_processes == 4
+    assert options.job_memory_warn_mb == 600
+    assert options.job_memory_limit_mb == 800
+
+
+def test_worker_ignores_an_invalid_pool_setting_instead_of_failing(monkeypatch):
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+    monkeypatch.setenv("LIVEKIT_NUM_IDLE_PROCESSES", "2x")
+    monkeypatch.setenv("LIVEKIT_JOB_MEMORY_LIMIT_MB", "lots")
+
+    options = worker_options()
+
+    assert options.num_idle_processes == 2
+    assert options.job_memory_limit_mb == 0
+
+
+def test_worker_rejects_a_fractional_process_count(monkeypatch):
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+    monkeypatch.setenv("LIVEKIT_NUM_IDLE_PROCESSES", "2.9")
+
+    options = worker_options()
+
+    assert options.num_idle_processes == 2
 
 
 @pytest.mark.parametrize(

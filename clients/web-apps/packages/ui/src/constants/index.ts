@@ -1,5 +1,7 @@
 import type { CrudActionType } from "../types";
 
+export * from "./job-status-display.constant";
+
 /**
  * A constant string representing a message which user will receive from the backend when tenant setup is incomplete.
  * This message is shown after user signup or account creation, until company (tenant) details are completed.

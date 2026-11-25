@@ -23,6 +23,7 @@ public class JobsTableService : IJobsTableService
     private readonly WorkspaceDbContext _workspaceDbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private const int MaxRemarkLength = 2000;
+    private const string RetryChainUniqueIndexName = "IX_run_Jobs_SourceJobId_RetryCount"; // IMPORTANT NOTE: keep in sync with the AddSourceJobIdToJobs migration index name.
 
     public JobsTableService(
         ILogger<JobsTableService> logger,
@@ -76,6 +77,20 @@ public class JobsTableService : IJobsTableService
         if (!string.IsNullOrWhiteSpace(name)) return name;
 
         return user?.FindFirstValue("uname") ?? string.Empty;
+    }
+
+    private static bool IsRetryChainConflict(DbUpdateException exception)
+    {
+        for (Exception? current = exception; current != null; current = current.InnerException)
+        {
+            if (current is Npgsql.PostgresException { SqlState: Npgsql.PostgresErrorCodes.UniqueViolation, ConstraintName: RetryChainUniqueIndexName })
+                return true;
+
+            if (current.Message.Contains(RetryChainUniqueIndexName, StringComparison.Ordinal))
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -284,6 +299,8 @@ public class JobsTableService : IJobsTableService
 
             // Default mapping
             var newJob = jobInsertDto.Adapt<Job>();
+            newJob.Id = Guid.NewGuid();
+            newJob.SourceJobId = newJob.Id;
             newJob.TenantId = tenantId; // Set the TenantId to the current or providedTenantId
             newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
 
@@ -291,21 +308,41 @@ public class JobsTableService : IJobsTableService
             {
                 newJob.MachineId = resolvedMachineId;
                 newJob.ExecutedOn = resolvedMachineName;
+                newJob.ClaimedOn = DateTimeOffset.UtcNow;
             }
 
-            // Manual mapping: Set RetryCount (if ExistingJobId is provided)
+            // Manual mapping: link the retry to its chain and number it one above the latest attempt
             if (jobInsertDto.ExistingJobId.HasValue)
             {
-                // Find the existing job with the same ExistingJobId and FlowVersionId to determine the retry count
-                var existingJobs = await _unitOfWork.JobRepo
-                                .GetByConditionAsync(w => w.Id == jobInsertDto.ExistingJobId && w.FlowVersionId == jobInsertDto.FlowVersionId)
-                                .CountAsync();
+                // Any attempt of the chain may be named; the first attempt's ID is the chain root
+                var sourceJobId = await _unitOfWork.JobRepo
+                                .GetByConditionAsync(w => w.Id == jobInsertDto.ExistingJobId && w.FlowVersionId == jobInsertDto.FlowVersionId && w.TenantId == tenantId)
+                                .Select(s => (Guid?)s.SourceJobId)
+                                .FirstOrDefaultAsync();
 
                 // If no existing job found, log and return
-                if (existingJobs == 0)
+                if (sourceJobId == null)
                     return serviceResponse.Update("No existing job found.", 404);
 
-                newJob.RetryCount = existingJobs;
+                // IMPORTANT NOTE: rows predating SourceJobId carry the empty default; the named job is its own chain root.
+                if (sourceJobId == Guid.Empty)
+                    sourceJobId = jobInsertDto.ExistingJobId;
+
+                var latestAttempt = await _unitOfWork.JobRepo
+                                .GetByConditionAsync(w => w.SourceJobId == sourceJobId.Value && w.FlowVersionId == jobInsertDto.FlowVersionId && w.TenantId == tenantId)
+                                .OrderByDescending(o => o.RetryCount)
+                                .FirstOrDefaultAsync();
+
+                if (latestAttempt == null)
+                    return serviceResponse.Update("No existing job found.", 404);
+
+                if (!latestAttempt.Status.IsTerminal())
+                    return serviceResponse.Update($"A retry can only be created after the latest attempt finishes (current status: {latestAttempt.Status}).", 409);
+
+                newJob.SourceJobId = sourceJobId.Value;
+                newJob.RetryCount = latestAttempt.RetryCount + 1;
+                newJob.TriggerType = latestAttempt.TriggerType;
+                newJob.RefId = latestAttempt.RefId;
             }
 
             // Manual mapping: Set CreatedByName and CreatedById
@@ -324,7 +361,9 @@ public class JobsTableService : IJobsTableService
                 newJob.ExecutedBy = $"{userRecord.FirstName} {userRecord.LastName} ({userRecord.UserName})";
 
                 // TODO: Property name to be changed CreatedById = [User Id]
-                newJob.RefId = userRecord.Id;
+                // IMPORTANT NOTE: a retry keeps its chain's parent reference; only fresh jobs link the creating user.
+                if (!jobInsertDto.ExistingJobId.HasValue)
+                    newJob.RefId = userRecord.Id;
             }
 
             if (newJob.TriggerType == TriggerTypesEnum.Flow)
@@ -346,23 +385,32 @@ public class JobsTableService : IJobsTableService
             // Insert job
             var jobSaved = true;
 
-            await _unitOfWork.ExecuteInTransactionAsync(async () =>
+            try
             {
-                await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(jobInsertDto.FlowVersionId));
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
+                {
+                    await _unitOfWork.AcquireAdvisoryLockAsync(FlowVersionHistoryHelpers.HistoryLockKey(jobInsertDto.FlowVersionId));
 
-                newJob.CreatedOn = DateTimeOffset.UtcNow;
+                    newJob.CreatedOn = DateTimeOffset.UtcNow;
 
-                newJob.FlowVersionHistoryId = await _unitOfWork.FlowVersionHistoryRepo
-                    .GetByConditionAsync(h => h.FlowVersionId == jobInsertDto.FlowVersionId && h.TenantId == tenantId)
-                    .OrderByDescending(h => h.CreatedOn)
-                    .ThenByDescending(h => h.Id)
-                    .Select(h => (Guid?)h.Id)
-                    .FirstOrDefaultAsync();
+                    newJob.FlowVersionHistoryId = await _unitOfWork.FlowVersionHistoryRepo
+                        .GetByConditionAsync(h => h.FlowVersionId == jobInsertDto.FlowVersionId && h.TenantId == tenantId)
+                        .OrderByDescending(h => h.CreatedOn)
+                        .ThenByDescending(h => h.Id)
+                        .Select(h => (Guid?)h.Id)
+                        .FirstOrDefaultAsync();
 
-                await _unitOfWork.JobRepo.InsertAsync(newJob);
+                    await _unitOfWork.JobRepo.InsertAsync(newJob);
 
-                jobSaved = await _unitOfWork.SaveAsync();
-            });
+                    jobSaved = await _unitOfWork.SaveAsync();
+                });
+            }
+            // IMPORTANT NOTE: two retries can read the same latest attempt and compute the same next
+            // number; the unique (SourceJobId, RetryCount) index decides and the loser gets this 409.
+            catch (DbUpdateException ex) when (IsRetryChainConflict(ex))
+            {
+                return serviceResponse.Update("A retry was already created for this job; fetch the latest attempt and retry again if needed.", 409);
+            }
 
             // Insert-Job failed, log and return
             if (!jobSaved)
@@ -750,15 +798,30 @@ public class JobsTableService : IJobsTableService
             }
 
             // Update status and start time.
+            // IMPORTANT NOTE: the job was read without tracking, so write the transition conditionally; a
+            // plain save would re-write a claim that another path released in the meantime.
+            var startTime = DateTimeOffset.UtcNow;
+
+            var startQuery = _workspaceDbContext.Jobs
+                .IgnoreQueryFilters()
+                .Where(w => w.Id == job.Id && w.Status == JobStatusEnum.Created);
+
+            if (job.MachineId.HasValue)
+                startQuery = startQuery.Where(w => w.MachineId == job.MachineId.Value);
+
+            var started = await startQuery
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(w => w.Status, JobStatusEnum.Running)
+                    .SetProperty(w => w.StartTime, startTime));
+
+            if (started != 1)
+            {
+                _logger.LogWarning("Job {JobId} could not be started; another path changed its state or released its machine.", job.Id);
+                return serviceResponse.Update("Job is no longer in created status.", 409);
+            }
+
             job.Status = JobStatusEnum.Running;
-            job.StartTime = DateTimeOffset.UtcNow;
-
-            // Update the record
-            _unitOfWork.JobRepo.Update(job);
-
-            // Start-Job failed, log and return
-            if (!await _unitOfWork.SaveAsync())
-                return serviceResponse.Update("Failed to save changes.", 500);
+            job.StartTime = startTime;
 
             // The job has actually started, so the machine is now busy. This is the single source of
             // truth for the machine's Running transition: dispatch leaves the machine Online/Idle
@@ -804,11 +867,8 @@ public class JobsTableService : IJobsTableService
             if (!CanCallerActOnJobMachine(job))
                 return serviceResponse.Update("Job is assigned to a different machine.", 403);
 
-            // CANNOT CLOSE THE JOB: Job is already in a terminal status
-            if (job.Status.IsTerminal())
-                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 409);
-
-            // Run the shared close logic.
+            // Run the shared close logic, which persists late step logs even when the job is
+            // already closed by the server (for example, killed on timeout).
             var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs ?? []);
             return closeResult;
         }
@@ -827,6 +887,19 @@ public class JobsTableService : IJobsTableService
 
         try
         {
+            // IMPORTANT NOTE: a job the server already closed keeps its own status, EndTime,
+            // remark and credits; only step logs that arrive late (a runner close after a kill)
+            // are persisted, and the close itself is still rejected.
+            if (job.Status.IsTerminal())
+            {
+                if (nodeExecutionLogs is { Count: > 0 })
+                {
+                    await _nodeExecutionLogService.InsertNodeExecutionLogsAsync(job.Id, nodeExecutionLogs);
+                }
+
+                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 409);
+            }
+
             var now = DateTimeOffset.UtcNow;
 
             // Apply closure fields.
@@ -993,6 +1066,8 @@ public class JobsTableService : IJobsTableService
                 if (machineStatus == null)
                     return;
 
+                await _workspaceDbContext.Jobs.IgnoreQueryFilters().ReleaseExpiredClaimAndRefreshAsync(machineStatus, _clientStatusStore);
+
                 if (await _unitOfWork.JobRepo.GetAllAsync().IgnoreQueryFilters().HasLivePendingJobAsync(machineStatus))
                     return;
 
@@ -1024,6 +1099,8 @@ public class JobsTableService : IJobsTableService
                 // IMPORTANT NOTE: the pick locks the row, but the bind must still be conditional. A row claimed
                 // between the pick and this update (or already held by another machine) yields affected 0, and the
                 // loser must not report a job it does not own.
+                var claimedOn = DateTimeOffset.UtcNow;
+
                 var claimed = await _workspaceDbContext.Jobs
                     .IgnoreQueryFilters()
                     .Where(w => w.Id == nextJob.Id
@@ -1031,7 +1108,8 @@ public class JobsTableService : IJobsTableService
                         && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
                     .ExecuteUpdateAsync(setters => setters
                         .SetProperty(w => w.MachineId, machineId)
-                        .SetProperty(w => w.ExecutedOn, machine.Name ?? machineId.ToString()));
+                        .SetProperty(w => w.ExecutedOn, machine.Name ?? machineId.ToString())
+                        .SetProperty(w => w.ClaimedOn, claimedOn));
 
                 if (claimed != 1)
                 {
@@ -1361,11 +1439,28 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
+            // Any attempt of the chain may be named; report the chain's latest attempt
+            // IMPORTANT NOTE: rows predating SourceJobId carry the empty default and stand as their own single-attempt chain.
+            var latestAttempt = job.SourceJobId == Guid.Empty
+                ? job
+                : await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.SourceJobId == job.SourceJobId
+                    && w.TenantId == tenantId
+                    && w.TriggerType == TriggerTypesEnum.Flow
+                    && w.RefId == linkedParentJobId)
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .OrderByDescending(o => o.RetryCount)
+                .FirstOrDefaultAsync();
+
+            if (latestAttempt == null)
+                return serviceResponse.Update("Job not found.", 404);
+
             return serviceResponse.Update(null, 200, new FlowJobStatusDto
             {
-                Id = job.Id,
-                Status = job.Status,
-                OutputDataJson = job.OutputDataJson
+                Id = latestAttempt.Id,
+                Status = latestAttempt.Status,
+                OutputDataJson = latestAttempt.OutputDataJson
             });
         }
         catch (Exception ex)

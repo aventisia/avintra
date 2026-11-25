@@ -1,9 +1,11 @@
-import { JobStatusEnum } from "../enums/job-status-enum";
+import { JobStatusEnum } from "@avplatform/ui/enums";
 
 export interface LogEntry {
   id: string;
   time: string;
   duration: number;
+  /** True when the run has ended; a run without an end time has no duration yet. */
+  hasEndTime: boolean;
   status: JobStatusEnum;
   user: {
     name: string;

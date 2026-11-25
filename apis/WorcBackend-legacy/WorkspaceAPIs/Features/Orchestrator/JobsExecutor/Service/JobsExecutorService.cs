@@ -88,6 +88,8 @@ public class JobsExecutorService : IJobsExecutorService
                 var pendingMachineIds = new HashSet<Guid>();
                 foreach (var machine in machineList)
                 {
+                    await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(machine, _clientStatusStore);
+
                     if (await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(machine))
                         pendingMachineIds.Add(machine.ClientId);
                 }
@@ -205,6 +207,8 @@ public class JobsExecutorService : IJobsExecutorService
                 clientDataStore.JobId.HasValue && clientDataStore.JobId.Value != Guid.Empty &&
                 clientDataStore.JobId.Value != executionCommandDto.JobId)
             {
+                await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(clientDataStore, _clientStatusStore);
+
                 var pendingLive = await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(clientDataStore);
                 if (pendingLive)
                 {
@@ -417,6 +421,8 @@ public class JobsExecutorService : IJobsExecutorService
                     var unavailableMachineIds = new HashSet<Guid>();
                     foreach (var machine in machineList)
                     {
+                        await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(machine, _clientStatusStore);
+
                         if (await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(machine))
                             unavailableMachineIds.Add(machine.ClientId);
                     }
@@ -481,7 +487,8 @@ public class JobsExecutorService : IJobsExecutorService
                 && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, machineId)
-                .SetProperty(w => w.ExecutedOn, machineName));
+                .SetProperty(w => w.ExecutedOn, machineName)
+                .SetProperty(w => w.ClaimedOn, DateTimeOffset.UtcNow));
 
     private Task<int> UnassignJobHeldByMachineAsync(Guid jobId, Guid machineId)
         => _workspaceInternalDbContext.Jobs
@@ -491,6 +498,7 @@ public class JobsExecutorService : IJobsExecutorService
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, (Guid?)null)
                 .SetProperty(w => w.ExecutedOn, (string?)null)
+                .SetProperty(w => w.ClaimedOn, (DateTimeOffset?)null)
                 .SetProperty(w => w.RetryCount, w => w.RetryCount + 1));
 
     private Task<int> CancelJobForInsufficientCreditsAsync(Guid jobId)
@@ -523,7 +531,8 @@ public class JobsExecutorService : IJobsExecutorService
                 && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, machineId)
-                .SetProperty(w => w.ExecutedOn, executedOn));
+                .SetProperty(w => w.ExecutedOn, executedOn)
+                .SetProperty(w => w.ClaimedOn, DateTimeOffset.UtcNow));
     }
 
     // Sends a command to the connected machine to terminate a stuck job.

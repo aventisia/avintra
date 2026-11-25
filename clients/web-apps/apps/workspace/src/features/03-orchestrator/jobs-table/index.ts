@@ -1,6 +1,6 @@
 // enum
+export { JobStatusEnum } from "@avplatform/ui/enums";
 export * from "./enums/job-priority-enum";
-export * from "./enums/job-status-enum";
 export * from "./enums/trigger-types-enum";
 
 // dtos
@@ -11,6 +11,7 @@ export * from "./dtos/job-update-dto";
 export * from "./dtos/jobs-table-row-dto";
 
 // constants
+export { statusVariant } from "@avplatform/ui/constants";
 export * from "./constants/cloud-execution.constant";
 export * from "./constants/column-display-names";
 export * from "./constants/column-visibility-state";

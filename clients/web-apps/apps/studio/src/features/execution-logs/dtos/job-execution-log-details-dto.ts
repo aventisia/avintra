@@ -1,4 +1,4 @@
-import { JobStatusEnum } from "../enums/job-status-enum";
+import { JobStatusEnum } from "@avplatform/ui/enums";
 
 export interface JobExecutionLogDetailDto {
   id: string;
@@ -11,7 +11,10 @@ export interface JobExecutionLogDetailDto {
   refId: string | null;
 
   priority: string;
+  startTime: string | null;
+  endTime: string | null;
   status: JobStatusEnum;
+  remark: string | null;
 
   versionNumber: number;
 

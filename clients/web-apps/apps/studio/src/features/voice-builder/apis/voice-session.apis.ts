@@ -7,11 +7,14 @@ import { getStudioSpaceHeaders } from "@/utils/space-headers";
 /**
  * Creates one caller-bound LiveKit session for a VoiceAgent.
  */
-export const createVoiceSession = (voiceSessionRequestDto: VoiceSessionRequest) =>
+export const createVoiceSession = (
+  voiceSessionRequestDto: VoiceSessionRequest,
+  signal?: AbortSignal,
+) =>
   axiosInstance
     .post<IHttpResponse<VoiceSessionResponse>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/voice/sessions`,
       voiceSessionRequestDto,
-      { headers: getStudioSpaceHeaders() },
+      { headers: getStudioSpaceHeaders(), signal },
     )
     .then((res) => res.data);

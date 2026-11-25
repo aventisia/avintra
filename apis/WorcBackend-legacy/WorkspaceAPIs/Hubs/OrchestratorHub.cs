@@ -164,8 +164,11 @@ public class OrchestratorHub : Hub
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
             if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled && canPullPendingJob)
             {
-                // Skip the claim while this machine already holds a live pending job, so a reconnect does not
-                // stack a second dispatch on a machine that has not started the first one yet.
+                // IMPORTANT NOTE: skip the claim while this machine already holds a live pending job, so a
+                // reconnect does not stack a second dispatch on a machine that has not started the first one
+                // yet. A claim older than the timeout is released first so a dead push cannot pin the machine.
+                await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(existingClientDataStore, _clientStatusStore);
+
                 var machineHasLivePendingJob = await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(existingClientDataStore);
 
                 // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
@@ -377,6 +380,8 @@ public class OrchestratorHub : Hub
                 var pendingMachineIds = new HashSet<Guid>();
                 foreach (var machine in availableMachines)
                 {
+                    await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(machine, _clientStatusStore);
+
                     if (await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(machine))
                         pendingMachineIds.Add(machine.ClientId);
                 }
@@ -420,7 +425,16 @@ public class OrchestratorHub : Hub
                 return;
             }
 
-            var jobId = Guid.NewGuid();
+            // IMPORTANT NOTE: only one dispatch may target a machine at a time; a live pending job would be
+            // orphaned when this one replaces its marker. An expired claim is released first so a dead push cannot pin the machine.
+            if (!await _workspaceInternalDbContext.Jobs.ReleaseExpiredClaimAndRefreshAsync(clientDataStore, _clientStatusStore)
+                && await _workspaceInternalDbContext.Jobs.HasLivePendingJobAsync(clientDataStore))
+            {
+                _logger.LogWarning("Machine {MachineName} already has a pending job.", machineName);
+                await Clients.Caller.SendAsync("error", "Machine already has a pending job.");
+                return;
+            }
+
 
             // Retrieve user identity and tenant ID from the HTTP context
             var clientId = Guid.Parse(Context?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -438,9 +452,9 @@ public class OrchestratorHub : Hub
             // Create a new job for agent execution
             var job = new Job()
             {
-                Id = jobId,
                 FlowVersionId = agent.Id,
                 MachineId = clientDataStore.ClientId,
+                ClaimedOn = DateTimeOffset.UtcNow,
                 ExecutedOn = clientDataStore.ClientName ?? machineName,
                 RefId = clientId,
                 Status = JobStatusEnum.Created,
@@ -511,7 +525,8 @@ public class OrchestratorHub : Hub
                 && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, machineId)
-                .SetProperty(w => w.ExecutedOn, machineName));
+                .SetProperty(w => w.ExecutedOn, machineName)
+                .SetProperty(w => w.ClaimedOn, DateTimeOffset.UtcNow));
 
     private Task<int> UnassignJobHeldByMachineAsync(Guid jobId, Guid machineId)
         => _workspaceInternalDbContext.Jobs
@@ -520,7 +535,9 @@ public class OrchestratorHub : Hub
                 && w.MachineId == machineId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(w => w.MachineId, (Guid?)null)
-                .SetProperty(w => w.ExecutedOn, (string?)null));
+                .SetProperty(w => w.ExecutedOn, (string?)null)
+                .SetProperty(w => w.ClaimedOn, (DateTimeOffset?)null)
+                .SetProperty(w => w.RetryCount, w => w.RetryCount + 1));
 
     // Reports execution progress for a job and relays it to the user who initiated the job.
     public async Task ReportProgress(Guid jobId, string message)

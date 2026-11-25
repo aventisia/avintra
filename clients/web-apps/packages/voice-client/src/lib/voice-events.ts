@@ -287,7 +287,11 @@ const finalizeCallerTurn = (
     if (!turn.isInterim) {
       finalized.unshift(turn);
     } else if (!replaced) {
-      finalized.unshift(callerTurn);
+      finalized.unshift(
+        callerTurn.createdAt || !turn.createdAt
+          ? callerTurn
+          : { ...callerTurn, createdAt: turn.createdAt },
+      );
       replaced = true;
     }
   }

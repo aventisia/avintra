@@ -205,13 +205,13 @@ public class BackendHttpClient : IBackendClient
     }
 
     /// <summary>
-    /// Builds a concise remark for a failed flow execution using the first failed node's output status.
+    /// Builds a concise remark for a failed flow execution using the deepest failed node's output status.
     /// The error message is placed first so truncation in the UI still shows the useful part.
     /// Falls back to the provided error message or a generic message when no failed node log is available.
     /// </summary>
     public static string BuildFailedNodeRemark(List<NodeExecutionLog> logs, string? errorMessage = null)
     {
-        var failedLog = logs.FirstOrDefault(l => !l.IsSuccess);
+        var failedLog = logs.LastOrDefault(l => !l.IsSuccess);
         if (failedLog is not null)
         {
             var statusMessage = failedLog.Outputs.TryGetValue("Status", out var status) ? status : null;

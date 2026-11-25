@@ -98,6 +98,11 @@ class Settings(BaseSettings):
     # The sidecar is backend-only and private; no auth header is required.
     CORSAIR_API_BASE_URL: str = ""
 
+    # IMPORTANT NOTE: unset or blank means a Community deployment; must mirror the
+    # backend's IsCommunityDeployment predicate.
+    ON_PREM_TENANT_ID: str = ""
+    ON_PREM_INSTANCE_KEY: str = ""
+
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files
         env_file_encoding='utf-8',
@@ -112,6 +117,14 @@ def accounts_api_url() -> str:
     """The AccountsAPIs base URL, including the nginx ``/accounts/api`` prefix."""
 
     return settings.ACCOUNTS_API_URL.rstrip("/") or f"https://{settings.APP_BASE_URL}/accounts/api"
+
+
+def is_community_deployment() -> bool:
+    """True when the deployment runs as Community (no on-prem tenant identity configured)."""
+
+    return not (
+        settings.ON_PREM_TENANT_ID.strip() and settings.ON_PREM_INSTANCE_KEY.strip()
+    )
 
 
 def workspace_api_url() -> str:

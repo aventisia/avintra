@@ -139,6 +139,26 @@ class LLMGenerationChunk(BaseModel):
     error: Optional[str] = None
 
 
+class PromptGenerationRequest(BaseModel):
+    """Prompt-generation request from Studio; ``refType`` is required when ``promptTarget`` is Template."""
+
+    model_config = ConfigDict(extra="ignore", populate_by_name=True)
+
+    ref_type: str = Field(default="", alias="refType")
+    prompt_target: str = Field(default="Template", alias="promptTarget")
+    ref_id: str = Field(default="", alias="refId")
+    ref_name: str = Field(alias="refName")
+    payload: str = Field(alias="payload")
+
+
+class PromptGenerationResponse(BaseModel):
+    """ServiceResponse-shaped envelope so Studio's ``IHttpResponse<string>`` handling works unchanged."""
+
+    data: str
+    status_code: int = Field(default=200, serialization_alias="statusCode")
+    message: str
+
+
 class EmbeddingRequest(LegacyByokWarningModel):
     model_config = ConfigDict(extra="ignore")
 

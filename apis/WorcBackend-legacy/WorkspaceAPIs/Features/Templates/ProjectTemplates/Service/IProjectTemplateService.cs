@@ -103,13 +103,6 @@ public interface IProjectTemplateService
     Task<ServiceResponse<ProjectTemplateDto>> UseProjectTemplateAsync(TrendingTemplateDto trendingTemplateDto);
 
     /// <summary>
-    /// Uses a Large Language Model (LLM) to generate documentation or instructions based on the provided project template data.
-    /// </summary>
-    /// <param name="genereateProjectInstructionRequestDto">The request containing the project template flow data to be processed by the LLM.</param>
-    /// <returns>A <see cref="ServiceResponse{T}"/> containing the generated documentation or instructions as a string.</returns>
-    Task<ServiceResponse<string>> GenerateTemplateUsingLLMAsync(GenereateProjectInstructionRequestDto genereateProjectInstructionRequestDto);
-
-    /// <summary>
     /// Validates a list of projects or resources to determine if they are approved templates and verifies access permissions based on their access types.
     /// </summary>
     /// <param name="projectAccessStatusDtos">A collection of project access status DTOs for validation.</param>

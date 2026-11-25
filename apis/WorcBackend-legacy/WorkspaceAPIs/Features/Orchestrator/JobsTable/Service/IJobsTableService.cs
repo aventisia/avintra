@@ -107,9 +107,9 @@ public interface IJobsTableService
     Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
 
     /// <summary>
-    /// Gets the status and output of a job scoped to the given tenant, restricted to the caller's linked parent job when the caller is not a machine identity.
+    /// Gets the status and output of a job's retry chain scoped to the given tenant, reporting the chain's latest attempt; restricted to the caller's linked parent job when the caller is not a machine identity.
     /// </summary>
-    /// <param name="jobId">The identifier of the job to retrieve.</param>
+    /// <param name="jobId">The identifier of any attempt in the job's retry chain.</param>
     /// <param name="tenantId">The tenant resolved from the caller's claims.</param>
     /// <param name="parentJobId">The calling flow's job id, required for non-machine callers.</param>
     /// <returns>A task representing the service response containing the job status.</returns>

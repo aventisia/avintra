@@ -565,11 +565,11 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         });
     }
 
-    // Helper: Formats a failed node execution message from the first failed node log.
+    // Helper: Formats a failed node execution message from the deepest failed node log.
     // The error message is placed first so truncation in the UI still shows the useful part.
     private static string BuildFailedNodeRemark(FlowExecutionResult flowResult)
     {
-        var failedLog = flowResult.NodeLogs.FirstOrDefault(l => !l.IsSuccess);
+        var failedLog = flowResult.NodeLogs.LastOrDefault(l => !l.IsSuccess);
         if (failedLog is not null)
         {
             var statusMessage = failedLog.Outputs.TryGetValue("Status", out var status) ? status : null;
