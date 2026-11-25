@@ -565,7 +565,7 @@ public class EmailTriggerService : IEmailTriggerService
 
                 if ((mappingsToRemove.Count > 0 || agentsToAdd.Count > 0) && !await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogError("Database SaveChanges failed while syncing agents for email trigger with ID {EmailTriggerId}.", emailTriggerDto.Id);
+                    _logger.LogError("Database SaveChanges failed while syncing agents for email trigger with ID {EmailTriggerId}.", emailTrigger.Id);
                     return serviceResponse;
                 }
             }
@@ -587,7 +587,7 @@ public class EmailTriggerService : IEmailTriggerService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while updating email trigger with ID {EmailTriggerId}.", emailTriggerDto.Id);
+            _logger.LogError(ex, "An unexpected error occurred while updating an email trigger.");
         }
 
         return serviceResponse;
