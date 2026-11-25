@@ -31,7 +31,13 @@ const { FakeRoom, fakeRooms, connectControl } = vi.hoisted(() => {
     readonly disconnect = vi.fn(async () => {
       this.disconnected = true;
       this.localParticipant.isMicrophoneEnabled = false;
+      this.engine = undefined;
     });
+    engine: { close: ReturnType<typeof vi.fn> } | undefined = {
+      close: vi.fn(async () => {
+        this.disconnected = true;
+      }),
+    };
     readonly startAudio = vi.fn(async () => undefined);
 
     on(event: string, listener: Listener): this {
@@ -271,6 +277,57 @@ describe("VoiceSessionClient lifecycle races", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
+  it("ends the backend session when the caller hangs up", async () => {
+    const endSession = vi.fn(async () => undefined);
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await client.end();
+    await client.dispose();
+
+    expect(endSession).toHaveBeenCalledTimes(1);
+    expect(endSession).toHaveBeenCalledWith(SESSION.conversationId);
+  });
+
+  it("ends the previous backend session when a new call starts", async () => {
+    const endSession = vi.fn(async () => undefined);
+    let created = 0;
+    const client = new VoiceSessionClient({
+      createSession: async () => ({
+        ...SESSION,
+        conversationId: `conversation-${++created}`,
+      }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+
+    expect(endSession).toHaveBeenCalledWith("conversation-1");
+  });
+
+  it("ends the backend session when the start times out", async () => {
+    const endSession = vi.fn(async () => undefined);
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(endSession).toHaveBeenCalledWith(SESSION.conversationId);
+
+    await client.end();
+    expect(endSession).toHaveBeenCalledTimes(1);
+  });
+
   it("does not start a call when end arrives during the draft save", async () => {
     const snapshots: VoiceCallSnapshot[] = [];
     let startedPrepare = false;
@@ -389,6 +446,7 @@ describe("VoiceSessionClient lifecycle races", () => {
 
     await client.start({ flowVersionId: "version-1", mode: "test" });
     const first = fakeRooms[0];
+    const firstEngine = first.engine;
     first.disconnect.mockImplementation(() => new Promise<void>(() => {}));
 
     const ending = client.end();
@@ -405,6 +463,7 @@ describe("VoiceSessionClient lifecycle races", () => {
     await ending;
 
     expect(first.disconnect).toHaveBeenCalled();
+    expect(firstEngine?.close).toHaveBeenCalled();
     expect(vi.getTimerCount()).toBe(0);
   });
 

@@ -61,6 +61,12 @@ from .usage import RealtimeUsageRecorder, StreamingSTTUsageRecorder
 
 USAGE_FLUSH_INTERVAL_SECONDS = 60.0
 CALLER_JOIN_TIMEOUT_SECONDS = 30.0
+
+# IMPORTANT NOTE: a provider or LiveKit close that never returns holds the job
+# process forever; the default pool has two, so two such calls starve every
+# later dispatch. Bound teardown so the process always returns to the pool.
+FINISH_TIMEOUT_SECONDS = 20.0
+DELETE_ROOM_TIMEOUT_SECONDS = 5.0
 MAX_CALL_DURATION_SECONDS = 3600.0
 
 
@@ -450,7 +456,25 @@ async def run_session(
         )
         session.mark_closed("error", error=True)
     finally:
-        await _finish(session)
+        try:
+            await asyncio.wait_for(_finish(session), timeout=FINISH_TIMEOUT_SECONDS)
+        except TimeoutError:
+            logger.error(
+                "[voice-agent] teardown timed out conversation=%s",
+                claims.conversation_id,
+            )
+            # IMPORTANT NOTE: the timed-out `_finish` never reached its own room
+            # deletion, so retry it best-effort; an abandoned room would keep
+            # occupying LiveKit and pile dispatches up behind the caller cap.
+            try:
+                await asyncio.wait_for(
+                    delete_room(session.ctx), timeout=DELETE_ROOM_TIMEOUT_SECONDS
+                )
+            except TimeoutError:
+                logger.error(
+                    "[voice-agent] room deletion timed out conversation=%s",
+                    claims.conversation_id,
+                )
 
 
 async def run_pipeline_session(session: VoiceSession) -> None:
@@ -675,6 +699,9 @@ async def _wait_for_disconnect(session: VoiceSession) -> None:
 
 
 async def _finish(session: VoiceSession) -> None:
+    # IMPORTANT NOTE: persist the terminal status before the slow closes, so a
+    # hung provider or room close still frees the per-user session cap.
+    await session.lifecycle.finish(failed=session.failed or session.close_failed)
     if session.agent_session is not None:
         await session.agent_session.aclose()
     if session.realtime_transcript is not None:
@@ -690,7 +717,6 @@ async def _finish(session: VoiceSession) -> None:
     )
     await session.events.aclose()
     await delete_room(session.ctx)
-    await session.lifecycle.finish(failed=session.failed or session.close_failed)
     logger.info(
         "[voice-agent] ended conversation=%s",
         session.claims.conversation_id,

@@ -6,7 +6,7 @@ import { isCanvasDirty, useSaveFlow } from "@/features/react-flow/hooks/useSaveF
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
-import { createVoiceSession } from "../apis/voice-session.apis";
+import { createVoiceSession, endVoiceSession } from "../apis/voice-session.apis";
 
 /** Studio test call: saves pending settings when the draft changed, then starts a real session. */
 export const useVoiceTestCall = () => {
@@ -50,6 +50,7 @@ export const useVoiceTestCall = () => {
         throw new Error(response.message || "Voice session could not be started.");
       return response.data;
     },
+    endSession: endVoiceSession,
   });
 
   return { ...call, isSavingDraft };
