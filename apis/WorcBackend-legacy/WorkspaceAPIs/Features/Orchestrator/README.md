@@ -23,6 +23,14 @@ job is never stuck when a machine was offline at trigger time.
 Only the current `Time` trigger value is matched. Older text values written by previous versions
 are not recoverable and are handled separately.
 
+## Pushed but never started
+
+A dispatch that the machine never starts leaves the job `Created` and bound to that machine, which
+keeps the machine out of every dispatch path. A claim older than five minutes (`ClaimedOn`) is
+therefore released before the next pick: the job goes back to unassigned with its retry count
+increased, and the machine can be selected again. A bound job without a claim timestamp counts as
+expired, so rows stuck before this rule are released on the next pick.
+
 ## Delivery result
 
 A dispatch is `delivered` as soon as the command has been handed to the machine's connection.

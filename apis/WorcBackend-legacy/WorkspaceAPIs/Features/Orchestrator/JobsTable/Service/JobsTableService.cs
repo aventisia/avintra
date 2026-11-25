@@ -308,6 +308,7 @@ public class JobsTableService : IJobsTableService
             {
                 newJob.MachineId = resolvedMachineId;
                 newJob.ExecutedOn = resolvedMachineName;
+                newJob.ClaimedOn = DateTimeOffset.UtcNow;
             }
 
             // Manual mapping: link the retry to its chain and number it one above the latest attempt
@@ -797,15 +798,30 @@ public class JobsTableService : IJobsTableService
             }
 
             // Update status and start time.
+            // IMPORTANT NOTE: the job was read without tracking, so write the transition conditionally; a
+            // plain save would re-write a claim that another path released in the meantime.
+            var startTime = DateTimeOffset.UtcNow;
+
+            var startQuery = _workspaceDbContext.Jobs
+                .IgnoreQueryFilters()
+                .Where(w => w.Id == job.Id && w.Status == JobStatusEnum.Created);
+
+            if (job.MachineId.HasValue)
+                startQuery = startQuery.Where(w => w.MachineId == job.MachineId.Value);
+
+            var started = await startQuery
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(w => w.Status, JobStatusEnum.Running)
+                    .SetProperty(w => w.StartTime, startTime));
+
+            if (started != 1)
+            {
+                _logger.LogWarning("Job {JobId} could not be started; another path changed its state or released its machine.", job.Id);
+                return serviceResponse.Update("Job is no longer in created status.", 409);
+            }
+
             job.Status = JobStatusEnum.Running;
-            job.StartTime = DateTimeOffset.UtcNow;
-
-            // Update the record
-            _unitOfWork.JobRepo.Update(job);
-
-            // Start-Job failed, log and return
-            if (!await _unitOfWork.SaveAsync())
-                return serviceResponse.Update("Failed to save changes.", 500);
+            job.StartTime = startTime;
 
             // The job has actually started, so the machine is now busy. This is the single source of
             // truth for the machine's Running transition: dispatch leaves the machine Online/Idle
@@ -1050,6 +1066,8 @@ public class JobsTableService : IJobsTableService
                 if (machineStatus == null)
                     return;
 
+                await _workspaceDbContext.Jobs.IgnoreQueryFilters().ReleaseExpiredClaimAndRefreshAsync(machineStatus, _clientStatusStore);
+
                 if (await _unitOfWork.JobRepo.GetAllAsync().IgnoreQueryFilters().HasLivePendingJobAsync(machineStatus))
                     return;
 
@@ -1081,6 +1099,8 @@ public class JobsTableService : IJobsTableService
                 // IMPORTANT NOTE: the pick locks the row, but the bind must still be conditional. A row claimed
                 // between the pick and this update (or already held by another machine) yields affected 0, and the
                 // loser must not report a job it does not own.
+                var claimedOn = DateTimeOffset.UtcNow;
+
                 var claimed = await _workspaceDbContext.Jobs
                     .IgnoreQueryFilters()
                     .Where(w => w.Id == nextJob.Id
@@ -1088,7 +1108,8 @@ public class JobsTableService : IJobsTableService
                         && (w.MachineId == null || w.MachineId == Guid.Empty || w.MachineId == machineId))
                     .ExecuteUpdateAsync(setters => setters
                         .SetProperty(w => w.MachineId, machineId)
-                        .SetProperty(w => w.ExecutedOn, machine.Name ?? machineId.ToString()));
+                        .SetProperty(w => w.ExecutedOn, machine.Name ?? machineId.ToString())
+                        .SetProperty(w => w.ClaimedOn, claimedOn));
 
                 if (claimed != 1)
                 {
