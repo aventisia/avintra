@@ -24,7 +24,7 @@ type AgentCardProps = {
 const META_CLASS_NAME = "inline-flex min-w-0 items-center gap-1 text-xs text-muted-foreground";
 
 const getQueueUrl = (queueId: string, queueName: string, queueType?: string) =>
-  `/assist/queues?qid=${queueId}&qn=${encodeURIComponent(queueName)}&qt=${queueType ?? "User"}`;
+  `/queues?qid=${queueId}&qn=${encodeURIComponent(queueName)}&qt=${queueType ?? "User"}`;
 
 /**
  * Card of an agent assigned to the user's machines, laid out like the Agents grid card: the

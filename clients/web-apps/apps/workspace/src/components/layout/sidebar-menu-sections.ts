@@ -46,6 +46,13 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
+        permissions: ["TU"],
+        Icon: ListIcon,
+        name: "Queues",
+        route: "/queues",
+        type: ["Commercial", "Enterprise", "Community"],
+      },
+      {
         Icon: BooksIcon,
         name: "Library",
         route: "/library",
@@ -155,14 +162,6 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         Icon: NewAgentIcon,
         name: "Agents",
         route: "/assist/agents",
-        hub: "assist",
-        type: ["Commercial", "Enterprise", "Community"],
-      },
-      {
-        permissions: ["TU"],
-        Icon: ListIcon,
-        name: "Queues",
-        route: "/assist/queues",
         hub: "assist",
         type: ["Commercial", "Enterprise", "Community"],
       },

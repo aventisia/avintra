@@ -9,7 +9,7 @@ export const useOpenWorkItem = () => {
       const params = new URLSearchParams(location.search);
       params.set("wid", workItemId);
 
-      return `/assist/queues?${params.toString()}`;
+      return `/queues?${params.toString()}`;
     },
     [location.search],
   );

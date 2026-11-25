@@ -29,7 +29,7 @@ type FlowCardProps = {
 const META_CLASS_NAME = "inline-flex min-w-0 items-center gap-1 text-xs text-muted-foreground";
 
 const getQueueUrl = (queueId: string, queueName: string, queueType?: string) =>
-  `/assist/queues?qid=${queueId}&qn=${encodeURIComponent(queueName)}&qt=${queueType ?? "User"}`;
+  `/queues?qid=${queueId}&qn=${encodeURIComponent(queueName)}&qt=${queueType ?? "User"}`;
 
 /**
  * Agent card of the Agents grid view: the type-tinted glyph, name (opens the Agent Builder),

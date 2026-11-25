@@ -115,6 +115,10 @@ const routerConfig: RouteObject[] = [
         element: <LibraryPage />,
       },
       {
+        path: "/queues",
+        element: <MyQueuePage />,
+      },
+      {
         path: "/ui-builder",
         element: <UiBuilderPage />,
       },
@@ -267,10 +271,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "agents",
             element: <AgentsAssistPage />,
-          },
-          {
-            path: "queues",
-            element: <MyQueuePage />,
           },
           {
             path: "chats",

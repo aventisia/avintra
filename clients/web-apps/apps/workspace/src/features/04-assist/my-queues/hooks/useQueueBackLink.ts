@@ -8,6 +8,6 @@ export const useQueueBackLink = () => {
     const params = new URLSearchParams(search);
     params.delete("wid");
 
-    return `/assist/queues?${params.toString()}`;
+    return `/queues?${params.toString()}`;
   }, [search]);
 };
