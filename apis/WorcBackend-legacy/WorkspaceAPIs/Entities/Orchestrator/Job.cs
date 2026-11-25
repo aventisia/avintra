@@ -95,6 +95,11 @@ public class Job
     public Guid? MachineId { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp when a machine claimed the job, used to release a pushed job that never started.
+    /// </summary>
+    public DateTimeOffset? ClaimedOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the input arguments for the job in JSON format.
     /// </summary>
     public string? InputArgumentsJson { get; set; }
