@@ -55,4 +55,15 @@ public class VoiceSessionsController : BaseApiController
             voiceSessionRequestDto,
             HttpContext.RequestAborted));
     }
+
+    /// <summary>
+    /// Ends one of the caller's voice sessions.
+    /// </summary>
+    [HttpPost("sessions/{conversationId:guid}/end")]
+    public async Task<ActionResult<ServiceResponse<bool>>> EndSession(Guid conversationId)
+    {
+        return ResultHelper(await _voiceSessionService.EndSessionAsync(
+            conversationId,
+            HttpContext.RequestAborted));
+    }
 }

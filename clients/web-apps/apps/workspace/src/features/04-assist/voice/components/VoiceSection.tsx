@@ -9,7 +9,7 @@ import { Link, useParams } from "react-router-dom";
 import { useFetchChatAgents } from "@/features/04-assist/my-chats/hooks/useFetchChatAgents";
 
 import type { AssistChatDto } from "../../my-chats/dtos/assist-chat.dto";
-import { createVoiceSession } from "../apis/voice-session.apis";
+import { createVoiceSession, endVoiceSession } from "../apis/voice-session.apis";
 
 const VOICE_HOME = "/assist/voice";
 
@@ -43,6 +43,7 @@ const VoiceCallScreen = ({ agent }: { agent: AssistChatDto }) => {
         throw new Error(response.message || "Voice session could not be started.");
       return response.data;
     },
+    endSession: endVoiceSession,
   });
 
   return (

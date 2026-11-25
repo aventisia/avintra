@@ -13,6 +13,13 @@ public interface IVoiceSessionService
     Task<ServiceResponse<VoiceSessionDto>> CreateSessionAsync(
         VoiceSessionRequestDto voiceSessionRequestDto,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Marks the caller's active voice conversation ended so it stops counting against the session cap.
+    /// </summary>
+    Task<ServiceResponse<bool>> EndSessionAsync(
+        Guid conversationId,
+        CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc />
@@ -145,6 +152,36 @@ public sealed class VoiceSessionService : IVoiceSessionService
         }
 
         return serviceResponse.Update("Voice session created.", 200, session);
+    }
+
+    /// <inheritdoc />
+    public async Task<ServiceResponse<bool>> EndSessionAsync(
+        Guid conversationId,
+        CancellationToken cancellationToken = default)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to end voice session.", 500);
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var conversation = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(existing =>
+                existing.Id == conversationId &&
+                existing.TenantId == tenantId &&
+                existing.UserId == _userId &&
+                existing.Channel == ConversationChannelEnum.Voice)
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (conversation is null || conversation.Status != ConversationStatusEnum.Active)
+            return serviceResponse.Update("Voice session ended.", 200, true);
+
+        conversation.Status = ConversationStatusEnum.Completed;
+        _unitOfWork.ConversationRepo.Update(conversation);
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to end voice conversation for user {UserId}.", _userId);
+            return serviceResponse.Update("Failed to end voice session.", 500);
+        }
+
+        return serviceResponse.Update("Voice session ended.", 200, true);
     }
 
     private Conversation CreateVoiceConversation(Guid flowVersionId)

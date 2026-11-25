@@ -8,6 +8,8 @@ Run from ``apis/llmpipeline``:
     ./.venv/Scripts/python.exe -m pytest tests/test_voice_worker_processes.py -q
 """
 
+from types import SimpleNamespace
+
 from livekit.agents import JobExecutorType
 
 from app.core.config import settings
@@ -32,6 +34,17 @@ def test_worker_keeps_two_warm_processes_in_every_environment(monkeypatch):
     assert options.job_executor_type == JobExecutorType.PROCESS
     assert options.job_memory_warn_mb == 1000
     assert options.job_memory_limit_mb == 0
+
+
+def test_worker_never_reports_load_that_would_drop_a_dispatch(monkeypatch):
+    monkeypatch.setattr(settings, "LIVEKIT_WS_URL", "ws://localhost:7880")
+    monkeypatch.setattr(settings, "LIVEKIT_API_KEY", "devkey")
+    monkeypatch.setattr(settings, "LIVEKIT_API_SECRET", "secret")
+
+    load_fnc = worker_options().load_fnc
+    server = SimpleNamespace(active_jobs=[object(), object()])
+
+    assert load_fnc(server) == 0.0
 
 
 def test_worker_pool_and_memory_limits_come_from_the_environment(monkeypatch):

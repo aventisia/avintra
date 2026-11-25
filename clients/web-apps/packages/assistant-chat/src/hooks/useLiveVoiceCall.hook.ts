@@ -22,6 +22,7 @@ export type UseLiveVoiceCallOptions = {
     request: VoiceSessionRequest,
     signal: AbortSignal,
   ) => Promise<VoiceSessionResponse>;
+  endSession?: (conversationId: string) => Promise<unknown>;
 };
 
 /** Runs one live voice call and mirrors the shared client's snapshot into React state. */
@@ -30,15 +31,18 @@ export const useLiveVoiceCall = ({
   mode,
   prepare,
   createSession,
+  endSession,
 }: UseLiveVoiceCallOptions): VoiceCallController => {
   const [snapshot, setSnapshot] = useState<VoiceCallSnapshot>(createVoiceCallSnapshot);
   const clientRef = useRef<VoiceSessionClient | null>(null);
   const createSessionRef = useRef(createSession);
   const prepareRef = useRef(prepare);
+  const endSessionRef = useRef(endSession);
   const startGenerationRef = useRef(0);
 
   createSessionRef.current = createSession;
   prepareRef.current = prepare;
+  endSessionRef.current = endSession;
 
   const fail = useCallback((code: string, error: unknown, fallback: string) => {
     setSnapshot((current) => ({
@@ -73,6 +77,8 @@ export const useLiveVoiceCall = ({
       const client = new ClientConstructor({
         prepare: () => prepareRef.current?.() ?? Promise.resolve(),
         createSession: (request, signal) => createSessionRef.current(request, signal),
+        endSession: (conversationId) =>
+          endSessionRef.current?.(conversationId) ?? Promise.resolve(),
         onSnapshot: (next) => {
           if (generation !== startGenerationRef.current) return;
           setSnapshot(next);

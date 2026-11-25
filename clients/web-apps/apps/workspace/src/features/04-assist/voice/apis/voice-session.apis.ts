@@ -30,3 +30,27 @@ export const createVoiceSession = async (
     throw error;
   }
 };
+
+/**
+ * Ends a voice session so the backend frees its active session slot.
+ */
+export const endVoiceSession = async (conversationId: string) => {
+  try {
+    const response = await axiosInstance.post<IHttpResponse<boolean>>(
+      `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/voice/sessions/${conversationId}/end`,
+      undefined,
+      {
+        headers: getSpaceHeaders(),
+        // IMPORTANT NOTE: the call also ends when the tab closes, and only the
+        // fetch adapter can keep the request alive past unload.
+        adapter: "fetch",
+        fetchOptions: { keepalive: true },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    const serverMessage = toServerMessage(error);
+    if (serverMessage) throw new Error(serverMessage);
+    throw error;
+  }
+};

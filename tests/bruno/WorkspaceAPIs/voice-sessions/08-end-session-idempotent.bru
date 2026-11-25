@@ -1,0 +1,28 @@
+meta {
+  name: End realtime live voice session again
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/voice/sessions/{{VOICE_REALTIME_LIVE_CONVERSATION_ID}}/end
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("ending an ended session stays successful", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody()?.data).to.equal(true);
+  });
+}
+
+docs {
+  > Repeats request 07 to prove the end is idempotent. WorkspaceAPIs returns 200
+  > for a session that is already `Completed`, so a browser retry after a lost
+  > response cannot fail the caller's hang-up path.
+}
