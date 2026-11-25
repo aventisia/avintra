@@ -1,56 +1,55 @@
 namespace WorkspaceAPIs.Controllers;
 
 /// <summary>
-/// Public endpoint for external applications to fire a webhook trigger and poll for job status.
-/// No JWT authorization — authentication is performed via X-Api-Key and X-Tenant-Id headers.
-/// 
+/// Endpoint for external applications to fire a webhook trigger and poll for job status.
+/// The tenant and the caller's permission come from the caller's signed-in identity.
+///
 /// TODO: Migrate this controller to use the centralized tenant-scoped ApiKey entity and the
 /// [ApiKeyAuthorize("webhookTrigger")] attribute. The per-trigger ApiKeyHash in Trigger.Metadata
 /// is legacy and should be removed once migration is complete.
 /// </summary>
 [Route("webhook")]
 [ApiController]
+[Authorize]
 public class WebhookController : BaseApiController
 {
     private readonly WorkspaceInternalDbContext _dbContext;
     private readonly IJobsExecutorService _jobsExecutorService;
+    private readonly IResourceUserAccessService _resourceUserAccessService;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly ILogger<WebhookController> _logger;
 
     public WebhookController(
         WorkspaceInternalDbContext dbContext,
         IJobsExecutorService jobsExecutorService,
+        IResourceUserAccessService resourceUserAccessService,
+        ICurrentTenantService currentTenantService,
         ILogger<WebhookController> logger)
     {
         _dbContext = dbContext;
         _jobsExecutorService = jobsExecutorService;
+        _resourceUserAccessService = resourceUserAccessService;
+        _currentTenantService = currentTenantService;
         _logger = logger;
     }
 
     /// <summary>
-    /// Fires a webhook trigger. Creates a job and returns the job ID for polling.
+    /// Fires a webhook trigger for the signed-in caller. Creates a job and returns the job ID for polling.
     /// </summary>
-    /// <remarks>
-    /// Required headers: X-Api-Key, X-Tenant-Id
-    /// </remarks>
     [HttpPost("{triggerId}")]
     public async Task<IActionResult> FireWebhook(Guid triggerId, [FromBody] WebhookFireRequestDto? request)
     {
-        // ── 1. Read headers ──────────────────────────────────────────────────
+        // ── 1. Resolve caller identity ───────────────────────────────────────
+        var userId = Guid.Parse(User.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        var tenantId = _currentTenantService.CurrentTenantId;
         var apiKey = Request.Headers["X-Api-Key"].FirstOrDefault();
-        var tenantIdRaw = Request.Headers["X-Tenant-Id"].FirstOrDefault();
 
-        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(tenantIdRaw))
-            return PlainTextError(400, "X-Api-Key and X-Tenant-Id headers are required.");
-
-        if (!Guid.TryParse(tenantIdRaw, out var tenantId))
-            return PlainTextError(400, "X-Tenant-Id must be a valid GUID.");
-
-        // ── 2. Load trigger (no tenant filter) ──────────────────────────────
+        // ── 2. Load trigger (tenant-scoped) ──────────────────────────────────
         var trigger = await _dbContext.Triggers
             .Include(t => t.TriggerFlowVersions)
                 .ThenInclude(tfv => tfv.FlowVersion)
                     .ThenInclude(fv => fv.Flow)
-            .FirstOrDefaultAsync(t => t.Id == triggerId);
+            .FirstOrDefaultAsync(t => t.Id == triggerId && t.TenantId == tenantId);
 
         if (trigger == null)
         {
@@ -64,11 +63,25 @@ public class WebhookController : BaseApiController
             return PlainTextError(404, "Trigger not found.");
         }
 
-        // ── 3. Validate tenant ───────────────────────────────────────────────
-        if (trigger.TenantId != tenantId)
+        // ── 3. Validate caller access ────────────────────────────────────────
+        var (canFire, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+            userId,
+            trigger.Id,
+            ResourceTypeEnum.Trigger,
+            trigger.CreatedByUserId,
+            trigger.IsTenantWideAccess,
+            new[]
+            {
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
+            }
+        );
+
+        if (!canFire)
         {
-            _logger.LogWarning("Webhook fire rejected: tenant mismatch for trigger {TriggerId}.", triggerId);
-            return PlainTextError(400, "Invalid tenant.");
+            _logger.LogWarning("Webhook fire rejected: user {UserId} has no access to trigger {TriggerId}.", userId, triggerId);
+            return PlainTextError(404, "Trigger not found.");
         }
 
         // ── 4. Validate disabled state ───────────────────────────────────────
@@ -145,13 +158,15 @@ public class WebhookController : BaseApiController
         // ── 9. Create job ───────────────────────────────────────────────────
         var job = new Job
         {
-            TenantId = tenantId,
+            Id = Guid.NewGuid(),
+            TenantId = trigger.TenantId,
             SpaceId = firstLinked?.FlowVersion?.SpaceId ?? firstLinked?.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
             FlowVersionId = flowVersionId.Value,
             TriggerType = TriggerTypesEnum.Webhook,
             RefId = triggerId,
             Status = JobStatusEnum.Created,
             Priority = JobPriorityEnum.Normal,
+            IsPublished = firstLinked.FlowVersion.IsPublished,
             InputArgumentsJson = request?.Payload.HasValue == true ? request.Payload.Value.GetRawText() : null,
         };
 
@@ -194,69 +209,83 @@ public class WebhookController : BaseApiController
     }
 
     /// <summary>
-    /// Polls for the current status and output of a job created by a webhook trigger.
+    /// Polls the status and output of a webhook job for the signed-in caller.
     /// </summary>
-    /// <remarks>
-    /// Required headers: X-Api-Key, X-Tenant-Id
-    /// </remarks>
     [HttpGet("job/{jobId}")]
     public async Task<IActionResult> GetJobStatus(Guid jobId)
     {
-        // ── 1. Read headers ──────────────────────────────────────────────────
+        // ── 1. Resolve caller identity ───────────────────────────────────────
+        var userId = Guid.Parse(User.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        var tenantId = _currentTenantService.CurrentTenantId;
         var apiKey = Request.Headers["X-Api-Key"].FirstOrDefault();
-        var tenantIdRaw = Request.Headers["X-Tenant-Id"].FirstOrDefault();
 
-        if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(tenantIdRaw))
-            return PlainTextError(400, "X-Api-Key and X-Tenant-Id headers are required.");
-
-        if (!Guid.TryParse(tenantIdRaw, out var tenantId))
-            return PlainTextError(400, "X-Tenant-Id must be a valid GUID.");
-
-        // ── 2. Load job ──────────────────────────────────────────────────────
-        var job = await _dbContext.Jobs.FirstOrDefaultAsync(j => j.Id == jobId);
-        if (job == null || job.TenantId != tenantId || job.TriggerType != TriggerTypesEnum.Webhook)
+        // ── 2. Load job (tenant-scoped) ──────────────────────────────────────
+        var job = await _dbContext.Jobs.FirstOrDefaultAsync(j =>
+            j.Id == jobId && j.TenantId == tenantId && j.TriggerType == TriggerTypesEnum.Webhook);
+        if (job == null)
             return PlainTextError(404, "Job not found.");
 
-        // ── 3. Validate API key against the linked trigger ──────────────────
-        if (job.RefId.HasValue)
-        {
-            var trigger = await _dbContext.Triggers.FirstOrDefaultAsync(t => t.Id == job.RefId.Value);
-            if (trigger != null)
-            {
-                WebhookTriggerModel? model = null;
-                try
-                {
-                    var jsonOptions = new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                    };
-                    jsonOptions.Converters.Add(new JsonStringEnumConverter());
-                    model = System.Text.Json.JsonSerializer.Deserialize<WebhookTriggerModel>(
-                        trigger.Metadata.RootElement.GetRawText(), jsonOptions);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to deserialize trigger metadata while polling job {JobId}.", jobId);
-                }
+        // ── 3. Validate caller access to the owning trigger ──────────────────
+        var trigger = job.RefId.HasValue
+            ? await _dbContext.Triggers.FirstOrDefaultAsync(t => t.Id == job.RefId.Value && t.TenantId == tenantId)
+            : null;
 
-                if (model != null)
-                {
-                    // Legacy per-trigger API key hash is no longer validated here.
-                    // TODO: Migrate this endpoint to use [ApiKeyAuthorize("webhookTrigger")].
-#pragma warning disable CS0162
-                    if (false)
-                    {
-                        var incomingHash = apiKey;
-                        if (incomingHash != model.ExpectedPayloadSchema)
-                            return PlainTextError(401, "Invalid API key.");
-                    }
-#pragma warning restore CS0162
-                }
+        if (trigger == null)
+            return PlainTextError(404, "Job not found.");
+
+        var (canView, _) = await _resourceUserAccessService.GetResourceAccessAsync(
+            userId,
+            trigger.Id,
+            ResourceTypeEnum.Trigger,
+            trigger.CreatedByUserId,
+            trigger.IsTenantWideAccess,
+            new[]
+            {
+                ResourceAccessTypeEnum.Owner,
+                ResourceAccessTypeEnum.View,
+                ResourceAccessTypeEnum.Edit,
             }
+        );
+
+        if (!canView)
+        {
+            _logger.LogWarning("Webhook job poll rejected: user {UserId} has no access to trigger {TriggerId}.", userId, trigger.Id);
+            return PlainTextError(404, "Job not found.");
         }
 
-        // ── 4. Return status ─────────────────────────────────────────────────
+        // ── 4. Validate API key against the linked trigger ──────────────────
+        WebhookTriggerModel? model = null;
+        try
+        {
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+            jsonOptions.Converters.Add(new JsonStringEnumConverter());
+            model = System.Text.Json.JsonSerializer.Deserialize<WebhookTriggerModel>(
+                trigger.Metadata.RootElement.GetRawText(), jsonOptions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to deserialize trigger metadata while polling job {JobId}.", jobId);
+        }
+
+        if (model != null)
+        {
+            // Legacy per-trigger API key hash is no longer validated here.
+            // TODO: Migrate this endpoint to use [ApiKeyAuthorize("webhookTrigger")].
+#pragma warning disable CS0162
+            if (false)
+            {
+                var incomingHash = apiKey;
+                if (incomingHash != model.ExpectedPayloadSchema)
+                    return PlainTextError(401, "Invalid API key.");
+            }
+#pragma warning restore CS0162
+        }
+
+        // ── 5. Return status ─────────────────────────────────────────────────
         return Ok(new WebhookJobStatusDto
         {
             JobId = job.Id,
