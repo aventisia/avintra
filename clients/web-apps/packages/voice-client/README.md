@@ -11,6 +11,7 @@ import { VoiceSessionClient } from "@avplatform/voice-client";
 
 const client = new VoiceSessionClient({
   createSession: (request, signal) => postSession(request, signal),
+  endSession: (conversationId) => postSessionEnd(conversationId),
   onSnapshot: (snapshot) => render(snapshot),
 });
 
@@ -24,7 +25,12 @@ await client.dispose();
 `start` cancels the previous call's pending session request through the `signal`,
 and `end` aborts it as well, so a session response that arrives after hang-up is
 never joined. Teardown stops microphone capture before disconnecting (a stalled
-signaling socket is bounded) and publishes the `ended` snapshot first.
+signaling socket is bounded, then force-closed) and publishes the `ended`
+snapshot first. `endSession` runs once for every created session on hang-up,
+start timeout, failed join, or dispose, so the backend can free the active-session
+slot even when no worker ever picks up the call. The host should keep that
+request alive across unload (axios `fetchOptions: { keepalive: true }`), so
+closing the tab still ends the row.
 
 `start` bootstraps through `createSession`, joins the room, enables the default
 microphone with the capture constraints of the resolved `noiseCancellation` mode

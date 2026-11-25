@@ -1059,6 +1059,55 @@ def test_call_stops_at_the_maximum_duration(monkeypatch, voice_persistence):
     assert closed["code"] == WS_CLOSE_NORMAL
 
 
+def test_hung_teardown_does_not_hold_the_job_process(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(
+        monkeypatch, on_start=_disconnect_on_start(ctx)
+    )
+
+    async def hang(_self) -> None:
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(fake_session, "aclose", hang)
+    monkeypatch.setattr(session_runtime, "FINISH_TIMEOUT_SECONDS", 0.01)
+
+    asyncio.run(run_session(ctx, _claims(), _settings(firstSpeaker="human")))
+
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    assert ctx.deleted_rooms == 1
+
+
+def test_hung_room_deletion_does_not_hold_the_job_process(
+    monkeypatch, voice_persistence
+):
+    ctx = _FakeJobContext()
+    fake_session = _fake_agent_session(
+        monkeypatch, on_start=_disconnect_on_start(ctx)
+    )
+
+    async def hang(_self) -> None:
+        await asyncio.Event().wait()
+
+    async def hang_delete() -> None:
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(fake_session, "aclose", hang)
+    monkeypatch.setattr(ctx, "delete_room", hang_delete)
+    monkeypatch.setattr(session_runtime, "FINISH_TIMEOUT_SECONDS", 0.01)
+    monkeypatch.setattr(session_runtime, "DELETE_ROOM_TIMEOUT_SECONDS", 0.01)
+
+    asyncio.run(run_session(ctx, _claims(), _settings(firstSpeaker="human")))
+
+    [lifecycle] = voice_persistence.lifecycles
+    assert lifecycle.calls == 1
+    assert lifecycle.failed is False
+    assert ctx.deleted_rooms == 0
+
+
 def test_call_refreshes_its_heartbeat_while_it_waits(monkeypatch, voice_persistence):
     ctx = _FakeJobContext()
     monkeypatch.setattr(session_runtime, "USAGE_FLUSH_INTERVAL_SECONDS", 0.01)

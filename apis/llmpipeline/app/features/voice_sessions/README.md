@@ -304,6 +304,16 @@ events because the worker never joins.
   disconnect.
 - The terminal status is written once even if several disconnect/error callbacks
   fire. Room deletion is also attempted on every failure path.
+- The browser also ends the row through
+  `POST /assist/voice/sessions/{conversationId}/end` on hang-up, start timeout,
+  failed join, or dispose. WorkspaceAPIs marks it `Completed` at once, so a
+  dispatch that never got a worker cannot hold the per-user cap for the sweep
+  window.
+- Teardown is bounded by `FINISH_TIMEOUT_SECONDS` (20 seconds), and the terminal
+  status is persisted before the slow provider/room closes. A close that never
+  returns therefore cannot hold a worker job process and starve later dispatches.
+  A timed-out teardown retries room deletion best-effort, itself bounded by
+  `DELETE_ROOM_TIMEOUT_SECONDS` (5 seconds).
 - A call is capped at `MAX_CALL_DURATION_SECONDS` (1 hour, aligned to the caller
   token TTL). The worker closes it with reason `max_duration`, writes
   `Completed`, and deletes the room.
