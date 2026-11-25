@@ -57,19 +57,19 @@ const AppHeader: React.FC = () => {
   }, [isAlertDialogOpen]);
 
   const goBack = () => {
-    window.location.href = import.meta.env.VITE_WORKSPACE_PATH;
+    window.location.href = `${import.meta.env.VITE_WORKSPACE_PATH}agents`;
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (
     <HeaderContainer className="p-0">
       <Header className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 bg-surface pl-1.5 pr-2">
         <div className="flex min-w-0 items-center gap-2.5 text-ink">
-          <Tooltip content="Back to Workspace">
+          <Tooltip content="Back to Agents">
             <Button
               size="icon8"
               variant="ghost"
               className="shrink-0"
-              aria-label="Back to Workspace"
+              aria-label="Back to Agents"
               onClick={() => goBack()}
             >
               <ArrowLeftIcon className="size-[17px]" />
