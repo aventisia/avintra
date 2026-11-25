@@ -1,7 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
-import { getStudioSpaceHeaders } from "@/utils/space-headers";
+import { getStudioConfigHeaders, getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
@@ -9,6 +9,7 @@ import { ValidateTemplateDto } from "../dto/validate-template-dto";
 
 // Base API URL for all project-template related endpoints
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`;
+const promptGenerationURL = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/v2/llm/prompts/generate`;
 
 /**
  * Save and publish a new template.
@@ -48,9 +49,9 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
 const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<string>>(
-      `${baseAPIURL}/generate`,
+      promptGenerationURL,
       postObj,
-      { headers: getStudioSpaceHeaders(), timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
+      { headers: getStudioConfigHeaders(), timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
     )
     .then((res) => res.data);
 };

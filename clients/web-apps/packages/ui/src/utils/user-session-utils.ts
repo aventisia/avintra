@@ -53,4 +53,14 @@ const getUserDisplayName = (userSession: IUserSessionStore | null | undefined) =
   `${userSession?.firstName ?? ""} ${userSession?.lastName ?? ""}`.trim() ||
   (userSession?.email ?? "");
 
-export { getUserDisplayName, isTenantSetupPending, needsDeferredProfile, setUserSessionLocally };
+/** True when the deployment runs the Community edition. */
+const isCommunityDeployment = (userSession: IUserSessionStore | null | undefined) =>
+  userSession?.deploymentType === "Community";
+
+export {
+  getUserDisplayName,
+  isCommunityDeployment,
+  isTenantSetupPending,
+  needsDeferredProfile,
+  setUserSessionLocally,
+};

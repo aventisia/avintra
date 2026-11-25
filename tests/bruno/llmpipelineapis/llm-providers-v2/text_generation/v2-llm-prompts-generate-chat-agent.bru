@@ -1,0 +1,46 @@
+meta {
+  name: v2 llm prompts - generate chat agent prompt
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/v2/llm/prompts/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "refType": "Agent",
+    "promptTarget": "ChatAgentSystemPrompt",
+    "refId": "{{$guid}}",
+    "refName": "bruno chat agent prompt",
+    "payload": ""
+  }
+}
+
+script:pre-request {
+  if (process.env.LLM_DEPLOYMENT_TYPE === "Community") {
+    bru.runner.skipRequest();
+  }
+}
+
+script:post-response {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("envelope carries a prompt string", function() {
+    expect(res.getBody().statusCode).to.equal(200);
+    expect(res.getBody().data).to.be.a("string").and.not.equal("");
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

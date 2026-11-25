@@ -1,4 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { isCommunityDeployment } from "@avplatform/ui/utils";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
@@ -15,6 +17,7 @@ import {
   splitVoiceAgentPromptSections,
 } from "../../../utils/voice-agent-prompt-sections.util";
 import { PromptActionButton } from "../../dcp-tabs/PromptActionButton";
+import { CommunityPromptUpgradeButton } from "./CommunityPromptUpgradeButton";
 
 type VoiceAgentPromptActionProps = {
   /** Disables the action (e.g. read-only panel). */
@@ -36,13 +39,18 @@ const VoiceAgentPromptAction = ({ disabled }: VoiceAgentPromptActionProps) => {
 
   const { mutate, data, isPending } = useVoiceAgentPromptMutation();
   const isAgentHistory = useIsVersionHistoryRoute();
+  const { userSession } = useUserSessionStore(
+    useShallow((state) => ({
+      userSession: state.userSession,
+    })),
+  );
+  const isCommunity = isCommunityDeployment(userSession);
 
   const goal = (watch(VOICE_AGENT_GOAL_FIELD) as string | undefined) ?? "";
   const role = (watch(VOICE_AGENT_ROLE_FIELD) as string | undefined) ?? "";
   const instructions = (watch(VOICE_AGENT_INSTRUCTIONS_FIELD) as string | undefined) ?? "";
   const isImprove = [goal, role, instructions].some((value) => value.trim().length > 0);
 
-  // Apply the generated/refined sections back into their fields.
   useEffect(() => {
     if (typeof data?.data !== "string" || data.data.trim().length === 0) return;
 
@@ -70,8 +78,13 @@ const VoiceAgentPromptAction = ({ disabled }: VoiceAgentPromptActionProps) => {
     });
   };
 
-  // Version history is read-only; hide the action there.
   if (isAgentHistory) return null;
+
+  if (isCommunity) {
+    return disabled ? null : (
+      <CommunityPromptUpgradeButton label={isImprove ? "Improve with AI" : "Generate"} />
+    );
+  }
 
   return (
     <PromptActionButton
