@@ -1,4 +1,5 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { type AxiosRequestConfig } from "axios";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
@@ -107,9 +108,10 @@ export const updateChatArtifact = (updateChatArtifactDto: UpdateChatArtifactDto)
 /**
  * Deletes an existing chat artifact.
  */
-export const deleteChatArtifact = (chatArtifactId: string) => {
+export const deleteChatArtifact = (chatArtifactId: string, config?: AxiosRequestConfig) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${artifactAPIURL}/${chatArtifactId}`, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -155,9 +157,13 @@ export const getSharedChatArtifact = (shareToken: string) => {
 /**
  * Deletes multiple chat artifacts by their IDs.
  */
-export const deleteMultipleChatArtifacts = (chatArtifactIds: string[]) => {
+export const deleteMultipleChatArtifacts = (
+  chatArtifactIds: string[],
+  config?: AxiosRequestConfig,
+) => {
   return axiosInstance
     .post<IHttpResponse<number>>(`${artifactAPIURL}/delete-multiple`, chatArtifactIds, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

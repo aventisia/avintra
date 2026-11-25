@@ -1,11 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  deleteChatArtifact,
-  deleteMultipleChatArtifacts,
-  getAllChatArtifacts,
-  updateChatArtifact,
-} from "../apis/workspace-chat.apis";
+import { getAllChatArtifacts, updateChatArtifact } from "../apis/workspace-chat.apis";
 
 /** Query key root for the workspace chat artifact gallery. */
 export const WORKSPACE_CHAT_ARTIFACTS_KEY = ["workspace-chat-artifacts"] as const;
@@ -23,9 +18,7 @@ export const useWorkspaceChatArtifacts = () => {
     queryFn: getAllChatArtifacts,
   });
   const onSuccess = () => queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
-  const deleteArtifact = useMutation({ mutationFn: deleteChatArtifact, onSuccess });
-  const deleteArtifacts = useMutation({ mutationFn: deleteMultipleChatArtifacts, onSuccess });
   const renameArtifact = useMutation({ mutationFn: updateChatArtifact, onSuccess });
 
-  return { all, renameArtifact, deleteArtifact, deleteArtifacts };
+  return { all, renameArtifact };
 };

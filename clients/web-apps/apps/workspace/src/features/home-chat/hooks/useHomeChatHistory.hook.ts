@@ -2,7 +2,9 @@ import { useDebounce } from "@avplatform/ui/hooks";
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
+import { useHiddenDeleteIds } from "@/hooks/useDeferredDelete";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { omitHidden } from "@/utils/deferred-delete-queue.util";
 
 import { getLandingConversations } from "../apis/conversation.apis";
 import {
@@ -10,7 +12,7 @@ import {
   HOME_CHAT_HISTORY_QUERY_KEY,
 } from "../constants/home-chat.constant";
 
-/** The user's active or archived Home chats in the current space, searched by title, optionally within one project, and loaded a page at a time. */
+/** The user's active or archived Home chats in the current space, searched by title, optionally within one project, and loaded a page at a time; chats being deleted are left out. */
 export const useHomeChatHistory = (archived: boolean, projectId: string | null = null) => {
   const spaceId = useCurrentSpaceStore((state) => state.currentSpace?.id ?? null);
   const [search, setSearch] = useState("");
@@ -37,9 +39,14 @@ export const useHomeChatHistory = (archived: boolean, projectId: string | null =
   });
 
   // Offset pages overlap when a chat moves to the top between page loads.
+  const hiddenIds = useHiddenDeleteIds();
   const items = useMemo(
-    () => [...new Map(query.data?.pages.flat().map((item) => [item.id, item])).values()],
-    [query.data],
+    () =>
+      omitHidden(
+        [...new Map(query.data?.pages.flat().map((item) => [item.id, item])).values()],
+        hiddenIds,
+      ),
+    [query.data, hiddenIds],
   );
 
   return {

@@ -2,6 +2,8 @@ import { type IHttpResponse } from "@avplatform/ui/dtos";
 import { type InfiniteData, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import { deleteWithUndo } from "@/hooks/useDeferredDelete";
+
 import {
   archiveConversations,
   deleteConversation,
@@ -15,6 +17,7 @@ import {
 } from "../apis/conversation.apis";
 import {
   HOME_CHAT_CONVERSATION_QUERY_KEY,
+  HOME_CHAT_FILES_QUERY_KEY,
   HOME_CHAT_HISTORY_QUERY_KEY,
   HOME_CHAT_SHARED_CHATS_QUERY_KEY,
 } from "../constants/home-chat.constant";
@@ -25,7 +28,7 @@ import { buildSharedChatLink } from "../utils/shared-link.util";
 
 type HistoryPages = InfiniteData<LandingConversationDto[], number>;
 
-/** Renames (shown at once), pins, archives, shares and deletes Home chats, one or several at a time, refreshing the history afterwards. */
+/** Renames (shown at once), pins, archives, shares and deletes (behind an Undo toast) Home chats, one or several at a time, refreshing the history afterwards. */
 export const useHomeChatHistoryActions = () => {
   const queryClient = useQueryClient();
   const refreshHistory = () => {
@@ -113,22 +116,28 @@ export const useHomeChatHistoryActions = () => {
     }
   };
 
-  const remove = useMutation({
-    mutationFn: deleteConversation,
-    onSuccess: () => toast.success("Chat deleted", { className: "sonner-toaster-sm" }),
-    onError: () => toast.error("Couldn't delete that chat"),
-    onSettled: refreshHistory,
-  });
+  const refreshAfterDelete = () => {
+    void refreshHistory();
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+  };
 
-  const removeMany = useMutation({
-    mutationFn: deleteMultipleConversations,
-    onSuccess: (_, ids) =>
-      toast.success(ids.length === 1 ? "Chat deleted" : `${ids.length} chats deleted`, {
-        className: "sonner-toaster-sm",
-      }),
-    onError: () => toast.error("Couldn't delete those chats"),
-    onSettled: refreshHistory,
-  });
+  const deleteChat = (id: string) =>
+    deleteWithUndo({
+      ids: [id],
+      message: "Chat deleted",
+      failureMessage: "Couldn't delete that chat",
+      commit: (config) => deleteConversation(id, config),
+      onSettled: refreshAfterDelete,
+    });
+
+  const deleteChats = (ids: string[]) =>
+    deleteWithUndo({
+      ids,
+      message: ids.length === 1 ? "Chat deleted" : `${ids.length} chats deleted`,
+      failureMessage: "Couldn't delete those chats",
+      commit: (config) => deleteMultipleConversations(ids, config),
+      onSettled: refreshAfterDelete,
+    });
 
   return {
     renameChat: (id: string, title: string) => rename.mutate({ id, title }),
@@ -138,8 +147,8 @@ export const useHomeChatHistoryActions = () => {
     setArchived: (id: string, archived: boolean) => archive.mutate({ id, archived }),
     copyShareLink,
     stopSharing: (id: string) => unshare.mutate(id),
-    deleteChat: remove.mutateAsync,
+    deleteChat,
     archiveChats: archiveMany.mutateAsync,
-    deleteChats: removeMany.mutateAsync,
+    deleteChats,
   };
 };

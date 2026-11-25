@@ -35,10 +35,14 @@ const COMPARERS: Record<ArtifactSort, (a: ChatArtifactDto, b: ChatArtifactDto) =
 
 const extensionOf = (name: string) => /\.([^.]+)$/.exec(name)?.[1]?.toLowerCase() ?? "";
 
-/** One row per file name in a conversation: the latest version only, so history stays behind the preview switcher. */
-export const latestArtifacts = (artifacts: ChatArtifactDto[]) => {
+/** One row per file name in a conversation: the latest version whose id and chat are not in `hidden`, so history stays behind the preview switcher. */
+export const latestArtifacts = (
+  artifacts: ChatArtifactDto[],
+  hidden: ReadonlySet<string> = new Set(),
+) => {
   const byFile = new Map<string, ChatArtifactDto>();
   for (const artifact of artifacts) {
+    if (hidden.has(artifact.id) || hidden.has(artifact.conversationId)) continue;
     const key = `${artifact.conversationId}␟${artifact.name.toLowerCase()}`;
     const current = byFile.get(key);
     if (

@@ -1,5 +1,6 @@
 import { type IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
+import { type AxiosRequestConfig } from "axios";
 
 import { getSpaceHeaders } from "@/utils/space-headers";
 
@@ -88,9 +89,10 @@ export const archiveConversations = (conversationIds: string[]) =>
     .then((res) => res.data);
 
 /** Deletes one of the user's conversations with its messages. */
-export const deleteConversation = (conversationId: string) =>
+export const deleteConversation = (conversationId: string, config?: AxiosRequestConfig) =>
   axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${conversationId}`, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -124,9 +126,13 @@ export const getSharedConversation = (shareToken: string) =>
     .then((res) => res.data);
 
 /** Deletes several of the user's conversations with their messages. */
-export const deleteMultipleConversations = (conversationIds: string[]) =>
+export const deleteMultipleConversations = (
+  conversationIds: string[],
+  config?: AxiosRequestConfig,
+) =>
   axiosInstance
     .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, conversationIds, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

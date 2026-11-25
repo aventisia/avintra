@@ -43,11 +43,10 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete chat?",
-      description: `“${item.title}”, its messages and the files made in it will be deleted. This can't be undone.`,
+      description: `“${item.title}”, its messages and the files made in it will be deleted. You can undo this for a few seconds.`,
       confirmBtnText: "Delete",
-      showLoadingOnConfirm: true,
-      confirmActionFn: async () => {
-        await deleteChat(item.id);
+      confirmActionFn: () => {
+        deleteChat(item.id);
         leaveIfOpen(item.id);
       },
     });
@@ -61,11 +60,10 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
       isDestructive: true,
       title: ids.length === 1 ? "Delete 1 chat?" : `Delete ${ids.length} chats?`,
       description:
-        "Their messages and the files made in them will be deleted. This can't be undone.",
+        "Their messages and the files made in them will be deleted. You can undo this for a few seconds.",
       confirmBtnText: "Delete",
-      showLoadingOnConfirm: true,
-      confirmActionFn: async () => {
-        await deleteChats(ids);
+      confirmActionFn: () => {
+        deleteChats(ids);
         leaveIfOpenAmong(ids);
         onDone();
       },

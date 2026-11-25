@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { getAllChatArtifacts } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 import { latestArtifacts } from "@/features/04-assist/workspace-chat/utils/workspace-chat-artifact-filter.util";
+import { useHiddenDeleteIds } from "@/hooks/useDeferredDelete";
 
 import { HOME_CHAT_FILES_QUERY_KEY } from "../constants/home-chat.constant";
 
@@ -15,16 +16,17 @@ export const useHomeChatMentions = () => {
     queryFn: getAllChatArtifacts,
     staleTime: 60_000,
   });
+  const hiddenIds = useHiddenDeleteIds();
 
   const mentions = useMemo<ChatMention[]>(
     () =>
-      latestArtifacts(artifacts.data?.data ?? []).map((artifact) => ({
+      latestArtifacts(artifacts.data?.data ?? [], hiddenIds).map((artifact) => ({
         id: artifact.id,
         label: artifact.name,
         description: artifact.conversationTitle ?? "Chat file",
         icon: FileTextIcon,
       })),
-    [artifacts.data],
+    [artifacts.data, hiddenIds],
   );
 
   return mentions;

@@ -26,10 +26,13 @@ import {
   buildSharedFileLink,
   useIsHomeChatAvailable,
 } from "@/features/home-chat";
+import { deleteWithUndo, useHiddenDeleteIds } from "@/hooks/useDeferredDelete";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import {
   createChatArtifact,
+  deleteChatArtifact,
+  deleteMultipleChatArtifacts,
   getChatArtifact,
   shareChatArtifact,
   unshareChatArtifact,
@@ -64,8 +67,12 @@ export const WorkspaceChatArtifactsGallery = () => {
       userSession: state.userSession,
     })),
   );
-  const { all, renameArtifact, deleteArtifact, deleteArtifacts } = useWorkspaceChatArtifacts();
-  const artifacts = useMemo(() => latestArtifacts(all.data?.data ?? []), [all.data]);
+  const { all, renameArtifact } = useWorkspaceChatArtifacts();
+  const hiddenIds = useHiddenDeleteIds();
+  const artifacts = useMemo(
+    () => latestArtifacts(all.data?.data ?? [], hiddenIds),
+    [all.data, hiddenIds],
+  );
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<ArtifactKind>("all");
   const [sort, setSort] = useState<ArtifactSort>("newest");
@@ -190,15 +197,26 @@ export const WorkspaceChatArtifactsGallery = () => {
     navigate("/");
   };
 
+  const refreshAfterDelete = () => {
+    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+  };
+
   const confirmDeleteArtifact = (artifactId: string) =>
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete artifact?",
-      description: `“${artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "This artifact"}” will be deleted. This can't be undone.`,
+      description: `“${artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "This artifact"}” will be deleted. You can undo this for a few seconds.`,
       confirmBtnText: "Delete",
       confirmActionFn: () => {
         if (previewArtifactId === artifactId) setPreviewArtifactId(null);
-        deleteArtifact.mutate(artifactId);
+        deleteWithUndo({
+          ids: [artifactId],
+          message: "File deleted",
+          failureMessage: "Couldn't delete that file",
+          commit: (config) => deleteChatArtifact(artifactId, config),
+          onSettled: refreshAfterDelete,
+        });
       },
     });
 
@@ -206,11 +224,17 @@ export const WorkspaceChatArtifactsGallery = () => {
     showCustomAlertDialog({
       isDestructive: true,
       title: `Delete ${selectedArtifactIds.length} ${selectedArtifactIds.length === 1 ? "artifact" : "artifacts"}?`,
-      description: "The selected files will be deleted. This can't be undone.",
+      description: "The selected files will be deleted. You can undo this for a few seconds.",
       confirmBtnText: "Delete",
-      showLoadingOnConfirm: true,
-      confirmActionFn: async () => {
-        await deleteArtifacts.mutateAsync(selectedArtifactIds);
+      confirmActionFn: () => {
+        const ids = selectedArtifactIds;
+        deleteWithUndo({
+          ids,
+          message: ids.length === 1 ? "File deleted" : `${ids.length} files deleted`,
+          failureMessage: "Couldn't delete those files",
+          commit: (config) => deleteMultipleChatArtifacts(ids, config),
+          onSettled: refreshAfterDelete,
+        });
         if (previewArtifactId && selectedArtifactIds.includes(previewArtifactId))
           setPreviewArtifactId(null);
         setSelectedIds(new Set());

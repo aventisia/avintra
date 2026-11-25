@@ -3,7 +3,9 @@ import { ChatCircleIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
+import { useHiddenDeleteIds } from "@/hooks/useDeferredDelete";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { omitHidden } from "@/utils/deferred-delete-queue.util";
 
 import { getLandingConversations } from "../apis/conversation.apis";
 import {
@@ -20,6 +22,7 @@ export const useHomeChatPaletteChats = (isOpen: boolean, search: string) => {
   const spaceId = useCurrentSpaceStore((state) => state.currentSpace?.id ?? null);
   const navigate = useNavigate();
   const debouncedSearch = useDebounce(search.trim(), 250);
+  const hiddenIds = useHiddenDeleteIds();
 
   const { data } = useQuery({
     queryKey: [...HOME_CHAT_HISTORY_QUERY_KEY, "palette", spaceId, debouncedSearch],
@@ -36,11 +39,13 @@ export const useHomeChatPaletteChats = (isOpen: boolean, search: string) => {
     placeholderData: keepPreviousData,
   });
 
-  if (!isOpen || !data?.length) return [];
+  const chats = omitHidden(data ?? [], hiddenIds);
+
+  if (!isOpen || !chats.length) return [];
   return [
     {
       heading: debouncedSearch ? "Chats" : "Recent chats",
-      items: data.map((chat) => ({
+      items: chats.map((chat) => ({
         id: chat.id,
         label: chat.title,
         hint: "Chat",
