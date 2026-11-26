@@ -49,4 +49,5 @@ export type {
 export { useHasPendingToolCalls, useToolCallCoordinatorStore } from "./stores/tool-call-store";
 export type { ToolCallEntry } from "./stores/tool-call-store";
 
+export type { ChatSource } from "./types/chat-source.type";
 export type { LLMMessageType } from "./types/llm-message.type";

@@ -10,6 +10,7 @@ from app.core.vault_credential_manager import VaultCredentialManager
 from app.core.credit_manager import CreditManagerService
 from app.features.auth.authenticated_user import User
 from app.features.litellm.core.credentials import is_byok
+from app.features.langgraph.providers.web_search import web_search_enabled
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
 _REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
@@ -134,9 +135,12 @@ def create_openai_model(
     # arg, so we set it on extra_body to be safe across OpenAI-compatible
     # endpoints. Non-reasoning models reject the parameter, so it is only
     # forwarded when the model is known to support it.
-    model_kwargs = {}
-    if llm_request.reasoning_effort and _supports_reasoning_effort(llm_request.model):
-        model_kwargs["reasoning_effort"] = llm_request.reasoning_effort
+    effort = (
+        llm_request.reasoning_effort
+        if _supports_reasoning_effort(llm_request.model)
+        else None
+    )
+    responses_api = web_search_enabled(llm_request)
 
     return ChatOpenAI(
         model=llm_request.model,
@@ -146,5 +150,8 @@ def create_openai_model(
         stream_usage=True,
         api_key=resolved_api_key,
         base_url=resolved_base_url,
-        extra_body=model_kwargs or None,
+        extra_body={"reasoning_effort": effort} if effort and not responses_api else None,
+        # IMPORTANT NOTE: the Responses API rejects a top-level `reasoning_effort`; it takes `reasoning.effort`.
+        reasoning={"effort": effort} if effort and responses_api else None,
+        use_responses_api=True if responses_api else None,
     )

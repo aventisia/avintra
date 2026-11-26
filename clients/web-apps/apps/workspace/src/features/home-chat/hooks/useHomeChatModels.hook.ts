@@ -1,4 +1,4 @@
-import { modelDisplayName, modelSupportsEffort } from "@avplatform/chat";
+import { modelDisplayName, modelSupportsEffort, modelSupportsWebSearch } from "@avplatform/chat";
 import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
@@ -37,6 +37,7 @@ export type HomeChatModel = {
   modelId: string;
   label: string;
   supportsEffort: boolean;
+  supportsWebSearch: boolean;
   /** Vault credential configured for the provider, or null when it runs on platform credits. */
   credentialName: string | null;
 };
@@ -89,6 +90,8 @@ const createModel = (
     modelId,
     label: modelDisplayName(modelId),
     supportsEffort: modelSupportsEffort(provider, modelId),
+    // IMPORTANT NOTE: platform credits never charge a provider's per-search fee, so search needs the tenant's own key.
+    supportsWebSearch: credentialName !== null && modelSupportsWebSearch(provider, modelId),
     credentialName,
   };
 };

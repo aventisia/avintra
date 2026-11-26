@@ -5,6 +5,7 @@ import {
   ChatEffortPicker,
   ChatModelPicker,
   ChatThread,
+  ChatWebSearchToggle,
   toDataUrl,
 } from "@avplatform/chat";
 import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
@@ -63,6 +64,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "");
   const [pickedModelKey, setPickedModelKey] = useState<string | null>(null);
   const [effort, setEffort] = useState<ChatEffort | null>(null);
+  const [webSearch, setWebSearch] = useState(false);
   const selectedModel = resolveHomeChatModel(
     models,
     pickedModelKey ?? getHomeChatModelKey(tenantId, userEmail),
@@ -74,6 +76,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         model: selectedModel.modelId,
         credentialName: selectedModel.credentialName ?? undefined,
         reasoningEffort: (selectedModel.supportsEffort && effort) || undefined,
+        webSearch: (selectedModel.supportsWebSearch && webSearch) || undefined,
       }
     : null;
   const selectModel = (key: string | null) => {
@@ -225,6 +228,9 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
                   />
                   {selectedModel?.supportsEffort && (
                     <ChatEffortPicker value={effort} onChange={setEffort} />
+                  )}
+                  {selectedModel?.supportsWebSearch && (
+                    <ChatWebSearchToggle value={webSearch} onChange={setWebSearch} />
                   )}
                 </div>
               ) : (

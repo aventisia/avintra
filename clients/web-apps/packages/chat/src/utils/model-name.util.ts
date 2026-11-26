@@ -15,3 +15,30 @@ export const modelDisplayName = (modelId: string) => {
   if ((match = GPT.exec(id))) return `GPT-${match[1]}${match[2] ? ` ${match[2]}` : ""}`;
   return modelId;
 };
+
+const CLAUDE_FAMILY_FIRST =
+  /^claude-(opus|sonnet|haiku|fable|mythos)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?$/;
+const CLAUDE_VERSION_FIRST =
+  /^claude-(\d+)(?:\.(\d+))?-(opus|sonnet|haiku|fable|mythos)(?:-\d{8})?$/;
+
+/** Family and version of a Claude model ID, or null when it is not one. */
+export const claudeVersion = (id: string) => {
+  const modelId = id.replace(/^anthropic\//, "");
+  const familyFirst = CLAUDE_FAMILY_FIRST.exec(modelId);
+  if (familyFirst) {
+    return {
+      family: familyFirst[1],
+      major: Number(familyFirst[2]),
+      minor: Number(familyFirst[3] ?? 0),
+    };
+  }
+  const versionFirst = CLAUDE_VERSION_FIRST.exec(modelId);
+  if (versionFirst) {
+    return {
+      family: versionFirst[3],
+      major: Number(versionFirst[1]),
+      minor: Number(versionFirst[2] ?? 0),
+    };
+  }
+  return null;
+};

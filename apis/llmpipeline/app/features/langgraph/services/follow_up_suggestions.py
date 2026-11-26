@@ -38,6 +38,7 @@ def suggestion_request(request: LLMRequest) -> LLMRequest:
             "max_output_tokens": OUTPUT_TOKENS,
             "reasoning_effort": "low" if reasoning_low else None,
             "generate_followup_messages": False,
+            "web_search": False,
         }
     )
 

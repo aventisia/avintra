@@ -213,3 +213,9 @@ def test_no_usage_when_call_failed():
 
     assert frames == []
     final_response.assert_not_called()
+
+
+def test_suggestions_never_search_the_web():
+    request = _request(web_search=True)
+
+    assert suggestion_request(request).web_search is False

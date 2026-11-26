@@ -6,6 +6,8 @@ export { ChatTitle } from "./components/ChatTitle";
 export { ChatIconButton } from "./components/ChatIconButton";
 export { ChatEffortPicker } from "./components/ChatEffortPicker";
 export type { ChatEffortPickerProps } from "./components/ChatEffortPicker";
+export { ChatWebSearchToggle } from "./components/ChatWebSearchToggle";
+export type { ChatWebSearchToggleProps } from "./components/ChatWebSearchToggle";
 export { ChatModelPicker } from "./components/ChatModelPicker";
 export type {
   ChatModelGroup,
@@ -47,4 +49,5 @@ export {
 export type { ChatFile } from "./utils/chat-file.util";
 export { modelDisplayName } from "./utils/model-name.util";
 export { modelSupportsEffort } from "./utils/model-effort.util";
+export { modelSupportsWebSearch } from "./utils/model-web-search.util";
 export type { ChatEffort } from "./utils/model-effort.util";

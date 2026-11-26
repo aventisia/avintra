@@ -6,6 +6,7 @@
  * builder, so a rehydrated thread renders exactly like the streamed one:
  * reasoning, skills, tool calls, approvals, and text in their original order.
  */
+import type { ChatSource } from "../types/chat-source.type";
 import { isPendingApprovalPart } from "./approval-parts";
 
 /** One normalized SSE frame (or a JSON-serialized `LLMChunkResponse`). */
@@ -175,6 +176,22 @@ export function createContentPartsBuilder(
         const skillName = output?.name || frame.output;
         if (!skillName) return false;
         parts.push({ type: "data", name: "skill", data: { name: skillName } });
+        return true;
+      }
+      case "sources": {
+        const sources = Array.isArray(frame.output)
+          ? (frame.output as any[]).filter(
+              (source): source is ChatSource =>
+                typeof source?.url === "string" &&
+                typeof source?.title === "string" &&
+                typeof source?.domain === "string",
+            )
+          : [];
+        if (sources.length === 0) return false;
+        const part: ContentPart = { type: "data", name: "sources", data: sources };
+        const idx = parts.findIndex((p) => p.type === "data" && p.name === "sources");
+        if (idx !== -1) parts[idx] = part;
+        else parts.push(part);
         return true;
       }
       case "tools": {

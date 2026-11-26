@@ -23,6 +23,7 @@ from app.features.langgraph.services.follow_up_suggestions import (
     suggestion_request,
 )
 from app.features.langgraph.services.request_context import restore_request
+from app.features.langgraph.services.web_sources import CitationMarkers, SourceCollector
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_EXPIRED,
     APPROVAL_MARKER_KEY,
@@ -410,6 +411,7 @@ class ChatService:
         - ``{"type": "delta", "output": "<partial text>"}`` token deltas
         - ``{"type": "tool_call", "output": {tool payload}}`` tool invocations
         - ``{"type": "approval_required", "output": {...}}`` pending approvals
+        - ``{"type": "sources", "output": [{title, url, domain}]}`` web search citations
         - ``{"type": "followup", "output": [...]}`` suggested follow-ups
         - ``{"type": "done", "output": "<final text>"}`` final completion
 
@@ -546,6 +548,8 @@ class ChatService:
         # IMPORTANT NOTE: a chat agent may answer in JSON, so only the reply text read from its tokens is sent.
         suppress_raw_deltas = request.is_chat_agent
         chat_agent_text = ChatAgentTextStream()
+        web_sources = SourceCollector()
+        citation_markers = CitationMarkers()
 
         async for event in graph.astream_events(
             graph_input,
@@ -567,6 +571,15 @@ class ChatService:
                     continue
                 chunk = data.get("chunk")
                 if chunk is not None:
+                    cited_numbers = web_sources.add(chunk)
+                    if marker := citation_markers.before(chunk):
+                        yield LLMChunkResponse(
+                            provider=request.provider,
+                            model=request.model,
+                            output=marker,
+                            type="delta",
+                            conversation_id=conversation_id,
+                        )
                     # Reasoning/thinking deltas (when the model emits them).
                     reasoning = self._extract_reasoning_delta(chunk)
                     if reasoning:
@@ -582,14 +595,18 @@ class ChatService:
                         text_buffer.append(text)
                         if suppress_raw_deltas:
                             text = chat_agent_text.feed(text)
-                        if text:
-                            yield LLMChunkResponse(
-                                provider=request.provider,
-                                model=request.model,
-                                output=text,
-                                type="delta",
-                                conversation_id=conversation_id,
-                            )
+                    # IMPORTANT NOTE: models do not write [n] markers when a provider's built-in search is on,
+                    # and Anthropic streams a block's citations before its text, so each marker is released
+                    # once its block has ended; markers stay out of the saved reply text.
+                    text = citation_markers.track(chunk, text or "", cited_numbers)
+                    if text:
+                        yield LLMChunkResponse(
+                            provider=request.provider,
+                            model=request.model,
+                            output=text,
+                            type="delta",
+                            conversation_id=conversation_id,
+                        )
                 continue
 
             # Tools node starting: surface every pending call as a preliminary
@@ -887,6 +904,24 @@ class ChatService:
                     conversation_id=conversation_id,
                 )
             final_text = ""
+
+        if marker := citation_markers.flush():
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=marker,
+                type="delta",
+                conversation_id=conversation_id,
+            )
+
+        if cited_sources := web_sources.sources():
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=cited_sources,
+                type="sources",
+                conversation_id=conversation_id,
+            )
 
         yield LLMChunkResponse(
             provider=request.provider,
@@ -1279,6 +1314,7 @@ class ChatService:
             skill_config_key,
             request.is_temp_chat,
             request.reasoning_effort,
+            request.web_search,
         )
 
         if cache_key not in self._graphs:

@@ -9,7 +9,7 @@ import {
   useAui,
   useAuiState,
 } from "@assistant-ui/react";
-import { ThinkingIndicator } from "@avplatform/assistant-chat";
+import { type ChatSource, ThinkingIndicator } from "@avplatform/assistant-chat";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -30,6 +30,7 @@ import { useContext } from "react";
 import { ChatFileContext } from "../constants/chat-file.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
 import { useReadAloud } from "../hooks/useReadAloud.hook";
+import { linkCitations } from "../utils/chat-citations.util";
 import {
   chatFileSize,
   findChatFile,
@@ -46,6 +47,7 @@ import { ChatDestination } from "./ChatDestination";
 import { ChatFileCard } from "./ChatFileCard";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
+import { ChatSources } from "./ChatSources";
 
 const useMessageEntranceClass = () => {
   const mountedAt = useContext(ChatThreadMountedAtContext);
@@ -188,15 +190,27 @@ const MessageError = ({ canRetry }: { canRetry: boolean }) => (
   </MessagePrimitive.Error>
 );
 
+const useMessageSources = () =>
+  useAuiState(
+    (s) =>
+      (
+        s.message.content.find((part) => part.type === "data" && part.name === "sources") as
+          { data: ChatSource[] } | undefined
+      )?.data,
+  );
+
 const AssistantText = ({ text }: { text: string }) => {
   const files = useContext(ChatFileContext);
   const isRunning = useAuiState((s) => s.message.status?.type === "running");
+  const sources = useMessageSources();
   const file = files ? findChatFile(text) : null;
-  if (!files || !file) return text.trim() ? <ChatMarkdown /> : null;
+  const withCitations = (value: string) => (sources ? linkCitations(value, sources) : value);
+  if (!files || !file) return text.trim() ? <ChatMarkdown preprocess={withCitations} /> : null;
 
   const state = file.isComplete ? files.resolveFile(file) : "saving";
   // A file that never got stored, or was cut off by Stop, shows as code, so nothing is lost.
-  if ((state === null || !file.isComplete) && !isRunning) return <ChatMarkdown />;
+  if ((state === null || !file.isComplete) && !isRunning)
+    return <ChatMarkdown preprocess={withCitations} />;
 
   const card =
     state && state !== "saving" ? (
@@ -215,9 +229,13 @@ const AssistantText = ({ text }: { text: string }) => {
     );
   return (
     <>
-      {textBeforeChatFile(text) && <ChatMarkdown preprocess={textBeforeChatFile} />}
+      {textBeforeChatFile(text) && (
+        <ChatMarkdown preprocess={(value) => withCitations(textBeforeChatFile(value))} />
+      )}
       {card}
-      {textAfterChatFile(text) && <ChatMarkdown preprocess={textAfterChatFile} />}
+      {textAfterChatFile(text) && (
+        <ChatMarkdown preprocess={(value) => withCitations(textAfterChatFile(value))} />
+      )}
     </>
   );
 };
@@ -323,6 +341,8 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
                 return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
               case "data":
                 if (part.name === "skill") return <ChatSkillStep name={skillName(part.data)} />;
+                if (part.name === "sources")
+                  return <ChatSources sources={part.data as ChatSource[]} />;
                 return null;
               case "tool-call":
                 if (part.toolName === NAVIGATE_TOOL_NAME)

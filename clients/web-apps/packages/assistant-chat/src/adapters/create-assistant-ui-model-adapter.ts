@@ -55,6 +55,7 @@ export type ChatModelSelection = {
   model: string;
   credentialName?: string;
   reasoningEffort?: "low" | "medium" | "high";
+  webSearch?: boolean;
 };
 
 /**
@@ -372,6 +373,7 @@ export const createAssistantUIModelAdapter = ({
                   modelId: modelSelection?.model,
                   credentialName: modelSelection?.credentialName,
                   reasoningEffort: modelSelection?.reasoningEffort,
+                  webSearch: modelSelection?.webSearch,
                   destinations: getDestinations?.(),
                   keepUserTurns: getKeepUserTurns?.(
                     options.messages.filter((message) => message.role === "user").length - 1,

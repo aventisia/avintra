@@ -58,7 +58,7 @@ _CLAUDE_VERSION_FIRST = re.compile(
 )
 
 
-def _claude_version(model: str) -> tuple[str, int, int] | None:
+def claude_version(model: str) -> tuple[str, int, int] | None:
     model_id = normalize_anthropic_model_id((model or "").lower())
     if match := _CLAUDE_FAMILY_FIRST.match(model_id):
         return match.group(1), int(match.group(2)), int(match.group(3) or 0)
@@ -69,7 +69,7 @@ def _claude_version(model: str) -> tuple[str, int, int] | None:
 
 def supports_anthropic_effort(model: str) -> bool:
     """Whether the model takes adaptive thinking with Anthropic's effort setting."""
-    version = _claude_version(model)
+    version = claude_version(model)
     if version is None:
         return False
     family, major, minor = version

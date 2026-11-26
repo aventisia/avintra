@@ -877,6 +877,7 @@ public class StreamingChatService : IStreamingChatService
             temperature = 1.0,
             top_p = 1.0,
             reasoning_effort = NormalizeReasoningEffort(request.ReasoningEffort),
+            web_search = request.WebSearch,
             credential_name = selection.CredentialName,
             skill_names = LandingSkillNames,
             tool_config = destinationsPrompt is null ? null : LandingNavigateToolConfig,

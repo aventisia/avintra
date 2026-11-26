@@ -4,6 +4,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.logger import logger
+from app.features.langgraph.providers.web_search import without_search_blocks
 from app.features.langgraph.schemas.graph_state import ChatState
 
 
@@ -31,7 +32,9 @@ def create_model_node(
     """
 
     async def call_model(state: ChatState):
-        messages = _apply_short_term_window(state["messages"], max_short_term_turns)
+        messages = without_search_blocks(
+            _apply_short_term_window(state["messages"], max_short_term_turns)
+        )
 
         if skill_prompt:
             messages = _inject_skill_prompt(messages, skill_prompt)
