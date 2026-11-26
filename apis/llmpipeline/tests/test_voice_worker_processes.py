@@ -34,6 +34,7 @@ def test_worker_keeps_two_warm_processes_in_every_environment(monkeypatch):
     assert options.job_executor_type == JobExecutorType.PROCESS
     assert options.job_memory_warn_mb == 1000
     assert options.job_memory_limit_mb == 0
+    assert options.preload_modules == ["voice_agent.agent"]
 
 
 def test_worker_never_reports_load_that_would_drop_a_dispatch(monkeypatch):
