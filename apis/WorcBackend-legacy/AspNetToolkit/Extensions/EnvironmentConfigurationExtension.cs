@@ -294,9 +294,15 @@ public static class EnvironmentConfigurationExtension
 
         // Allowed hosts configuration
         var EXTRA_ALLOWED_HOSTS = Environment.GetEnvironmentVariable("EXTRA_ALLOWED_HOSTS") ?? string.Empty;
-        var ALLOWED_HOSTS = string.IsNullOrEmpty(EXTRA_ALLOWED_HOSTS)
-                            ? $"localhost;{APP_BASE_URL}"
-                            : $"localhost;{APP_BASE_URL};{EXTRA_ALLOWED_HOSTS}";
+        var SERVICE_HOSTS = new[] { ACCOUNTS_API_BASE_URL, WORKSPACE_API_BASE_URL, LLMPIPELINE_API_BASE_URL, CAMEL_API_BASE_URL, CORSAIR_API_BASE_URL }
+            .Select(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri.Host : string.Empty)
+            .Where(host => host.Length > 0);
+        var ALLOWED_HOSTS = string.Join(
+            ';',
+            new[] { "localhost", APP_BASE_URL }
+                .Concat(SERVICE_HOSTS)
+                .Concat(EXTRA_ALLOWED_HOSTS.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .Distinct());
 
         // Build new configuration with sensitive data from environment variables
         return new ConfigurationBuilder()
