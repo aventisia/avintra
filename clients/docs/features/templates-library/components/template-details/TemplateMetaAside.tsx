@@ -107,20 +107,6 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                <span className="text-muted-foreground">Temperature</span>
-                <span className="col-span-2">
-                  {parsedPromptSchema.modelConfig.temperature ?? "-"}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <span className="text-muted-foreground">Top P</span>
-                <span className="col-span-2">
-                  {parsedPromptSchema.modelConfig.top_p ?? "-"}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
                 <span className="text-muted-foreground">JSON Output</span>
                 <span className="col-span-2">
                   {parsedPromptSchema.modelConfig.is_json_output

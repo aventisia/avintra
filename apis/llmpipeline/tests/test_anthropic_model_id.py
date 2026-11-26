@@ -46,8 +46,6 @@ def test_omits_sampling_params_because_api_version_2026_10_21_rejects_them():
     llm_request = SimpleNamespace(
         credential_name="cred",
         model="anthropic/claude-4.5-haiku-20251001",
-        temperature=1.0,
-        top_p=1.0,
         max_output_tokens=1024,
     )
     user = SimpleNamespace(access_token="jwt", env_type=None, tenant_id=None, space_id=None)

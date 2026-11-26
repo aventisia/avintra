@@ -23,7 +23,6 @@ from app.features.litellm.text_generation.prompts.service import (
     PromptGenerationService,
     _clean_response,
     _template_file_name,
-    _temperature_for,
 )
 
 THINK_OPEN = "<think" + ">"
@@ -117,12 +116,6 @@ def test_unknown_ref_type_is_rejected_with_its_own_message():
         _template_file_name("Template", "UiBuilder", "x")
     assert exc.value.status_code == 400
     assert exc.value.detail == prompt_service.UNSUPPORTED_REF_TYPE_MESSAGE
-
-
-def test_temperature_matching_ignores_case():
-    assert _temperature_for("Template") == 1
-    assert _temperature_for("VoiceAgentSystemPrompt") == 0.4
-    assert _temperature_for("chatagentsystemprompt") == 0.4
 
 
 def test_clean_response_strips_think_block():

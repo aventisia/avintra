@@ -113,14 +113,6 @@ public sealed class VoiceModelSettingsDto
     [JsonPropertyName("credentialName")]
     public string? CredentialName { get; init; }
 
-    /// <summary>The sampling temperature.</summary>
-    [JsonPropertyName("temperature")]
-    public double Temperature { get; init; } = 1;
-
-    /// <summary>The nucleus sampling value.</summary>
-    [JsonPropertyName("topP")]
-    public double TopP { get; init; } = 1;
-
     /// <summary>The optional maximum output token count.</summary>
     [JsonPropertyName("maxOutputTokens")]
     public int? MaxOutputTokens { get; init; }

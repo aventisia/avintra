@@ -147,8 +147,6 @@ def create_gemini_model(
     return ChatGoogleGenerativeAI(
 
         model=llm_request.model,
-        temperature=llm_request.temperature,
-        top_p=llm_request.top_p,
         max_tokens=llm_request.max_output_tokens,
         api_key=resolved_api_key,
         base_url=_to_genai_endpoint(resolved_base_url),

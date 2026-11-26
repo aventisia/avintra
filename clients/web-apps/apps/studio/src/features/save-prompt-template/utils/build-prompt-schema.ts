@@ -24,10 +24,6 @@ export function buildPromptTemplateSchema(payload: Payload): PromptTemplateSchem
 
           model: modelConfig.model as string | undefined,
 
-          temperature: modelConfig.temperature as number | undefined,
-
-          top_p: modelConfig.top_p as number | undefined,
-
           is_json_output: modelConfig.is_json_output as boolean | undefined,
         }
       : undefined,

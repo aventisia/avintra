@@ -27,7 +27,6 @@ export type UiBuilderLlmRequest = {
   is_json_output?: boolean;
   credential_name?: string | null;
   max_output_tokens?: number;
-  temperature?: number;
   skill_names?: string[];
   files?: string[];
   ref_type: string;

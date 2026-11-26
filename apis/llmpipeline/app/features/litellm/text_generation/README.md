@@ -16,15 +16,15 @@
 
 `refName` and `payload` are required; `refType` defaults to empty and `promptTarget` may be left out. `refType` must be `Agent` or `Platform` whenever `promptTarget` is `Template` (the default), otherwise the request is rejected with 400.
 
-## Templates, model and temperature
+## Templates and model
 
-| `promptTarget` | Empty `payload` | `payload` present | Temperature |
-| --- | --- | --- | --- |
-| `ChatAgentSystemPrompt` | `GenerateChatAgentPromptInstructions.txt` | `ImproveChatAgentPromptInstructions.txt` | 0.4 |
-| `VoiceAgentSystemPrompt` | `GenerateVoiceAgentPromptInstructions.txt` | `ImproveVoiceAgentPromptInstructions.txt` | 0.4 |
-| `Template`, or absent | `refType` picks the template | same | 1 |
+| `promptTarget` | Empty `payload` | `payload` present |
+| --- | --- | --- |
+| `ChatAgentSystemPrompt` | `GenerateChatAgentPromptInstructions.txt` | `ImproveChatAgentPromptInstructions.txt` |
+| `VoiceAgentSystemPrompt` | `GenerateVoiceAgentPromptInstructions.txt` | `ImproveVoiceAgentPromptInstructions.txt` |
+| `Template`, or absent | `refType` picks the template | same |
 
-`promptTarget` matching is case-insensitive. With `Template` (or no target), `refType` decides: `Agent` uses `GenerateAgentTemplateDescriptionPrompt.txt`, `Platform` uses `ImprovedPromptInstructions.txt`. An unknown `promptTarget` or `refType` is rejected with 400. Every call uses `openai` / `gpt-4o-mini`, and `{{PAYLOAD_CONTENT}}` in the template is replaced with `payload`.
+`promptTarget` matching is case-insensitive. With `Template` (or no target), `refType` decides: `Agent` uses `GenerateAgentTemplateDescriptionPrompt.txt`, `Platform` uses `ImprovedPromptInstructions.txt`. An unknown `promptTarget` or `refType` is rejected with 400. Every call uses `openai` / `gpt-4o-mini` with the provider's own sampling defaults, and `{{PAYLOAD_CONTENT}}` in the template is replaced with `payload`.
 
 ## Answer and errors
 

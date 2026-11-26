@@ -1554,8 +1554,6 @@ class ChatService:
             output="",
             status=None,
             finish_reason=None,
-            temperature=request.temperature,
-            top_p=request.top_p,
             stream=request.stream,
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,

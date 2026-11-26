@@ -331,8 +331,6 @@ class OpenAIProvider(BaseLLMProvider):
         request_payload = {
             "model": llm_request.model,
             "input": input_serialized, # Can be string or list of messages (as dicts)
-            "temperature": llm_request.temperature,
-            "top_p": llm_request.top_p,
             "stream": llm_request.stream,
             "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
         }
@@ -454,8 +452,6 @@ class OpenAIProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

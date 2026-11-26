@@ -100,8 +100,6 @@ def build_voice_llm_request(
         sfx=_sound_effects(agent_settings.get("soundEffects")),
         stream=True,
         conversation_id=claims.conversation_id,
-        temperature=llm.get("temperature", 1),
-        top_p=llm.get("topP", 1),
         reasoning_effort=llm.get("reasoningEffort"),
         credential_name=llm.get("credentialName") or None,
         max_output_tokens=llm.get("maxOutputTokens"),

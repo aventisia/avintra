@@ -113,8 +113,6 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             bool isJsonOutput = root.TryGetProperty("is_json_output", out var jsonOutProp) ? jsonOutProp.GetBoolean() : false;
             string? jsonSchema = root.TryGetProperty("json_schema", out var schemaProp) ? schemaProp.GetString() : null;
             int? maxOutputTokens = root.TryGetProperty("max_output_tokens", out var maxTokensProp) ? maxTokensProp.GetInt32() : null;
-            float temperature = root.TryGetProperty("temperature", out var tempProp) ? tempProp.GetSingle() : 1.0f;
-            float topP = root.TryGetProperty("top_p", out var topPProp) ? topPProp.GetSingle() : 1.0f;
             bool stream = root.TryGetProperty("stream", out var streamProp) ? streamProp.GetBoolean() : false;
 
             // Files (List of base64-encoded strings)
@@ -145,8 +143,6 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 ["json_schema"] = jsonSchema,
                 ["max_output_tokens"] = maxOutputTokens,
                 ["credential_name"] = payloadCredentialName ?? string.Empty,
-                ["temperature"] = temperature,
-                ["top_p"] = topP,
                 ["stream"] = stream
             };
 
