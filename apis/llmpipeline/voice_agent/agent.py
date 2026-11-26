@@ -292,6 +292,11 @@ def worker_options() -> WorkerOptions:
         # A per-job limit bounds the blast radius of one leaking call; 0 disables it.
         job_memory_warn_mb=_env_number("LIVEKIT_JOB_MEMORY_WARN_MB", 1000),
         job_memory_limit_mb=_env_number("LIVEKIT_JOB_MEMORY_LIMIT_MB", 0),
+        # IMPORTANT NOTE: LiveKit's Linux forkserver preloads only the plugin packages,
+        # so each cold job process re-imports this module's whole app graph and that
+        # import is most of the caller's wait. Preloading it happens once and the job
+        # processes inherit it; "spawn" (Windows) ignores this list.
+        preload_modules=["voice_agent.agent"],
     )
 
 
