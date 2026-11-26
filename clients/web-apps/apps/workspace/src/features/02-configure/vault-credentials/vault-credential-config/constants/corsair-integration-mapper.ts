@@ -5,6 +5,13 @@ type CorsairIntegration = (typeof catalog)[number];
 
 const integrations = catalog as CorsairIntegration[];
 
+const normalizeName = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const iconByPluginId = new Map(integrations.map(({ pluginId, icon }) => [pluginId, icon]));
+const iconByProviderName = new Map(
+  integrations.map(({ providerName, icon }) => [normalizeName(providerName), icon]),
+);
+
 export function getCorsairIntegration(type: string | undefined): CorsairIntegration | undefined {
   return integrations.find((integration) => integration.vaultCredentialType === type);
 }
@@ -14,7 +21,8 @@ export function isCorsairCredentialType(type: string | undefined): boolean {
 }
 
 export function getCorsairPluginIcon(pluginId: string | undefined): string | undefined {
-  return integrations.find((integration) => integration.pluginId === pluginId)?.icon;
+  if (!pluginId) return undefined;
+  return iconByPluginId.get(pluginId) ?? iconByProviderName.get(normalizeName(pluginId));
 }
 
 export function isCorsairOAuthCredentialType(type: string | undefined): boolean {

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "store_url",
+    "label": "Store_url",
+    "description": "Store_url for CloudCart.",
+    "defaultValue": "",
+    "required": true
+  }
+]

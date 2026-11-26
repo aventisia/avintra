@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "uid",
+    "label": "Uid",
+    "description": "Uid for waboxapp.",
+    "defaultValue": "",
+    "required": true
+  }
+]

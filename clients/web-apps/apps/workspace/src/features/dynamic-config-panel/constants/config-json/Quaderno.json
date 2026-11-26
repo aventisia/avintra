@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "account_name",
+    "label": "Account_name",
+    "description": "Account_name for Quaderno.",
+    "defaultValue": "",
+    "required": true
+  }
+]

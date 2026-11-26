@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "webhook_id",
+    "label": "Webhook_id",
+    "description": "Webhook_id for TwittrAPI.",
+    "defaultValue": "",
+    "required": true
+  }
+]

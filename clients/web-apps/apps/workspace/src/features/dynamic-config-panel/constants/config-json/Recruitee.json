@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "company_id",
+    "label": "Company_id",
+    "description": "Company_id for Recruitee.",
+    "defaultValue": "",
+    "required": true
+  }
+]

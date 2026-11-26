@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "email",
+    "label": "Email",
+    "description": "Email for Adyntel.",
+    "defaultValue": "",
+    "required": true
+  }
+]

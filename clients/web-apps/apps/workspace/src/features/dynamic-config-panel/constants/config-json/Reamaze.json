@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "host",
+    "label": "Host",
+    "description": "Host for Re:amaze.",
+    "defaultValue": "",
+    "required": true
+  }
+]

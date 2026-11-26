@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "api_url",
+    "label": "Api_url",
+    "description": "Api_url for Mailcoach.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "database_token",
+    "label": "Database_token",
+    "description": "Database_token for Turso.",
+    "defaultValue": "",
+    "required": true
+  }
+]

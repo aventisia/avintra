@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "product_secret_key",
+    "label": "Product_secret_key",
+    "description": "Product_secret_key for Payhip.",
+    "defaultValue": "",
+    "required": true
+  }
+]

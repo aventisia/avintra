@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "public_key",
+    "label": "Public_key",
+    "description": "Public_key for ForceManager.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -16,6 +16,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=4006
 ENV PYTHONUNBUFFERED=1
+# The sidecar registers every integration plugin at boot, which needs more than
+# Node's default heap limit (~4 GB).
+ENV NODE_OPTIONS=--max-old-space-size=8192
 
 # Runtime configuration is injected via environment variables at deploy time
 # (see .env.example). APP_BASE_URL, CORSAIR_KEK and the

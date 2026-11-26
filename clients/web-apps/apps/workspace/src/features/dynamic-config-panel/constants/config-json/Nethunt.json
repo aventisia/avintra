@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "email",
+    "label": "Email",
+    "description": "Email for NetHunt CRM.",
+    "defaultValue": "",
+    "required": true
+  }
+]

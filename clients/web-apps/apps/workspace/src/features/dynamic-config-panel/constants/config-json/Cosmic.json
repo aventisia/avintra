@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "bucket_slug",
+    "label": "Bucket_slug",
+    "description": "Bucket_slug for Cosmic.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "shop_domain",
+    "label": "Shop_domain",
+    "description": "Shop_domain for Shopify.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "client_id",
+    "label": "Client_id",
+    "description": "Client_id for Shopify.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "client_secret",
+    "label": "Client_secret",
+    "description": "Client_secret for Shopify.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "expires_at",
+    "label": "Expires_at",
+    "description": "Expires_at for Shopify.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "user_key",
+    "label": "User_key",
+    "description": "User_key for Pushover.",
+    "defaultValue": "",
+    "required": true
+  }
+]

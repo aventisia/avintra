@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "company",
+    "label": "Company",
+    "description": "Company for Supportbee.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "verification_token",
+    "label": "Verification_token",
+    "description": "Verification_token for Ko-fi.",
+    "defaultValue": "",
+    "required": true
+  }
+]

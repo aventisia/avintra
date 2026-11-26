@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "username",
+    "label": "Username",
+    "description": "Username for DeployHQ.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "account_subdomain",
+    "label": "Account_subdomain",
+    "description": "Account_subdomain for DeployHQ.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "api_host",
+    "label": "Api_host",
+    "description": "Api_host for Whautomate.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_key",
+    "label": "Api_key",
+    "description": "Api_key for Whautomate.",
+    "defaultValue": "",
+    "required": true
+  }
+]

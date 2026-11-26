@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "app_key",
+    "label": "App_key",
+    "description": "App_key for FinerWorks.",
+    "defaultValue": "",
+    "required": true
+  }
+]

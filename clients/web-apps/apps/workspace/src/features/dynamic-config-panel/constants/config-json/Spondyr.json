@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "application_token",
+    "label": "Application_token",
+    "description": "Application_token for Spondyr.",
+    "defaultValue": "",
+    "required": true
+  }
+]

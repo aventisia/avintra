@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "email",
+    "label": "Email",
+    "description": "Email for Gorgias.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Gorgias.",
+    "defaultValue": "",
+    "required": true
+  }
+]

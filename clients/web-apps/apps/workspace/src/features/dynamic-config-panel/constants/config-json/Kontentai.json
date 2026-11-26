@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "delivery_api_key",
+    "label": "Delivery_api_key",
+    "description": "Delivery_api_key for Kontent.ai.",
+    "defaultValue": "",
+    "required": true
+  }
+]

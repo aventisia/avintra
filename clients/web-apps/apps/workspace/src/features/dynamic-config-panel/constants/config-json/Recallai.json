@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Recall.ai.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "region",
+    "label": "Region",
+    "description": "Region for Recall.ai.",
+    "defaultValue": "",
+    "required": true
+  }
+]

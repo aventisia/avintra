@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "repository",
+    "label": "Repository",
+    "description": "Repository for Prismic.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "access_token",
+    "label": "Access_token",
+    "description": "Access_token for Prismic.",
+    "defaultValue": "",
+    "required": true
+  }
+]

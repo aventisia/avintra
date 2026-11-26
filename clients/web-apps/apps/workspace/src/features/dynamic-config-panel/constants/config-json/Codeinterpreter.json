@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "session_id",
+    "label": "Session_id",
+    "description": "Session_id for Code Interpreter.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Code Interpreter.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "shippo_account_id",
+    "label": "Shippo_account_id",
+    "description": "Shippo_account_id for Shippo.",
+    "defaultValue": "",
+    "required": true
+  }
+]

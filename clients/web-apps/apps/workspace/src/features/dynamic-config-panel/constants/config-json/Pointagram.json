@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "api_user",
+    "label": "Api_user",
+    "description": "Api_user for Pointagram.",
+    "defaultValue": "",
+    "required": true
+  }
+]

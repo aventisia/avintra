@@ -1,0 +1,56 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "export_gcs_project_id",
+    "label": "Export_gcs_project_id",
+    "description": "Export_gcs_project_id for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "export_gcs_client_email",
+    "label": "Export_gcs_client_email",
+    "description": "Export_gcs_client_email for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "export_gcs_private_key",
+    "label": "Export_gcs_private_key",
+    "description": "Export_gcs_private_key for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "export_s3_access_key_id",
+    "label": "Export_s3_access_key_id",
+    "description": "Export_s3_access_key_id for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "export_s3_secret_access_key",
+    "label": "Export_s3_secret_access_key",
+    "description": "Export_s3_secret_access_key for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "export_s3_session_token",
+    "label": "Export_s3_session_token",
+    "description": "Export_s3_session_token for CloudConvert.",
+    "defaultValue": "",
+    "required": true
+  }
+]

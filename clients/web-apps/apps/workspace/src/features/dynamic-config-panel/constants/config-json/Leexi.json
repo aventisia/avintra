@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "key_secret",
+    "label": "Key_secret",
+    "description": "Key_secret for Leexi.",
+    "defaultValue": "",
+    "required": true
+  }
+]

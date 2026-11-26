@@ -1,0 +1,47 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "service_account_username",
+    "label": "Service_account_username",
+    "description": "Service_account_username for Mixpanel.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "project_id",
+    "label": "Project_id",
+    "description": "Project_id for Mixpanel.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "region",
+    "label": "Region",
+    "description": "Region for Mixpanel.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "project_token",
+    "label": "Project_token",
+    "description": "Project_token for Mixpanel.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "gdpr_token",
+    "label": "Gdpr_token",
+    "description": "Gdpr_token for Mixpanel.",
+    "defaultValue": "",
+    "required": true
+  }
+]

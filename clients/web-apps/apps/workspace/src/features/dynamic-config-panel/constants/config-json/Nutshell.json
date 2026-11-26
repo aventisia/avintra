@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "email",
+    "label": "Email",
+    "description": "Email for Nutshell.",
+    "defaultValue": "",
+    "required": true
+  }
+]

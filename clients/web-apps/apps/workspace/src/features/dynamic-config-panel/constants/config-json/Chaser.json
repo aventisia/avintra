@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Chaser.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_secret",
+    "label": "Api_secret",
+    "description": "Api_secret for Chaser.",
+    "defaultValue": "",
+    "required": true
+  }
+]

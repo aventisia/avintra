@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "client_id",
+    "label": "Client_id",
+    "description": "Client_id for Leiga.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "access_token",
+    "label": "Access_token",
+    "description": "Access_token for Leiga.",
+    "defaultValue": "",
+    "required": true
+  }
+]

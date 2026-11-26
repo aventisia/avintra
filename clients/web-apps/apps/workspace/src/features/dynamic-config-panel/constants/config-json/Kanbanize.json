@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "subdomain",
+    "label": "Subdomain",
+    "description": "Subdomain for Kanbanize.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "business_code",
+    "label": "Business_code",
+    "description": "Business_code for Storeganise.",
+    "defaultValue": "",
+    "required": true
+  }
+]

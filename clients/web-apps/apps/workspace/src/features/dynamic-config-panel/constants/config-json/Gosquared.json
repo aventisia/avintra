@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "site_token",
+    "label": "Site_token",
+    "description": "Site_token for GoSquared.",
+    "defaultValue": "",
+    "required": true
+  }
+]

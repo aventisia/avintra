@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "base_url",
+    "label": "Base_url",
+    "description": "Base_url for Grist.",
+    "defaultValue": "",
+    "required": true
+  }
+]

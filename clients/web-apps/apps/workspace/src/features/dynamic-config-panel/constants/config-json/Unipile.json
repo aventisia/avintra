@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "application_id",
+    "label": "Application_id",
+    "description": "Application_id for Unipile.",
+    "defaultValue": "",
+    "required": true
+  }
+]

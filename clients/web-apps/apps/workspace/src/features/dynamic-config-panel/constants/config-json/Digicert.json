@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "digicert_one_api_key",
+    "label": "Digicert_one_api_key",
+    "description": "Digicert_one_api_key for DigiCert.",
+    "defaultValue": "",
+    "required": true
+  }
+]

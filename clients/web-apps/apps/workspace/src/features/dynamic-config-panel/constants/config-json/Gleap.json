@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "project_id",
+    "label": "Project_id",
+    "description": "Project_id for Gleap.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "region",
+    "label": "Region",
+    "description": "Region for Gleap.",
+    "defaultValue": "",
+    "required": true
+  }
+]

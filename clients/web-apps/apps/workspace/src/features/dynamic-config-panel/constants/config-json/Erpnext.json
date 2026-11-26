@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_secret",
+    "label": "Api_secret",
+    "description": "Api_secret for ERPNext.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "base_url",
+    "label": "Base_url",
+    "description": "Base_url for ERPNext.",
+    "defaultValue": "",
+    "required": true
+  }
+]

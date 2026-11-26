@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "region",
+    "label": "Region",
+    "description": "Region for JumpCloud.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "org_id",
+    "label": "Org_id",
+    "description": "Org_id for JumpCloud.",
+    "defaultValue": "",
+    "required": true
+  }
+]

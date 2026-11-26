@@ -55,6 +55,8 @@ This preserves a clean split:
 - **Workspace API**: owns core platform defaults and bootstrap; does not seed Corsair tools
 - **Corsair sidecar**: owns plugin runtime, metadata generation, and tool registry seeding
 
+Registering every upstream integration costs about 4.6 GB of heap at boot, above Node's default limit, so the sidecar and the tools that generate and seed its metadata run with `--max-old-space-size=8192` (set in `package.json`, `Dockerfile`, and `dekit.yaml`).
+
 If Corsair deployment is skipped, the Workspace API continues to function using its own platform defaults.
 
 ## Runtime API surface

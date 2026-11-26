@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "project_id",
+    "label": "Project_id",
+    "description": "Project_id for Keen.",
+    "defaultValue": "",
+    "required": true
+  }
+]

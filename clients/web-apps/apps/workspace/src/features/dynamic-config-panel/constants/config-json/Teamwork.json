@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "site_name",
+    "label": "Site_name",
+    "description": "Site_name for Teamwork.",
+    "defaultValue": "",
+    "required": true
+  }
+]

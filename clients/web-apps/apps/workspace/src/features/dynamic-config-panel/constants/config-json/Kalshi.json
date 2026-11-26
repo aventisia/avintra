@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "private_key",
+    "label": "Private_key",
+    "description": "Private_key for Kalshi.",
+    "defaultValue": "",
+    "required": true
+  }
+]

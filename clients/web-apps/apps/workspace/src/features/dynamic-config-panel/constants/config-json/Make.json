@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "zone",
+    "label": "Zone",
+    "description": "Zone for Make.",
+    "defaultValue": "",
+    "required": true
+  }
+]

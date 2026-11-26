@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Customer.io.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "track_api_key",
+    "label": "Track_api_key",
+    "description": "Track_api_key for Customer.io.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "cdp_write_key",
+    "label": "Cdp_write_key",
+    "description": "Cdp_write_key for Customer.io.",
+    "defaultValue": "",
+    "required": true
+  }
+]

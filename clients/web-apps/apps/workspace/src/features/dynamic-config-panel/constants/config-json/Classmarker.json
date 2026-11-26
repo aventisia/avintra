@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_key_secret",
+    "label": "Api_key_secret",
+    "description": "Api_key_secret for ClassMarker.",
+    "defaultValue": "",
+    "required": true
+  }
+]

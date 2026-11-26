@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "wallet_id",
+    "label": "Wallet_id",
+    "description": "Wallet_id for Paradym.",
+    "defaultValue": "",
+    "required": true
+  }
+]
