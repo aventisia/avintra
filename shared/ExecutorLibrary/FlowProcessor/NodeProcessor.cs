@@ -549,7 +549,8 @@ public class NodeProcessor : INodeProcessor
 
     /// <summary>
     /// Remaps aiNode's double-underscore-delimited keys (e.g. __ModelConfig__) to
-    /// the property names expected by ProcessLLMRequestNode.
+    /// the property names expected by ProcessLLMRequestNode, ProcessTTSRequestNode,
+    /// or ProcessSTTRequestNode.
     /// When the flow is triggered by a chat interaction, automatically injects
     /// ChatUserInput and ChatThreadMessages from the flow execution context.
     /// </summary>
@@ -598,7 +599,7 @@ public class NodeProcessor : INodeProcessor
         }
         else if (rawName == "CreateSTTAIAgent")
         {
-            return ("ProcessTTSRequestNode", newInputs);
+            return ("ProcessSTTRequestNode", newInputs);
         }
         else
             return ("ProcessLLMRequestNode", newInputs);
