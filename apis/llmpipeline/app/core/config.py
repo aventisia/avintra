@@ -40,14 +40,16 @@ class Settings(BaseSettings):
     SSL_VERIFY: bool = True
 
     # Internal AccountsAPIs URL used for credit checks and usage postings.
-    # Defaults to https://{APP_BASE_URL}/accounts/api (the nginx prefix).
-    # Override for local dev when AccountsAPIs runs on a non-standard port.
+    # Resolution order: ACCOUNTS_API_URL, then ACCOUNTS_API_BASE_URL + "/api" (the
+    # backend's shared service URL), then https://{APP_BASE_URL}/accounts/api (the nginx prefix).
     ACCOUNTS_API_URL: str = ""
+    ACCOUNTS_API_BASE_URL: str = ""
 
     # Internal WorkspaceAPIs URL used for cloud-connector execution and voice settings.
-    # Defaults to https://{APP_BASE_URL}/workspace/api (the nginx prefix).
-    # Override for local dev when WorkspaceAPIs runs on a non-standard port.
+    # Resolution order: WORKSPACE_API_URL, then WORKSPACE_API_BASE_URL + "/api",
+    # then https://{APP_BASE_URL}/workspace/api (the nginx prefix).
     WORKSPACE_API_URL: str = ""
+    WORKSPACE_API_BASE_URL: str = ""
 
     # PostgreSQL settings
     POSTGRESQL_HOST: str
@@ -113,10 +115,18 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-def accounts_api_url() -> str:
-    """The AccountsAPIs base URL, including the nginx ``/accounts/api`` prefix."""
+def _internal_api_url(explicit: str, service_base_url: str, module: str) -> str:
+    return (
+        explicit.rstrip("/")
+        or (service_base_url.rstrip("/") + "/api" if service_base_url.strip() else "")
+        or f"https://{settings.APP_BASE_URL}/{module}/api"
+    )
 
-    return settings.ACCOUNTS_API_URL.rstrip("/") or f"https://{settings.APP_BASE_URL}/accounts/api"
+
+def accounts_api_url() -> str:
+    """The AccountsAPIs base URL, including the ``/api`` path base."""
+
+    return _internal_api_url(settings.ACCOUNTS_API_URL, settings.ACCOUNTS_API_BASE_URL, "accounts")
 
 
 def is_community_deployment() -> bool:
@@ -128,9 +138,9 @@ def is_community_deployment() -> bool:
 
 
 def workspace_api_url() -> str:
-    """The WorkspaceAPIs base URL, including the nginx ``/workspace/api`` prefix."""
+    """The WorkspaceAPIs base URL, including the ``/api`` path base."""
 
-    return settings.WORKSPACE_API_URL.rstrip("/") or f"https://{settings.APP_BASE_URL}/workspace/api"
+    return _internal_api_url(settings.WORKSPACE_API_URL, settings.WORKSPACE_API_BASE_URL, "workspace")
 
 
 def livekit_http_url() -> str:

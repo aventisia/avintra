@@ -40,7 +40,7 @@ Limit `uat` to the `uat` branch and `production-server2` to `main` with required
 | --- | --- |
 | `/opt/avintra/deploy.sh` | Owned by root, so the `deploy` user cannot change it |
 | `/opt/avintra/.env` | From `.env.example`; mode 600, owned by `deploy`. UAT sets `AVINTRA_TAG_PREFIX=uat-` |
-| `/opt/avintra/env/*.env` | `shared.env` plus one file per service (`accounts-api`, `workspace-api`, `global-admin-api`, `llmpipeline-api`, `corsair-api`), copied from `/etc/environment` and the bare-metal units. Service URLs use compose names, such as `http://accounts-api:4000` and `http://corsair-api:4006`. Never commit them. |
+| `/opt/avintra/env/*.env` | `shared.env` plus one file per service (`accounts-api`, `workspace-api`, `global-admin-api`, `llmpipeline-api`, `corsair-api`), copied from `/etc/environment` and the bare-metal units. Service URLs live once in `shared.env` (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `CORSAIR_API_BASE_URL`, with compose names such as `http://accounts-api:4000`); the .NET services and LLM Pipeline all read them, so no service file repeats them. Never commit them. |
 | `/opt/avintra/compose.yml`, `deploy.log` | The running release and the deploy history, written by `deploy.sh` |
 | `/var/www/aventisia.com/files` | Shared folder; `deploy.sh` replaces `skills/`, `configs/Corsair/` and `scripts/` from the images |
 
