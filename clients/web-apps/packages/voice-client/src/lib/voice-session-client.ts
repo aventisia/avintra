@@ -73,6 +73,7 @@ export type VoiceSessionClientOptions = {
     request: VoiceSessionRequest,
     signal: AbortSignal,
   ) => Promise<VoiceSessionResponse>;
+  endSession?: (conversationId: string) => Promise<unknown>;
   onSnapshot: (snapshot: VoiceCallSnapshot) => void;
 };
 
@@ -90,17 +91,20 @@ export class VoiceSessionClient {
   private _micGated = false;
   private _generation = 0;
   private _sessionAbort: AbortController | null = null;
+  private _closedSessionId: string | null = null;
   private _startedAt = 0;
   private _workerStarted = false;
   private _captureOptions: AudioCaptureOptions = captureOptionsFor("none");
   private _disposed = false;
   private readonly _prepare: VoiceSessionClientOptions["prepare"];
   private readonly _createSession: VoiceSessionClientOptions["createSession"];
+  private readonly _endSession: VoiceSessionClientOptions["endSession"];
   private readonly _onSnapshot: VoiceSessionClientOptions["onSnapshot"];
 
   constructor(options: VoiceSessionClientOptions) {
     this._prepare = options.prepare;
     this._createSession = options.createSession;
+    this._endSession = options.endSession;
     this._onSnapshot = options.onSnapshot;
   }
 
@@ -109,6 +113,7 @@ export class VoiceSessionClient {
 
     const generation = ++this._generation;
     this._abortSession();
+    this._closeSession(this._snapshot.conversationId);
     await this._releaseRoom();
     if (generation !== this._generation) return;
 
@@ -143,8 +148,12 @@ export class VoiceSessionClient {
     }
 
     this._clearSessionAbort(abort);
-    if (generation !== this._generation) return;
+    if (generation !== this._generation) {
+      this._closeSession(session.conversationId);
+      return;
+    }
     if (!session.serverUrl || !session.clientToken || !session.conversationId) {
+      this._closeSession(session.conversationId);
       this._fail(new Error("The voice session response is missing its room details."));
       return;
     }
@@ -162,11 +171,13 @@ export class VoiceSessionClient {
       if (this._room === room) this._room = null;
       await this._disconnectRoom(room);
       if (generation === this._generation) this._fail(error);
+      else this._closeSession(session.conversationId);
       return;
     }
 
     if (generation !== this._generation) {
       if (this._room === room) this._room = null;
+      this._closeSession(session.conversationId);
       await this._disconnectRoom(room);
       return;
     }
@@ -185,6 +196,7 @@ export class VoiceSessionClient {
         );
         await this._releaseRoom();
       } else {
+        this._closeSession(session.conversationId);
         await this._disconnectRoom(room);
       }
       return;
@@ -192,6 +204,7 @@ export class VoiceSessionClient {
 
     if (generation !== this._generation) {
       if (this._room === room) this._room = null;
+      this._closeSession(session.conversationId);
       await this._disconnectRoom(room);
       return;
     }
@@ -212,6 +225,7 @@ export class VoiceSessionClient {
       isMuted: false,
       needsAudioResume: false,
     });
+    this._closeSession(this._snapshot.conversationId);
     await this._releaseRoom();
   }
 
@@ -250,6 +264,7 @@ export class VoiceSessionClient {
     this._disposed = true;
     ++this._generation;
     this._abortSession();
+    this._closeSession(this._snapshot.conversationId);
     await this._releaseRoom();
   }
 
@@ -291,6 +306,7 @@ export class VoiceSessionClient {
     const wasActive = this._snapshot.isActive;
     ++this._generation;
     this._abortSession();
+    this._closeSession(this._snapshot.conversationId);
     void this._releaseRoom();
     if (!wasActive) return;
 
@@ -357,6 +373,10 @@ export class VoiceSessionClient {
     // the caller audible or the next call blocked.
     room.localParticipant.getTrackPublication(Track.Source.Microphone)?.track?.stop();
     await withTimeout(ignoreRejections(room.disconnect()), ROOM_LEAVE_TIMEOUT_MS);
+    // IMPORTANT NOTE: `disconnect()` skips its own `engine.close()` when the leave
+    // request fails, so a timed-out leave would keep this room joined on the
+    // server and the next calls would pile up behind the per-user session cap.
+    if (room.engine) await ignoreRejections(room.engine.close());
   }
 
   private _abortSession(): void {
@@ -396,6 +416,7 @@ export class VoiceSessionClient {
   }
 
   private _fail(error: unknown): void {
+    this._closeSession(this._snapshot.conversationId);
     this._stopTimer();
     this._setSnapshot({
       ...this._snapshot,
@@ -408,6 +429,14 @@ export class VoiceSessionClient {
         retryable: true,
       },
     });
+  }
+
+  private _closeSession(conversationId: string | null): void {
+    if (!conversationId || this._closedSessionId === conversationId) return;
+    this._closedSessionId = conversationId;
+    // IMPORTANT NOTE: the browser also ends the backend row, so a worker that
+    // never got a job can not keep the session counted against the per-user cap.
+    void ignoreRejections(this._endSession?.(conversationId) ?? Promise.resolve());
   }
 
   private _update(patch: Partial<VoiceCallSnapshot>): void {

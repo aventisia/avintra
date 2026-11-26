@@ -8,9 +8,10 @@ docs {
 
   Run the requests in order. `00-login` stores `ACCESS_TOKEN`. Requests 01–02
   exercise one pipeline asset; requests 03–06 exercise a realtime draft and its
-  published live version. Each settings request asserts the resolved engine mode
-  and noise-cancellation mode before the matching session request creates the
-  conversation and LiveKit room.
+  published live version; request 07 ends the live session from request 06 and
+  request 08 repeats it to prove the end is idempotent. Each settings request
+  asserts the resolved engine mode and noise-cancellation mode before the
+  matching session request creates the conversation and LiveKit room.
 
   Set these collection or environment variables before running:
 

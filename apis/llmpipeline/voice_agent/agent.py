@@ -250,6 +250,14 @@ def _env_int(name: str, default: int) -> int:
         return default
 
 
+def worker_load(_server: AgentServer) -> float:
+    # IMPORTANT NOTE: LiveKit's default load is host CPU percent, and its dispatch
+    # affinity drops any job at 0.7, so a busy host or a warming process makes the
+    # caller wait forever even though the API already returned 200. Report no load;
+    # the API's active-session cap is the admission control.
+    return 0.0
+
+
 def worker_options() -> WorkerOptions:
     """Build worker options, failing fast instead of letting LiveKit guess credentials."""
 
@@ -272,6 +280,7 @@ def worker_options() -> WorkerOptions:
         # engine or HTTP client survives into the next job's loop and fails. Process
         # isolation matches the Linux default and keeps each job's state loop-local.
         job_executor_type=JobExecutorType.PROCESS,
+        load_fnc=worker_load,
         # IMPORTANT NOTE: a Windows job process imports its modules and loads the VAD
         # in ~20s, past the 10s default that kills it mid-startup.
         initialize_process_timeout=30,
