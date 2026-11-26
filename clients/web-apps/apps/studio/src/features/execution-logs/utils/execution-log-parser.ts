@@ -30,7 +30,7 @@ export const mapLogsToFlow = (
   const traversedEdges: Record<string, Record<string, boolean>> = {};
 
   const branchToRouterMap: Record<string, string> = {};
-  const routerConfig: Record<string, { defaultId: string; conditionals: string[] }> = {};
+  const routerConfig: Record<string, { defaultId?: string; conditionals: string[] }> = {};
 
   // Loop metadata derived from the flow graph. This is only a fallback for legacy logs that
   // predate the loop-context migration (empty `loopReferenceId` / `-1` iteration index);
@@ -52,7 +52,7 @@ export const mapLogsToFlow = (
 
       routerConfig[n.id] = { defaultId, conditionals };
 
-      [defaultId, ...conditionals]?.forEach((bid) => {
+      [...(defaultId ? [defaultId] : []), ...conditionals].forEach((bid) => {
         branchToRouterMap[bid] = n.id;
       });
     }

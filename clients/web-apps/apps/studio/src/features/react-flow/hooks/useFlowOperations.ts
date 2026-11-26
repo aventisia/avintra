@@ -406,6 +406,25 @@ export const useFlowOperations = () => {
 
     const targetIds = getTargetIds();
     if (targetIds.length === 0) return;
+
+    const { nodes: currentNodes } = useReactFlowExtStore.getState();
+    const copiesDefaultBranch = currentNodes.some(
+      (n) =>
+        targetIds.includes(n.id) &&
+        n.type === "branchNode1" &&
+        n.data?.name === "DefaultBranch" &&
+        !targetIds.includes(
+          currentNodes.find(
+            (p) =>
+              p.type === "conditionalNode" &&
+              p.data?.mergeBranchesNodeId === n.data?.mergeBranchesNodeId,
+          )?.id ?? "",
+        ),
+    );
+    if (copiesDefaultBranch) {
+      toast.info("The default branch cannot be copied.");
+      return;
+    }
     cancelCut();
 
     const result = extractSubgraphs(targetIds);
@@ -446,9 +465,13 @@ export const useFlowOperations = () => {
       );
       const isRouterSelected = parentNode && targetIds.includes(parentNode.id);
       if (!isRouterSelected && parentNode) {
+        if (targetBranchHead.data?.name === "DefaultBranch") {
+          toast.info("The default branch cannot be cut.");
+          return;
+        }
         const branches = (parentNode.data?.branches ?? []) as string[];
-        if (branches.length <= 2) {
-          toast.info("At least two branches are required. Cannot cut.");
+        if (branches.length <= 1) {
+          toast.info("At least one branch is required. Cannot cut.");
           return;
         }
       }
@@ -892,8 +915,8 @@ export const useFlowOperations = () => {
         const isRouterSelected = parentNode && nodesToDelete.some((n) => n.id === parentNode.id);
         if (parentNode && !isRouterSelected) {
           const branches = (parentNode.data?.branches ?? []) as string[];
-          if (branches.length <= 2) {
-            toast.info("At least two branches are required.");
+          if (branches.length <= 1) {
+            toast.info("At least one branch is required.");
             return;
           }
         }

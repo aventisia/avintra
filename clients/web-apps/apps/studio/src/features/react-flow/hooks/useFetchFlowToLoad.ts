@@ -171,10 +171,18 @@ export const useFetchFlowToLoad = () => {
       setFlowVariablesObject(graph.flowVariablesObject);
       setInputOutputObject(inputOutputObj);
 
+      const loadedNodes = graph.nodes.map((node) =>
+        node.type === "branchNode1" &&
+        node.data?.name === "DefaultBranch" &&
+        node.deletable === false
+          ? { ...node, deletable: true }
+          : node,
+      );
+
       // Apply layout before hydration
       const { nodes, edges } = autoLayout({
         newEdges: graph.edges,
-        newNodes: graph.nodes,
+        newNodes: loadedNodes,
       });
 
       hydrateFlow(nodes, edges, graph.flowVariablesObject);
