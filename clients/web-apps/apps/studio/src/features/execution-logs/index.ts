@@ -5,5 +5,7 @@ export {
   useFetchAgentRunActivity,
 } from "./hooks/useFetchAgentRunActivity.hook";
 export { useIsExecutionLogsRoute } from "./hooks/useIsExecutionLogsRoute";
+export { NodeLogHeader } from "./components/NodeLogHeader";
+export type { NodeLogIdentity } from "./components/NodeLogHeader";
 export { countExecutionLogs } from "./utils/execution-logs-query.util";
 export { loadExecutionLogsView } from "./utils/load-execution-logs-view.util";
