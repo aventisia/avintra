@@ -16,7 +16,7 @@ export const createConditionalBranchNodeObj = (
       mergeBranchesNodeId: mergeBranchesNodeId,
     },
     position: { x: 0, y: 0 },
-    deletable: isDefaultBranch ? false : true,
+    deletable: true,
     draggable: true,
     selectable: true,
   } as Node;
