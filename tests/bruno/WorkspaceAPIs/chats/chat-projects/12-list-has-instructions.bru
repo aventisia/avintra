@@ -1,0 +1,23 @@
+meta {
+  name: List shows instructions
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+
+script:post-response {
+  test("the list carries instructions", function() {
+    const p = res.getBody().data.find(x => x.id === bru.getVar("CHAT_PROJECT_ID"));
+    expect(p.instructions).to.equal("Always answer in French.");
+  });
+}

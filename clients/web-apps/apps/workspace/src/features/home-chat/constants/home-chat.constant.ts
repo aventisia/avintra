@@ -20,6 +20,8 @@ export const HOME_CHAT_SHARED_CHATS_QUERY_KEY = ["home-chat-shared-chats"] as co
 
 export const HOME_CHAT_PROJECTS_QUERY_KEY = ["home-chat-projects"] as const;
 
+export const HOME_CHAT_PROJECT_FILES_QUERY_KEY = ["home-chat-project-files"] as const;
+
 export const HOME_CHAT_FILES_QUERY_KEY = ["home-chat-files"] as const;
 
 export const HOME_CHAT_FILE_QUERY_KEY = ["home-chat-file"] as const;

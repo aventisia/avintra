@@ -134,9 +134,10 @@ def _apply_short_term_window(messages, max_short_term_turns: int | None) -> list
     kept, de-duplicated by content, and moved to the front, with or without a limit.
     Older turns are dropped without summarization. ``None`` or ``0`` means no limit.
 
-    IMPORTANT NOTE: the system prompt is re-sent on every request and accumulates
-    mid-conversation in the checkpoint; Anthropic rejects system messages that follow
-    a user or assistant turn, so they are hoisted even when nothing is trimmed (#623).
+    IMPORTANT NOTE: system messages can sit mid-conversation in the checkpoint (the
+    request prompt replaces its earlier copy by id, but id-less ones still append);
+    Anthropic rejects system messages that follow a user or assistant turn, so they
+    are hoisted even when nothing is trimmed (#623).
     """
 
     messages = list(messages)

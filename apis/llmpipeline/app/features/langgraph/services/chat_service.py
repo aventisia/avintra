@@ -1217,7 +1217,7 @@ class ChatService:
         if not sections:
             return messages
 
-        return [SystemMessage(content="\n\n".join(sections)), *messages]
+        return [SystemMessage(content="\n\n".join(sections), id="voice-context"), *messages]
 
     def _latest_ai_message(
         self,

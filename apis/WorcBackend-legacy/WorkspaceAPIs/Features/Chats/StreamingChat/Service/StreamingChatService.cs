@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using AspNetToolkit.Utils;
 using ExecutorLibrary.Helpers;
 using ExecutorLibrary.Models;
+using WorkspaceAPIs.Features.Chats.ChatProjects.Helpers;
 using WorkspaceAPIs.Features.Chats.StreamingChat.DTOs;
 using WorkspaceAPIs.Features.VoiceSessions.Service;
 using WorkspaceAPIs.Services;
@@ -256,10 +257,11 @@ public class StreamingChatService : IStreamingChatService
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
         var profilePrompt = await BuildUserChatProfilePromptAsync(cancellationToken);
         var filesPrompt = await BuildConversationFilesPromptAsync(request.ConversationId, cancellationToken);
+        var projectPrompt = await BuildProjectPromptAsync(request.ConversationId, cancellationToken);
         var replyText = new StringBuilder();
         await foreach (var chunk in RelayPipelineStreamAsync(
             "/api/chat/completions/normalized",
-            BuildLandingLlmPayload(request, modelSelection, filesPrompt, profilePrompt),
+            BuildLandingLlmPayload(request, modelSelection, filesPrompt, projectPrompt, profilePrompt),
             currentSpaceId == Guid.Empty ? null : currentSpaceId,
             _currentTenantService.CurrentEnvType == ConfigureEnvironmentType.Prod ? "prod" : "dev",
             cancellationToken))
@@ -818,6 +820,34 @@ public class StreamingChatService : IStreamingChatService
             : $"Files saved in this chat, by their current names (the user may have renamed them); when you revise one, put that exact name on the fence line:\n{string.Join("\n", names.Select(name => $"- {name}"))}";
     }
 
+    private async Task<string?> BuildProjectPromptAsync(Guid? conversationId, CancellationToken cancellationToken)
+    {
+        if (conversationId is null)
+            return null;
+
+        var projectId = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w => w.Id == conversationId && w.UserId == _userId && w.FlowVersionId == null)
+            .AsNoTracking()
+            .Select(s => s.ProjectId)
+            .SingleOrDefaultAsync(cancellationToken);
+        if (projectId is null)
+            return null;
+
+        var instructions = await _unitOfWork.ChatProjectRepo
+            .GetByConditionAsync(w => w.Id == projectId && w.UserId == _userId)
+            .AsNoTracking()
+            .Select(s => s.Instructions)
+            .SingleOrDefaultAsync(cancellationToken);
+        var files = await _unitOfWork.ChatProjectFileRepo
+            .GetByConditionAsync(w => w.ProjectId == projectId && w.UserId == _userId)
+            .AsNoTracking()
+            .OrderBy(o => o.CreatedOn)
+            .Select(s => new { s.Name, s.Content })
+            .ToListAsync(cancellationToken);
+
+        return ChatProjectsHelpers.BuildProjectPrompt(instructions, files.Select(f => (f.Name, f.Content)).ToList());
+    }
+
     /// <summary>
     /// Builds the agent-less landing LLMGenerationRequest: default prompt plus the UI skills
     /// on the selected model, attributed to the "LandingChat" reference.
@@ -838,7 +868,7 @@ public class StreamingChatService : IStreamingChatService
         return sections.Count == 0 ? null : string.Join("\n\n", sections);
     }
 
-    private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection, string? filesPrompt, string? profilePrompt)
+    private object BuildLandingLlmPayload(StreamingChatRequestDto request, LlmModelSelection selection, string? filesPrompt, string? projectPrompt, string? profilePrompt)
     {
         var destinationsPrompt = StreamingChatHelpers.BuildLandingDestinationsPrompt(request.Destinations);
         var systemPrompt = LandingSystemPrompt;
@@ -846,6 +876,8 @@ public class StreamingChatService : IStreamingChatService
             systemPrompt = $"{systemPrompt}\n\n{destinationsPrompt}";
         if (filesPrompt is not null)
             systemPrompt = $"{systemPrompt}\n\n{filesPrompt}";
+        if (projectPrompt is not null)
+            systemPrompt = $"{systemPrompt}\n\n{projectPrompt}";
         if (profilePrompt is not null)
             systemPrompt = $"{systemPrompt}\n\n{profilePrompt}";
         var messages = new List<object> { new { role = "system", content = systemPrompt } };

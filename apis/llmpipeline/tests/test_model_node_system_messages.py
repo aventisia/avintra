@@ -1,8 +1,11 @@
 import pytest
 from langchain_anthropic.chat_models import _format_messages
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langgraph.graph.message import add_messages
 
+from app.features.langgraph.graphs.message_builder import build_messages
 from app.features.langgraph.nodes.model_node import _apply_short_term_window, _with_text_blocks
+from app.features.llm_providers.llm_providers_schemas import LLMRequest
 
 
 def _second_turn_state(second_system: str = "sys"):
@@ -84,3 +87,21 @@ def test_clean_reply_is_returned_unchanged():
     streamed = AIMessage(content=[{"type": "text", "text": "Done."}])
 
     assert _with_text_blocks(streamed) is streamed
+
+
+def test_resent_system_prompt_replaces_the_checkpointed_one():
+    def turn(system: str, text: str):
+        request = LLMRequest.model_validate(
+            {
+                "provider": "anthropic",
+                "model": "claude-sonnet-4-5",
+                "input": [{"role": "system", "content": system}, {"role": "user", "content": text}],
+            }
+        )
+        return build_messages(request)
+
+    state = add_messages(turn("with the project", "hi"), [AIMessage(content="hello")])
+    state = add_messages(state, turn("without the project", "again"))
+
+    assert [m.content for m in state if isinstance(m, SystemMessage)] == ["without the project"]
+    assert isinstance(state[0], SystemMessage)

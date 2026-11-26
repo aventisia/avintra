@@ -1,0 +1,22 @@
+meta {
+  name: Files of an unknown project
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/00000000-0000-0000-0000-000000000001/files
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+
+script:post-response {
+  test("an unknown project is not found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

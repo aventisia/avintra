@@ -1,0 +1,35 @@
+meta {
+  name: Fill to 10 files, then the 11th is refused
+  type: http
+  seq: 21
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}/files
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"name": "count-1.txt", "content": "x"}
+}
+
+script:post-response {
+  const axios = require("axios");
+  const base = bru.getEnvVar("WORKSPACE_API_BASE_URL") + "/assist/chat-projects/" + bru.getVar("CHAT_PROJECT_ID") + "/files";
+  const headers = { Authorization: "Bearer " + (bru.getEnvVar("ACCESS_TOKEN") || bru.getVar("ACCESS_TOKEN")) };
+  const post = (n) => axios.post(base, { name: "count-" + n + ".txt", content: "x" }, { headers, validateStatus: () => true });
+  test("files up to the cap of 10 are accepted, the 11th is refused", async function() {
+    expect(res.getStatus()).to.equal(201);
+    const statuses = [];
+    let last;
+    for (let n = 2; n <= 10; n++) { last = await post(n); statuses.push(last.status); }
+    expect(statuses.filter((s) => s === 201).length).to.equal(8);
+    expect(last.status).to.equal(400);
+    expect(String(last.data)).to.contain("10 files");
+  });
+}

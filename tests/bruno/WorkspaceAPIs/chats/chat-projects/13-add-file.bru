@@ -1,0 +1,28 @@
+meta {
+  name: Add project file
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}/files
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"name": "notes.md", "content": "The secret word is pineapple.\n"}
+}
+
+script:post-response {
+  test("file is stored", function() {
+    expect(res.getStatus()).to.equal(201);
+    expect(res.getBody().data.name).to.equal("notes.md");
+    expect(res.getBody().data.sizeBytes).to.equal(30);
+  });
+  if (res.getStatus() == 201) bru.setVar("CHAT_PROJECT_FILE_ID", res.getBody().data.id);
+}

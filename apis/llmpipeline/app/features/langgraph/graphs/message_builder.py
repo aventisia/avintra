@@ -31,8 +31,11 @@ def build_messages(llm_request: LLMRequest) -> list[Any]:
             content = getattr(message, "content", "")
 
             if role == "system":
+                # IMPORTANT NOTE: callers re-send the system prompt every turn; a stable id makes
+                # add_messages replace the checkpointed copy instead of appending another (#634).
+                system_index = sum(isinstance(m, SystemMessage) for m in messages)
                 messages.append(
-                    SystemMessage(content=content)
+                    SystemMessage(content=content, id=f"request-system-{system_index}")
                 )
 
             elif role == "user":

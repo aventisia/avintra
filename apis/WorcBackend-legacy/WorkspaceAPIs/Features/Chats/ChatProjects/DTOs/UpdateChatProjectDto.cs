@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.Features.Chats.ChatProjects.DTOs;
 
 /// <summary>
-/// The payload used to rename a project.
+/// The payload used to rename a project and set its instructions.
 /// </summary>
 public class UpdateChatProjectDto
 {
@@ -16,4 +16,10 @@ public class UpdateChatProjectDto
     /// </summary>
     [StringLength(100)]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the instructions. Null leaves them unchanged; blank clears them. Max-4000 characters.
+    /// </summary>
+    [StringLength(4000)]
+    public string? Instructions { get; set; }
 }

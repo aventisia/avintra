@@ -22,6 +22,7 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     .conversationId;
   const [showArchived, setShowArchived] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
   const {
     renameChat,
@@ -111,6 +112,7 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     onProjectFilterChange: setProjectId,
     onCreateProject: (name) => chatProjects.createProject(name, setProjectId),
     onRenameProject: chatProjects.renameProject,
+    onEditProject: (project) => setEditingProjectId(project.id),
     onDeleteProject: confirmDeleteProject,
     onMoveToProject: (item, nextProjectId) => moveToProject(item.id, nextProjectId),
     search: history.search,
@@ -123,5 +125,10 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     onLoadMore: history.loadMore,
   };
 
-  return { props, confirmDelete };
+  return {
+    props,
+    confirmDelete,
+    editingProjectId,
+    closeProjectDialog: () => setEditingProjectId(null),
+  };
 };

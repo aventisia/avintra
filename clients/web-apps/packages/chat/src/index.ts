@@ -39,10 +39,12 @@ export { appendToComposerDraft } from "./utils/composer-draft.util";
 export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
+export { PROJECT_NAME_MAX_LENGTH } from "./constants/chat-name.constant";
 export {
   SYNTHESIZED_FILE_TYPES,
   chatFileSize,
   findChatFile,
+  formatFileSize,
   readDataUrl,
   toDataUrl,
 } from "./utils/chat-file.util";

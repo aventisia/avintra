@@ -23,6 +23,7 @@ import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
 import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
+import { HomeChatProjectDialog } from "./HomeChatProjectDialog";
 import { HomeChatSharedLinksDialog } from "./HomeChatSharedLinksDialog";
 import { HomeChatThread } from "./HomeChatThread";
 
@@ -45,7 +46,12 @@ export const HomeChatLayout = () => {
   const [areSharedLinksOpen, setAreSharedLinksOpen] = useState(false);
   const titles = useHomeChatHistory(false);
   const { renameChat, copyShareLink, stopSharing } = useHomeChatHistoryActions();
-  const { props: historyProps, confirmDelete } = useHomeChatHistoryPanel();
+  const {
+    props: historyProps,
+    confirmDelete,
+    editingProjectId,
+    closeProjectDialog,
+  } = useHomeChatHistoryPanel();
   const activeChat = useHomeChatActiveChat(session.conversationId, titles.items, titles.isLoading);
 
   return (
@@ -103,6 +109,7 @@ export const HomeChatLayout = () => {
         <HomeChatThread key={sessionKey} {...session} />
       </HomeChatFrame>
       <HomeChatPreferencesDialog open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen} />
+      <HomeChatProjectDialog projectId={editingProjectId} onClose={closeProjectDialog} />
       <HomeChatSharedLinksDialog open={areSharedLinksOpen} onOpenChange={setAreSharedLinksOpen} />
     </>
   );

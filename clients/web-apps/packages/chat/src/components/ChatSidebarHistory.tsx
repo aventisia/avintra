@@ -21,6 +21,7 @@ import {
   FolderPlusIcon,
   MagnifyingGlassIcon,
   PencilSimpleIcon,
+  SlidersHorizontalIcon,
   TrashIcon,
   XIcon,
 } from "@phosphor-icons/react";
@@ -77,6 +78,7 @@ export const ChatSidebarHistory = ({
   onProjectFilterChange,
   onCreateProject,
   onRenameProject,
+  onEditProject,
   onDeleteProject,
   onMoveToProject,
 }: ChatSidebarHistoryProps) => {
@@ -212,6 +214,13 @@ export const ChatSidebarHistory = ({
                         projectMenuFocusGuard.markEditing();
                         setProjectEdit({ mode: "rename", project: activeProject });
                       }}
+                    />
+                  )}
+                  {activeProject && onEditProject && (
+                    <SimpleDDMenuItem
+                      content="Project settings"
+                      Icon={SlidersHorizontalIcon}
+                      onSelect={() => onEditProject(activeProject)}
                     />
                   )}
                   {activeProject && onDeleteProject && (

@@ -1,0 +1,26 @@
+meta {
+  name: Set project instructions
+  type: http
+  seq: 10
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"id": "{{CHAT_PROJECT_ID}}", "name": "Renamed project", "instructions": "Always answer in French."}
+}
+
+script:post-response {
+  test("instructions are saved", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.instructions).to.equal("Always answer in French.");
+  });
+}

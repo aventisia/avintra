@@ -81,6 +81,8 @@ export type ChatHistoryProps = {
   onCreateProject?: (name: string) => void;
   /** Renames a project from the filter row's menu; the rename item is hidden without it. */
   onRenameProject?: (projectId: string, name: string) => void;
+  /** Opens a project's settings from the filter row's menu; the settings item is hidden without it. */
+  onEditProject?: (project: ChatHistoryProject) => void;
   /** Deletes a project from the filter row's menu; the delete item is hidden without it. */
   onDeleteProject?: (project: ChatHistoryProject) => void;
   /** Files a chat under a project, or ungroups it with null; the move menu is hidden without it. */
@@ -117,6 +119,7 @@ export const ChatHistory = ({
   onProjectFilterChange,
   onCreateProject,
   onRenameProject,
+  onEditProject,
   onDeleteProject,
   onMoveToProject,
 }: ChatHistoryProps) => {
@@ -181,6 +184,7 @@ export const ChatHistory = ({
           onChange={onProjectFilterChange}
           onCreate={onCreateProject}
           onRename={onRenameProject}
+          onEdit={onEditProject}
           onDelete={onDeleteProject}
         />
       )}

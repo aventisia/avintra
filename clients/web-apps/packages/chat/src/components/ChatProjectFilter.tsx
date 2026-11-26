@@ -5,7 +5,12 @@ import {
   DropdownMenuTrigger,
   SimpleDDMenuItem,
 } from "@avplatform/ui/dropdown-menu";
-import { DotsThreeIcon, PencilSimpleIcon, PlusIcon } from "@phosphor-icons/react";
+import {
+  DotsThreeIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  SlidersHorizontalIcon,
+} from "@phosphor-icons/react";
 import { type ReactNode, useState } from "react";
 
 import { PROJECT_NAME_MAX_LENGTH } from "../constants/chat-name.constant";
@@ -19,6 +24,7 @@ type ChatProjectFilterProps = {
   onChange: (projectId: string | null) => void;
   onCreate?: (name: string) => void;
   onRename?: (projectId: string, name: string) => void;
+  onEdit?: (project: ChatHistoryProject) => void;
   onDelete?: (project: ChatHistoryProject) => void;
 };
 
@@ -33,6 +39,7 @@ export const ChatProjectFilter = ({
   onChange,
   onCreate,
   onRename,
+  onEdit,
   onDelete,
 }: ChatProjectFilterProps) => {
   const [edit, setEdit] = useState<ProjectEdit | null>(null);
@@ -69,7 +76,7 @@ export const ChatProjectFilter = ({
             >
               {project.name}
             </FilterPill>
-            {activeProjectId === project.id && (onRename || onDelete) && (
+            {activeProjectId === project.id && (onRename || onEdit || onDelete) && (
               <DropdownMenu>
                 <DropdownMenuTrigger
                   aria-label={`Options for ${project.name}`}
@@ -79,7 +86,7 @@ export const ChatProjectFilter = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="flex min-w-36 max-w-xs flex-col"
+                  className="flex min-w-40 max-w-xs flex-col"
                   onCloseAutoFocus={focusGuard.onCloseAutoFocus}
                 >
                   {onRename && (
@@ -90,6 +97,13 @@ export const ChatProjectFilter = ({
                         focusGuard.markEditing();
                         setEdit({ mode: "rename", projectId: project.id });
                       }}
+                    />
+                  )}
+                  {onEdit && (
+                    <SimpleDDMenuItem
+                      content="Project settings"
+                      Icon={SlidersHorizontalIcon}
+                      onSelect={() => onEdit(project)}
                     />
                   )}
                   {onDelete && <DeleteDDMenuItem onSelect={() => onDelete(project)} />}

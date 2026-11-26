@@ -49,4 +49,31 @@ public class ChatProjectController : BaseApiController
     {
         return ResultHelper(await _chatProjectService.DeleteChatProjectAsync(chatProjectId));
     }
+
+    /// <summary>
+    /// Retrieves list of chat project files.
+    /// </summary>
+    [HttpGet("{chatProjectId}/files")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<ChatProjectFileDto>>>> GetChatProjectFiles(Guid chatProjectId)
+    {
+        return ResultHelper(await _chatProjectService.GetChatProjectFilesAsync(chatProjectId));
+    }
+
+    /// <summary>
+    /// Inserts a new chat project file.
+    /// </summary>
+    [HttpPost("{chatProjectId}/files")]
+    public async Task<ActionResult<ServiceResponse<ChatProjectFileDto>>> InsertChatProjectFile(Guid chatProjectId, [FromBody] InsertChatProjectFileDto insertChatProjectFileDto)
+    {
+        return ResultHelper(await _chatProjectService.InsertChatProjectFileAsync(chatProjectId, insertChatProjectFileDto));
+    }
+
+    /// <summary>
+    /// Deletes an existing chat project file.
+    /// </summary>
+    [HttpDelete("{chatProjectId}/files/{fileId}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteChatProjectFile(Guid chatProjectId, Guid fileId)
+    {
+        return ResultHelper(await _chatProjectService.DeleteChatProjectFileAsync(chatProjectId, fileId));
+    }
 }

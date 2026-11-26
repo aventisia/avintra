@@ -13,6 +13,8 @@ import {
 } from "../constants/home-chat.constant";
 import { type ChatProjectDto } from "../dtos/chat-project.dto";
 
+type ProjectUpdate = { id: string; name: string; instructions?: string };
+
 /** The user's Home chat projects, plus creating one (handing back its id), renaming and deleting. */
 export const useChatProjects = () => {
   const queryClient = useQueryClient();
@@ -27,14 +29,18 @@ export const useChatProjects = () => {
   });
 
   const rename = useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) => updateChatProject(id, name),
-    onMutate: async ({ id, name }) => {
+    mutationFn: ({ id, name, instructions }: ProjectUpdate) =>
+      updateChatProject(id, name, instructions),
+    onMutate: async ({ id, name, instructions }) => {
       await queryClient.cancelQueries({ queryKey: HOME_CHAT_PROJECTS_QUERY_KEY });
       queryClient.setQueryData<ChatProjectDto[]>(HOME_CHAT_PROJECTS_QUERY_KEY, (projects) =>
-        projects?.map((project) => (project.id === id ? { ...project, name } : project)),
+        projects?.map((project) =>
+          project.id === id
+            ? { ...project, name, instructions: instructions ?? project.instructions }
+            : project,
+        ),
       );
     },
-    onError: () => toast.error("Couldn't rename that project"),
     onSettled: () => queryClient.invalidateQueries({ queryKey: HOME_CHAT_PROJECTS_QUERY_KEY }),
   });
   const remove = useMutation({
@@ -51,7 +57,9 @@ export const useChatProjects = () => {
     projects: query.data ?? [],
     createProject: (name: string, onCreated: (projectId: string) => void) =>
       create.mutate(name, { onSuccess: (response) => onCreated(response.data.id) }),
-    renameProject: (id: string, name: string) => rename.mutate({ id, name }),
+    renameProject: (id: string, name: string) =>
+      rename.mutate({ id, name }, { onError: () => toast.error("Couldn't rename that project") }),
+    updateProject: (update: ProjectUpdate) => rename.mutateAsync(update),
     deleteProject: (id: string) => remove.mutateAsync(id),
   };
 };
