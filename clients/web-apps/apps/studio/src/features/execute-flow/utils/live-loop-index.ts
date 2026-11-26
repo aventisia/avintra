@@ -20,7 +20,7 @@ export type LiveLoopIndex = {
   /** caller||nodeId -> ordered list of enclosing loop ids (outermost first). */
   nodeToParentStack: Record<string, string[]>;
   /** routerId -> default + conditional branch node ids. */
-  routerConfig: Record<string, { defaultId: string; conditionals: string[] }>;
+  routerConfig: Record<string, { defaultId?: string; conditionals: string[] }>;
 };
 
 const toRecord = (entries?: Array<{ key: string; value: string }>): Record<string, string> =>
@@ -66,7 +66,7 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
   const loopRegistry: Record<string, { total: number }> = {};
   const skippedLoops: Record<string, Record<string, true>> = {};
   const nodeToParentStack: Record<string, string[]> = {};
-  const routerConfig: Record<string, { defaultId: string; conditionals: string[] }> = {};
+  const routerConfig: Record<string, { defaultId?: string; conditionals: string[] }> = {};
 
   // Loop merge targets, to recognise a post-loop merge log (which the executor stamps with
   // the just-exited loop's reference even though the merge sits outside the loop).
@@ -84,7 +84,7 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
     const data = node.data as any;
     const defaultId = data?.defaultBranchNodeId;
     const conditionals = (data?.branches || []).filter((id: string) => id !== defaultId);
-    if (defaultId) routerConfig[node.id] = { defaultId, conditionals };
+    routerConfig[node.id] = { defaultId, conditionals };
   });
 
   const stack: string[] = [];

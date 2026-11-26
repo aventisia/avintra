@@ -41,7 +41,7 @@ export interface ExecutionState {
   nodeTypes: Record<string, string>; // nodeId -> React Flow node type
 
   // O(1) Inference Maps
-  routerConfig: Record<string, { defaultId: string; conditionals: string[] }>;
+  routerConfig: Record<string, { defaultId?: string; conditionals: string[] }>;
   /** edgeId -> pathKey -> true. Only edges the execution actually followed are present. */
   traversedEdges: Record<string, Record<string, boolean>>;
 
