@@ -35,11 +35,13 @@ import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.
 import { openHtmlInPreviewTab } from "../utils/chat-preview-host.util";
 import { defaultComparePair, sortVersions } from "../utils/chat-version-diff.util";
 import { printArtifact } from "../utils/print-chat.util";
+import { type ChatSelectionQuote } from "../utils/selection-quote.util";
 import { pngFileName, svgToPngBlob } from "../utils/svg-image.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 import { ChatHtmlPreviewFrame } from "./ChatHtmlPreviewFrame";
 import { ChatIconButton } from "./ChatIconButton";
+import { ChatQuoteSelectionButton } from "./ChatQuoteSelectionButton";
 import { ChatVersionCompare } from "./ChatVersionCompare";
 
 export type ChatPreviewFile = {
@@ -70,6 +72,8 @@ type ChatFilePreviewProps = {
   isSavingVersion?: boolean;
   /** Reads one version's text; without it no Compare button is shown. */
   loadVersionText?: (id: string) => Promise<string | null>;
+  /** Quotes selected text into the chat; without it no selection button is shown. */
+  onQuoteSelection?: (quote: ChatSelectionQuote) => void;
 };
 
 const linkClassName =
@@ -236,6 +240,7 @@ export const ChatFilePreview = ({
   onSaveVersion,
   isSavingVersion,
   loadVersionText,
+  onQuoteSelection,
 }: ChatFilePreviewProps) => {
   const loadable = file?.url ? { ...file, url: file.url } : null;
   const language = loadable && SOURCE_LANGUAGES[loadable.contentType.toLowerCase()];
@@ -287,6 +292,15 @@ export const ChatFilePreview = ({
   const zoom = ZOOM_LEVELS[zoomIndex]!;
   const zoomTo = (index: number) => setZoomFor({ url: loadable!.url, index });
   const sectionRef = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const quoteSelection = (quote: ChatSelectionQuote) => {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    onQuoteSelection?.(quote);
+  };
+  const canQuote =
+    !!onQuoteSelection &&
+    !!loadable &&
+    (showsSource || (isPrintable && loadable.contentType.toLowerCase() !== "text/html"));
   const isFullscreen = useIsFullscreen(sectionRef);
   const toggleFullscreen = () =>
     void (
@@ -470,7 +484,7 @@ export const ChatFilePreview = ({
           <XIcon />
         </ChatIconButton>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         {isLoading ? (
           <div role="status" aria-label="Loading preview" className="space-y-3 p-6">
             <Skeleton className="h-6 w-1/2 rounded" />
@@ -493,16 +507,26 @@ export const ChatFilePreview = ({
             className="h-full w-full resize-none bg-surface p-6 font-mono text-[13px] leading-6 text-ink focus:outline-none"
           />
         ) : fileBody ? (
-          <div
-            className="origin-top-left"
-            style={{
-              width: `${100 / zoom}%`,
-              height: `${100 / zoom}%`,
-              transform: zoom === 1 ? undefined : `scale(${zoom})`,
-            }}
-          >
-            {fileBody}
-          </div>
+          <>
+            <div
+              ref={bodyRef}
+              className="origin-top-left"
+              style={{
+                width: `${100 / zoom}%`,
+                height: `${100 / zoom}%`,
+                transform: zoom === 1 ? undefined : `scale(${zoom})`,
+              }}
+            >
+              {fileBody}
+            </div>
+            {canQuote && (
+              <ChatQuoteSelectionButton
+                bodyRef={bodyRef}
+                fileName={loadable.name}
+                onQuote={quoteSelection}
+              />
+            )}
+          </>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">
             {loadable
