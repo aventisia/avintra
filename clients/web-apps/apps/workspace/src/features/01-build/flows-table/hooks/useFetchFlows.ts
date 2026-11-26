@@ -6,14 +6,24 @@ import { useShallow } from "zustand/react/shallow";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getFlows } from "../apis/flows-table-apis";
-import { FLOWS_QUERY_KEY } from "../constants";
+import { FLOWS_QUERY_KEY, withAssignedFirstFlowsQueryKey } from "../constants";
+
+type UseFetchFlowsOptions = {
+  /** Fetch the Build lists; TU-only callers pass false and read the assigned sources instead. */
+  enabled?: boolean;
+  /** Ask the server to order the rows assigned to the caller first, as the main Agents page shows. */
+  assignedFirst?: boolean;
+};
 
 /**
  * Fetches the current-space (personal) and shared-with-user agents concurrently and
  * exposes them as a single merged list, including archived agents.
  * @returns An object containing the merged data, isFetching flag, and isLoading flag.
  */
-export const useFetchFlows = () => {
+export const useFetchFlows = ({
+  enabled = true,
+  assignedFirst = false,
+}: UseFetchFlowsOptions = {}) => {
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({
       currentSpace: state.currentSpace,
@@ -24,12 +34,17 @@ export const useFetchFlows = () => {
   const results = useQueries({
     queries: [
       {
-        queryKey: [...FLOWS_QUERY_KEY, space],
-        queryFn: () => getFlows({ isPersonal: true, includeArchived: true }),
+        queryKey: withAssignedFirstFlowsQueryKey([...FLOWS_QUERY_KEY, space], assignedFirst),
+        queryFn: () => getFlows({ isPersonal: true, includeArchived: true, assignedFirst }),
+        enabled,
       },
       {
-        queryKey: [...FLOWS_QUERY_KEY, "SHARED", space],
-        queryFn: () => getFlows({ isPersonal: false, includeArchived: true }),
+        queryKey: withAssignedFirstFlowsQueryKey(
+          [...FLOWS_QUERY_KEY, "SHARED", space],
+          assignedFirst,
+        ),
+        queryFn: () => getFlows({ isPersonal: false, includeArchived: true, assignedFirst }),
+        enabled,
       },
     ],
   });

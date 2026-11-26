@@ -15,6 +15,11 @@ const SHOW_ARCHIVED_QUERY_VALUE = "1";
 const withShowArchived = (path: string, showArchived: boolean) =>
   showArchived ? `${path}?${SHOW_ARCHIVED_QUERY_PARAM}=${SHOW_ARCHIVED_QUERY_VALUE}` : path;
 
+const ASSIGNED_FIRST_FLOWS_QUERY_KEY = "assignedFirst";
+
+const withAssignedFirstFlowsQueryKey = (queryKey: string[], assignedFirst: boolean) =>
+  assignedFirst ? [...queryKey, ASSIGNED_FIRST_FLOWS_QUERY_KEY] : queryKey;
+
 const getAgentsPagePath = (showArchived = false) =>
   withShowArchived(AGENTS_PAGE_PATH, showArchived);
 
@@ -37,4 +42,5 @@ export {
   SHOW_ARCHIVED_QUERY_VALUE,
   TABLE_HEADING,
   TABLE_KEY,
+  withAssignedFirstFlowsQueryKey,
 };
