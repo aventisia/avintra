@@ -19,8 +19,9 @@ public class SearchByQueryController : BaseApiController
     public async Task<ActionResult<ServiceResponse<IEnumerable<SearchedUserDto>>>> SearchUser(
         [FromQuery] string? query,
         [FromQuery] bool includeCurrentUser = false,
-        [FromQuery] bool onlyCurrentSpace = false)
+        [FromQuery] bool onlyCurrentSpace = false,
+        [FromQuery] bool onlyTu = false)
     {
-        return ResultHelper(await _searchByQueryService.SearchUserAsync(query, includeCurrentUser, onlyCurrentSpace));
+        return ResultHelper(await _searchByQueryService.SearchUserAsync(query, includeCurrentUser, onlyCurrentSpace, onlyTu));
     }
 }

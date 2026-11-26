@@ -14,20 +14,23 @@ import { UpdateFlowFolderDto } from "../dtos/update-flow-folder.dto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
 
 /**
- * Retrieves all flows created by the user, optionally including archived agents.
+ * Retrieves all flows created by the user, optionally including archived agents and with the
+ * caller's assigned agents first.
  */
 const getFlows = ({
   isPersonal = true,
   includeArchived = false,
+  assignedFirst = false,
 }: {
   isPersonal: boolean;
   includeArchived?: boolean;
+  assignedFirst?: boolean;
 }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
     .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/${path}`, {
       headers: getSpaceHeaders(),
-      params: { includeArchived },
+      params: { includeArchived, ...(assignedFirst ? { assignedFirst } : {}) },
     })
     .then((res) => res.data);
 };

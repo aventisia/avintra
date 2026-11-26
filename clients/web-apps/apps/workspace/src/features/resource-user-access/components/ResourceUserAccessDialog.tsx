@@ -27,6 +27,7 @@ type ResourceUserAccessDialogProps = {
 
 const ResourceUserAccessCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKey: unknown[] }) => {
   const draft = useResourceUserAccessDraft(isOpen, queryKey);
+  const onlyTu = useResourceUserAccessStore((state) => state.onlyTu);
   const spaceName = useCurrentSpaceStore((state) => state.currentSpace?.name ?? "Central");
   const resourceName = getResourceDisplayName(draft.resourceName, draft.resourceType);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -114,7 +115,7 @@ const ResourceUserAccessCard = ({ isOpen, queryKey }: { isOpen: boolean; queryKe
               </div>
             )}
 
-            <SharePanels draft={draft} spaceName={spaceName} />
+            <SharePanels draft={draft} spaceName={spaceName} onlyTu={onlyTu} />
 
             <LinkedItemsSection draft={draft} />
 

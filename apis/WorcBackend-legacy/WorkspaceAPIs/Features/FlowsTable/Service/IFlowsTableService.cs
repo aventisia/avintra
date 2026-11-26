@@ -10,8 +10,9 @@ public interface IFlowsTableService
     /// </summary>
     /// <param name="isPersonal"> If <c>true</c>, returns only personal flows. If <c>false</c>, returns only shared flows. </param>
     /// <param name="includeArchived"> If <c>true</c>, includes flows whose latest version is archived. </param>
+    /// <param name="assignedFirst"> If <c>true</c>, returns the flows assigned to the caller first, then the other published flows, then the rest, keeping the current order inside each of these three sets. </param>
     /// <returns>The task result contains the service response with the list of flow details.</returns>
-    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal, bool includeArchived = false);
+    Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(bool isPersonal, bool includeArchived = false, bool assignedFirst = false);
 
     /// <summary>
     /// Checks the availability of a flow name.

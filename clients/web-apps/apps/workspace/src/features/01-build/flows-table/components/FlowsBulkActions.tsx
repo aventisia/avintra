@@ -14,10 +14,11 @@ import { format } from "date-fns";
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { AgentRow } from "../types/agent-row.type";
 import { MoveSelectedAgentsMenu } from "./bulk-actions/MoveSelectedAgentsMenu";
 
 type FlowsBulkActionsProps = {
-  table: Table<FlowsTableDto>;
+  table: Table<AgentRow>;
 };
 
 /**

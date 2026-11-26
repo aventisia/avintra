@@ -26,13 +26,20 @@ type AgentNameCellProps = {
   flow: FlowsTableDto;
   searchText: string;
   folder?: FoldersTableRowDto;
+  /** False when the row has no flow record, so the name is plain text instead of a Builder link. */
+  showLink?: boolean;
 };
 
 /**
  * Agent glyph and one line: the name (opens the Agent Builder), latest version, Published dot,
  * queue count, and folder chip.
  */
-export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) => {
+export const AgentNameCell = ({
+  flow,
+  searchText,
+  folder,
+  showLink = true,
+}: AgentNameCellProps) => {
   const { href, isExternal } = getAgentBuilderLink(flow.id);
   const linkProps = {
     draggable: false,
@@ -50,7 +57,17 @@ export const AgentNameCell = ({ flow, searchText, folder }: AgentNameCellProps) 
   return (
     <div className="flex min-w-0 max-w-[32rem] items-center gap-2.5 whitespace-nowrap">
       <AgentTypeAvatar type={flow.type} isMuted={flow.isArchived} />
-      {isExternal ? (
+      {!showLink ? (
+        <span
+          title={flow.name}
+          className={cn(
+            "min-w-0 truncate text-body font-semibold",
+            flow.isArchived ? "text-muted-foreground" : "text-ink",
+          )}
+        >
+          {name}
+        </span>
+      ) : isExternal ? (
         <a href={href} {...linkProps}>
           {name}
         </a>

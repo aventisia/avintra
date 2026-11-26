@@ -1,0 +1,22 @@
+meta {
+  name: Search users (Tenant User holders)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/search/user?query={{SEARCH_KEY}}&includeCurrentUser=false&onlyCurrentSpace=false&onlyTu=true
+  body: none
+  auth: bearer
+}
+
+params:query {
+  query: {{SEARCH_KEY}}
+  includeCurrentUser: false
+  onlyCurrentSpace: false
+  onlyTu: true
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
