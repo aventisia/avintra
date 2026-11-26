@@ -23,12 +23,26 @@ def test_defaults_use_the_nginx_prefixes(monkeypatch):
     monkeypatch.setattr(config.settings, "APP_BASE_URL", "avintra.example.com")
     monkeypatch.setattr(config.settings, "ACCOUNTS_API_URL", "")
     monkeypatch.setattr(config.settings, "WORKSPACE_API_URL", "")
+    monkeypatch.setattr(config.settings, "ACCOUNTS_API_BASE_URL", "")
+    monkeypatch.setattr(config.settings, "WORKSPACE_API_BASE_URL", "")
 
     assert config.accounts_api_url() == "https://avintra.example.com/accounts/api"
     assert config.workspace_api_url() == "https://avintra.example.com/workspace/api"
 
 
+def test_shared_service_base_urls_are_used_without_overrides(monkeypatch):
+    monkeypatch.setattr(config.settings, "ACCOUNTS_API_URL", "")
+    monkeypatch.setattr(config.settings, "WORKSPACE_API_URL", "")
+    monkeypatch.setattr(config.settings, "ACCOUNTS_API_BASE_URL", "http://accounts-api:4000/")
+    monkeypatch.setattr(config.settings, "WORKSPACE_API_BASE_URL", "http://workspace-api:4001")
+
+    assert config.accounts_api_url() == "http://accounts-api:4000/api"
+    assert config.workspace_api_url() == "http://workspace-api:4001/api"
+
+
 def test_explicit_overrides_win(monkeypatch):
+    monkeypatch.setattr(config.settings, "ACCOUNTS_API_BASE_URL", "http://accounts-api:4000")
+    monkeypatch.setattr(config.settings, "WORKSPACE_API_BASE_URL", "http://workspace-api:4001")
     monkeypatch.setattr(config.settings, "ACCOUNTS_API_URL", "https://localhost:4000/api")
     monkeypatch.setattr(config.settings, "WORKSPACE_API_URL", "https://localhost:4001/api")
 
