@@ -12,21 +12,21 @@ public class RunnerBinariesController : BaseApiController
     }
 
     // GET: /binaries/runner/latest
-    [HttpGet("latest")]
+    [AcceptVerbs("GET", "HEAD", Route = "latest")]
     public async Task<ActionResult<ServiceResponse<RunnerLatestDto>>> GetRunnerAppLatest()
     {
         return ResultHelper(await _clientBinariesService.GetRunnerAppLatestAsync());
     }
 
     // GET: /binaries/runner/download/
-    [HttpGet("download")]
+    [AcceptVerbs("GET", "HEAD", Route = "download")]
     public IActionResult DownloadRunnerApp()
     {
         return StreamBinary(_clientBinariesService.GetRunnerDownload(null));
     }
 
     // GET: /binaries/runner/download/{version}
-    [HttpGet("download/{version}")]
+    [AcceptVerbs("GET", "HEAD", Route = "download/{version}")]
     public IActionResult DownloadRunnerApp(string version)
     {
         return StreamBinary(_clientBinariesService.GetRunnerDownload(version));

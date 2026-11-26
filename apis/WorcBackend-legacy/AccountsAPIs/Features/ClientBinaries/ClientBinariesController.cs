@@ -12,7 +12,7 @@ public class ClientBinariesController : BaseApiController
     }
 
     // GET: /binaries/download-manifest
-    [HttpGet("download-manifest")]
+    [AcceptVerbs("GET", "HEAD", Route = "download-manifest")]
     public async Task<ActionResult<ServiceResponse<DownloadManifestDto>>> GetDownloadManifest()
     {
         return ResultHelper(await _clientBinariesService.GetDownloadManifestAsync());

@@ -15,7 +15,7 @@ public class ScriptsController : BaseApiController
     // Public install-script endpoint. The proxy rewrites /files/scripts/* to /api/scripts/*,
     // so this action route is intentionally a plain "scripts" prefix without any
     // /binaries/runner/ segment.
-    [HttpGet("Install-AvintraRunnerService.ps1")]
+    [AcceptVerbs("GET", "HEAD", Route = "Install-AvintraRunnerService.ps1")]
     public IActionResult GetInstallScript()
     {
         var result = _clientBinariesService.GetInstallScript();
