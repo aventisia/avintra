@@ -1,4 +1,4 @@
-import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
+import { JobStatusEnum } from "@avplatform/ui/enums";
 
 import { NodeExecutionLogDto } from "./node-execution-log.dto";
 

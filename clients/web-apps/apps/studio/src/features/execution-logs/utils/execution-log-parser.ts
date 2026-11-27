@@ -1,6 +1,16 @@
 import { Edge, Node } from "@xyflow/react";
 
-import { NodeExecutionLogType } from "../types/execution-log-types";
+import { MappedExecution, NodeExecutionLogType } from "../types/execution-log-types";
+
+// These nodes are drawn as invisible 1px anchors between real nodes, so they have no frame to
+// show a mark on.
+const MARKLESS_NODE_TYPES = new Set([
+  "plusNode",
+  "plusFirstNode",
+  "mergeBranchesNode",
+  "branchStartNode",
+  "branchEndNode",
+]);
 
 export const mapLogsToFlow = (
   logs: NodeExecutionLogType[],
@@ -12,11 +22,12 @@ export const mapLogsToFlow = (
    * invocations of one sub-flow cannot overwrite each other's per-path logs.
    */
   callerId?: string | null,
-) => {
+): MappedExecution => {
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
   const executionHistoryMap: Record<string, Record<string, NodeExecutionLogType[]>> = {};
   const branchStats: Record<string, number> = {};
   const loopRegistry: Record<string, { total: number }> = {};
+  const skippedLoops: Record<string, Record<string, true>> = {};
   const nodeToParentStack: Record<string, string[]> = {};
 
   // Traversed edges, keyed by the TARGET node's pathKey — the same key the edge component
@@ -100,6 +111,26 @@ export const mapLogsToFlow = (
   // and the edge that entered the sub-flow is the one from that previous node.
   let previousNodeId: string | null = null;
 
+  // The node + path of the last log recorded for the loaded graph. On a killed or aborted run
+  // that is the step the run stopped at, because the log list arrives ordered by `executedAt`.
+  // Structural nodes are 1px invisible anchors with no frame to mark, so they are skipped.
+  let stoppedAt: { nodeId: string; pathKey: string } | null = null;
+
+  // A stopped step belongs only to the view that contains the run's final log. A sub-flow
+  // that completed before the run failed elsewhere must not claim the stop, so walk the
+  // caller chain from the final log to the selected caller.
+  const callerOfNode: Record<string, string> = {};
+  logs.forEach((entry) => {
+    if (entry.callerReferenceId) callerOfNode[entry.nodeId] = entry.callerReferenceId;
+  });
+  const stopCallers = new Set<string>();
+  let stopCaller = logs[logs.length - 1]?.callerReferenceId ?? "";
+  while (stopCaller && !stopCallers.has(stopCaller)) {
+    stopCallers.add(stopCaller);
+    stopCaller = callerOfNode[stopCaller] ?? "";
+  }
+  const stopIsInView = !callerId || stopCallers.has(callerId);
+
   const updateLoopTotal = (loopId: string, idx: number) => {
     if (!loopRegistry[loopId]) loopRegistry[loopId] = { total: 0 };
     loopRegistry[loopId].total = Math.max(loopRegistry[loopId].total, idx + 1);
@@ -136,6 +167,7 @@ export const mapLogsToFlow = (
     }
 
     // --- LOOP NODE PROCESSING ---
+    let skippedHere = false;
     if (isLoopLog) {
       const loopStatus = outputs?.LoopStatus;
       const isExplicitExit = loopStatus === "exit" || loopStatus === "skip";
@@ -152,6 +184,10 @@ export const mapLogsToFlow = (
         typeof entry.loopIterationIndex === "number" && entry.loopIterationIndex >= 0
           ? entry.loopIterationIndex
           : null;
+
+      if (loopStatus === "skip") {
+        skippedHere = true;
+      }
 
       if (isExplicitExit || legacyExit) {
         // Exit the loop if it is currently on top of the stack.
@@ -226,7 +262,16 @@ export const mapLogsToFlow = (
     const hasAuthoritativeLoop = authoritativeLoopId !== "" && authoritativeIteration >= 0;
 
     let parentLoops: { id: string; idx: number }[];
-    if (hasAuthoritativeLoop) {
+    // The executor stamps the loop's merge node BEFORE clearing the loop context, so a
+    // post-loop merge carries the just-exited loop's id/index (e.g. merge 42419ea6 with
+    // loopReferenceId 09b5d916 idx 3 in the reported run). It is outside the loop, so the
+    // stale authoritative context must be ignored and the enclosing stack used instead —
+    // otherwise the merge is keyed to "3" and vanishes for every other selected iteration.
+    const authoritativeIsLoopMerge =
+      hasAuthoritativeLoop && loopMergeNode[authoritativeLoopId] === nodeId;
+    if (authoritativeIsLoopMerge) {
+      parentLoops = [...stack];
+    } else if (hasAuthoritativeLoop) {
       if (authoritativeLoopId === nodeId) {
         // A loop node's own log is attributed to itself, so it is not its own parent. Its
         // enclosing loops are only known from the order-based stack. The total is NOT updated
@@ -268,6 +313,13 @@ export const mapLogsToFlow = (
 
     executionHistoryMap[nodeId][pathKey].push(entry);
     executionMap[nodeId][pathKey] = entry;
+    if (skippedHere) {
+      if (!skippedLoops[nodeId]) skippedLoops[nodeId] = {};
+      skippedLoops[nodeId][pathKey] = true;
+    }
+    if (stopIsInView && !MARKLESS_NODE_TYPES.has(node.type ?? "")) {
+      stoppedAt = { nodeId, pathKey };
+    }
 
     if (parentLoops.length > 0) {
       nodeToParentStack[nodeId] = parentLoops.map((s) => s.id);
@@ -276,14 +328,28 @@ export const mapLogsToFlow = (
     // Record the edge that led into this node as traversed for this path. Only edges that
     // actually exist in the graph are recorded, so the synthetic caller log emitted when a
     // sub-flow returns cannot create a phantom edge.
-    if (previousNodeId && previousNodeId !== nodeId) {
-      const incomingEdgeId = edgeIdBySourceTarget[`${previousNodeId}|${nodeId}`];
-      if (incomingEdgeId) {
-        if (!traversedEdges[incomingEdgeId]) traversedEdges[incomingEdgeId] = {};
-        traversedEdges[incomingEdgeId][pathKey] = true;
+    // A loop exit log sits between the last body node and the loop's merge node but has no
+    // graph edge to either, so it is transparent for adjacency: retaining the previous body
+    // node lets the branchEnd → merge edge resolve. A skip log is a real hop through the loop
+    // node (nothing ran inside it), so it is kept and draws loop → merge. Only a loop's own
+    // log can be an exit: a conditional break/continue also reports `ConditionsResult`
+    // "False" when it falls through, and is a visible hop that must keep its edges.
+    const exitStatus = (entry.outputs as Record<string, unknown> | undefined)?.LoopStatus;
+    const isExitEntry =
+      exitStatus === "exit" ||
+      (isLoopLog &&
+        exitStatus === undefined &&
+        (entry.outputs as Record<string, unknown> | undefined)?.ConditionsResult === "False");
+    if (!isExitEntry) {
+      if (previousNodeId && previousNodeId !== nodeId) {
+        const incomingEdgeId = edgeIdBySourceTarget[`${previousNodeId}|${nodeId}`];
+        if (incomingEdgeId) {
+          if (!traversedEdges[incomingEdgeId]) traversedEdges[incomingEdgeId] = {};
+          traversedEdges[incomingEdgeId][pathKey] = true;
+        }
       }
+      previousNodeId = nodeId;
     }
-    previousNodeId = nodeId;
 
     // A branch start node is only ever logged when the router SELECTED it, so its incoming
     // edge (router → branch) is authoritative and can be recorded directly. This is required
@@ -318,8 +384,10 @@ export const mapLogsToFlow = (
     executionHistoryMap,
     branchStats,
     loopRegistry,
+    skippedLoops,
     nodeToParentStack,
     routerConfig,
     traversedEdges,
+    stoppedAt,
   };
 };

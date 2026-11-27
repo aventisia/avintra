@@ -21,6 +21,7 @@ import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundViewOnly } from "./BackgroundViewOnly";
 import { NodeDetailPanel } from "./NodeDetailPanel";
+import { RunHeader } from "./RunHeader";
 import { ExecutionLogPanel } from "./execution-log-panel/ExecutionLogPanel";
 import { ViewControls } from "./view-controls";
 
@@ -37,7 +38,7 @@ export const ReactFlowViewOnly = () => {
     useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
   );
 
-  const { isFetching, isSubFlowView } = useReactFlowViewData();
+  const { isFetching, isSubFlowView, runDetail } = useReactFlowViewData();
 
   const { openPanel, closePanel, isNodeDetailPanelOpen } = usePanelStore(
     useShallow((state) => ({
@@ -151,6 +152,8 @@ export const ReactFlowViewOnly = () => {
           >
             {/* Keep navigation controls */}
             <ViewControls />
+            {/* Selected run's status, remark and duration */}
+            <RunHeader run={runDetail} />
             {/* Breadcrumb trail so the user can navigate back out of a sub-flow */}
             <FlowBreadcrumbs />
           </ReactFlow>

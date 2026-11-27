@@ -1,9 +1,11 @@
+import { FALLBACK_STATUS_DISPLAY, STATUS_DISPLAY } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 
 import { DayTimelineEntry } from "@/components/day-timeline";
 
 import { LogEntry } from "../../types/log-list-type";
-import { LEVEL_STYLES, STATUS_LEVEL } from "../../utils/job-log-level";
+import { formatSecondsToCompactDuration } from "../../utils/format-duration.util";
+import { STATUS_TONE_TEXT_CLASS } from "../../utils/status-tone.util";
 
 interface Props {
   entry: LogEntry;
@@ -11,35 +13,21 @@ interface Props {
   onClick: (id: string) => void;
 }
 
-const formatSecondsToCompactDuration = (totalSeconds?: number) => {
-  if (!totalSeconds || totalSeconds <= 0) return "0s";
-
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = Math.floor(totalSeconds % 60);
-
-  const parts: string[] = [];
-
-  if (h > 0) parts.push(`${h}h`);
-  if (m > 0) parts.push(`${m}m`);
-  if (s > 0) parts.push(`${s}s`);
-
-  return parts.join(" ");
-};
-
 export default function ExecutionLogAccordionItem({ entry, isSelected, onClick }: Props) {
-  const levelStyle = LEVEL_STYLES[STATUS_LEVEL[entry.status] ?? "info"];
+  const { label, Icon, tone } = STATUS_DISPLAY[entry.status] ?? FALLBACK_STATUS_DISPLAY;
+  const toneClass = STATUS_TONE_TEXT_CLASS[tone];
 
   return (
     <DayTimelineEntry
       isSelected={isSelected}
       onSelect={() => onClick(entry.id)}
-      markerClassName={cn(levelStyle.shape, levelStyle.text)}
+      markerClassName={cn("rounded-full bg-current", toneClass)}
       title={entry.time}
-      aside={formatSecondsToCompactDuration(entry.duration)}
+      aside={entry.hasEndTime ? formatSecondsToCompactDuration(entry.duration) : "—"}
       subtitle={
         <>
-          <span className={cn("shrink-0 font-medium", levelStyle.text)}>{levelStyle.label}</span>
+          <Icon className={cn("size-3 shrink-0", toneClass)} aria-hidden="true" />
+          <span className={cn("shrink-0 font-medium", toneClass)}>{label}</span>
           <span aria-hidden="true" className="text-line-strong">
             ·
           </span>

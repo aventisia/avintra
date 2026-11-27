@@ -15,6 +15,8 @@ export type LiveLoopIndex = {
   executionMap: Record<string, Record<string, NodeExecutionLogType>>;
   /** loopId -> total number of iterations observed. */
   loopRegistry: Record<string, { total: number }>;
+  /** Loops that were skipped, per parent path (loopId -> pathKey -> true). */
+  skippedLoops: Record<string, Record<string, true>>;
   /** caller||nodeId -> ordered list of enclosing loop ids (outermost first). */
   nodeToParentStack: Record<string, string[]>;
   /** routerId -> default + conditional branch node ids. */
@@ -62,10 +64,21 @@ export const buildLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]):
 const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): LiveLoopIndex => {
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
   const loopRegistry: Record<string, { total: number }> = {};
+  const skippedLoops: Record<string, Record<string, true>> = {};
   const nodeToParentStack: Record<string, string[]> = {};
   const routerConfig: Record<string, { defaultId?: string; conditionals: string[] }> = {};
 
+  // Loop merge targets, to recognise a post-loop merge log (which the executor stamps with
+  // the just-exited loop's reference even though the merge sits outside the loop).
+  const loopMergeNode: Record<string, string> = {};
+
   nodes.forEach((node) => {
+    if (node.type === "forLoopNode") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mergeId = (node.data as any)?.mergeBranchesNodeId;
+      if (mergeId) loopMergeNode[node.id] = mergeId;
+      return;
+    }
     if (node.type !== "conditionalNode") return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data = node.data as any;
@@ -105,7 +118,13 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
       if (stack.length > 0) nodeToParentStack[key] = [...stack];
 
       if (status === "exit" || status === "skip") {
-        // Keep the loop on the stack so the following merge node is recorded under its path.
+        if (status === "skip") {
+          // A skip log's own loop reference can be empty; the log's node is the loop.
+          if (!skippedLoops[log.nodeId]) skippedLoops[log.nodeId] = {};
+          skippedLoops[log.nodeId][parentPath] = true;
+        }
+        // Arm the merge branch below: the loop's merge log arrives next and pops the loop,
+        // so the merge is recorded under the enclosing path.
         if (loopId) pendingClose[loopId] = true;
       } else {
         if (loopId && stack[stack.length - 1] !== loopId) stack.push(loopId);
@@ -121,25 +140,27 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
       continue;
     }
 
-    // Merge node: the first log after a loop exit that carries that loop's reference. Record
-    // it under the loop path, then pop the loop.
+    // First log after a loop exit that still carries that loop's reference: normally the
+    // loop's merge node, which the executor stamps BEFORE clearing the loop context. Pop
+    // the loop first so the merge is recorded under the enclosing path (global for a
+    // top-level loop) and stays resolved for every selected iteration, not just the last.
+    // A non-merge log (or a loop unknown to the loaded graph, e.g. a parent loop while
+    // viewing a sub-flow) pops on the same first log, then is recorded.
     if (loopId && pendingClose[loopId]) {
-      const key = scopeKey(caller, log.nodeId);
-      const pathKey = stack.map((id) => currentIteration[id] ?? 0).join("-") || "global";
-      if (!executionMap[key]) executionMap[key] = {};
-      executionMap[key][pathKey] = log;
-      if (stack.length > 0) nodeToParentStack[key] = [...stack];
-
-      const idx = stack.lastIndexOf(loopId);
-      if (idx >= 0) stack.splice(idx);
-      delete pendingClose[loopId];
+      const mergeId = loopMergeNode[loopId];
+      if (mergeId === undefined || log.nodeId === mergeId) {
+        const idx = stack.lastIndexOf(loopId);
+        if (idx >= 0) stack.splice(idx);
+        delete pendingClose[loopId];
+      }
+      record(log);
       continue;
     }
 
     record(log);
   }
 
-  return { executionMap, loopRegistry, nodeToParentStack, routerConfig };
+  return { executionMap, loopRegistry, skippedLoops, nodeToParentStack, routerConfig };
 };
 
 /** Builds the path key for a node using the currently selected loop iterations. */

@@ -867,11 +867,8 @@ public class JobsTableService : IJobsTableService
             if (!CanCallerActOnJobMachine(job))
                 return serviceResponse.Update("Job is assigned to a different machine.", 403);
 
-            // CANNOT CLOSE THE JOB: Job is already in a terminal status
-            if (job.Status.IsTerminal())
-                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 409);
-
-            // Run the shared close logic.
+            // Run the shared close logic, which persists late step logs even when the job is
+            // already closed by the server (for example, killed on timeout).
             var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs ?? []);
             return closeResult;
         }
@@ -890,6 +887,19 @@ public class JobsTableService : IJobsTableService
 
         try
         {
+            // IMPORTANT NOTE: a job the server already closed keeps its own status, EndTime,
+            // remark and credits; only step logs that arrive late (a runner close after a kill)
+            // are persisted, and the close itself is still rejected.
+            if (job.Status.IsTerminal())
+            {
+                if (nodeExecutionLogs is { Count: > 0 })
+                {
+                    await _nodeExecutionLogService.InsertNodeExecutionLogsAsync(job.Id, nodeExecutionLogs);
+                }
+
+                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 409);
+            }
+
             var now = DateTimeOffset.UtcNow;
 
             // Apply closure fields.

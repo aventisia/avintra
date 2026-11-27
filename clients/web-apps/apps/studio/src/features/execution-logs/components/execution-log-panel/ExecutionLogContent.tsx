@@ -1,4 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
+import { isErrorStatus } from "@avplatform/ui/utils";
 import { CheckCircleIcon, ListDashesIcon, WarningIcon } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { useEffect, useMemo } from "react";
@@ -8,7 +9,6 @@ import { DayTimelineSkeleton } from "@/components/day-timeline";
 import { useFetchExecutionLogsList } from "../../hooks/useFetchExecutionLogsList.hook";
 import { useJobExecutionQueryParams } from "../../hooks/useJobExecutionQueryParams";
 import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
-import { isErrorStatus } from "../../utils/job-log-level";
 import ExecutionLogAccordion from "./ExecutionLogAccordion";
 
 interface Props {
