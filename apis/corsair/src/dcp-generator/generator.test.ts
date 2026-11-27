@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { createCorsair } from "corsair";
 import { plugins } from "../plugins.js";
 import { PLUGIN_DISPLAY_NAMES } from "./plugin-metadata.js";
@@ -19,6 +20,37 @@ import { PLUGIN_DESCRIPTIONS } from "../plugin-descriptions.js";
 import { generateToolMetadata } from "../generate-tool-metadata.js";
 import { humanizeFieldKey } from "./schema-to-fields.js";
 import { generateDcpFiles } from "./index.js";
+import { deriveDefaultAuthType } from "./auth-type.js";
+import {
+  formSatisfiesDefaultAuthMode,
+  isPlatformOwnedVaultCredentialType,
+} from "./integration-catalog.js";
+import { isOAuthTwoPlugin } from "../corsair.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(__dirname, "../../../..");
+const frontendCatalogPath = path.join(
+  repoRoot,
+  "clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials/vault-credential-config/constants/corsair-integration-catalog.json",
+);
+const backendCatalogPath = path.join(
+  repoRoot,
+  "apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles/CorsairIntegrationCatalog.json",
+);
+const formsDir = path.join(
+  repoRoot,
+  "clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json",
+);
+const frontendEnumPath = path.join(
+  repoRoot,
+  "clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials/enums/vault-credential-apps.enum.ts",
+);
+const backendEnumPath = path.join(
+  repoRoot,
+  "apis/WorcBackend-legacy/AspNetToolkit/Enums/VaultCredentialTypesEnum.cs",
+);
+const packageJsonPath = path.join(repoRoot, "apis/corsair/package.json");
+const packageLockPath = path.join(repoRoot, "apis/corsair/package-lock.json");
 
 const corsair = createCorsair({
   multiTenancy: true,
@@ -43,10 +75,57 @@ function assert(cond: boolean, message: string): void {
   if (!cond) throw new Error(`ASSERTION FAILED: ${message}`);
 }
 
+function parseTypeScriptEnumMembers(source: string): Set<string> {
+  return parseEnumMembers(source, (line) => line.replace(/\/\/.*$/, ""));
+}
+
+function parseCSharpEnumMembers(source: string): Set<string> {
+  return parseEnumMembers(source, (line) => line);
+}
+
+function parseEnumMembers(
+  source: string,
+  clean: (line: string) => string,
+): Set<string> {
+  const body = source.slice(source.indexOf("{") + 1, source.lastIndexOf("}"));
+  return new Set(
+    body
+      .split("\n")
+      .map((line) => clean(line).trim())
+      .filter((line) => /^[A-Za-z][A-Za-z0-9_]*,?$/.test(line))
+      .map((line) => line.replace(/,$/, "")),
+  );
+}
+
+function readJsonArray(filePath: string): Array<Record<string, unknown>> {
+  const parsed = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  assert(Array.isArray(parsed), `${filePath} is not an array`);
+  return parsed;
+}
+
+function inputFieldNames(fields: Array<Record<string, unknown>>): string[] {
+  return fields
+    .filter((field) => field.direction === "Input" && typeof field.name === "string")
+    .map((field) => field.name as string);
+}
+
+function missingFromSet(expected: Iterable<string>, actual: Set<string>): string[] {
+  return [...expected].filter((value) => !actual.has(value));
+}
+
 async function main() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "corsair-dcp-test-"));
+  const tmpFormsDir = path.join(tmpDir, "config-json");
   try {
-    await generateDcpFiles({ outputDir: tmpDir, plugins, corsair });
+    // Keep every write inside tmpDir: the test never touches the committed
+    // catalogs or forms it validates.
+    await generateDcpFiles({
+      outputDir: tmpDir,
+      plugins,
+      corsair,
+      frontendCatalogFile: path.join(tmpDir, "corsair-integration-catalog.json"),
+      vaultCredentialConfigDir: tmpFormsDir,
+    });
 
     const configRoot = path.join(tmpDir, "Corsair");
     const mappingFile = path.join(tmpDir, "CorsairActionSelectorMappingFile.json");
@@ -214,7 +293,9 @@ async function main() {
       );
     }
 
-    const catalog = JSON.parse(fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"));
+    const catalog: any[] = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"),
+    );
     const microsoftEntries = catalog.filter((entry: any) =>
       ["outlook", "teams", "onedrive", "sharepoint"].includes(entry.pluginId),
     );
@@ -384,6 +465,131 @@ async function main() {
         `non-mapped plugin field '${field.name}' label is not humanized`,
       );
     }
+
+    // 8. Drift check: committed outputs, credential-type lists, form files,
+    //    form fields, plugin registry, dependency list, and the sidecar OAuth
+    //    gate all agree with the freshly generated catalog.
+    const generatedCatalogBytes = fs.readFileSync(
+      path.join(tmpDir, "CorsairIntegrationCatalog.json"),
+      "utf8",
+    );
+    assert(
+      fs.readFileSync(frontendCatalogPath, "utf8") === generatedCatalogBytes,
+      "frontend catalog is stale; run `npm run generate:configs`",
+    );
+    assert(
+      fs.readFileSync(backendCatalogPath, "utf8") === generatedCatalogBytes,
+      "backend catalog is stale; run `npm run generate:configs`",
+    );
+
+    const catalogTypes = new Set(catalog.map((entry: any) => entry.vaultCredentialType as string));
+
+    const pluginById = new Map(plugins.map((p: any) => [p.id as string, p]));
+    for (const entry of catalog as any[]) {
+      const plugin = pluginById.get(entry.pluginId);
+      assert(plugin, `catalog lists plugin '${entry.pluginId}' that is not loaded`);
+      assert(
+        entry.defaultAuthMode === deriveDefaultAuthType(plugin),
+        `catalog defaultAuthMode for '${entry.pluginId}' is not its runtime default`,
+      );
+    }
+
+    const frontendMembers = parseTypeScriptEnumMembers(fs.readFileSync(frontendEnumPath, "utf8"));
+    const missingFrontendMembers = missingFromSet(catalogTypes, frontendMembers);
+    assert(
+      missingFrontendMembers.length === 0,
+      `frontend VaultCredentialAppsEnum is missing catalog types: ${missingFrontendMembers.join(", ")}`,
+    );
+
+    const backendMembers = parseCSharpEnumMembers(fs.readFileSync(backendEnumPath, "utf8"));
+    const missingBackendMembers = missingFromSet(catalogTypes, backendMembers);
+    assert(
+      missingBackendMembers.length === 0,
+      `backend VaultCredentialTypesEnum is missing catalog types: ${missingBackendMembers.join(", ")}`,
+    );
+
+    const formFiles = new Set(
+      fs
+        .readdirSync(formsDir)
+        .filter((file) => file.endsWith(".json"))
+        .map((file) => file.slice(0, -".json".length)),
+    );
+    const missingForms = [...catalogTypes].filter((type) => !formFiles.has(type));
+    assert(missingForms.length === 0, `missing vault credential forms: ${missingForms.join(", ")}`);
+
+    const firstEntryByType = new Map<string, any>();
+    for (const entry of catalog as any[]) {
+      if (!firstEntryByType.has(entry.vaultCredentialType)) {
+        firstEntryByType.set(entry.vaultCredentialType, entry);
+      }
+    }
+    for (const [type, entry] of firstEntryByType) {
+      if (isPlatformOwnedVaultCredentialType(type)) continue;
+      const fields = readJsonArray(path.join(formsDir, `${type}.json`));
+      assert(
+        formSatisfiesDefaultAuthMode(entry, inputFieldNames(fields)),
+        `form ${type}.json does not collect its default auth mode (${entry.defaultAuthMode}) fields`,
+      );
+    }
+
+    const catalogPluginIds = new Set(catalog.map((entry: any) => entry.pluginId as string));
+    const unknownCatalogPlugins = [...catalogPluginIds].filter((id) => !pluginIds.has(id));
+    assert(
+      unknownCatalogPlugins.length === 0,
+      `catalog lists unknown plugins: ${unknownCatalogPlugins.join(", ")}`,
+    );
+
+    const dependencyPluginIds = new Set(
+      Object.keys(JSON.parse(fs.readFileSync(packageJsonPath, "utf8")).dependencies ?? {})
+        .filter((name) => name.startsWith("@corsair-dev/"))
+        .map((name) => name.slice("@corsair-dev/".length)),
+    );
+    const missingDependencies = [...pluginIds].filter((id) => !dependencyPluginIds.has(id));
+    assert(
+      missingDependencies.length === 0,
+      `plugins without a @corsair-dev dependency: ${missingDependencies.join(", ")}`,
+    );
+    const orphanDependencies = [...dependencyPluginIds].filter((id) => !pluginIds.has(id));
+    assert(
+      orphanDependencies.length === 0,
+      `@corsair-dev dependencies not registered as plugins: ${orphanDependencies.join(", ")}`,
+    );
+
+    for (const entry of catalog as any[]) {
+      const catalogSaysOAuth = entry.defaultAuthMode === "oauth_2" && Boolean(entry.oauthConfig);
+      assert(
+        isOAuthTwoPlugin(entry.pluginId) === catalogSaysOAuth,
+        `sidecar OAuth gate disagrees with the catalog for '${entry.pluginId}' (${entry.vaultCredentialType})`,
+      );
+    }
+
+    const oauthConfiguredTypes = new Set(
+      (catalog as any[])
+        .filter((entry) => entry.oauthConfig)
+        .map((entry) => entry.vaultCredentialType as string),
+    );
+    const hiddenTypes = new Set(
+      (catalog as any[])
+        .filter(
+          (entry) =>
+            entry.defaultAuthMode === "oauth_2" &&
+            !oauthConfiguredTypes.has(entry.vaultCredentialType),
+        )
+        .map((entry) => entry.vaultCredentialType as string),
+    );
+    const offeredTypes = [...catalogTypes].filter((type) => !hiddenTypes.has(type));
+    for (const type of offeredTypes) {
+      assert(
+        !hiddenTypes.has(type),
+        `offered provider '${type}' defaults to OAuth without app settings`,
+      );
+    }
+
+    console.log(
+      `Drift check: ${catalogTypes.size} catalog types, ${hiddenTypes.size} hidden OAuth-default types without settings` +
+        (hiddenTypes.size > 0 ? ` (${[...hiddenTypes].join(", ")})` : "") +
+        ".",
+    );
 
     console.log(`PASS: ${configFiles.length} configs, ${actionMap.length} invocations, ${appIntegrations.actionCategories.length} categories.`);
   } finally {

@@ -1,19 +1,19 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "ClientId",
-    "label": "Client Id",
-    "description": "Client Id for Insightoai.",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Insighto.ai.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "password",
-    "name": "ClientSecret",
-    "label": "Client Secret",
-    "description": "Client Secret for Insightoai.",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Insighto.ai.",
     "defaultValue": "",
     "required": true
   }

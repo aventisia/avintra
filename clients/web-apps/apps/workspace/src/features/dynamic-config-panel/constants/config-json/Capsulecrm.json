@@ -1,19 +1,19 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "ClientId",
-    "label": "Client Id",
-    "description": "Client Id for Capsule CRM.",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Capsule CRM.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "password",
-    "name": "ClientSecret",
-    "label": "Client Secret",
-    "description": "Client Secret for Capsule CRM.",
+    "type": "text",
+    "name": "subdomain",
+    "label": "Subdomain",
+    "description": "Subdomain for Capsule CRM.",
     "defaultValue": "",
     "required": true
   }
