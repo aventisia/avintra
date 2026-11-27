@@ -1,15 +1,21 @@
 import { ChatIconButton } from "@avplatform/chat";
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
-import { formatDate } from "@avplatform/ui/utils";
+import { IconTile, type IconTileTone } from "@avplatform/ui/icon-tile";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import { formatRelativeTime } from "@avplatform/ui/utils";
 import {
   ChatCircleIcon,
-  CircleNotchIcon,
   FileTextIcon,
   LinkBreakIcon,
   LinkSimpleIcon,
+  ShareNetworkIcon,
 } from "@phosphor-icons/react";
-import { type ReactNode } from "react";
+import { type ComponentProps } from "react";
 import { Link } from "react-router-dom";
+
+import { CardDialog } from "@/components/card-dialog/CardDialog";
+import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
+import { StatusLine } from "@/components/card-dialog/StatusLine";
+import { pluralize } from "@/utils/pluralize.util";
 
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
 import { SHARED_CHATS_LIMIT, useHomeChatSharedLinks } from "../hooks/useHomeChatSharedLinks.hook";
@@ -19,40 +25,56 @@ type SharedLinkRow = {
   name: string;
   detail: string;
   href: string;
-  icon: ReactNode;
 };
 
-const SharedLinkSection = ({
-  title,
-  rows,
-  note,
-  onOpen,
-  onCopyLink,
-  onStopSharing,
-}: {
-  title: string;
+type SharedLinkSectionProps = {
   rows: SharedLinkRow[];
+  Icon: ComponentProps<typeof IconTile>["Icon"];
+  tone: IconTileTone;
+  emptyTitle: string;
+  emptyHint: string;
   note?: string;
   onOpen: () => void;
   onCopyLink: (id: string) => void;
   onStopSharing: (id: string) => void;
-}) => (
-  <section aria-label={title}>
-    <h3 className="mb-1.5 text-body-sm font-semibold text-ink">
-      {title} <span className="font-normal text-muted-foreground">({rows.length})</span>
-    </h3>
-    {rows.length === 0 ? (
-      <p className="py-2 text-body-sm text-muted-foreground">None shared.</p>
-    ) : (
-      <ul className="flex flex-col">
+};
+
+const SharedLinkSection = ({
+  rows,
+  Icon,
+  tone,
+  emptyTitle,
+  emptyHint,
+  note,
+  onOpen,
+  onCopyLink,
+  onStopSharing,
+}: SharedLinkSectionProps) => {
+  if (rows.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-1 rounded-md border border-dashed border-line-strong/40 bg-sunken/50 px-6 py-10 text-center">
+        <IconTile Icon={Icon} size="xl" tone={tone} className="mb-2" />
+        <p className="text-body-sm font-semibold text-ink">{emptyTitle}</p>
+        <p className="max-w-[26rem] text-[12.5px] leading-5 text-muted-foreground">{emptyHint}</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ul className="flex flex-col gap-2">
         {rows.map((row) => (
           <li
             key={row.id}
-            className="flex items-center gap-3 border-b border-line/60 py-1.5 last:border-b-0"
+            className="flex items-center gap-3 rounded-md bg-surface py-2 pl-2.5 pr-2 ring-1 ring-line transition hover:bg-muted/60 hover:ring-line-strong/40"
           >
-            <span className="text-muted-foreground [&>svg]:size-4">{row.icon}</span>
-            <Link to={row.href} onClick={onOpen} className="min-w-0 flex-1 hover:underline">
-              <span className="block truncate text-body-sm text-ink">{row.name}</span>
+            <IconTile Icon={Icon} size="md" tone={tone} />
+            <Link
+              to={row.href}
+              onClick={onOpen}
+              className="min-w-0 flex-1 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <span className="block truncate text-body-sm font-medium text-ink">{row.name}</span>
               <span className="block truncate text-xs text-muted-foreground">{row.detail}</span>
             </Link>
             <ChatIconButton label={`Copy link to ${row.name}`} onClick={() => onCopyLink(row.id)}>
@@ -68,9 +90,26 @@ const SharedLinkSection = ({
           </li>
         ))}
       </ul>
-    )}
-    {note && <p className="pt-2 text-xs text-muted-foreground">{note}</p>}
-  </section>
+      {note && <p className="pt-2.5 text-xs text-muted-foreground">{note}</p>}
+    </>
+  );
+};
+
+const LoadingRows = () => (
+  <div role="status" aria-label="Loading shared links" className="flex flex-col gap-2">
+    {[0, 1, 2].map((index) => (
+      <div
+        key={index}
+        className="flex animate-pulse items-center gap-3 rounded-md bg-surface py-2 pl-2.5 pr-2 ring-1 ring-line"
+      >
+        <span className="size-8 rounded-md bg-muted" />
+        <span className="flex flex-1 flex-col gap-1.5">
+          <span className="h-3 w-2/5 rounded-sm bg-muted" />
+          <span className="h-2.5 w-1/4 rounded-sm bg-muted" />
+        </span>
+      </div>
+    ))}
+  </div>
 );
 
 type HomeChatSharedLinksDialogProps = {
@@ -89,60 +128,94 @@ export const HomeChatSharedLinksDialog = ({
   const chatRows = links.chats.map<SharedLinkRow>((chat) => ({
     id: chat.id,
     name: chat.title,
-    detail: `Updated ${formatDate(chat.lastModifiedOn)}`,
+    detail: `Updated ${formatRelativeTime(chat.lastModifiedOn)}`,
     href: `${HOME_CHAT_CONVERSATION_ROUTE}/${chat.id}`,
-    icon: <ChatCircleIcon />,
   }));
   const fileRows = links.files.map<SharedLinkRow>((file) => ({
     id: file.id,
     name: file.versionNumber > 1 ? `${file.name} (v${file.versionNumber})` : file.name,
     detail: file.conversationTitle ?? "Chat file",
     href: `${HOME_CHAT_CONVERSATION_ROUTE}/${file.conversationId}?file=${file.id}`,
-    icon: <FileTextIcon />,
   }));
 
+  const status = links.isError ? (
+    <StatusLine tone="error">Couldn't load your shared links.</StatusLine>
+  ) : links.isLoading ? (
+    <StatusLine tone="idle">Loading shared links</StatusLine>
+  ) : (
+    <StatusLine tone={chatRows.length + fileRows.length > 0 ? "open" : "idle"}>
+      {chatRows.length + fileRows.length === 0
+        ? "Nothing shared yet"
+        : `${chatRows.length} ${pluralize(chatRows.length, "chat")} · ${fileRows.length} ${pluralize(fileRows.length, "file")} shared`}
+    </StatusLine>
+  );
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[560px]">
-        <DialogDefaultHeader
-          heading="Shared links"
-          description="People signed in to this workspace can read a chat or file from its link. Stop sharing to turn its link off."
-        />
-        <div className="flex max-h-[70dvh] flex-col gap-5 overflow-y-auto px-5 py-4">
-          {links.isLoading ? (
-            <p className="flex items-center justify-center gap-2 py-8 text-body-sm text-muted-foreground">
-              <CircleNotchIcon className="size-4 animate-spin" />
-              Loading shared links
-            </p>
-          ) : links.isError ? (
-            <p role="alert" className="py-8 text-center text-body-sm text-bad">
-              Couldn't load your shared links.
-            </p>
-          ) : (
-            <>
-              <SharedLinkSection
-                title="Chats"
-                rows={chatRows}
-                note={
-                  links.hasMoreChats
-                    ? `Showing the first ${SHARED_CHATS_LIMIT} shared chats.`
-                    : undefined
-                }
-                onOpen={close}
-                onCopyLink={links.copyChatLink}
-                onStopSharing={links.stopSharingChat}
-              />
-              <SharedLinkSection
-                title="Files"
-                rows={fileRows}
-                onOpen={close}
-                onCopyLink={links.copyFileLink}
-                onStopSharing={links.stopSharingFile}
-              />
-            </>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <CardDialog
+      isOpen={open}
+      onClose={close}
+      widthClassName="w-[min(36rem,calc(100vw-2rem))]"
+      mark={<IconTile Icon={ShareNetworkIcon} size="xl" className="size-12 [&>svg]:size-6" />}
+      eyebrow="Chat"
+      title="Shared links"
+      footer={
+        <>
+          {status}
+          <CardDialogButton onClick={close}>Done</CardDialogButton>
+        </>
+      }
+    >
+      <p className="pb-4 text-[13px] leading-5 text-muted-foreground">
+        People signed in to this workspace can read a chat or file from its link. Stop sharing to
+        turn its link off.
+      </p>
+      {links.isLoading ? (
+        <LoadingRows />
+      ) : links.isError ? (
+        <p role="alert" className="py-8 text-center text-body-sm text-bad">
+          Couldn't load your shared links.
+        </p>
+      ) : (
+        <Tabs defaultValue="chats">
+          <TabsList className="mb-3 flex w-full">
+            <TabsTrigger value="chats">
+              Chats <span className="font-normal tabular-nums">({chatRows.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="files">
+              Files <span className="font-normal tabular-nums">({fileRows.length})</span>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="chats" className="mt-0">
+            <SharedLinkSection
+              rows={chatRows}
+              Icon={ChatCircleIcon}
+              tone="neutral"
+              emptyTitle="No shared chats yet"
+              emptyHint="Chats you share show up here, so you can copy their link again or turn it off."
+              note={
+                links.hasMoreChats
+                  ? `Showing the first ${SHARED_CHATS_LIMIT} shared chats.`
+                  : undefined
+              }
+              onOpen={close}
+              onCopyLink={links.copyChatLink}
+              onStopSharing={links.stopSharingChat}
+            />
+          </TabsContent>
+          <TabsContent value="files" className="mt-0">
+            <SharedLinkSection
+              rows={fileRows}
+              Icon={FileTextIcon}
+              tone="sky"
+              emptyTitle="No shared files yet"
+              emptyHint="Files you share show up here, so you can copy their link again or turn it off."
+              onOpen={close}
+              onCopyLink={links.copyFileLink}
+              onStopSharing={links.stopSharingFile}
+            />
+          </TabsContent>
+        </Tabs>
+      )}
+    </CardDialog>
   );
 };

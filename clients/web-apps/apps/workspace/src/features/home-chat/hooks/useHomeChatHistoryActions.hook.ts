@@ -96,25 +96,17 @@ export const useHomeChatHistoryActions = () => {
 
   const share = useMutation({
     mutationFn: shareConversation,
-    onSettled: refreshHistory,
+    onSettled: () => void refreshHistory(),
   });
 
   const unshare = useMutation({
     mutationFn: unshareConversation,
     onSuccess: () => toast.success("Sharing stopped"),
-    onError: () => toast.error("Couldn't stop sharing"),
-    onSettled: refreshHistory,
+    onSettled: () => void refreshHistory(),
   });
 
-  const copyShareLink = async (id: string) => {
-    try {
-      const token = (await share.mutateAsync(id)).data;
-      await navigator.clipboard.writeText(buildSharedChatLink(token));
-      toast.success("Read-only link copied");
-    } catch {
-      toast.error("Couldn't create the share link");
-    }
-  };
+  const createShareLink = async (id: string) =>
+    buildSharedChatLink((await share.mutateAsync(id)).data);
 
   const refreshAfterDelete = () => {
     void refreshHistory();
@@ -145,8 +137,10 @@ export const useHomeChatHistoryActions = () => {
       pin.mutate({ id, isPinned: !isPinned }),
     moveToProject: (id: string, projectId: string | null) => moveProject.mutate({ id, projectId }),
     setArchived: (id: string, archived: boolean) => archive.mutate({ id, archived }),
-    copyShareLink,
-    stopSharing: (id: string) => unshare.mutate(id),
+    createShareLink,
+    stopSharing: async (id: string) => {
+      await unshare.mutateAsync(id);
+    },
     deleteChat,
     archiveChats: archiveMany.mutateAsync,
     deleteChats,

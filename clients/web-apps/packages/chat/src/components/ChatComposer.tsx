@@ -112,7 +112,7 @@ export const ChatComposer = ({
             placeholder={placeholder}
             aria-label="Message"
             onKeyDown={recallLastMessage}
-            className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-5 pb-1 pt-4 text-base leading-6 text-ink outline-none placeholder:text-muted-foreground"
+            className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-5 pb-1 pt-4 text-[14.5px] leading-6 text-ink outline-none placeholder:text-muted-foreground"
           />
           {notice && (
             <p role="alert" className="px-5 pb-1 text-sm text-bad">

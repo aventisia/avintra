@@ -102,6 +102,15 @@ public class ConversationController : BaseApiController
         return ResultHelper(await _conversationService.UpdateLandingConversationPinAsync(updateConversationPinDto));
     }
 
+    /// <summary>
+    /// Remembers the model, effort and web search of one of the current user's landing conversations.
+    /// </summary>
+    [HttpPut("landing/settings")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationSettings([FromBody] UpdateConversationSettingsDto updateConversationSettingsDto)
+    {
+        return ResultHelper(await _conversationService.UpdateLandingConversationSettingsAsync(updateConversationSettingsDto));
+    }
+
     // Archives a conversation (moves it to archived state).
     [HttpPost("{conversationId}/archive")]
     public async Task<ActionResult<ServiceResponse<bool>>> Archive(Guid conversationId)

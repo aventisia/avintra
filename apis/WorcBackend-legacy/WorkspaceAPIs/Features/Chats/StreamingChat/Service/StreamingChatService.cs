@@ -253,7 +253,11 @@ public class StreamingChatService : IStreamingChatService
         }
 
         if (request.ConversationId is Guid conversationId)
+        {
             await TitleLandingConversationAsync(conversationId, request.UserInput, cancellationToken);
+            if (!request.IsTempChat)
+                await SaveLandingConversationSettingsAsync(conversationId, modelSelection, request, cancellationToken);
+        }
 
         var currentSpaceId = _currentTenantService.CurrentSpaceId;
         var profilePrompt = await BuildUserChatProfilePromptAsync(cancellationToken);
@@ -310,6 +314,27 @@ public class StreamingChatService : IStreamingChatService
                 w.Title == null)
             .ExecuteUpdateAsync(setters => setters.SetProperty(c => c.Title, title), cancellationToken);
     }
+
+    /// <summary>
+    /// Remembers the model, effort and web search a landing turn runs with, so reopening the chat restores them.
+    /// </summary>
+    private Task SaveLandingConversationSettingsAsync(
+        Guid conversationId,
+        LlmModelSelection modelSelection,
+        StreamingChatRequestDto request,
+        CancellationToken cancellationToken) =>
+        _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == conversationId &&
+                w.UserId == _userId &&
+                w.FlowVersionId == null)
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(c => c.ModelProvider, modelSelection.Provider)
+                    .SetProperty(c => c.ModelId, modelSelection.Model)
+                    .SetProperty(c => c.ReasoningEffort, NormalizeReasoningEffort(request.ReasoningEffort))
+                    .SetProperty(c => c.WebSearch, request.WebSearch),
+                cancellationToken);
 
     /// <summary>
     /// Posts the approval decisions to llmpipeline /chat/completions/approvals

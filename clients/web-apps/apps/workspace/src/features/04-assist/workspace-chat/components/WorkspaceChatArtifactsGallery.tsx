@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
+import { ShareLinkDialog } from "@/components/share-link-dialog/ShareLinkDialog";
 import {
   HOME_CHAT_CONVERSATION_ROUTE,
   HOME_CHAT_FILES_QUERY_KEY,
@@ -74,6 +75,10 @@ export const WorkspaceChatArtifactsGallery = () => {
     () => latestArtifacts(all.data?.data ?? [], hiddenIds),
     [all.data, hiddenIds],
   );
+  const [sharingArtifactId, setSharingArtifactId] = useState<string | null>(null);
+  const sharedArtifact = useRef(artifacts[0]);
+  const sharingArtifact = artifacts.find((artifact) => artifact.id === sharingArtifactId);
+  if (sharingArtifact) sharedArtifact.current = sharingArtifact;
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<ArtifactKind>("all");
   const [sort, setSort] = useState<ArtifactSort>("newest");
@@ -157,25 +162,26 @@ export const WorkspaceChatArtifactsGallery = () => {
     }
   };
 
-  const copyShareLink = async (artifactId: string) => {
-    try {
-      const token = (await shareChatArtifact(artifactId)).data;
-      await navigator.clipboard.writeText(buildSharedFileLink(token));
-      toast.success("Read-only link copied");
-    } catch {
-      toast.error("Couldn't create the share link");
-    }
+  const refreshSharing = () => {
     void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
   };
 
-  const stopSharing = async (artifactId: string) => {
+  const createFileShareLink = async (artifactId: string) => {
+    try {
+      return buildSharedFileLink((await shareChatArtifact(artifactId)).data);
+    } finally {
+      refreshSharing();
+    }
+  };
+
+  const stopFileSharing = async (artifactId: string) => {
     try {
       await unshareChatArtifact(artifactId);
       toast.success("Sharing stopped");
-    } catch {
-      toast.error("Couldn't stop sharing");
+    } finally {
+      refreshSharing();
     }
-    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
   };
 
   const renameFile = async (artifactId: string, name: string) => {
@@ -398,9 +404,8 @@ export const WorkspaceChatArtifactsGallery = () => {
                         onRename={(id, name) => void renameFile(id, name)}
                         onUseInNewChat={isHomeChatAvailable ? startChatWithFile : undefined}
                         onDelete={confirmDeleteArtifact}
-                        onCopyShareLink={(id) => void copyShareLink(id)}
+                        onShare={setSharingArtifactId}
                         isShared={artifact.isShared}
-                        onStopSharing={artifact.isShared ? (id) => void stopSharing(id) : undefined}
                       />
                     ))}
                   </div>
@@ -444,6 +449,20 @@ export const WorkspaceChatArtifactsGallery = () => {
           </>
         )}
       </ResizablePanelGroup>
+      {sharedArtifact.current && (
+        <ShareLinkDialog
+          key={sharedArtifact.current.id}
+          open={sharingArtifactId !== null}
+          onOpenChange={(open) => {
+            if (!open) setSharingArtifactId(null);
+          }}
+          kind="file"
+          name={sharedArtifact.current.name}
+          isShared={sharedArtifact.current.isShared}
+          createLink={() => createFileShareLink(sharedArtifact.current!.id)}
+          stopSharing={() => stopFileSharing(sharedArtifact.current!.id)}
+        />
+      )}
     </div>
   );
 };

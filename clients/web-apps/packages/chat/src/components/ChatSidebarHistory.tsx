@@ -62,6 +62,7 @@ export const ChatSidebarHistory = ({
   onArchiveMany,
   onDeleteMany,
   onTogglePin,
+  onShare,
   showArchived = false,
   onShowArchivedChange,
   onToggleArchive,
@@ -367,6 +368,7 @@ export const ChatSidebarHistory = ({
                       onTogglePin={
                         !showArchived && onTogglePin ? () => onTogglePin(item) : undefined
                       }
+                      onShare={!showArchived && onShare ? () => onShare(item) : undefined}
                       archiveLabel={showArchived ? "Unarchive" : "Archive"}
                       onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
                       projects={projects}

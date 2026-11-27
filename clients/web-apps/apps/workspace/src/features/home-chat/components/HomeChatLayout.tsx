@@ -24,6 +24,7 @@ import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
 import { HomeChatProjectDialog } from "./HomeChatProjectDialog";
+import { HomeChatShareDialog } from "./HomeChatShareDialog";
 import { HomeChatSharedLinksDialog } from "./HomeChatSharedLinksDialog";
 import { HomeChatThread } from "./HomeChatThread";
 
@@ -45,12 +46,15 @@ export const HomeChatLayout = () => {
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [areSharedLinksOpen, setAreSharedLinksOpen] = useState(false);
   const titles = useHomeChatHistory(false);
-  const { renameChat, copyShareLink, stopSharing } = useHomeChatHistoryActions();
+  const { renameChat } = useHomeChatHistoryActions();
   const {
     props: historyProps,
     confirmDelete,
     editingProjectId,
     closeProjectDialog,
+    sharingChat,
+    openShare,
+    closeShare,
   } = useHomeChatHistoryPanel();
   const activeChat = useHomeChatActiveChat(session.conversationId, titles.items, titles.isLoading);
 
@@ -76,8 +80,8 @@ export const HomeChatLayout = () => {
                 onExportPdf={() =>
                   printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
                 }
-                onCopyShareLink={() => void copyShareLink(activeChat.id)}
-                onStopSharing={activeChat.isShared ? () => stopSharing(activeChat.id) : undefined}
+                onShare={() => openShare(activeChat)}
+                isShared={activeChat.isShared}
                 onDelete={() => confirmDelete(activeChat)}
               />
             )
@@ -110,6 +114,7 @@ export const HomeChatLayout = () => {
       </HomeChatFrame>
       <HomeChatPreferencesDialog open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen} />
       <HomeChatProjectDialog projectId={editingProjectId} onClose={closeProjectDialog} />
+      <HomeChatShareDialog chat={sharingChat} onClose={closeShare} />
       <HomeChatSharedLinksDialog open={areSharedLinksOpen} onOpenChange={setAreSharedLinksOpen} />
     </>
   );

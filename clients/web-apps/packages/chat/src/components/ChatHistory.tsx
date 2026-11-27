@@ -20,11 +20,13 @@ import {
   CircleNotchIcon,
   DotsThreeIcon,
   FolderSimpleIcon,
+  LinkSimpleIcon,
   MagnifyingGlassIcon,
   NotePencilIcon,
   PencilSimpleIcon,
   PushPinIcon,
   PushPinSlashIcon,
+  ShareNetworkIcon,
   SidebarSimpleIcon,
 } from "@phosphor-icons/react";
 import { type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -55,6 +57,8 @@ export type ChatHistoryProps = {
   onDeleteMany?: (ids: string[], onDone: () => void) => void;
   /** Pins or unpins a chat; the menu item is hidden without it. */
   onTogglePin?: (item: ChatHistoryItem) => void;
+  /** Opens the share dialog for a chat; the menu item is hidden without it and while archived chats are shown. */
+  onShare?: (item: ChatHistoryItem) => void;
   /** Lists archived chats instead of the active ones. */
   showArchived?: boolean;
   /** Switches between active and archived chats; the button is hidden without it. */
@@ -102,6 +106,7 @@ export const ChatHistory = ({
   onRename,
   onDelete,
   onTogglePin,
+  onShare,
   showArchived = false,
   onShowArchivedChange,
   onToggleArchive,
@@ -237,6 +242,7 @@ export const ChatHistory = ({
                         onTogglePin={
                           !showArchived && onTogglePin ? () => onTogglePin(item) : undefined
                         }
+                        onShare={!showArchived && onShare ? () => onShare(item) : undefined}
                         archiveLabel={showArchived ? "Unarchive" : "Archive"}
                         onToggleArchive={onToggleArchive && (() => onToggleArchive(item))}
                         projects={projects}
@@ -280,6 +286,7 @@ export type ChatHistoryRowProps = {
   onRename: () => void;
   onDelete: () => void;
   onTogglePin?: () => void;
+  onShare?: () => void;
   archiveLabel: "Archive" | "Unarchive";
   onToggleArchive?: () => void;
   projects: readonly ChatHistoryProject[];
@@ -295,6 +302,7 @@ export const ChatHistoryRow = ({
   onRename,
   onDelete,
   onTogglePin,
+  onShare,
   archiveLabel,
   onToggleArchive,
   projects,
@@ -340,6 +348,15 @@ export const ChatHistoryRow = ({
           className="pointer-events-none absolute right-2.5 size-3 text-muted-foreground transition-opacity group-hover/item:opacity-0 group-has-[[data-state=open]]/item:opacity-0"
         />
       )}
+      {isSidebar && item.isShared && (
+        <LinkSimpleIcon
+          aria-label="Shared"
+          className={cn(
+            "pointer-events-none absolute size-3 text-muted-foreground transition-opacity group-hover/item:opacity-0 group-has-[[data-state=open]]/item:opacity-0",
+            item.isPinned ? "right-7" : "right-2.5",
+          )}
+        />
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={`Options for ${item.title}`}
@@ -366,6 +383,9 @@ export const ChatHistoryRow = ({
               Icon={item.isPinned ? PushPinSlashIcon : PushPinIcon}
               onSelect={onTogglePin}
             />
+          )}
+          {onShare && (
+            <SimpleDDMenuItem content="Share" Icon={ShareNetworkIcon} onSelect={onShare} />
           )}
           {onToggleArchive && (
             <SimpleDDMenuItem

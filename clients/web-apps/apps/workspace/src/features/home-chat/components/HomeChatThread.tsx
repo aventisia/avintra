@@ -11,8 +11,9 @@ import {
 import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import {
   createChatArtifact,
@@ -20,8 +21,10 @@ import {
 } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 import { useChatArtifactText } from "@/features/04-assist/workspace-chat/hooks/useChatArtifactText.hook";
 
+import { getConversation, updateLandingConversationSettings } from "../apis/conversation.apis";
 import { transcribeSpeech } from "../apis/speech.apis";
 import {
+  HOME_CHAT_CONVERSATION_QUERY_KEY,
   HOME_CHAT_FILES_QUERY_KEY,
   HOME_CHAT_FILE_QUERY_KEY,
   HOME_CHAT_NEW_DRAFT_KEY,
@@ -34,9 +37,10 @@ import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
 import {
-  getHomeChatModelKey,
+  type HomeChatComposerPreferences,
+  getHomeChatComposerPreferences,
   resolveHomeChatModel,
-  saveHomeChatModelKey,
+  saveHomeChatComposerPreferences,
 } from "../utils/home-chat-model-preference.util";
 import { HomeChatNoModelNotice } from "./HomeChatNoModelNotice";
 import { HomeChatPreview } from "./HomeChatPreview";
@@ -62,13 +66,42 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   } = useHomeChatModels();
   const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "");
-  const [pickedModelKey, setPickedModelKey] = useState<string | null>(null);
-  const [effort, setEffort] = useState<ChatEffort | null>(null);
-  const [webSearch, setWebSearch] = useState(false);
-  const selectedModel = resolveHomeChatModel(
-    models,
-    pickedModelKey ?? getHomeChatModelKey(tenantId, userEmail),
-  );
+  const [preferences] = useState(() => getHomeChatComposerPreferences(tenantId, userEmail));
+  const [pickedModelKey, setPickedModelKey] = useState<string | null>(preferences.modelKey);
+  const [effort, setEffort] = useState<ChatEffort | null>(preferences.effort);
+  const [webSearch, setWebSearch] = useState(preferences.webSearch);
+  const selectedModel = resolveHomeChatModel(models, pickedModelKey);
+
+  const initialConversationIdRef = useRef(props.conversationId);
+  const conversationQuery = useQuery({
+    queryKey: [...HOME_CHAT_CONVERSATION_QUERY_KEY, props.conversationId],
+    queryFn: () => getConversation(props.conversationId!),
+    enabled:
+      !!props.conversationId &&
+      !props.isTemporary &&
+      initialConversationIdRef.current === props.conversationId,
+    retry: false,
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+  const hasAppliedSettingsRef = useRef(false);
+  useEffect(() => {
+    if (hasAppliedSettingsRef.current || !conversationQuery.data) return;
+    hasAppliedSettingsRef.current = true;
+    const conversation = conversationQuery.data.data;
+    if (conversation.modelProvider && conversation.modelId) {
+      setPickedModelKey(`${conversation.modelProvider}::${conversation.modelId}`);
+    }
+    if (
+      conversation.reasoningEffort === "low" ||
+      conversation.reasoningEffort === "medium" ||
+      conversation.reasoningEffort === "high"
+    ) {
+      setEffort(conversation.reasoningEffort);
+    }
+    if (conversation.webSearch !== null) setWebSearch(conversation.webSearch);
+  }, [conversationQuery.data]);
+
   const modelSelectionRef = useRef<ChatModelSelection | null>(null);
   modelSelectionRef.current = selectedModel
     ? {
@@ -79,10 +112,37 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         webSearch: (selectedModel.supportsWebSearch && webSearch) || undefined,
       }
     : null;
+  const rememberPreferences = (next: HomeChatComposerPreferences) =>
+    saveHomeChatComposerPreferences(tenantId, userEmail, next);
+  const persistSettings = (
+    model: { provider: string; modelId: string } | undefined,
+    nextEffort: ChatEffort | null,
+    nextWebSearch: boolean,
+  ) => {
+    if (!props.conversationId || props.isTemporary) return;
+    void updateLandingConversationSettings({
+      id: props.conversationId,
+      modelProvider: model?.provider ?? null,
+      modelId: model?.modelId ?? null,
+      reasoningEffort: nextEffort,
+      webSearch: nextWebSearch,
+    }).catch(() => toast.error("Couldn't save the chat settings"));
+  };
   const selectModel = (key: string | null) => {
     if (!key) return;
     setPickedModelKey(key);
-    saveHomeChatModelKey(tenantId, userEmail, key);
+    rememberPreferences({ modelKey: key, effort, webSearch });
+    persistSettings(resolveHomeChatModel(models, key), effort, webSearch);
+  };
+  const selectEffort = (next: ChatEffort | null) => {
+    setEffort(next);
+    rememberPreferences({ modelKey: selectedModel?.key ?? null, effort: next, webSearch });
+    persistSettings(selectedModel, next, webSearch);
+  };
+  const toggleWebSearch = (next: boolean) => {
+    setWebSearch(next);
+    rememberPreferences({ modelKey: selectedModel?.key ?? null, effort, webSearch: next });
+    persistSettings(selectedModel, effort, next);
   };
 
   const destinations = useHomeChatDestinations();
@@ -227,10 +287,10 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
                     allowAuto={false}
                   />
                   {selectedModel?.supportsEffort && (
-                    <ChatEffortPicker value={effort} onChange={setEffort} />
+                    <ChatEffortPicker value={effort} onChange={selectEffort} />
                   )}
                   {selectedModel?.supportsWebSearch && (
-                    <ChatWebSearchToggle value={webSearch} onChange={setWebSearch} />
+                    <ChatWebSearchToggle value={webSearch} onChange={toggleWebSearch} />
                   )}
                 </div>
               ) : (

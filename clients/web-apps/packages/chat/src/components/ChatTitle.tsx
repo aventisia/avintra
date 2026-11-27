@@ -1,3 +1,4 @@
+import { Badge } from "@avplatform/ui/badge";
 import {
   DeleteDDMenuItem,
   DropdownMenu,
@@ -9,9 +10,9 @@ import {
   CaretDownIcon,
   DownloadSimpleIcon,
   FilePdfIcon,
-  LinkBreakIcon,
   LinkSimpleIcon,
   PencilSimpleIcon,
+  ShareNetworkIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -25,10 +26,10 @@ type ChatTitleProps = {
   onExport: () => void;
   onExportPdf: () => void;
   onDelete: () => void;
-  /** Copies the read-only share link; without it no share item is shown. */
-  onCopyShareLink?: () => void;
-  /** Stops sharing; without it no stop-sharing item is shown. */
-  onStopSharing?: () => void;
+  /** Opens the share dialog; without it no share item is shown. */
+  onShare?: () => void;
+  /** Shows a "Shared" badge while a read-only link is active. */
+  isShared?: boolean;
 };
 
 /** The open chat's title as a menu of Rename (edits it in place), Export and Delete. */
@@ -38,8 +39,8 @@ export const ChatTitle = ({
   onExport,
   onExportPdf,
   onDelete,
-  onCopyShareLink,
-  onStopSharing,
+  onShare,
+  isShared = false,
 }: ChatTitleProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
   const focusGuard = useInlineEditFocusGuard();
@@ -60,11 +61,11 @@ export const ChatTitle = ({
     );
 
   return (
-    <h2 className="min-w-0">
+    <h2 className="flex min-w-0 items-center gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           title={title}
-          className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-ink transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover"
+          className="inline-flex h-8 min-w-0 max-w-full items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-ink transition-colors hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover"
         >
           <span className="truncate">{title}</span>
           <CaretDownIcon aria-hidden className="size-3.5 shrink-0 text-muted-foreground" />
@@ -88,23 +89,18 @@ export const ChatTitle = ({
             onSelect={onExport}
           />
           <SimpleDDMenuItem content="Export as PDF" Icon={FilePdfIcon} onSelect={onExportPdf} />
-          {onCopyShareLink && (
-            <SimpleDDMenuItem
-              content="Copy read-only link"
-              Icon={LinkSimpleIcon}
-              onSelect={onCopyShareLink}
-            />
-          )}
-          {onStopSharing && (
-            <SimpleDDMenuItem
-              content="Stop sharing"
-              Icon={LinkBreakIcon}
-              onSelect={onStopSharing}
-            />
+          {onShare && (
+            <SimpleDDMenuItem content="Share" Icon={ShareNetworkIcon} onSelect={onShare} />
           )}
           <DeleteDDMenuItem onSelect={onDelete} />
         </DropdownMenuContent>
       </DropdownMenu>
+      {isShared && (
+        <Badge variant="secondary" className="shrink-0 gap-1">
+          <LinkSimpleIcon className="size-3" />
+          Shared
+        </Badge>
+      )}
     </h2>
   );
 };

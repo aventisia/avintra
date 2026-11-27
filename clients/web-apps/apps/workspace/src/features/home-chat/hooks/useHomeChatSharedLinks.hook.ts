@@ -25,7 +25,7 @@ export const SHARED_CHATS_LIMIT = 100;
 /** The user's shared Home chats and files, with copy-link and stop-sharing actions for each. */
 export const useHomeChatSharedLinks = (isEnabled: boolean) => {
   const queryClient = useQueryClient();
-  const { copyShareLink: copyChatLink, stopSharing: stopSharingChat } = useHomeChatHistoryActions();
+  const { createShareLink, stopSharing } = useHomeChatHistoryActions();
 
   const chats = useQuery({
     queryKey: HOME_CHAT_SHARED_CHATS_QUERY_KEY,
@@ -47,6 +47,23 @@ export const useHomeChatSharedLinks = (isEnabled: boolean) => {
   const refreshFiles = () => {
     void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
     void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+  };
+
+  const copyChatLink = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(await createShareLink(id));
+      toast.success("Read-only link copied");
+    } catch {
+      toast.error("Couldn't copy the share link");
+    }
+  };
+
+  const stopSharingChat = async (id: string) => {
+    try {
+      await stopSharing(id);
+    } catch {
+      toast.error("Couldn't stop sharing");
+    }
   };
 
   const copyFileLink = async (artifactId: string) => {
@@ -78,7 +95,7 @@ export const useHomeChatSharedLinks = (isEnabled: boolean) => {
     isLoading: chats.isLoading || files.isLoading,
     isError: chats.isError || files.isError,
     copyChatLink: (id: string) => void copyChatLink(id),
-    stopSharingChat,
+    stopSharingChat: (id: string) => void stopSharingChat(id),
     copyFileLink: (id: string) => void copyFileLink(id),
     stopSharingFile: (id: string) => void stopSharingFile(id),
   };

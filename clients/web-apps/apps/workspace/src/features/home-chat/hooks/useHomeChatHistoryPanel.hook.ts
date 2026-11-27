@@ -23,6 +23,7 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
   const [showArchived, setShowArchived] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [sharingChat, setSharingChat] = useState<HomeChatActiveChat | null>(null);
   const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
   const {
     renameChat,
@@ -93,6 +94,8 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     },
     onRename: renameChat,
     onTogglePin: togglePin,
+    onShare: ({ id, title, isShared }) =>
+      setSharingChat({ id, title, isShared: isShared ?? false }),
     showArchived,
     onShowArchivedChange: setShowArchived,
     onToggleArchive: ({ id }) => {
@@ -130,5 +133,8 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     confirmDelete,
     editingProjectId,
     closeProjectDialog: () => setEditingProjectId(null),
+    sharingChat,
+    openShare: setSharingChat,
+    closeShare: () => setSharingChat(null),
   };
 };

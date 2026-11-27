@@ -461,6 +461,26 @@ public class ConversationService : IConversationService
             : serviceResponse.Update(null, 200, true);
     }
 
+    public async Task<ServiceResponse<bool>> UpdateLandingConversationSettingsAsync(UpdateConversationSettingsDto updateConversationSettingsDto)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to save chat settings", 500);
+
+        var updated = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(w =>
+                w.Id == updateConversationSettingsDto.Id &&
+                w.FlowVersionId == null &&
+                w.UserId == _userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(c => c.ModelProvider, updateConversationSettingsDto.ModelProvider)
+                .SetProperty(c => c.ModelId, updateConversationSettingsDto.ModelId)
+                .SetProperty(c => c.ReasoningEffort, updateConversationSettingsDto.ReasoningEffort)
+                .SetProperty(c => c.WebSearch, updateConversationSettingsDto.WebSearch));
+
+        return updated == 0
+            ? serviceResponse.Update("Conversation not found", 404)
+            : serviceResponse.Update(null, 200, true);
+    }
+
     public async Task<ServiceResponse<bool>> UpdateLandingConversationProjectAsync(UpdateConversationProjectDto updateConversationProjectDto)
     {
         var serviceResponse = ServiceResponse<bool>.Create("Failed to move conversation", 500);

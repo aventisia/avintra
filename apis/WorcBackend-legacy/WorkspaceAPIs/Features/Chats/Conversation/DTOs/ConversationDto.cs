@@ -51,4 +51,24 @@ public class ConversationDto
     /// Gets or sets whether the conversation has a live read-only share link.
     /// </summary>
     public bool IsShared { get; set; }
+
+    /// <summary>
+    /// Gets or sets the LiteLLM provider of the model last used in this landing chat. Max-100 characters.
+    /// </summary>
+    public string? ModelProvider { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model last used in this landing chat. Max-255 characters.
+    /// </summary>
+    public string? ModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reasoning effort last picked for this landing chat. Max-20 characters.
+    /// </summary>
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether web search was last enabled for this landing chat.
+    /// </summary>
+    public bool? WebSearch { get; set; }
 }

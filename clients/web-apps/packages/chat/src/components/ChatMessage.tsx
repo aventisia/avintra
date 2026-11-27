@@ -277,7 +277,7 @@ const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
       </div>
       {hasText && (
         <>
-          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-xl bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
+          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-xl bg-sunken px-4 py-2.5 text-[14.5px] leading-7 text-ink dark:bg-fill">
             <MessagePrimitive.Parts />
           </div>
           {!readOnly && (
@@ -304,7 +304,7 @@ const EditComposer = () => (
       <ComposerPrimitive.Input
         autoFocus
         aria-label="Edit message"
-        className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-4 pb-1 pt-3 text-base leading-7 text-ink outline-none"
+        className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-4 pb-1 pt-3 text-[14.5px] leading-7 text-ink outline-none"
       />
       <div className="flex justify-end gap-2 px-3 pb-3">
         <ComposerPrimitive.Cancel asChild>
@@ -329,7 +329,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         useMessageEntranceClass(),
       )}
     >
-      <div className="text-base leading-7 text-ink">
+      <div className="text-[14.5px] leading-7 text-ink">
         <MessagePrimitive.GroupedParts groupBy={groupActivity} indicator="empty">
           {({ part, children }) => {
             switch (part.type) {

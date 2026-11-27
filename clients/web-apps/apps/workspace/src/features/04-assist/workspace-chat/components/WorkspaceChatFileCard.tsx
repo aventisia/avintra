@@ -21,9 +21,9 @@ import {
   FilePptIcon,
   FileTextIcon,
   FileXlsIcon,
-  LinkBreakIcon,
   LinkSimpleIcon,
   PencilSimpleIcon,
+  ShareNetworkIcon,
 } from "@phosphor-icons/react";
 import { type FC, useState } from "react";
 import { Link } from "react-router-dom";
@@ -41,12 +41,10 @@ type WorkspaceChatFileCardProps = {
   chatHref?: string;
   onPreview?: (artifactId: string) => void;
   onDelete?: (artifactId: string) => void;
-  /** Copies the read-only share link; without it no share button is shown. */
-  onCopyShareLink?: (artifactId: string) => void;
+  /** Opens the share dialog; without it no share item is shown. */
+  onShare?: (artifactId: string) => void;
   /** Shows a "Shared" badge while a read-only link is active. */
   isShared?: boolean;
-  /** Stops sharing; without it no stop-sharing button is shown. */
-  onStopSharing?: (artifactId: string) => void;
   /** Saves a new name for the file and its versions; without it no rename action is shown. */
   onRename?: (artifactId: string, name: string) => void;
   /** Starts a new chat with the file mentioned; without it no such action is shown. */
@@ -102,9 +100,8 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   chatHref,
   onPreview,
   onDelete,
-  onCopyShareLink,
+  onShare,
   isShared = false,
-  onStopSharing,
   onRename,
   onUseInNewChat,
   onSelectedChange,
@@ -120,9 +117,7 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
     conversationTitle?.trim() || null,
   ].filter(Boolean);
 
-  const hasMenu = Boolean(
-    onUseInNewChat || onRename || onCopyShareLink || onStopSharing || onDelete,
-  );
+  const hasMenu = Boolean(onUseInNewChat || onRename || onShare || onDelete);
   const hasActions = Boolean(chatHref || hasMenu);
 
   return (
@@ -223,18 +218,11 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
                       onSelect={() => setIsRenaming(true)}
                     />
                   )}
-                  {onCopyShareLink && (
+                  {onShare && (
                     <SimpleDDMenuItem
-                      content="Copy read-only link"
-                      Icon={LinkSimpleIcon}
-                      onSelect={() => onCopyShareLink(artifactId)}
-                    />
-                  )}
-                  {onStopSharing && (
-                    <SimpleDDMenuItem
-                      content="Stop sharing"
-                      Icon={LinkBreakIcon}
-                      onSelect={() => onStopSharing(artifactId)}
+                      content="Share"
+                      Icon={ShareNetworkIcon}
+                      onSelect={() => onShare(artifactId)}
                     />
                   )}
                   {onDelete && <DeleteDDMenuItem onSelect={() => onDelete(artifactId)} />}

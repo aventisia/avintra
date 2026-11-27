@@ -4,7 +4,10 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { getModelProviders } from "@/features/05-tenant-admin/model-providers";
+import {
+  getModelProviders,
+  getProviderIconByType,
+} from "@/features/05-tenant-admin/model-providers";
 
 const HOME_CHAT_MODELS_QUERY_KEY = ["home-chat-models"] as const;
 
@@ -38,6 +41,8 @@ export type HomeChatModel = {
   label: string;
   supportsEffort: boolean;
   supportsWebSearch: boolean;
+  /** Provider logo for the picker heading, when the tenant's provider has a brand asset. */
+  providerIcon?: string;
   /** Vault credential configured for the provider, or null when it runs on platform credits. */
   credentialName: string | null;
 };
@@ -56,6 +61,7 @@ const PLATFORM_SPEECH_MODEL: HomeChatSpeechModel = {
 export type HomeChatModelGroup = {
   provider: string;
   label: string;
+  icon?: string;
   models: HomeChatModel[];
 };
 
@@ -80,6 +86,7 @@ const createModel = (
   provider: string,
   rawModelId: string,
   credentialName: string | null,
+  providerIcon?: string,
 ): HomeChatModel | null => {
   const modelId = toModelId(provider, rawModelId);
   if (!modelId) return null;
@@ -92,6 +99,7 @@ const createModel = (
     supportsEffort: modelSupportsEffort(provider, modelId),
     // IMPORTANT NOTE: platform credits never charge a provider's per-search fee, so search needs the tenant's own key.
     supportsWebSearch: credentialName !== null && modelSupportsWebSearch(provider, modelId),
+    providerIcon,
     credentialName,
   };
 };
@@ -130,12 +138,13 @@ export const useHomeChatModels = () => {
       if (!pipelineProvider) continue;
 
       const credentialName = provider.credentialName?.trim() || null;
+      const providerIcon = getProviderIconByType(provider.providerType);
       const enabledModelIds = provider.enabledModels?.length
         ? provider.enabledModels.filter(isChatModel).map((model) => model.modelId)
         : provider.enabledModelIds.filter((modelId) => isChatModel({ modelId }));
 
       for (const rawModelId of enabledModelIds) {
-        const model = createModel(pipelineProvider, rawModelId, credentialName);
+        const model = createModel(pipelineProvider, rawModelId, credentialName, providerIcon);
         if (model) options.push(model);
       }
     }
@@ -149,6 +158,7 @@ export const useHomeChatModels = () => {
       const group = byProvider.get(model.provider) ?? {
         provider: model.provider,
         label: model.providerLabel,
+        icon: model.providerIcon,
         models: [],
       };
       group.models.push(model);
