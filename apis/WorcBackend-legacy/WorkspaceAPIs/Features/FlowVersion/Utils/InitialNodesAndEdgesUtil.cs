@@ -100,8 +100,6 @@ public static class InitialNodesAndEdgesUtil
                     provider = "openai",
                     credential_name = "",
                     model = "gpt-4o-mini",
-                    temperature = 1,
-                    top_p = 1,
                     max_output_tokens = (int?)null,
                     reasoning_effort = "medium"
                 }
@@ -237,8 +235,6 @@ public static class InitialNodesAndEdgesUtil
                     provider = "",
                     credential_name = "",
                     model = "",
-                    temperature = 1,
-                    top_p = 1,
                     max_output_tokens = (int?)null,
                     reasoning_effort = "medium"
                 }
@@ -251,8 +247,6 @@ public static class InitialNodesAndEdgesUtil
                     provider = "",
                     credential_name = "",
                     model = "",
-                    temperature = 1,
-                    top_p = 1,
                     max_output_tokens = (int?)null
                 }
             },
@@ -264,8 +258,6 @@ public static class InitialNodesAndEdgesUtil
                     provider = "",
                     credential_name = "",
                     model = "",
-                    temperature = 1,
-                    top_p = 1,
                     max_output_tokens = (int?)null
                 }
             },
@@ -288,8 +280,6 @@ public static class InitialNodesAndEdgesUtil
                     provider = "",
                     credential_name = "",
                     model = "",
-                    temperature = 1,
-                    top_p = 1,
                     max_output_tokens = (int?)null,
                     reasoning_effort = "medium"
                 }

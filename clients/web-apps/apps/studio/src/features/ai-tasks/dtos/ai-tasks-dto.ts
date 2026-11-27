@@ -26,12 +26,6 @@ export interface AITaskDto {
   /** Maximum number of tokens the LLM can generate in the output */
   maxOutputTokens: number;
 
-  /** Temperature setting for the LLM; controls randomness of output */
-  temperature: number;
-
-  /** Top-p setting controlling diversity by considering only the top probabilities (0.0 - 1.0) */
-  topP: number;
-
   /** Flag indicating whether the LLM's response should be streamed */
   stream: boolean;
 

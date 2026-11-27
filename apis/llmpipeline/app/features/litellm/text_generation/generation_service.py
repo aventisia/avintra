@@ -305,8 +305,6 @@ class GenerationService:
             status=_map_finish_reason_to_status(finish_reason),
             finish_reason=finish_reason,
             max_output_tokens=req.max_output_tokens,
-            temperature=req.temperature or 1.0,
-            top_p=req.top_p or 1.0,
             stream=False,
             time_taken=round(time.perf_counter() - start, 2),
             input_tokens=usage.get("prompt_tokens", 0),

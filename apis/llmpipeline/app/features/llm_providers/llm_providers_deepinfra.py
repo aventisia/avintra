@@ -325,8 +325,6 @@ class DeepInfraProvider(BaseLLMProvider):
         request_payload = {
             "model": llm_request.model,
             "messages": messages,
-            "temperature": llm_request.temperature,
-            "top_p": llm_request.top_p,
             # Has to set this default supported max_tokens value since it is an required input from deepinfra side; 
             # can be overridden below if provided in the request
             # Even if deepinfra supports documentation says it can handle up to 1000000 tokens, but when we tested above 16000 tokens it failed.
@@ -361,8 +359,6 @@ class DeepInfraProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

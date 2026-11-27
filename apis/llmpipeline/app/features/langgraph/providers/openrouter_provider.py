@@ -121,8 +121,6 @@ def create_openrouter_model(
     # Tool binding and structured output are applied later inside LangGraph nodes.
     return ChatOpenRouter(
         model=llm_request.model,
-        temperature=llm_request.temperature,
-        top_p=llm_request.top_p,
         max_tokens=llm_request.max_output_tokens,
         stream_usage=True,
         api_key=resolved_api_key,

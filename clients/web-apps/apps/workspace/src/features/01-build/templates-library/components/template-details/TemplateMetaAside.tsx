@@ -88,8 +88,6 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
             <RecordFactGrid>
               <RecordFact label="Provider" value={modelConfig.provider} />
               <RecordFact label="Model" value={modelConfig.model} />
-              <RecordFact label="Temperature" value={modelConfig.temperature} />
-              <RecordFact label="Top P" value={modelConfig.top_p} />
               <RecordFact
                 label="JSON output"
                 value={modelConfig.is_json_output ? "Enabled" : "Disabled"}

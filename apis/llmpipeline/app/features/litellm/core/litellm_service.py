@@ -27,12 +27,6 @@ from .provider_registry import (
 )
 from .schemas import EmbeddingRequest, LLMGenerationRequest, ModelInfo, ProviderInfo
 
-def _should_send_top_p(request: LLMGenerationRequest) -> bool:
-    if request.top_p is None or request.top_p >= 1.0:
-        return False
-    # IMPORTANT NOTE: Claude 4.5+ models reject requests that set both temperature and top_p.
-    is_claude = "claude" in request.model.lower() or normalize_provider(request.provider) == "anthropic"
-    return not (is_claude and request.temperature is not None)
 
 class LiteLLMService:
     """Encapsulates direct LiteLLM calls for text, embeddings, STT and TTS."""
@@ -59,15 +53,10 @@ class LiteLLMService:
             {
                 "model": litellm_model,
                 "messages": messages,
-                "temperature": 1.0 if request.temperature is None else request.temperature,
                 "stream": request.stream,
-                # OpenAI gpt-5-* models reject top_p; let LiteLLM drop params
-                # that the provider/model does not support instead of failing.
                 "drop_params": True,
             }
         )
-        if _should_send_top_p(request):
-            kwargs["top_p"] = request.top_p
         if request.stream:
             kwargs["stream_options"] = {"include_usage": True}
         if request.max_output_tokens:

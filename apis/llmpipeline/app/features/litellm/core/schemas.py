@@ -64,8 +64,6 @@ class LLMGenerationRequest(LegacyByokWarningModel):
     model: str
     input: Union[str, list[V2ChatMessage]]
     max_output_tokens: Optional[int] = Field(default=None, ge=0)
-    temperature: Optional[float] = Field(default=1.0, ge=0.0, le=2.0)
-    top_p: Optional[float] = Field(default=1.0, ge=0.0, le=1.0)
     stream: Optional[bool] = False
     is_json_output: Optional[bool] = False
     json_schema: Optional[Union[str, dict]] = None
@@ -112,8 +110,6 @@ class LLMGenerationResponse(BaseModel):
     finish_reason: Optional[str] = None
     created_on: datetime = Field(default_factory=_utc_now)
     max_output_tokens: Optional[int] = None
-    temperature: float = 1.0
-    top_p: float = 1.0
     stream: bool = False
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0

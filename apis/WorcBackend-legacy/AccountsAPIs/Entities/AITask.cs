@@ -51,16 +51,6 @@ public class AITask : BaseEntity
     public int MaxOutputTokens { get; set; }
 
     /// <summary>
-    /// Gets or sets the temperature setting for the LLM, which controls the randomness of the model's output (higher values yield more random responses).
-    /// </summary>
-    public float Temperature { get; set; }
-
-    /// <summary>
-    /// Gets or sets the top-p setting for the LLM, which controls the diversity of the model's output (0.0 to 1.0 range).
-    /// </summary>
-    public float TopP { get; set; }
-
-    /// <summary>
     /// Gets or sets a flag indicating whether the LLM response should be streamed, which can improve response time for larger outputs.
     /// </summary>
     public bool Stream { get; set; }

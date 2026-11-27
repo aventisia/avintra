@@ -40,8 +40,6 @@ class LLMRequest(LegacyByokWarningModel):
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name') # Credential reference (unique name)
-    temperature: Optional[float] = 1.0
-    top_p: Optional[float] = 1.0
     reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
@@ -93,8 +91,6 @@ class LLMResponse(BaseModel):
     finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)
     max_output_tokens: Optional[int] = None
-    temperature: float = 1.0
-    top_p: float = 1.0
     stream: bool = False
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0

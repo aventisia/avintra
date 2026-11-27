@@ -143,8 +143,9 @@ class TestRequestMapping:
         assert request.provider == "openai"
         assert request.model == "gpt-4o-mini"
         assert request.input == "book a demo"
-        assert request.temperature == 0.3
-        assert request.top_p == 0.9
+        # Saved voice settings that still hold sampling values keep working; the values are not forwarded.
+        assert not hasattr(request, "temperature")
+        assert not hasattr(request, "top_p")
         assert request.reasoning_effort == "low"
         assert request.credential_name == "voice-key"
         assert not hasattr(request, "is_byok_enabled")

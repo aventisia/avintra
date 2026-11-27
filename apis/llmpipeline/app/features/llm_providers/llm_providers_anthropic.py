@@ -368,9 +368,6 @@ class AnthropicProvider(BaseLLMProvider):
             "model": model_name,
             "messages": messages, 
             "stream": llm_request.stream,
-            # IMPORTANT NOTE: The top_p and temperature parameters have been deprecated in Anthropic APIs and may be removed in future versions
-            # "top_p": llm_request.top_p 
-            # "temperature": llm_request.temperature,
             # "store": False # Disabling openai parameter to store the generated model response for later retrieval via API.
         }
 
@@ -471,8 +468,6 @@ class AnthropicProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

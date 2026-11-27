@@ -272,10 +272,6 @@ class OllamaProvider(BaseLLMProvider):
         request_payload = {
             "model": llm_request.model,
             "messages": messages,
-            "options": {
-                "temperature": llm_request.temperature,
-                "top_p": llm_request.top_p
-            },
             "stream": llm_request.stream
         }
         request_headers = {
@@ -309,8 +305,6 @@ class OllamaProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

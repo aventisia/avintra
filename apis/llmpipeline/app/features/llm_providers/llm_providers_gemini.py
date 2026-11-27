@@ -332,10 +332,6 @@ class GeminiProvider(BaseLLMProvider):
         generation_config = {
             "responseMimeType": "text/plain"  # Default MIME type; may be overridden below
         }
-        if llm_request.temperature is not None:
-            generation_config["temperature"] = llm_request.temperature
-        if llm_request.top_p is not None:
-            generation_config["topP"] = llm_request.top_p
         # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
         if llm_request.max_output_tokens:
              generation_config["maxOutputTokens"] = llm_request.max_output_tokens
@@ -413,8 +409,6 @@ class GeminiProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

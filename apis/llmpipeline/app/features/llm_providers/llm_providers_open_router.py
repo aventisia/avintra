@@ -352,8 +352,6 @@ class OpenRouterProvider(BaseLLMProvider):
             "model": llm_request.model,
             "messages": messages,
             "stream": llm_request.stream,
-            "temperature": llm_request.temperature,
-            "top_p": llm_request.top_p,
         }
         
         # If max_output_tokens is provided and greater than 0 (in python 0 is falsy), include it in the payload
@@ -425,8 +423,6 @@ class OpenRouterProvider(BaseLLMProvider):
             output="",
             status=None,
             finish_reason=None,
-            temperature=llm_request.temperature,
-            top_p=llm_request.top_p,
             stream=llm_request.stream,
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,

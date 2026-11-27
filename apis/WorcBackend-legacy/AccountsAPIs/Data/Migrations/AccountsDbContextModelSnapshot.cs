@@ -72,12 +72,6 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<string>("SystemInput")
                         .HasColumnType("text");
 
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.Property<float>("TopP")
-                        .HasColumnType("real");
-
                     b.Property<string>("UserInput")
                         .HasColumnType("text");
 

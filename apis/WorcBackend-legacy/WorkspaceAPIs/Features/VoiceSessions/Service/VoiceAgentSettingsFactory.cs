@@ -126,8 +126,6 @@ public static class VoiceAgentSettingsFactory
             Provider = GetString(config, "provider"),
             Model = GetString(config, "model"),
             CredentialName = CredentialReferenceUtil.Resolve(config),
-            Temperature = GetDouble(config, "temperature") ?? 1,
-            TopP = GetDouble(config, "top_p") ?? 1,
             MaxOutputTokens = GetInt(config, "max_output_tokens"),
             ReasoningEffort = GetString(config, "reasoning_effort"),
         };

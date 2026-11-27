@@ -54,16 +54,6 @@ public class AITaskTableDto
     public int MaxOutputTokens { get; set; }
 
     /// <summary>
-    /// Gets or sets the temperature setting for the LLM. The temperature controls the randomness of the model's output; higher values result in more random responses.
-    /// </summary>
-    public float Temperature { get; set; }
-
-    /// <summary>
-    /// Gets or sets the top-p setting for the LLM, which controls the diversity of the model's output by considering only the top probabilities. The value ranges from 0.0 to 1.0.
-    /// </summary>
-    public float TopP { get; set; }
-
-    /// <summary>
     /// Gets or sets a flag indicating whether the LLM's response should be streamed. Enabling streaming can reduce response time for larger outputs.
     /// </summary>
     public bool Stream { get; set; }
