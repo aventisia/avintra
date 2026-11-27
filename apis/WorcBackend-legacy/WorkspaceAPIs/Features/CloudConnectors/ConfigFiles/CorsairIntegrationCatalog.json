@@ -3236,16 +3236,7 @@
   {
     "pluginId": "gmail",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "gmail"
     ],
     "providerName": "Gmail",
     "authModes": [
@@ -3274,22 +3265,13 @@
       }
     },
     "icon": "/brand-img/gmail.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Gmail",
+    "configFile": "Gmail.json"
   },
   {
     "pluginId": "googleaddressvalidation",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googleaddressvalidation"
     ],
     "providerName": "Google Address Validation",
     "authModes": [
@@ -3302,8 +3284,8 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/googleaddressvalidation.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googleaddressvalidation",
+    "configFile": "Googleaddressvalidation.json"
   },
   {
     "pluginId": "googleanalytics",
@@ -3338,16 +3320,7 @@
   {
     "pluginId": "googlebigquery",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googlebigquery"
     ],
     "providerName": "Google BigQuery",
     "authModes": [
@@ -3373,22 +3346,13 @@
       }
     },
     "icon": "/brand-img/googlebigquery.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlebigquery",
+    "configFile": "Googlebigquery.json"
   },
   {
     "pluginId": "googlecalendar",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googlecalendar"
     ],
     "providerName": "Google Calendar",
     "authModes": [
@@ -3413,22 +3377,13 @@
       }
     },
     "icon": "/brand-img/googlecalendar.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlecalendar",
+    "configFile": "Googlecalendar.json"
   },
   {
     "pluginId": "googlecloudvision",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googlecloudvision"
     ],
     "providerName": "Google Cloud Vision",
     "authModes": [
@@ -3447,22 +3402,13 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/googlecloudvision.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlecloudvision",
+    "configFile": "Googlecloudvision.json"
   },
   {
     "pluginId": "googledocs",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googledocs"
     ],
     "providerName": "Google Docs",
     "authModes": [
@@ -3489,22 +3435,13 @@
       }
     },
     "icon": "/brand-img/googledocs.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googledocs",
+    "configFile": "Googledocs.json"
   },
   {
     "pluginId": "googledrive",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googledrive"
     ],
     "providerName": "Google Drive",
     "authModes": [
@@ -3530,22 +3467,13 @@
       }
     },
     "icon": "/brand-img/googledrive.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googledrive",
+    "configFile": "Googledrive.json"
   },
   {
     "pluginId": "googlemaps",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googlemaps"
     ],
     "providerName": "Google Maps",
     "authModes": [
@@ -3564,22 +3492,13 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/googlemaps.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlemaps",
+    "configFile": "Googlemaps.json"
   },
   {
     "pluginId": "googlemeet",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
-      "googlesheets"
+      "googlemeet"
     ],
     "providerName": "Google Meet",
     "authModes": [
@@ -3603,21 +3522,12 @@
       }
     },
     "icon": "/brand-img/googlemeet.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlemeet",
+    "configFile": "Googlemeet.json"
   },
   {
     "pluginId": "googlesheets",
     "pluginIds": [
-      "gmail",
-      "googleaddressvalidation",
-      "googlebigquery",
-      "googlecalendar",
-      "googlecloudvision",
-      "googledocs",
-      "googledrive",
-      "googlemaps",
-      "googlemeet",
       "googlesheets"
     ],
     "providerName": "Google Sheets",
@@ -3644,8 +3554,8 @@
       }
     },
     "icon": "/brand-img/googlesheets.svg",
-    "vaultCredentialType": "GoogleWorkspace",
-    "configFile": "GoogleWorkspace.json"
+    "vaultCredentialType": "Googlesheets",
+    "configFile": "Googlesheets.json"
   },
   {
     "pluginId": "grafana",
@@ -4434,10 +4344,7 @@
   {
     "pluginId": "onedrive",
     "pluginIds": [
-      "onedrive",
-      "outlook",
-      "sharepoint",
-      "teams"
+      "onedrive"
     ],
     "providerName": "OneDrive",
     "authModes": [
@@ -4462,29 +4369,16 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "Calendars.ReadWrite",
-        "Channel.ReadBasic.All",
-        "ChannelMessage.Read.All",
-        "ChannelMessage.Send",
-        "Chat.ReadWrite",
-        "Contacts.ReadWrite",
-        "Files.ReadWrite.All",
-        "Mail.ReadWrite",
-        "Mail.Send",
-        "Sites.FullControl.All",
-        "Sites.Manage.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        "Subscription.Read.All",
-        "Team.ReadBasic.All",
-        "TeamMember.Read.All",
+        "offline_access",
         "User.Read",
-        "offline_access"
+        "Files.ReadWrite.All",
+        "Sites.Read.All",
+        "Subscription.Read.All"
       ]
     },
     "icon": "/brand-img/onedrive.svg",
-    "vaultCredentialType": "M365",
-    "configFile": "M365.json"
+    "vaultCredentialType": "Onedrive",
+    "configFile": "Onedrive.json"
   },
   {
     "pluginId": "onepassword",
@@ -4574,10 +4468,7 @@
   {
     "pluginId": "outlook",
     "pluginIds": [
-      "onedrive",
-      "outlook",
-      "sharepoint",
-      "teams"
+      "outlook"
     ],
     "providerName": "Outlook",
     "authModes": [
@@ -4602,29 +4493,16 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "Calendars.ReadWrite",
-        "Channel.ReadBasic.All",
-        "ChannelMessage.Read.All",
-        "ChannelMessage.Send",
-        "Chat.ReadWrite",
-        "Contacts.ReadWrite",
-        "Files.ReadWrite.All",
+        "offline_access",
         "Mail.ReadWrite",
         "Mail.Send",
-        "Sites.FullControl.All",
-        "Sites.Manage.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        "Subscription.Read.All",
-        "Team.ReadBasic.All",
-        "TeamMember.Read.All",
-        "User.Read",
-        "offline_access"
+        "Calendars.ReadWrite",
+        "Contacts.ReadWrite"
       ]
     },
     "icon": "/brand-img/outlook.svg",
-    "vaultCredentialType": "M365",
-    "configFile": "M365.json"
+    "vaultCredentialType": "Outlook",
+    "configFile": "Outlook.json"
   },
   {
     "pluginId": "pagerduty",
@@ -4803,8 +4681,8 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/resend.svg",
-    "vaultCredentialType": "SendGrid",
-    "configFile": "SendGrid.json"
+    "vaultCredentialType": "Resend",
+    "configFile": "Resend.json"
   },
   {
     "pluginId": "retailed",
@@ -5030,10 +4908,7 @@
   {
     "pluginId": "sharepoint",
     "pluginIds": [
-      "onedrive",
-      "outlook",
-      "sharepoint",
-      "teams"
+      "sharepoint"
     ],
     "providerName": "SharePoint",
     "authModes": [
@@ -5060,29 +4935,16 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "Calendars.ReadWrite",
-        "Channel.ReadBasic.All",
-        "ChannelMessage.Read.All",
-        "ChannelMessage.Send",
-        "Chat.ReadWrite",
-        "Contacts.ReadWrite",
-        "Files.ReadWrite.All",
-        "Mail.ReadWrite",
-        "Mail.Send",
-        "Sites.FullControl.All",
-        "Sites.Manage.All",
+        "offline_access",
         "Sites.Read.All",
         "Sites.ReadWrite.All",
-        "Subscription.Read.All",
-        "Team.ReadBasic.All",
-        "TeamMember.Read.All",
-        "User.Read",
-        "offline_access"
+        "Sites.Manage.All",
+        "Sites.FullControl.All"
       ]
     },
     "icon": "/brand-img/sharepoint.png",
-    "vaultCredentialType": "M365",
-    "configFile": "M365.json"
+    "vaultCredentialType": "Sharepoint",
+    "configFile": "Sharepoint.json"
   },
   {
     "pluginId": "slack",
@@ -5398,9 +5260,6 @@
   {
     "pluginId": "teams",
     "pluginIds": [
-      "onedrive",
-      "outlook",
-      "sharepoint",
       "teams"
     ],
     "providerName": "Microsoft Teams",
@@ -5426,29 +5285,18 @@
       "authUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
       "tokenUrl": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
       "scopes": [
-        "Calendars.ReadWrite",
+        "offline_access",
+        "Team.ReadBasic.All",
         "Channel.ReadBasic.All",
         "ChannelMessage.Read.All",
         "ChannelMessage.Send",
-        "Chat.ReadWrite",
-        "Contacts.ReadWrite",
-        "Files.ReadWrite.All",
-        "Mail.ReadWrite",
-        "Mail.Send",
-        "Sites.FullControl.All",
-        "Sites.Manage.All",
-        "Sites.Read.All",
-        "Sites.ReadWrite.All",
-        "Subscription.Read.All",
-        "Team.ReadBasic.All",
         "TeamMember.Read.All",
-        "User.Read",
-        "offline_access"
+        "Chat.ReadWrite"
       ]
     },
     "icon": "/brand-img/teams.svg",
-    "vaultCredentialType": "M365",
-    "configFile": "M365.json"
+    "vaultCredentialType": "Teams",
+    "configFile": "Teams.json"
   },
   {
     "pluginId": "telegram",

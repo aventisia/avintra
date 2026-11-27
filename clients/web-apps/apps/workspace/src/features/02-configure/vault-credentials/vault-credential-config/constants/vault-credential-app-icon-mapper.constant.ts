@@ -169,10 +169,8 @@ export const vaultCredentialAppIconMapper: Record<string, string> = {
 for (const integration of catalog) {
   if (integration.vaultCredentialType in vaultCredentialAppIconMapper) continue;
 
-  // IMPORTANT NOTE: Several catalog plugins can share one vaultCredentialType (e.g. OneDrive,
-  // Outlook, SharePoint and Teams all map to "M365"). When the vaultCredentialType is already
-  // a curated VaultCredentialAppsEnum member, reuse that icon instead of letting the first
-  // catalog plugin overwrite it.
+  // IMPORTANT NOTE: a catalog type that is already a curated VaultCredentialAppsEnum
+  // member keeps its curated icon instead of the catalog plugin's icon.
   const enumValue =
     VaultCredentialAppsEnum[
       integration.vaultCredentialType as keyof typeof VaultCredentialAppsEnum
@@ -189,7 +187,7 @@ for (const integration of catalog) {
  * Curated entries always win: the catalog backfill above reuses the enum's
  * icon whenever a catalog `vaultCredentialType` is already a curated member.
  *
- * @param type Credential type as stored on the vault record (e.g. "M365").
+ * @param type Credential type as stored on the vault record (e.g. "Outlook").
  * @returns The icon path, or undefined when the type is unknown.
  */
 export function getVaultCredentialAppIcon(type: string | undefined): string | undefined {

@@ -202,6 +202,9 @@ const oauthConfiguredTypes = new Set(
     .map((integration) => integration.vaultCredentialType),
 );
 
+/** Pre-flattening family names stay resolvable server-side but are never offered for new credentials. */
+const LEGACY_FAMILY_TYPES = new Set(["M365", "GoogleWorkspace"]);
+
 /** Catalog types whose default is OAuth but that cannot complete consent: no OAuth app settings. */
 const hiddenVaultCredentialTypes = new Set(
   catalog
@@ -221,6 +224,7 @@ export function getDistinctVaultCredentialAppSelectOptions(): Array<{
 
   return Object.values(vaultCredentialAppsSelectOptions).filter((option) => {
     const providerKey = option.value.toLowerCase();
+    if (LEGACY_FAMILY_TYPES.has(option.value)) return false;
     if (hiddenVaultCredentialTypes.has(option.value)) return false;
     if (seenProviders.has(providerKey)) return false;
     seenProviders.add(providerKey);

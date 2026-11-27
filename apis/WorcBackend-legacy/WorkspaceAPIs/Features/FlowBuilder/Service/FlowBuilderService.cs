@@ -1158,6 +1158,7 @@ public class FlowBuilderService : IFlowBuilderService
             UsageCount = 0,
             IsTenantWideAccess = devSecret.IsTenantWideAccess,
             IsResourceAccessRestricted = devSecret.IsResourceAccessRestricted,
+            LegacyFamilyAccess = devSecret.LegacyFamilyAccess,
             SpaceId = devSecret.SpaceId,
             EnvType = ConfigureEnvironmentType.Prod,
             CreatedByUserId = _userId,

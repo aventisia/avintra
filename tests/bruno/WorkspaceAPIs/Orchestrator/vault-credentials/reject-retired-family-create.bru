@@ -1,0 +1,43 @@
+meta {
+  name: Reject retired family credential type on create
+  type: http
+  seq: 2.3
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "name": "Bruno Retired M365 {{$randomProductName}}",
+    "description": "Retired family type must not create a credential",
+    "type": "M365",
+    "data": {
+      "ClientId": "bruno-test-client-id",
+      "ClientSecret": "bruno-test-client-secret",
+      "AzureTenantId": "bruno-test-tenant"
+    }
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the type as retired", function() {
+    expect(res.getBody()).to.contain("retired");
+  });
+}
+
+docs {
+  > `M365` and `GoogleWorkspace` are retired family names: stored rows keep working, but nothing new may be
+  > created under them. The retired name is rejected before any row or sidecar alias is written.
+}

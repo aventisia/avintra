@@ -332,31 +332,6 @@ public class GoogleGeminiCredentialsDto
 }
 
 /// <summary>
-/// This DTO is used to store the necessary configuration values such as the OAuth redirect URL, 
-/// client ID, and client secret, which are required for authenticating and authorizing access 
-/// to Google services like Google Calendar, Google Docs, and other Workspace APIs.
-/// </summary>
-public class GoogleWorkspaceCredentialsDto
-{
-    /// <summary>
-    /// The redirect URI configured in the Google Cloud Console for your OAuth 2.0 client.
-    /// </summary>
-    public string OAuthRedirectURL { get; set; } = string.Empty;
-
-    /// <summary>
-    ///  /// The client ID assigned to your application by the OAuth provider oogle Cloud .
-    /// This uniquely identifies your application during the authentication process.
-    /// </summary>
-    public string ClientID { get; set; } = string.Empty;
-
-    /// <summary>
-    /// This secret is used together with the Client ID to securely authenticate your 
-    /// application when obtaining access tokens for Google Workspace APIs.
-    /// </summary>
-    public string ClientSecret { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// Represents the credentials required to authenticate requests to the Azure Open AI.
 /// </summary>
 public class AzureOpenAiCredentialsDto

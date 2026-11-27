@@ -86,6 +86,29 @@ Types are supported through `CorsairConfigRepository` plugin mappings; the
 "VaultCredentialType"/"Vault credential" terminology in Corsair/CloudConnectors code refers to a
 credential type, not a legacy entity.
 
+### Per-credential OAuth registration and per-service types
+
+Each OAuth credential now owns its provider plugin instance
+(`<plugin>__<credential-id>`), so saving one credential never changes another
+credential's OAuth app registration. `VaultCredential.LegacyFamilyAccess` records
+credentials saved before this isolation:
+
+- The `ApplyVaultCredentialFlattening` migration renames `M365` to `Outlook` and
+  `GoogleWorkspace` to `Gmail`, and sets `LegacyFamilyAccess = true` on those rows plus
+  the untouched `Teams`, `Onedrive`, `Sharepoint` and `SendGrid` rows.
+- A flagged credential keeps the previous family-wide plugin access when invoked (all
+  four Microsoft services, all Google services), because its tokens live on the family's
+  base plugin instance. New credentials get only their own service.
+- `CorsairOAuthAliasBackfillHostedService` runs at startup and asks the sidecar to copy
+  each credential's legacy base-plugin tokens onto its own instance, so existing OAuth
+  connections keep working without a reconnect.
+
+Vault credential types map one-to-one to Corsair plugins (`Outlook`, `Teams`,
+`Onedrive`, `Sharepoint`, `Gmail`, `Googlecalendar`, ...). The retired family names
+(`M365`, `GoogleWorkspace`) stay in the generated type map for stored rows and rollback
+but are not offered for new credentials: create refuses them, and update refuses a type
+change to them, while rename/data edits on an existing row of that type still work.
+
 ## Persistence and compatibility
 
 `VaultCredential` owns `EncryptedKeyValue` rows (cascade delete) that hold the encrypted

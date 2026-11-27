@@ -21,19 +21,24 @@ import {
   listOperations,
   getStructuredSchema,
 } from "corsair";
-import { createIntegrationKeyManager } from "corsair/core";
-import { createCorsairDatabase } from "corsair/db";
 import { getConnectStatusForTenant } from "corsair/hub";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
 import {
   corsair,
   provision,
   plugins,
-  pool,
   isOAuthPlugin,
   isOAuthTwoPlugin,
   getPluginMeta,
+  resolveBasePluginId,
+  resolveRegisteredPluginId,
 } from "./corsair.js";
+import { isAliasId, parseAliasId } from "./alias.js";
+import {
+  backfillIntegrationAlias,
+  deleteIntegrationCredentials,
+  writeIntegrationKeys,
+} from "./integration-keys.js";
 import {
   validatePayload,
   normalizeInvokeError,
@@ -320,9 +325,11 @@ app.post("/connect/status/scoped", async (req, res) => {
   }
 });
 
-// --- Store tenant-scoped OAuth integration keys for a plugin ---
-// These are the client_id / client_secret / redirect_url used by Corsair to
-// drive the OAuth flow and refresh tokens for this specific tenant.
+// --- Store tenant-scoped OAuth integration keys for a plugin instance ---
+// `plugin` is either a base plugin id or a per-credential instance id
+// (`<base-plugin>__<credential-id>`). These are the client_id / client_secret /
+// redirect_url that Corsair uses to drive the OAuth flow and refresh tokens for
+// that credential only.
 app.post("/integration-keys", async (req, res) => {
   const { plugin, tenantId, clientId, clientSecret, redirectUrl } =
     req.body ?? {};
@@ -340,22 +347,55 @@ app.post("/integration-keys", async (req, res) => {
       .json({ error: `Plugin ${pluginId} does not support OAuth` });
   }
 
-  try {
-    const keyManager = createIntegrationKeyManager({
-      authType: "oauth_2",
-      integrationName: pluginId,
-      kek: process.env.CORSAIR_KEK!,
-      database: createCorsairDatabase(pool),
-    });
+  // IMPORTANT NOTE: an instance id is bound to the credential it was derived
+  // from; refusing a mismatched tenant keeps one credential's app settings from
+  // ever being written into another credential's row.
+  const parsedAlias = parseAliasId(pluginId);
+  if (
+    parsedAlias &&
+    parsedAlias.credentialId !==
+      String(tenantId).replaceAll("-", "").toLowerCase()
+  ) {
+    return res
+      .status(400)
+      .json({ error: "plugin instance does not belong to tenantId" });
+  }
 
-    await keyManager.set_client_id(clientId);
-    await keyManager.set_client_secret(clientSecret);
-    await keyManager.set_redirect_url(redirectUrl);
+  try {
+    await writeIntegrationKeys(pluginId, clientId, clientSecret, redirectUrl);
 
     res.json({ success: true, plugin: pluginId, tenantId });
   } catch (err: any) {
     console.error(
       "[corsair:integration-keys] failed:",
+      err?.message ?? String(err),
+    );
+    res.status(500).json({ error: err?.message ?? String(err) });
+  }
+});
+
+// --- Copy a credential's existing base-row connection data onto its instance row ---
+// Used once at Workspace API startup so credentials saved before per-credential
+// isolation keep their OAuth app settings and tokens without reconnecting.
+app.post("/integration-keys/backfill", async (req, res) => {
+  const { plugin, tenantId } = req.body ?? {};
+  if (!plugin || !tenantId) {
+    return res.status(400).json({ error: "plugin and tenantId required" });
+  }
+
+  const pluginId = String(plugin).toLowerCase();
+  if (parseAliasId(pluginId) || !isOAuthPlugin(pluginId)) {
+    return res
+      .status(400)
+      .json({ error: `Plugin ${pluginId} is not a base OAuth plugin` });
+  }
+
+  try {
+    const result = await backfillIntegrationAlias(pluginId, String(tenantId));
+    res.json({ success: true, ...result });
+  } catch (err: any) {
+    console.error(
+      "[corsair:integration-keys] backfill failed:",
       err?.message ?? String(err),
     );
     res.status(500).json({ error: err?.message ?? String(err) });
@@ -450,9 +490,10 @@ app.post("/credentials/test", async (req, res) => {
   }
 });
 
-// --- Unmirror / delete an API-key credential from Corsair ---
-// We clear the stored key/config instead of deleting the row so FK relationships
-// with corsair_entities / corsair_events stay intact.
+// --- Remove a credential's mirrored connection data from Corsair ---
+// Per-credential instance rows are deleted together with their connection data;
+// base plugin rows are shared and are only cleared. The row is resolved by name
+// because account rows reference its generated UUID id.
 app.delete("/credentials", async (req, res) => {
   const { connectionId, plugin } = req.body ?? {};
   if (!connectionId || !plugin) {
@@ -460,18 +501,16 @@ app.delete("/credentials", async (req, res) => {
   }
 
   const pluginId = String(plugin).toLowerCase();
-  const pluginNames = plugins.map((p) => (p as any).id as string);
-  if (!pluginNames.includes(pluginId)) {
+  if (isAliasId(pluginId)) {
+    if (!getPluginMeta(pluginId)) {
+      return res.status(400).json({ error: `Unsupported plugin: ${plugin}` });
+    }
+  } else if (!plugins.some((registered) => registered.id === pluginId)) {
     return res.status(400).json({ error: `Unsupported plugin: ${plugin}` });
   }
 
   try {
-    await pool.query(
-      `UPDATE corsair_accounts
-       SET dek = NULL, config = '{}', updated_at = NOW()
-       WHERE tenant_id = $1 AND integration_id = $2`,
-      [String(connectionId), pluginId],
-    );
+    await deleteIntegrationCredentials(pluginId, String(connectionId));
     return res.status(204).send();
   } catch (err: any) {
     console.error(
@@ -504,8 +543,9 @@ app.post("/api/corsair/invoke", async (req, res) => {
   }
 
   const parts = String(action).split(".");
+  const pluginInstanceId = resolveRegisteredPluginId(pluginId, connectionId);
   const tenant = corsair.withTenant(connectionId) as any;
-  let fn: any = tenant[pluginId]?.api;
+  let fn: any = tenant[pluginInstanceId]?.api;
   for (const part of parts) fn = fn?.[part];
   if (typeof fn !== "function")
     return res
@@ -543,7 +583,7 @@ app.post("/api/corsair/invoke", async (req, res) => {
       return res.status(401).json({
         success: false,
         needsConnect: true,
-        plugin: err.pluginId,
+        plugin: resolveBasePluginId(err.pluginId),
         authType: err.authType,
         message: err.message,
       });

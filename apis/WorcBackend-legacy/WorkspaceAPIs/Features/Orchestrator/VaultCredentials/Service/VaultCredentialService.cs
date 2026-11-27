@@ -102,7 +102,7 @@ public class VaultCredentialService : IVaultCredentialService
             });
 
             var oauthStatusTasks = vaultCredentialData
-                .Select(dto => (dto, plugin: MapVaultCredentialTypeToCorsairOAuthPlugin(dto.Type)))
+                .Select(dto => (dto, plugin: MapVaultCredentialTypeToCorsairPluginInstance(dto.Type, dto.Id)))
                 .Where(item => item.plugin is not null)
                 .Select(async item =>
                 {
@@ -363,6 +363,12 @@ public class VaultCredentialService : IVaultCredentialService
 
             vaultCredentialDto = TrimDtoStringPropsUtil.TrimDtoStringProps(vaultCredentialDto);
 
+            if (IsLegacyFamilyCredentialType(vaultCredentialDto.Type))
+            {
+                serviceResponse.Message = LegacyFamilyCredentialTypeRejection(vaultCredentialDto.Type);
+                return serviceResponse;
+            }
+
             var validateData = ValidateData(vaultCredentialDto.Type, vaultCredentialDto.Data);
 
             if (string.IsNullOrEmpty(validateData.SanitizedDataJson))
@@ -439,7 +445,7 @@ public class VaultCredentialService : IVaultCredentialService
 
             if (MapVaultCredentialTypeToCorsairOAuthPlugin(newVaultCredential.Type) is not null)
             {
-                var link = await _corsairSidecarService.CreateConnectLinkAsync(newVaultCredential.Id, MapVaultCredentialTypeToCorsairOAuthPlugin(newVaultCredential.Type)!);
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(newVaultCredential.Id, MapVaultCredentialTypeToCorsairPluginInstance(newVaultCredential.Type, newVaultCredential.Id)!);
                 if (link != null)
                 {
                     serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;
@@ -540,6 +546,12 @@ public class VaultCredentialService : IVaultCredentialService
             var typeChanged = existingVaultCredential.Type != vaultCredentialDto.Type;
             var previousType = existingVaultCredential.Type;
             var needsRevalidation = isDataChanged || typeChanged;
+
+            if (typeChanged && IsLegacyFamilyCredentialType(vaultCredentialDto.Type))
+            {
+                serviceResponse.Message = LegacyFamilyCredentialTypeRejection(vaultCredentialDto.Type);
+                return serviceResponse;
+            }
 
             if (needsRevalidation)
             {
@@ -652,7 +664,7 @@ public class VaultCredentialService : IVaultCredentialService
             {
                 if (typeChanged)
                 {
-                    await UnmirrorCredentialFromCorsairAsync(existingVaultCredential.Id, previousType);
+                    await UnmirrorCredentialFromCorsairAsync(existingVaultCredential.Id, previousType, existingVaultCredential.LegacyFamilyAccess);
                 }
 
                 await MirrorCredentialToCorsairAsync(existingVaultCredential, validateData.EncryptedValues);
@@ -663,7 +675,7 @@ public class VaultCredentialService : IVaultCredentialService
 
             if (MapVaultCredentialTypeToCorsairOAuthPlugin(existingVaultCredential.Type) is not null)
             {
-                var link = await _corsairSidecarService.CreateConnectLinkAsync(existingVaultCredential.Id, MapVaultCredentialTypeToCorsairOAuthPlugin(existingVaultCredential.Type)!);
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(existingVaultCredential.Id, MapVaultCredentialTypeToCorsairPluginInstance(existingVaultCredential.Type, existingVaultCredential.Id)!);
                 if (link != null)
                 {
                     serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;
@@ -746,7 +758,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            await UnmirrorCredentialFromCorsairAsync(vaultCredential.Id, vaultCredential.Type);
+            await UnmirrorCredentialFromCorsairAsync(vaultCredential.Id, vaultCredential.Type, vaultCredential.LegacyFamilyAccess);
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -836,7 +848,7 @@ public class VaultCredentialService : IVaultCredentialService
 
             foreach (var vaultCredential in vaultCredentials)
             {
-                await UnmirrorCredentialFromCorsairAsync(vaultCredential.Id, vaultCredential.Type);
+                await UnmirrorCredentialFromCorsairAsync(vaultCredential.Id, vaultCredential.Type, vaultCredential.LegacyFamilyAccess);
             }
 
             serviceResponse.Data = vaultCredentials.Count;
@@ -1023,7 +1035,8 @@ public class VaultCredentialService : IVaultCredentialService
             return serviceResponse;
         }
 
-        var plugin = MapVaultCredentialTypeToCorsairPlugin(vaultCredential.Type);
+        var plugin = MapVaultCredentialTypeToCorsairPluginInstance(vaultCredential.Type, vaultCredential.Id)
+            ?? MapVaultCredentialTypeToCorsairPlugin(vaultCredential.Type);
         if (string.IsNullOrWhiteSpace(plugin))
         {
             serviceResponse.Message = "This credential is not mapped to Corsair.";
@@ -1087,7 +1100,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var plugin = MapVaultCredentialTypeToCorsairOAuthPlugin(vaultCredential.Type);
+            var plugin = MapVaultCredentialTypeToCorsairPluginInstance(vaultCredential.Type, vaultCredential.Id);
             if (string.IsNullOrWhiteSpace(plugin))
             {
                 serviceResponse.Message = "This credential type does not support OAuth connect.";
@@ -1134,7 +1147,7 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var plugin = MapVaultCredentialTypeToCorsairOAuthPlugin(vaultCredential.Type);
+            var plugin = MapVaultCredentialTypeToCorsairPluginInstance(vaultCredential.Type, vaultCredential.Id);
             if (string.IsNullOrWhiteSpace(plugin))
             {
                 serviceResponse.Message = "This credential type does not support OAuth connect.";
@@ -1173,6 +1186,11 @@ public class VaultCredentialService : IVaultCredentialService
         };
 
         var rawJson = System.Text.Json.JsonSerializer.Serialize(data, jsonOptions);
+
+        if (IsMicrosoftOAuthCredentialType(type))
+        {
+            return ValidateMicrosoftOAuthData(rawJson, jsonOptions);
+        }
 
         if (_corsairConfigRepository.GetPluginIdForVaultCredentialType(type.ToString()) is not null)
         {
@@ -1279,23 +1297,6 @@ public class VaultCredentialService : IVaultCredentialService
                     break;
                 }
 
-            case VaultCredentialTypesEnum.M365:
-                {
-                    var m365Credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
-                    if (m365Credentials != null)
-                    {
-
-                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(m365Credentials.ClientSecret);
-                        m365Credentials.ClientSecret = string.Empty;
-                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(m365Credentials, jsonOptions);
-                    }
-                    else
-                    {
-                        validationResult.Remark = "Invalid M365 credentials: required fields missing or format incorrect.";
-                    }
-                    break;
-                }
-
             case VaultCredentialTypesEnum.GeneralCredentials:
                 {
                     var generalCredential = System.Text.Json.JsonSerializer.Deserialize<GeneralCredentialsDto>(rawJson, jsonOptions);
@@ -1378,25 +1379,6 @@ public class VaultCredentialService : IVaultCredentialService
                         validationResult.Remark = "Invalid Google Gemini credentials: required fields missing or format incorrect.";
                     }
                     break;
-                }
-
-            case VaultCredentialTypesEnum.GoogleWorkspace:
-                {
-                    var googleWorkspaceCredentials = System.Text.Json.JsonSerializer.Deserialize<GoogleWorkspaceCredentialsDto>(rawJson, jsonOptions);
-                    if (googleWorkspaceCredentials != null)
-                    {
-
-                        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(googleWorkspaceCredentials.ClientSecret);
-                        googleWorkspaceCredentials.ClientSecret = string.Empty;
-
-                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(googleWorkspaceCredentials, jsonOptions);
-                    }
-                    else
-                    {
-                        validationResult.Remark = "Invalid Google Workspace credentials: required fields missing or format incorrect.";
-                    }
-                    break;
-
                 }
 
             case VaultCredentialTypesEnum.AzureOpenAI:
@@ -3819,6 +3801,40 @@ public class VaultCredentialService : IVaultCredentialService
         return validationResult;
     }
 
+    private static bool IsMicrosoftOAuthCredentialType(VaultCredentialTypesEnum type) =>
+        type is VaultCredentialTypesEnum.M365
+            or VaultCredentialTypesEnum.Outlook
+            or VaultCredentialTypesEnum.Teams
+            or VaultCredentialTypesEnum.Onedrive
+            or VaultCredentialTypesEnum.Sharepoint;
+
+    // IMPORTANT NOTE: retired family types must stay resolvable for rows stored before the flattening; only new or retyped credentials are rejected.
+    private static bool IsLegacyFamilyCredentialType(VaultCredentialTypesEnum type) =>
+        type is VaultCredentialTypesEnum.M365 or VaultCredentialTypesEnum.GoogleWorkspace;
+
+    private static string LegacyFamilyCredentialTypeRejection(VaultCredentialTypesEnum type) =>
+        $"Credential type '{type}' is retired and cannot be used for new credentials. Select the specific service instead.";
+
+    /// <summary>
+    /// Validates the shared Microsoft OAuth app form. The directory (tenant) id is not a
+    /// secret and stays in the stored data; the client secret is encrypted.
+    /// </summary>
+    private VaultCredentialValidationResult ValidateMicrosoftOAuthData(string rawJson, JsonSerializerOptions jsonOptions)
+    {
+        var validationResult = new VaultCredentialValidationResult();
+        var credentials = System.Text.Json.JsonSerializer.Deserialize<M365CredentialsDto>(rawJson, jsonOptions);
+        if (credentials is null)
+        {
+            validationResult.Remark = "Invalid Microsoft OAuth credentials: required fields missing or format incorrect.";
+            return validationResult;
+        }
+
+        validationResult.EncryptedValues["ClientSecret"] = _encryptionService.EncryptString(credentials.ClientSecret);
+        credentials.ClientSecret = string.Empty;
+        validationResult.SanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(credentials, jsonOptions);
+        return validationResult;
+    }
+
     private VaultCredentialValidationResult ValidateGeneratedCorsairData(string rawJson, JsonSerializerOptions jsonOptions)
     {
         var result = new VaultCredentialValidationResult();
@@ -3891,17 +3907,20 @@ public class VaultCredentialService : IVaultCredentialService
     /// </remarks>
     private string? MapVaultCredentialTypeToCorsairOAuthPlugin(VaultCredentialTypesEnum type)
     {
-        var mappedPlugin = type switch
-        {
-            VaultCredentialTypesEnum.M365 => "outlook",
-            VaultCredentialTypesEnum.Teams => "teams",
-            VaultCredentialTypesEnum.Onedrive => "onedrive",
-            VaultCredentialTypesEnum.Sharepoint => "sharepoint",
-            VaultCredentialTypesEnum.GoogleWorkspace => "gmail",
-            _ => null
-        };
+        return CorsairPluginResolver.ResolveOAuthPlugin(type, _corsairConfigRepository);
+    }
 
-        return mappedPlugin ?? _corsairConfigRepository.GetOAuthPluginIdForVaultCredentialType(type.ToString());
+    /// <summary>
+    /// Maps an <see cref="VaultCredentialTypesEnum"/> to the per-credential Corsair OAuth
+    /// plugin instance id (<c>&lt;plugin&gt;__&lt;credential-id&gt;</c>).
+    /// Returns <c>null</c> when the type does not correspond to a Corsair-supported OAuth plugin.
+    /// </summary>
+    private string? MapVaultCredentialTypeToCorsairPluginInstance(VaultCredentialTypesEnum type, Guid credentialId)
+    {
+        var plugin = MapVaultCredentialTypeToCorsairOAuthPlugin(type);
+        return string.IsNullOrWhiteSpace(plugin)
+            ? null
+            : CorsairPluginResolver.ToPluginInstance(plugin, credentialId);
     }
 
     /// <summary>
@@ -3938,8 +3957,26 @@ public class VaultCredentialService : IVaultCredentialService
     /// Clears a previously mirrored credential from the Corsair sidecar.
     /// Best-effort: failures are logged but do not fail the delete operation.
     /// </summary>
-    private async Task UnmirrorCredentialFromCorsairAsync(Guid vaultCredentialId, VaultCredentialTypesEnum type)
+    private async Task UnmirrorCredentialFromCorsairAsync(Guid vaultCredentialId, VaultCredentialTypesEnum type, bool legacyFamilyAccess = false)
     {
+        var oauthPluginInstance = MapVaultCredentialTypeToCorsairPluginInstance(type, vaultCredentialId);
+        if (!string.IsNullOrWhiteSpace(oauthPluginInstance))
+        {
+            await _corsairSidecarService.DeleteCredentialAsync(vaultCredentialId, oauthPluginInstance);
+
+            if (legacyFamilyAccess)
+            {
+                // IMPORTANT NOTE: pre-flattening credentials kept their tokens on the shared family
+                // base rows; deleting the credential must clear those per-tenant accounts too.
+                foreach (var familyPluginId in CorsairPluginResolver.ResolveLegacyFamilyPluginIds(type))
+                {
+                    await _corsairSidecarService.DeleteCredentialAsync(vaultCredentialId, familyPluginId);
+                }
+            }
+
+            return;
+        }
+
         var plugin = MapVaultCredentialTypeToCorsairPlugin(type);
         var plugins = _corsairConfigRepository.GetPluginIdsForVaultCredentialType(type.ToString());
         if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
@@ -4063,6 +4100,12 @@ public class VaultCredentialService : IVaultCredentialService
             return true;
         }
 
+        var pluginInstance = MapVaultCredentialTypeToCorsairPluginInstance(vaultCredential.Type, vaultCredential.Id);
+        if (string.IsNullOrWhiteSpace(pluginInstance))
+        {
+            return true;
+        }
+
         var decryptedValues = encryptedValues.ToDictionary(
             kv => kv.Key,
             kv => _encryptionService.DecryptString(kv.Value));
@@ -4094,7 +4137,7 @@ public class VaultCredentialService : IVaultCredentialService
 
         return await _corsairSidecarService.StoreIntegrationKeysAsync(
             vaultCredential.Id,
-            plugin,
+            pluginInstance,
             clientId,
             clientSecret,
             redirectUrl);
