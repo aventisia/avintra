@@ -125,7 +125,7 @@ public class EnvironmentConfig
     public string SalesEmails { get; set; } = string.Empty;
 
     // Voice sessions
-    public int MaxActiveVoiceSessionsPerUser { get; set; } = 2;
+    public int MaxActiveVoiceSessionsPerUser { get; set; } = 50;
 
     // Identity Configurations
     public int MaxActiveSessionAllowed { get; set; }
