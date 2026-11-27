@@ -1,6 +1,48 @@
-# Avintra
+<h1 align="center">Avintra</h1>
 
-**Build, run and govern AI agents that do real work in enterprise workflows.**
+<p align="center"><strong>Build, run and govern AI agents that do real work in enterprise workflows.</strong></p>
+
+<p align="center">
+  AI agents, deterministic workflows and desktop automation in one self-hostable platform,<br>
+  with human approvals and a full trace on every run.
+</p>
+
+<p align="center">
+  <a href="https://www.aventisia.com/avintra/">Website</a> ·
+  <a href="https://docs.aventisia.com">Docs</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="https://avintra.aventisia.com/accounts/create-account">Try Avintra Cloud free</a> ·
+  <a href="https://github.com/aventisia/avintra/discussions">Discussions</a>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: Avintra Community License" src="https://img.shields.io/badge/license-Avintra%20Community%20(source--available)-blue"></a>
+  <img alt=".NET 8" src="https://img.shields.io/badge/.NET-8-512BD4">
+  <a href="https://github.com/aventisia/avintra/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/aventisia/avintra?style=social"></a>
+</p>
+
+<!-- Suggested: add a screenshot or short GIF of the Agent Builder canvas here, e.g. docs/assets/agent-builder.png -->
+
+## Why Avintra
+
+- **Agentic or deterministic, per process.** Let the model plan and route for conversational work, or keep a fixed workflow in control and call AI only where judgment is needed, for regulated processes.
+- **Reaches legacy systems.** The Runner automates desktop and browser apps that have no API, next to 500+ app integrations and MCP tools.
+- **Governed by default.** Human approval steps, a credential vault, role-based access, and a recorded trace of every run: trigger, model, outputs and approvals.
+- **Your models, your infrastructure.** Bring your own keys (OpenAI, Anthropic, Google Gemini, OpenRouter, DeepInfra) or run local models with Ollama, and self-host on your own machines.
+- **Pay for runtime, not seats.** On [Avintra Cloud](https://www.aventisia.com/pricing/), usage is billed by execution time, with unlimited users and agents. The Community edition is free to self-host.
+
+## How Avintra compares
+
+| | Avintra | n8n | Dify | UiPath | Power Automate |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| AI agents | ✅ | ✅ | ✅ | ✅ | Via Copilot Studio |
+| Deterministic workflows | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Desktop and browser automation (RPA) | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Free self-hosted edition | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Bring your own models, incl. local | ✅ | ✅ | ✅ | Paid tiers | Azure AI models |
+| Pricing unit | Execution time | Workflow executions | Workspace plans | Platform units or robot and user licenses | Per user and per bot |
+
+Based on public product information as of November 2026; check each vendor's current documentation. More detail: [platform comparison](https://www.aventisia.com/resources/#compare).
 
 ## What is Avintra?
 
