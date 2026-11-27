@@ -1,5 +1,6 @@
-# Aventisia's stack for one host (UAT, then production server 2), run by deploy.sh next to the host's own nginx,
-# avdb Postgres and Azure Blob; images come from .github/workflows/docker-images.yml. Setup: README.md.
+# Aventisia's stack for one host (UAT, then production server 2), run by deploy.sh next to the host's own nginx
+# and Azure Blob, with an external Postgres or the bundled one (profile db); images come from
+# .github/workflows/docker-images.yml. Setup: DEPLOYMENT.md, reference: README.md.
 # /opt/avintra/.env (template: .env.example) fills the ${...} values below; env/*.env hold each container's own settings.
 # IMPORTANT NOTE: Docker-published ports bypass UFW, so every port binds to 127.0.0.1 except LiveKit's media ports.
 # The -apis and corsair aliases are the backend's default service URLs and the edge image's upstreams.
@@ -103,3 +104,22 @@ services:
       - "127.0.0.1:7880:7880"
       - "7881:7881"
       - "7882:7882/udp"
+
+  # Optional database: COMPOSE_PROFILES=db in .env and POSTGRESQL_HOST=postgres in env/shared.env.
+  # pgvector image because the Workspace database needs the vector extension. Publishes no port.
+  postgres:
+    <<: *service
+    profiles: [db]
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRESQL_USERNAME:-}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD:-}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      retries: 12
+
+volumes:
+  pgdata:

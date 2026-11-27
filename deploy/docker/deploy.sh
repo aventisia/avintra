@@ -128,14 +128,23 @@ changes_started=1
 echo "==> syncing skills, Corsair configs and the Runner install script into $FILES"
 sync_seed_folders
 
-echo "==> Corsair migrate and seed"
-dc run --rm --no-deps corsair-api sh -c 'node dist/migrate.js && node dist/seed-corsair-tools.js'
+if dc config --services | grep -qx postgres; then
+  echo "==> starting the bundled Postgres"
+  dc up -d --wait postgres
+fi
+
+echo "==> Corsair migrate"
+dc run --rm --no-deps corsair-api node dist/migrate.js
 
 echo "==> starting"
 dc up -d --remove-orphans
 
 echo "==> waiting for every service to answer (up to 3 min each)"
 wait_for_services || { dc ps; exit 5; }
+
+# IMPORTANT NOTE: the seed writes to the Workspace database, whose tables exist only once Workspace API has migrated, so it runs after the stack is up.
+echo "==> Corsair seed"
+dc run --rm --no-deps corsair-api node dist/seed-corsair-tools.js
 
 mv compose.next.yml compose.yml
 sed -i "s/^AVINTRA_TAG=.*/AVINTRA_TAG=${AVINTRA_TAG}/" .env

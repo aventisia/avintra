@@ -7,9 +7,11 @@ Aventisia's own servers can run from the images in this folder instead of the Je
 | File | Purpose |
 | --- | --- |
 | `web.Dockerfile`, `docs.Dockerfile`, `nginx/` | Web app and docs images (`build-docker-images` skill) |
-| `compose.yml` | One server's stack: every service bound to `127.0.0.1` except LiveKit's media ports |
-| `deploy.sh` | Deploys one commit: pulls its images, fills the shared folders, migrates Corsair, restarts, checks every service |
+| `DEPLOYMENT.md` | Quick step-by-step guide to deploy the stack on a server |
+| `compose.yml` | One server's stack: every service bound to `127.0.0.1` except LiveKit's media ports; an optional bundled Postgres (profile `db`, see `DEPLOYMENT.md`) |
+| `deploy.sh` | Deploys one commit: pulls its images, fills the shared folders, starts the bundled Postgres when enabled, migrates Corsair, restarts, checks every service, seeds the Corsair tools |
 | `.env.example` | Template for `/opt/avintra/.env` |
+| `env/*.env.example` | Templates for `/opt/avintra/env/*.env`: `shared`, `accounts-api`, `workspace-api`, `global-admin-api`, `llmpipeline-api`, `corsair-api` |
 
 ## Flow
 
@@ -40,7 +42,7 @@ Limit `uat` to the `uat` branch and `production-server2` to `main` with required
 | --- | --- |
 | `/opt/avintra/deploy.sh` | Owned by root, so the `deploy` user cannot change it |
 | `/opt/avintra/.env` | From `.env.example`; mode 600, owned by `deploy`. UAT sets `AVINTRA_TAG_PREFIX=uat-` |
-| `/opt/avintra/env/*.env` | `shared.env` plus one file per service (`accounts-api`, `workspace-api`, `global-admin-api`, `llmpipeline-api`, `corsair-api`), copied from `/etc/environment` and the bare-metal units. Service URLs live once in `shared.env` (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `CORSAIR_API_BASE_URL`, with compose names such as `http://accounts-api:4000`); the .NET services and LLM Pipeline all read them, so no service file repeats them. Never commit them. |
+| `/opt/avintra/env/*.env` | `shared.env` plus one file per service (`accounts-api`, `workspace-api`, `global-admin-api`, `llmpipeline-api`, `corsair-api`), copied from `/etc/environment` and the bare-metal units. Service URLs live once in `shared.env` (`ACCOUNTS_API_BASE_URL`, `WORKSPACE_API_BASE_URL`, `CORSAIR_API_BASE_URL`, with compose names such as `http://accounts-api:4000`); the .NET services and LLM Pipeline all read them, so no service file repeats them. Templates: `env/*.env.example`. Never commit them. |
 | `/opt/avintra/compose.yml`, `deploy.log` | The running release and the deploy history, written by `deploy.sh` |
 | `/var/www/aventisia.com/files` | Shared folder; `deploy.sh` replaces `skills/`, `configs/Corsair/` and `scripts/` from the images |
 

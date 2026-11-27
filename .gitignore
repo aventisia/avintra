@@ -8,6 +8,7 @@ dist
 dist-ssr
 *.local
 .env
+deploy/docker/env/*.env
 .cache
 server/dist
 public/dist
