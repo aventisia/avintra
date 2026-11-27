@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { useNodeSelectorStore } from "../../stores/action-selector-store";
 import { toCanvasNodeData } from "../to-canvas-node-data.util";
 
-useNodeSelectorStore.getState().setActionSelectorData([
+useNodeSelectorStore.getState().setUnfilteredActionSelectorData([
   {
     label: "L1",
     description: "L1",

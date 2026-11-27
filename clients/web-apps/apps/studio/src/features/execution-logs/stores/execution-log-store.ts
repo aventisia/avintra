@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+import type { NodeDataType } from "@/types/node-data-type";
+
 import { ExecutionActions, ExecutionState } from "../types/execution-log-types";
 import { mapLogsToFlow } from "../utils/execution-log-parser";
 
@@ -12,6 +14,7 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
   activeIteration: {},
   activeCallerId: null,
   nodeTypes: {},
+  nodeMeta: {},
   routerConfig: {},
   traversedEdges: {},
   showBranchStats: false,
@@ -19,8 +22,18 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
     const data = mapLogsToFlow(logs, nodes, edges, callerId);
 
     const nodeTypes: Record<string, string> = {};
+    const nodeMeta: ExecutionState["nodeMeta"] = {};
     nodes?.forEach((n) => {
       nodeTypes[n.id] = n.type ?? "";
+      const step = n.data as unknown as Partial<NodeDataType> | null | undefined;
+      nodeMeta[n.id] = {
+        label: step?.label,
+        name: step?.name,
+        category: step?.category,
+        iconUrl: step?.iconUrl,
+        icon: step?.icon,
+        img: step?.img,
+      };
     });
 
     set((state) => {
@@ -33,7 +46,7 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
         indices[id] = typeof previous === "number" ? Math.min(previous, Math.max(0, total - 1)) : 0;
       });
 
-      return { ...data, activeIteration: indices, nodeTypes };
+      return { ...data, activeIteration: indices, nodeTypes, nodeMeta };
     });
   },
 

@@ -1,0 +1,49 @@
+meta {
+  name: v2 llm prompts - community deployment rejected
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{LLMPIPELINE_API_BASE_URL}}/v2/llm/prompts/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "refType": "Agent",
+    "promptTarget": "ChatAgentSystemPrompt",
+    "refId": "{{$guid}}",
+    "refName": "bruno community rejection",
+    "payload": ""
+  }
+}
+
+script:pre-request {
+  if (process.env.LLM_DEPLOYMENT_TYPE !== "Community") {
+    bru.runner.skipRequest();
+  }
+}
+
+script:post-response {
+  test("community deployment rejects with 403", function() {
+    expect(res.getStatus()).to.equal(403);
+  });
+}
+
+docs {
+  Requires a Community deployment (set LLM_DEPLOYMENT_TYPE=Community in
+  tests/bruno/.env and leave ON_PREM_TENANT_ID / ON_PREM_INSTANCE_KEY blank in
+  apis/llmpipeline/.env.local, then restart llmpipeline_apis); skipped on
+  Commercial.
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

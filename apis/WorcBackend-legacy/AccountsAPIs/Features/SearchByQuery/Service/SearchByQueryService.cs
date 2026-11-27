@@ -22,7 +22,7 @@ public class SearchByQueryService : ISearchByQueryService
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
     }
 
-    public async Task<ServiceResponse<IEnumerable<SearchedUserDto>>> SearchUserAsync(string? searchKey, bool includeCurrentUser, bool onlyCurrentSpace)
+    public async Task<ServiceResponse<IEnumerable<SearchedUserDto>>> SearchUserAsync(string? searchKey, bool includeCurrentUser, bool onlyCurrentSpace, bool onlyTu)
     {
         var serviceResponse = ServiceResponse<IEnumerable<SearchedUserDto>>.Create("Failed to search users", 500);
 
@@ -54,6 +54,14 @@ public class SearchByQueryService : ISearchByQueryService
                     .ToListAsync();
 
                 accountUsersQuery = accountUsersQuery.Where(w => spaceUserIds.Contains(w.Id));
+            }
+
+            if (onlyTu)
+            {
+                var tuRoleName = CustomRolesEnum.TU.ToString();
+                accountUsersQuery = accountUsersQuery.Where(w =>
+                    w.UserRoles != null &&
+                    w.UserRoles.Any(ur => ur.Role != null && ur.Role.Name == tuRoleName));
             }
 
             if (string.IsNullOrWhiteSpace(trimmedSearchKey))

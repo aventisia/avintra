@@ -1,7 +1,9 @@
+import { Button } from "@avplatform/ui/buttons";
+import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ListDashesIcon, XIcon } from "@phosphor-icons/react";
-import { useMemo } from "react";
+import { ArrowsInIcon, ArrowsOutIcon, XIcon } from "@phosphor-icons/react";
+import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { Panel, PanelClose, PanelContent } from "@/components/panel/components/Panel";
@@ -10,6 +12,7 @@ import { buildNodeLogPayload } from "@/utils/node-log-payload";
 import { NODE_DETAIL_PANEL_ID } from "../constants";
 import { useExecutionStore } from "../stores/execution-log-store";
 import { useNodeDetailStore } from "../stores/node-detail-store";
+import { NodeLogHeader } from "./NodeLogHeader";
 
 /**
  * Docked panel showing the selected node's execution log.
@@ -23,14 +26,18 @@ import { useNodeDetailStore } from "../stores/node-detail-store";
 export const NodeDetailPanel = () => {
   const selectedNodeId = useNodeDetailStore((state) => state.selectedNodeId);
 
-  const { executionMap, nodeToParentStack, activeIteration, nodeTypes } = useExecutionStore(
-    useShallow((state) => ({
-      executionMap: state.executionMap,
-      nodeToParentStack: state.nodeToParentStack,
-      activeIteration: state.activeIteration,
-      nodeTypes: state.nodeTypes,
-    })),
-  );
+  const { executionMap, nodeToParentStack, activeIteration, nodeTypes, nodeMeta } =
+    useExecutionStore(
+      useShallow((state) => ({
+        executionMap: state.executionMap,
+        nodeToParentStack: state.nodeToParentStack,
+        activeIteration: state.activeIteration,
+        nodeTypes: state.nodeTypes,
+        nodeMeta: state.nodeMeta,
+      })),
+    );
+
+  const [expanded, setExpanded] = useState(false);
 
   const nodeId = selectedNodeId;
 
@@ -38,6 +45,7 @@ export const NodeDetailPanel = () => {
   const parents = nodeId ? nodeToParentStack[nodeId] || [] : [];
   const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
   const log = nodeId ? executionMap[nodeId]?.[pathKey] : undefined;
+  const meta = nodeId ? nodeMeta[nodeId] : undefined;
 
   const nodeLogPayload = useMemo(
     () =>
@@ -49,19 +57,44 @@ export const NodeDetailPanel = () => {
 
   if (!nodeId) return null;
 
+  const storedName = nodeLogPayload.nodeDisplayName as string | undefined;
+  const customName =
+    meta?.label || (storedName !== FALLBACK_VALUE ? storedName : undefined) || nodeId;
+
   return (
     <Panel
       id={NODE_DETAIL_PANEL_ID}
       side="right"
-      width="w-[30rem]"
+      width={expanded ? "w-[46rem] max-w-[calc(100vw-2.5rem)]" : "w-[30rem]"}
       className="rounded-lg border-line bg-surface shadow-pop"
       closeOnEscape
     >
       <PanelContent className="flex flex-col overflow-hidden">
-        <div className="flex h-10 shrink-0 items-center gap-2 border-b border-line pl-4 pr-2">
-          <ListDashesIcon className="size-3.5 text-muted-foreground" />
-          <span className="text-body-sm font-semibold text-ink">Node log</span>
-          <div className="ml-auto flex items-center gap-1">
+        <div className="flex min-h-12 shrink-0 items-center gap-2 border-b border-line py-1 pl-4 pr-2">
+          <NodeLogHeader
+            className="min-w-0 flex-1"
+            customName={customName}
+            builtInName={(nodeLogPayload.nodeUniqueName as string) || meta?.name}
+            category={meta?.category}
+            iconUrl={meta?.iconUrl}
+            icon={meta?.icon}
+            img={meta?.img}
+          />
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon8"
+              onClick={() => setExpanded((value) => !value)}
+              aria-label={expanded ? "Narrow panel" : "Widen panel"}
+              title={expanded ? "Narrow panel" : "Widen panel"}
+              className="size-6 p-0 text-muted-foreground hover:text-ink"
+            >
+              {expanded ? (
+                <ArrowsInIcon className="size-4" />
+              ) : (
+                <ArrowsOutIcon className="size-4" />
+              )}
+            </Button>
             {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
             <PanelClose
               className="size-6 p-0 text-muted-foreground hover:text-ink"

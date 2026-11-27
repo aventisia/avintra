@@ -938,7 +938,13 @@ export const useFlowOperations = () => {
         updatedEdges = deduplicateEdges(updatedEdges);
 
         setFlowVariablesObject(result?.flowVariables ?? []);
-        autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+        // IMPORTANT NOTE: autoLayout returns before setNodes for an empty graph.
+        if (updatedNodes.length === 0) {
+          setNodes(updatedNodes);
+          setEdges(updatedEdges);
+        } else {
+          autoLayout({ newNodes: updatedNodes, newEdges: updatedEdges });
+        }
       };
 
       if (deleteAlert) {
@@ -955,7 +961,9 @@ export const useFlowOperations = () => {
       autoLayout,
       deleteAlert,
       resetContextMenu,
+      setEdges,
       setFlowVariablesObject,
+      setNodes,
       showDefaultAlertDialog,
       getComprehensiveSelection,
     ],

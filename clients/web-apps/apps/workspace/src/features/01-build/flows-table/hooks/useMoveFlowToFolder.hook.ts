@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { updateFlowFolder } from "../apis/flows-table-apis";
-import { FLOWS_QUERY_KEY, FOLDERS_QUERY_KEY } from "../constants";
+import { FLOWS_QUERY_KEY, FOLDERS_QUERY_KEY, withAssignedFirstFlowsQueryKey } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { useCurrentSpaceId } from "./useCurrentSpaceId.hook";
 
@@ -40,6 +40,8 @@ export const useMoveFlowToFolder = () => {
   const flowsQueryKeys = [
     [...FLOWS_QUERY_KEY, space],
     [...FLOWS_QUERY_KEY, "SHARED", space],
+    withAssignedFirstFlowsQueryKey([...FLOWS_QUERY_KEY, space], true),
+    withAssignedFirstFlowsQueryKey([...FLOWS_QUERY_KEY, "SHARED", space], true),
   ];
 
   const { mutate, isPending } = useMutation({

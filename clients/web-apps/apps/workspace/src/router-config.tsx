@@ -39,7 +39,6 @@ import { JobsPage } from "./pages/03-orchestrator/JobsPage";
 import { MachinesPage } from "./pages/03-orchestrator/MachinesPage";
 import { PublishedAgentsPage } from "./pages/03-orchestrator/PublishedAgentsPage";
 import { ConversationDetailsPage } from "./pages/03-orchestrator/conversations/ConversationDetailsPage";
-import { AgentsAssistPage } from "./pages/04-assist/AgentsAssistPage";
 import { MyChatsPage } from "./pages/04-assist/MyChatsPage";
 import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { UserInterfacesPage } from "./pages/04-assist/UserInterfacesPage";
@@ -270,7 +269,7 @@ const routerConfig: RouteObject[] = [
           },
           {
             path: "agents",
-            element: <AgentsAssistPage />,
+            element: <Navigate to="/agents" replace />,
           },
           {
             path: "chats",

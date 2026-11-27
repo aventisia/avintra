@@ -36,7 +36,8 @@ public class FlowsTableService : IFlowsTableService
     // Retrieves all flows created by the user.
     public async Task<ServiceResponse<IEnumerable<FlowsTableDto>>> GetFlowsAsync(
         bool isPersonal,
-        bool includeArchived = false)
+        bool includeArchived = false,
+        bool assignedFirst = false)
     {
         // Initialize ServiceResponse with failed response
         var serviceResponse = new ServiceResponse<IEnumerable<FlowsTableDto>>
@@ -157,6 +158,17 @@ public class FlowsTableService : IFlowsTableService
                     .ToList();
             }
 
+            if (assignedFirst)
+            {
+                var assignedFlowIds = await GetAssignedFlowIdsAsync(flowDtoList.Select(flow => flow.Id));
+                flowDtoList = flowDtoList
+                    .OrderBy(flow =>
+                        assignedFlowIds.Contains(flow.Id) ? 0
+                        : flow.IsPublished ? 1
+                        : 2)
+                    .ToList();
+            }
+
             // Task successful
             serviceResponse.Data = flowDtoList;
             serviceResponse.StatusCode = 200;
@@ -169,6 +181,42 @@ public class FlowsTableService : IFlowsTableService
         }
 
         return serviceResponse;
+    }
+
+    // Flow ids the user can run among the given flows: a published, non-archived version assigned
+    // to one of their machines, or a published, non-archived chat or voice version shared with them.
+    private async Task<HashSet<Guid>> GetAssignedFlowIdsAsync(IEnumerable<Guid> candidateFlowIds)
+    {
+        var flowIds = candidateFlowIds.ToList();
+
+        var machineFlowIds = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                flowIds.Contains(w.FlowId) &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                w.Flow.Type != FlowTypesEnum.Block &&
+                w.FlowVersionMachines.Any(machine => machine.Machine.UserId == _userId))
+            .Select(w => w.FlowId)
+            .ToListAsync();
+
+        var accessibleFlowVersionIds = await _resourceUserAccessService.GetAccessibleResourceIdsAsync(
+            _userId,
+            ResourceTypeEnum.FlowVersion,
+            ResourceAccessTypeEnum.Owner,
+            ResourceAccessTypeEnum.Edit,
+            ResourceAccessTypeEnum.View);
+
+        var sharedChatFlowIds = await _unitOfWork.FlowVersionRepo
+            .GetByConditionAsync(w =>
+                flowIds.Contains(w.FlowId) &&
+                (w.Flow.Type == FlowTypesEnum.ChatAgent || w.Flow.Type == FlowTypesEnum.VoiceAgent) &&
+                w.IsPublished &&
+                !w.IsArchived &&
+                (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleFlowVersionIds.Contains(w.Id)))
+            .Select(w => w.FlowId)
+            .ToListAsync();
+
+        return machineFlowIds.Concat(sharedChatFlowIds).ToHashSet();
     }
 
     // Checks the availability of a flow name.

@@ -145,7 +145,6 @@ public class WebhookController : BaseApiController
         // ── 9. Create job ───────────────────────────────────────────────────
         var job = new Job
         {
-            Id = Guid.NewGuid(),
             TenantId = tenantId,
             SpaceId = firstLinked?.FlowVersion?.SpaceId ?? firstLinked?.FlowVersion?.Flow?.SpaceId ?? trigger.SpaceId,
             FlowVersionId = flowVersionId.Value,

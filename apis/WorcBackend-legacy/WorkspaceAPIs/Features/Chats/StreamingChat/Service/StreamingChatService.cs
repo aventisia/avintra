@@ -585,7 +585,7 @@ public class StreamingChatService : IStreamingChatService
     }
 
     /// <summary>
-    /// Builds the llmpipeline LLMRequest payload from the resolved AI node config.
+    /// Builds the llmpipeline LLMGenerationRequest payload from the resolved AI node config.
     /// A model picked for this turn overrides the node configuration.
     /// </summary>
     private async Task<object> BuildLlmPayloadAsync(
@@ -797,7 +797,7 @@ public class StreamingChatService : IStreamingChatService
     }
 
     /// <summary>
-    /// Builds the agent-less landing LLMRequest: default prompt plus the UI skills
+    /// Builds the agent-less landing LLMGenerationRequest: default prompt plus the UI skills
     /// on the selected model, attributed to the "LandingChat" reference.
     /// </summary>
     private async Task<string?> BuildUserChatProfilePromptAsync(CancellationToken cancellationToken)

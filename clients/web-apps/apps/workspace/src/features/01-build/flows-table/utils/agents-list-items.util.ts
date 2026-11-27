@@ -1,5 +1,6 @@
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
+import { AgentRow } from "../types/agent-row.type";
 import { FolderSummary } from "../types/folder-summary.type";
 
 const countVisibleAgentsByFolder = (flows: FlowsTableDto[]) => {
@@ -34,6 +35,16 @@ export const filterArchivedAgents = (
   showArchived: boolean,
 ): FlowsTableDto[] | undefined =>
   flows?.filter((flow) => Boolean(flow.isArchived) === showArchived);
+
+/**
+ * Orders the main list the way the server does: rows with a run action first, then the other
+ * published rows, then the rest, keeping the current order inside each of these three sets.
+ */
+export const orderAgentRows = (rows: AgentRow[]): AgentRow[] => [
+  ...rows.filter((row) => row.run),
+  ...rows.filter((row) => !row.run && row.isPublished),
+  ...rows.filter((row) => !row.run && !row.isPublished),
+];
 
 /**
  * Folder summaries whose name contains the search text, ignoring case.

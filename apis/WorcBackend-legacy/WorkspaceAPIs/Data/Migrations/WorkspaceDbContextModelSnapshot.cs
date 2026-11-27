@@ -933,6 +933,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset?>("ClaimedOn")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -982,6 +985,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("SourceJobId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
 
@@ -1006,6 +1012,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("FlowVersionId");
 
                     b.HasIndex("MachineId");
+
+                    b.HasIndex("SourceJobId", "RetryCount")
+                        .IsUnique();
 
                     b.ToTable("run_Jobs");
                 });

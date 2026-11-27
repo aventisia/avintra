@@ -75,6 +75,8 @@ const CallAgentConfigForm = () => {
 
         <Form
           methods={form}
+          className="min-h-0 flex-1"
+          formClassName="flex min-h-0 flex-1 flex-col"
           onSubmit={(e) => {
             e.preventDefault();
             void flushNow();

@@ -9,6 +9,42 @@
   max-width: 100% !important;
   min-width: 0 !important;
   width: 100% !important;
+  /* IMPORTANT NOTE: vars live on the container so var(--ink) resolves in dark subtrees. */
+  --w-rjv-background-color: transparent;
+  --w-rjv-color: var(--ink);
+  --w-rjv-key-string: var(--ink);
+  --w-rjv-key-number: var(--ink);
+  --w-rjv-ellipsis-color: var(--muted-ink);
+  --w-rjv-colon-color: var(--muted-ink);
+  --w-rjv-curlybraces-color: var(--ink-2);
+  --w-rjv-brackets-color: var(--ink-2);
+  --w-rjv-quotes-color: var(--ink-2);
+  --w-rjv-quotes-string-color: var(--w-rjv-type-string-color);
+  --w-rjv-type-string-color: var(--warn);
+  --w-rjv-type-int-color: #268bd2;
+  --w-rjv-type-bigint-color: #268bd2;
+  --w-rjv-type-float-color: var(--ok);
+  --w-rjv-type-nan-color: var(--ok);
+  --w-rjv-type-boolean-color: var(--primary-text);
+  --w-rjv-type-date-color: var(--muted-ink);
+  --w-rjv-type-undefined-color: var(--muted-ink);
+  --w-rjv-type-null-color: var(--bad);
+  --w-rjv-type-url-color: #0969da;
+  --w-rjv-line-color: var(--line);
+  --w-rjv-arrow-color: var(--muted-ink);
+  --w-rjv-edit-color: var(--ink);
+  --w-rjv-info-color: var(--muted-ink);
+  --w-rjv-update-color: var(--selected);
+  --w-rjv-copied-color: var(--muted-ink);
+  --w-rjv-copied-success-color: var(--ok);
+}
+
+.dark .w-json-view-container {
+  --w-rjv-type-int-color: var(--ai-sky);
+  --w-rjv-type-bigint-color: var(--ai-sky);
+  --w-rjv-type-url-color: var(--ai-sky);
+  --w-rjv-type-map-color: var(--ai-sky);
+  --w-rjv-type-set-color: var(--ai-sky);
 }
 
 .w-json-view-container .w-json-view-key,

@@ -635,7 +635,7 @@ public class AuthService : IAuthService
 
             // Get user (Includes Tenant and Roles)
             var user = await _unitOfWork.AccountUserRepo
-                    .GetByConditionAsync(w => w.UserName == userName)
+                    .GetByConditionAsync(w => w.UserName.ToLower() == userName.ToLower())
                     .AsNoTracking()
                     .SingleOrDefaultAsync();
 
@@ -662,6 +662,14 @@ public class AuthService : IAuthService
                         requestType, userName, userAgent);
                     return serviceResponse;
                 }
+            }
+
+            if (user == null && requestType == VerificationCodeRequestTypesEnum.LinkSocialLogin)
+            {
+                _logger.LogError(
+                    "Social link code requested for a user that does not exist. Username - {UserName} and device Id - {UserAgent}",
+                    userName, userAgent);
+                return ServiceResponse<CreatedVerificationCodeDto>.Create("Failed to create verification code.", 500);
             }
 
             // User not found
@@ -735,6 +743,8 @@ public class AuthService : IAuthService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create verification code.");
+            if (createVerificationCodeDto.RequestType == VerificationCodeRequestTypesEnum.LinkSocialLogin)
+                return ServiceResponse<CreatedVerificationCodeDto>.Create("Failed to create verification code.", 500);
             return serviceResponse;
         }
 

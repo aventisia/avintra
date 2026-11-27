@@ -5,12 +5,14 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getActionSelectorData } from "@/apis/get-action-selector-data.apis";
+import { ComponentTypeEnum } from "@/features/dynamic-config-panel/enums/component-type-enum";
 import { useUsableToolCatalog } from "@/features/dynamic-config-panel/hooks/useTools.hook";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { canWeRenderNodeOrCategory } from "../utils/action-visibilty";
 import { getCustomTools } from "../utils/custom-tool-actions.util";
+import { filterLibraryAppIntegrations } from "../utils/library-app-integrations.util";
 
 /**
  * Fetches and filters action selector data once the session and flow are ready.
@@ -30,12 +32,14 @@ export function useActionSelectorData() {
 
   const deploymentType = userSession?.deploymentType as DeploymentType;
 
-  const { setActionSelectorData, setCustomToolNodesCount } = useNodeSelectorStore(
-    useShallow((state) => ({
-      setActionSelectorData: state.setActionSelectorData,
-      setCustomToolNodesCount: state.setCustomToolNodesCount,
-    })),
-  );
+  const { setActionSelectorData, setCustomToolNodesCount, setUnfilteredActionSelectorData } =
+    useNodeSelectorStore(
+      useShallow((state) => ({
+        setActionSelectorData: state.setActionSelectorData,
+        setCustomToolNodesCount: state.setCustomToolNodesCount,
+        setUnfilteredActionSelectorData: state.setUnfilteredActionSelectorData,
+      })),
+    );
 
   const { data: rawData } = useQuery({
     queryKey: ["action-selector-data"],
@@ -58,6 +62,12 @@ export function useActionSelectorData() {
   useEffect(() => {
     if (!rawData) return;
 
+    // IMPORTANT NOTE: the enabled set stays empty until a catalog request succeeds, so
+    // library integrations stay hidden and the picker never falls back to the full library.
+    const enabledLibraryToolNames = (catalogResponse?.data ?? [])
+      .filter((tool) => tool.type === ComponentTypeEnum.Platform)
+      .map((tool) => tool.name);
+
     const filtered = rawData.map((primary) => ({
       ...primary,
 
@@ -77,6 +87,13 @@ export function useActionSelectorData() {
         .filter((ac) => ac.actions?.length),
     }));
 
-    setActionSelectorData(filtered);
-  }, [rawData, deploymentType, setActionSelectorData]);
+    setUnfilteredActionSelectorData(filtered);
+    setActionSelectorData(filterLibraryAppIntegrations(filtered, enabledLibraryToolNames));
+  }, [
+    rawData,
+    deploymentType,
+    catalogResponse,
+    setActionSelectorData,
+    setUnfilteredActionSelectorData,
+  ]);
 }

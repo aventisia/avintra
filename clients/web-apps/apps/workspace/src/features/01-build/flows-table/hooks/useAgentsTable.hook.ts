@@ -6,16 +6,16 @@ import {
   AGENTS_SEARCH_COLUMNS,
   AGENTS_TABLE_INITIAL_STATE,
 } from "../constants/agents-table.constant";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { AgentRow } from "../types/agent-row.type";
 
 type UseAgentsTableOptions = {
-  agents: FlowsTableDto[];
-  columns: ColumnDef<FlowsTableDto>[];
+  agents: AgentRow[];
+  columns: ColumnDef<AgentRow>[];
   searchText: string;
   onSearchTextChange: (searchText: string) => void;
 };
 
-const getAgentRowId = (flow: FlowsTableDto) => flow.id ?? "";
+const getAgentRowId = (flow: AgentRow) => flow.id ?? "";
 
 /**
  * Agents table of the Agents and folder pages: searches names, keeps the page, page size, and
@@ -31,6 +31,7 @@ export const useAgentsTable = ({
     data: agents,
     columns,
     getRowId: getAgentRowId,
+    enableRowSelection: (row) => row.original.hasStudioLink !== false,
     initialState: AGENTS_TABLE_INITIAL_STATE,
     persistKey: TABLE_KEY,
     searchColumns: AGENTS_SEARCH_COLUMNS,

@@ -12,22 +12,23 @@ const FOLDERS_FETCH_ERROR_TOAST_ID = "folders-fetch-error";
  * Fetches the folders of the current space.
  * @returns The folders (empty until loaded), the query status flags, and the folders query key.
  */
-export const useFetchFolders = () => {
+export const useFetchFolders = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const space = useCurrentSpaceId();
   const queryKey = [...FOLDERS_QUERY_KEY, space];
 
   const { data, isFetching, isLoading, isError, error, isSuccess } = useQuery({
     queryKey,
     queryFn: () => getFolders(),
+    enabled,
   });
 
   useEffect(() => {
-    if (isError) {
+    if (enabled && isError) {
       toast.error(error?.toString() ?? "Failed to fetch folders", {
         id: FOLDERS_FETCH_ERROR_TOAST_ID,
       });
     }
-  }, [error, isError]);
+  }, [enabled, error, isError]);
 
   return {
     folders: data?.data,

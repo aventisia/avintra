@@ -16,16 +16,15 @@ import ResourceUserAccessDialog from "@/features/resource-user-access/components
 import { pluralize } from "@/utils/pluralize.util";
 
 import { FLOWS_QUERY_KEY, TABLE_HEADING } from "../constants";
+import { useAgentRoles } from "../hooks/useAgentRoles.hook";
+import { useAgentRows } from "../hooks/useAgentRows.hook";
 import { useAgentsTable } from "../hooks/useAgentsTable.hook";
-import { useFetchFlows } from "../hooks/useFetchFlows";
-import { useFetchFolders } from "../hooks/useFetchFolders.hook";
 import { useFlowsView } from "../hooks/useFlowsView";
 import { useShowArchived } from "../hooks/useShowArchived.hook";
 import { getAgentFilterOptions } from "../utils/agent-attributes.util";
 import {
   buildFolderSummaries,
   buildMainPageAgents,
-  filterArchivedAgents,
   filterFolderSummaries,
 } from "../utils/agents-list-items.util";
 import { AgentsCreateButton } from "./AgentsCreateButton";
@@ -123,39 +122,27 @@ export const FlowsTable = () => {
   // Grid/table view preference (persisted in localStorage)
   const { view, setView } = useFlowsView();
 
-  const { data, isLoading: isFlowsLoading } = useFetchFlows();
-  const { folders, isSuccess: isFoldersLoaded, isError: isFoldersFailed } = useFetchFolders();
+  const { showArchived, setShowArchived } = useShowArchived();
+
+  const { hasTU, isTuOnly } = useAgentRoles();
+  const { allRows, rows, folders, isFoldersFailed, isListReady } = useAgentRows(
+    showArchived,
+    hasTU && !isTuOnly,
+  );
 
   const [searchText, setSearchText] = useState("");
   const isSearching = searchText.trim() !== "";
 
-  const { showArchived, setShowArchived } = useShowArchived();
-  const allFlows = data?.data;
-  const flows = useMemo(
-    () => filterArchivedAgents(allFlows, showArchived),
-    [allFlows, showArchived],
-  );
-  const isListReady = Boolean(flows) && !isFlowsLoading && (isFoldersLoaded || isFoldersFailed);
-
-  const folderSummaries = useMemo(
-    () => buildFolderSummaries(flows ?? [], folders ?? []),
-    [flows, folders],
-  );
+  const folderSummaries = useMemo(() => buildFolderSummaries(rows, folders), [rows, folders]);
 
   const agents = useMemo(
-    () =>
-      isListReady
-        ? buildMainPageAgents({ flows: flows ?? [], folders: folders ?? [], isSearching })
-        : [],
-    [isListReady, flows, folders, isSearching],
+    () => (isListReady ? buildMainPageAgents({ flows: rows, folders, isSearching }) : []),
+    [isListReady, rows, folders, isSearching],
   );
-  const archivedCount = useMemo(
-    () => (allFlows ?? []).filter((flow) => flow.isArchived).length,
-    [allFlows],
-  );
+  const archivedCount = useMemo(() => allRows.filter((flow) => flow.isArchived).length, [allRows]);
 
   const folderById = useMemo(
-    () => new Map((folders ?? []).map((folder) => [folder.id, folder])),
+    () => new Map(folders.map((folder) => [folder.id, folder])),
     [folders],
   );
   const chipFolderById = isSearching ? folderById : undefined;
@@ -163,8 +150,14 @@ export const FlowsTable = () => {
   const filterOptions = useMemo(() => getAgentFilterOptions(agents), [agents]);
 
   const flowsTableColumnsArray = useMemo(
-    () => flowsTableColumns({ filterOptions, folderById: chipFolderById }),
-    [filterOptions, chipFolderById],
+    () =>
+      flowsTableColumns({
+        filterOptions,
+        folderById: chipFolderById,
+        canManageActions: !isTuOnly,
+        canRun: hasTU,
+      }),
+    [filterOptions, chipFolderById, isTuOnly, hasTU],
   );
 
   const { table } = useAgentsTable({
@@ -176,14 +169,20 @@ export const FlowsTable = () => {
 
   const shelfSummaries = filterFolderSummaries(folderSummaries, searchText);
   const isFiltered = table.getState().columnFilters.length > 0;
-  const emptyMessage = getAgentsEmptyMessage({
-    isSearching,
-    isFiltered,
-    showArchived,
-    hasMatchingFolders: shelfSummaries.length > 0,
-    hasAnyAgents: (flows ?? []).length > 0,
-    hasArchivedAgents: archivedCount > 0,
-  });
+  const emptyMessage =
+    isTuOnly && !isSearching && !isFiltered
+      ? {
+          primary: "No agents assigned",
+          secondary: "Agents assigned to your machines and shared with you appear here.",
+        }
+      : getAgentsEmptyMessage({
+          isSearching,
+          isFiltered,
+          showArchived,
+          hasMatchingFolders: shelfSummaries.length > 0,
+          hasAnyAgents: rows.length > 0,
+          hasArchivedAgents: archivedCount > 0,
+        });
 
   return (
     <>
@@ -196,12 +195,14 @@ export const FlowsTable = () => {
                   <TableCNHeading heading={TABLE_HEADING} />
                 </div>
                 <p className="mt-[5px] text-[13px] text-muted-foreground">
-                  {getAgentsSubtitle((flows ?? []).length, folderSummaries.length)}
+                  {isTuOnly
+                    ? `${rows.length} ${pluralize(rows.length, "agent")}`
+                    : getAgentsSubtitle(rows.length, folderSummaries.length)}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <ViewModeToggle view={view} onChange={setView} />
-                {!showArchived && <AgentsCreateButton />}
+                {!isTuOnly && !showArchived && <AgentsCreateButton />}
               </div>
             </div>
             <TableCNToolbar
@@ -209,18 +210,22 @@ export const FlowsTable = () => {
               searchPlaceholder="Search agents and folders..."
               withViewOptions={view === "table"}
             >
-              <CountToggle
-                Icon={ArchiveIcon}
-                label="Archived"
-                title={showArchived ? "Show active agents" : "Show archived agents"}
-                count={archivedCount}
-                pressed={showArchived}
-                onPressedChange={setShowArchived}
-              />
+              {!isTuOnly && (
+                <CountToggle
+                  Icon={ArchiveIcon}
+                  label="Archived"
+                  title={showArchived ? "Show active agents" : "Show archived agents"}
+                  count={archivedCount}
+                  pressed={showArchived}
+                  onPressedChange={setShowArchived}
+                />
+              )}
               <TableCNSortMenu table={table} />
             </TableCNToolbar>
           </div>
-          {!isFoldersFailed && <FolderShelf summaries={shelfSummaries} searchText={searchText} />}
+          {!isTuOnly && !isFoldersFailed && (
+            <FolderShelf summaries={shelfSummaries} searchText={searchText} />
+          )}
           <section aria-labelledby="agents-section-heading" className="space-y-2.5">
             {(isSearching || isFiltered) && (
               <SectionHeading
@@ -234,6 +239,7 @@ export const FlowsTable = () => {
               table={table}
               view={view}
               folderById={chipFolderById}
+              showActions={!isTuOnly}
               emptyState={
                 <EmptyState
                   Icon={NewAgentIcon}

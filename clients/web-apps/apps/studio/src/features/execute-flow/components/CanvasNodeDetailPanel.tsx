@@ -1,7 +1,8 @@
-import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
+import { Button } from "@avplatform/ui/buttons";
+import { ViewContainer } from "@avplatform/ui/components/view-record";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import { ListDashesIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowsInIcon, ArrowsOutIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -16,6 +17,7 @@ import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { buildLiveLoopIndex, getLiveNodeLog } from "@/features/execute-flow/utils/live-loop-index";
+import { NodeLogHeader } from "@/features/execution-logs";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -66,6 +68,7 @@ export const CanvasNodeDetailPanel = () => {
   );
 
   const [nodeTimingMap, setNodeTimingMap] = useState<Record<string, NodeTiming>>({});
+  const [expanded, setExpanded] = useState(false);
 
   // Restore colors, job status and per-node logs from IndexedDB when the page refreshes
   // with the run-results flag, so the panel still works after a reload. Sub-flow node logs
@@ -221,19 +224,46 @@ export const CanvasNodeDetailPanel = () => {
   }
 
   return (
-    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[30rem]" closeOnEscape>
+    <Panel
+      id={CANVAS_NODE_DETAIL_PANEL_ID}
+      side="right"
+      width={expanded ? "w-[46rem] max-w-[calc(100vw-2.5rem)]" : "w-[30rem]"}
+      closeOnEscape
+    >
       <PanelContent className="overflow-hidden py-2 pl-2">
         <ScrollArea className="h-full w-full">
           <ViewContainer className="pt-1">
-            {/* Full node log JSON — same design as LAST NODE LOG. Only render once the
-                node has actually completed and produced a log; a running node has no log
-                yet and would otherwise show a card full of fallback placeholders. */}
+            {/* Full node log JSON — same header as the run-history NodeDetailPanel. Only
+                render once the node has actually completed and produced a log; a running
+                node has no log yet and would otherwise show a card full of fallback
+                placeholders. */}
             {selectedLiveLog && nodeLogPayload && (
-              <ViewInfoRowsCard
-                title="Node log"
-                icon={<ListDashesIcon className="size-3.5 text-muted-foreground" />}
-                action={
-                  <div className="flex items-center gap-1 pr-1">
+              <div>
+                <div className="flex min-h-12 items-center gap-2 py-1 pr-2">
+                  <NodeLogHeader
+                    className="min-w-0 flex-1"
+                    customName={nodeData.label || nodeData.name}
+                    builtInName={nodeData.name}
+                    category={nodeData.category}
+                    iconUrl={nodeData.iconUrl}
+                    icon={nodeData.icon}
+                    img={nodeData.img}
+                  />
+                  <div className="flex shrink-0 items-center gap-1 pr-1">
+                    <Button
+                      variant="ghost"
+                      size="icon8"
+                      onClick={() => setExpanded((value) => !value)}
+                      aria-label={expanded ? "Narrow panel" : "Widen panel"}
+                      title={expanded ? "Narrow panel" : "Widen panel"}
+                      className="size-6 p-0 text-muted-foreground/60 opacity-60 hover:text-primary hover:opacity-100"
+                    >
+                      {expanded ? (
+                        <ArrowsInIcon className="size-4" />
+                      ) : (
+                        <ArrowsOutIcon className="size-4" />
+                      )}
+                    </Button>
                     {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
                     <PanelClose
                       className="h-6 w-6 p-0 -mr-1.5 text-muted-foreground/60 opacity-60 hover:text-primary hover:opacity-100"
@@ -242,19 +272,17 @@ export const CanvasNodeDetailPanel = () => {
                       <XIcon className="size-[1.2rem]" />
                     </PanelClose>
                   </div>
-                }
-                className="border-0 bg-transparent p-0 pt-0 shadow-none"
-                headerClassName="px-0"
-                bodyClassName="pt-2 px-0 pr-2"
-              >
-                <JsonViewer
-                  jsonData={JSON.stringify(nodeLogPayload, null, 2)}
-                  enableValueClipboard
-                  viewportClassName=""
-                  parseNestedStrings
-                  shortenTextAfterLength={70}
-                />
-              </ViewInfoRowsCard>
+                </div>
+                <div className="pr-2 pt-2">
+                  <JsonViewer
+                    jsonData={JSON.stringify(nodeLogPayload, null, 2)}
+                    enableValueClipboard
+                    viewportClassName=""
+                    parseNestedStrings
+                    shortenTextAfterLength={70}
+                  />
+                </div>
+              </div>
             )}
           </ViewContainer>
         </ScrollArea>
