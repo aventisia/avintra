@@ -18,7 +18,7 @@ export type LiveLoopIndex = {
   /** caller||nodeId -> ordered list of enclosing loop ids (outermost first). */
   nodeToParentStack: Record<string, string[]>;
   /** routerId -> default + conditional branch node ids. */
-  routerConfig: Record<string, { defaultId: string; conditionals: string[] }>;
+  routerConfig: Record<string, { defaultId?: string; conditionals: string[] }>;
 };
 
 const toRecord = (entries?: Array<{ key: string; value: string }>): Record<string, string> =>
@@ -63,7 +63,7 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
   const loopRegistry: Record<string, { total: number }> = {};
   const nodeToParentStack: Record<string, string[]> = {};
-  const routerConfig: Record<string, { defaultId: string; conditionals: string[] }> = {};
+  const routerConfig: Record<string, { defaultId?: string; conditionals: string[] }> = {};
 
   nodes.forEach((node) => {
     if (node.type !== "conditionalNode") return;
@@ -71,7 +71,7 @@ const computeLiveLoopIndex = (logs: NodeExecutionLogType[], nodes: Node[]): Live
     const data = node.data as any;
     const defaultId = data?.defaultBranchNodeId;
     const conditionals = (data?.branches || []).filter((id: string) => id !== defaultId);
-    if (defaultId) routerConfig[node.id] = { defaultId, conditionals };
+    routerConfig[node.id] = { defaultId, conditionals };
   });
 
   const stack: string[] = [];

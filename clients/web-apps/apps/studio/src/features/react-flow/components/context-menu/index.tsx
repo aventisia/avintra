@@ -8,6 +8,7 @@ import {
   BooksIcon,
   CheckCircleIcon,
   CopyIcon,
+  PlusIcon,
   ProhibitIcon,
   ScissorsIcon,
   SelectionPlusIcon,
@@ -19,9 +20,11 @@ import { memo, useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
+import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 
 import { STRUCTURAL_NODE_TYPES } from "../../constants/structural-node-types.constant";
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
@@ -52,6 +55,7 @@ export const ReactFlowContextMenu = memo(() => {
     cancelCut,
   } = useFlowOperations();
   const { groupNodes, ungroupNodes } = useNodeGrouping();
+  const addConditionalBranch = useAddConditionalBranch();
   const autoLayout = useDagreAutoLayout();
   const clipboard = useClipboardStore((state) => state.clipboard);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -85,6 +89,8 @@ export const ReactFlowContextMenu = memo(() => {
   const isBranchNode = selectedNode?.type === "branchNode1";
   const isDefaultBranchNode =
     selectedNode?.type === "branchNode1" && selectedNode.data.name == "DefaultBranch";
+  const isRouterWithoutDefault =
+    selectedNode?.type === "conditionalNode" && !selectedNode.data?.defaultBranchNodeId;
   const hasBranchNode = clipboardNodes.some((n) => n.type === "branchNode1");
   const hasConditionalNode = clipboardNodes.some((n) => n.type === "conditionalNode");
   const isClipboardBranch = hasBranchNode && !hasConditionalNode;
@@ -255,6 +261,23 @@ export const ReactFlowContextMenu = memo(() => {
             }}
           />
 
+          {isRouterWithoutDefault && (
+            <MenuItem
+              icon={<PlusIcon size={14} />}
+              label="Add default branch"
+              onClick={() => {
+                if (selectedNode) {
+                  addConditionalBranch(
+                    selectedNode.data as ConditionalNodeDataType,
+                    selectedNode.id,
+                    "default",
+                  );
+                  resetContextMenu();
+                }
+              }}
+            />
+          )}
+
           <Separator className="my-0.5" />
 
           <MenuItem
@@ -262,7 +285,7 @@ export const ReactFlowContextMenu = memo(() => {
             label="Delete"
             shortcut="DEL"
             isDestructive
-            disabled={(isPaneOrStartOrEnd || isDefaultBranchNode) && !selectedEdge}
+            disabled={isPaneOrStartOrEnd && !selectedEdge}
             onClick={() => {
               if (selectedNode) deleteNode(selectedNode.id);
             }}

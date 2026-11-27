@@ -82,22 +82,16 @@ export function getNodesAndEdgesAfterDeletion({
   const mergeNodeId = node.data?.mergeBranchesNodeId as string;
 
   if (isBranchNode && mergeNodeId) {
-    const isDefaultBranch = nodes.some(
-      (n) => n.type === "conditionalNode" && n.data?.defaultBranchNodeId === nodeId,
-    );
-
-    if (isDefaultBranch && !allowBranchDeletion) {
-      throw new Error("Cannot delete the default branch.");
-    }
-
     const parentNode = nodes.find(
       (n) => n.type === "conditionalNode" && n.data?.mergeBranchesNodeId === mergeNodeId,
     );
 
+    const isDefaultBranch = parentNode?.data?.defaultBranchNodeId === nodeId;
+
     const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
 
-    if (branches.length <= 2 && !allowBranchDeletion) {
-      throw new Error("At least two branches are required.");
+    if (branches.length <= 1 && !allowBranchDeletion) {
+      throw new Error("At least one branch is required.");
     }
 
     const nodeIdsToDelete = getBranchSubgraphNodeIds(nodes, edges, nodeId, mergeNodeId);
@@ -110,10 +104,14 @@ export function getNodesAndEdgesAfterDeletion({
       .filter((n) => !nodeIdsToDelete.includes(n.id))
       .map((n) => {
         if (n.id === parentNode?.id) {
+          const clearedDefault = isDefaultBranch
+            ? { defaultBranchNodeId: undefined, conditional2DefaultBranchEdgeId: undefined }
+            : {};
           return {
             ...n,
             data: {
               ...n.data,
+              ...clearedDefault,
               branches: branches.filter((id) => id !== nodeId),
             },
           };

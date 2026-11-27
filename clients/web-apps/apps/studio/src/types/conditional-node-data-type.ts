@@ -5,7 +5,7 @@ import { NodeDataType } from "./node-data-type";
  */
 export type ConditionalNodeDataType = NodeDataType & {
   branches: string[]; // Array of branch IDs
-  defaultBranchNodeId: string;
+  defaultBranchNodeId?: string;
   mergeBranchesNodeId: string;
-  conditional2DefaultBranchEdgeId: string;
+  conditional2DefaultBranchEdgeId?: string;
 };

@@ -1,7 +1,7 @@
 import { Input } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { ArrowSquareOutIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon, GitBranchIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -125,6 +125,8 @@ const DCPDialogHeader = () => {
       iconMapper.CallAgentIcon
     ) : nodeData?.type === "blockNode" ? (
       iconMapper.BlockNodeIcon
+    ) : nodeData?.type === "branchNode1" ? (
+      <GitBranchIcon className="size-4" />
     ) : nodeData?.iconUrl ? (
       <NodeImage src={nodeData.iconUrl} />
     ) : nodeData?.icon && iconMapper[nodeData.icon] ? (
