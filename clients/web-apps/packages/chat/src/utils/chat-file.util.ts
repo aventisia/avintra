@@ -60,7 +60,7 @@ const specTitle = (body: string, contentType: string) => {
 };
 
 const UNSAFE_NAME_CHARACTERS = /[\\/:*?"<>|#]/g;
-const FENCE_NAME_PATTERN = /^```\S+[ \t]+([^\n`]*\S)/;
+const FENCE_NAME_PATTERN = /^```\S+[ \t]+([^\s`][^\n`]*)/;
 
 const nameFromFence = (text: string, index: number, fallbackName: string) => {
   const name = FENCE_NAME_PATTERN.exec(text.slice(index))?.[1]

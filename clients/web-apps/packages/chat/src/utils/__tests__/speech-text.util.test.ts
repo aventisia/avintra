@@ -21,6 +21,10 @@ describe("toSpeechText", () => {
     ).toBe("Here it is.\n\nFile Intake flow.svg.\n\nEnjoy.");
   });
 
+  it("never leaves a stray tag opener in the spoken text", () => {
+    expect(toSpeechText("a <script and b")).toBe("a script and b");
+  });
+
   it("reads table cells as phrases", () => {
     expect(toSpeechText("| A | B |\n|---|---|\n| 1 | 2 |")).toBe("A, B\n1, 2");
   });

@@ -265,7 +265,7 @@ public class ChatArtifactsService : IChatArtifactsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while renaming chat artifact {chatArtifactId}", updateChatArtifactDto?.Id);
+            _logger.LogError(ex, "Error occurred while renaming chat artifact {chatArtifactId}", CloudConnectorLogRedactor.SanitizeForLog(updateChatArtifactDto?.Id.ToString()));
             return serviceResponse;
         }
     }
