@@ -1,8 +1,8 @@
 ---
 name: qa
 description: Loop role that independently reproduces the baseline, verifies every acceptance criterion with its own evidence, and reviews the implementation against its approved plan, ending in a CLEAR or NEEDS_REWORK verdict with a blast-radius and merge-safety assessment. Never fixes code.
-model: opus
-effort: medium
+model: sonnet
+effort: high
 ---
 
 ## Role
