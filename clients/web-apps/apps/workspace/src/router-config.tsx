@@ -114,6 +114,10 @@ const routerConfig: RouteObject[] = [
         element: <LibraryPage />,
       },
       {
+        path: "/queues",
+        element: <MyQueuePage />,
+      },
+      {
         path: "/ui-builder",
         element: <UiBuilderPage />,
       },
@@ -266,10 +270,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "agents",
             element: <Navigate to="/agents" replace />,
-          },
-          {
-            path: "queues",
-            element: <MyQueuePage />,
           },
           {
             path: "chats",

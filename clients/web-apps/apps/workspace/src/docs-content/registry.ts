@@ -69,6 +69,15 @@ const guides: HelpGuideContent[] = [
     content: agents,
   },
   {
+    id: "assist-queues",
+    routes: ["/queues"],
+    title: "Queues",
+    summary: "Process the work items assigned to you.",
+    section: "build",
+    docsSiteUrl: "https://docs.aventisia.com/workspace",
+    content: assistQueues,
+  },
+  {
     id: "library",
     routes: ["/library"],
     title: "Library",
@@ -242,15 +251,6 @@ const guides: HelpGuideContent[] = [
     section: "assist",
     docsSiteUrl: "https://docs.aventisia.com/workspace",
     content: assistAgents,
-  },
-  {
-    id: "assist-queues",
-    routes: ["/assist/queues"],
-    title: "Assist — queues",
-    summary: "Process the work items assigned to you.",
-    section: "assist",
-    docsSiteUrl: "https://docs.aventisia.com/workspace",
-    content: assistQueues,
   },
   {
     id: "assist-chats",
