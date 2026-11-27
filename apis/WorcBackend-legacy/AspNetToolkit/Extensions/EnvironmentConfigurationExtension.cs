@@ -153,7 +153,7 @@ public static class EnvironmentConfigurationExtension
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
 
         // Voice session settings environment variables
-        var MAX_ACTIVE_VOICE_SESSIONS_PER_USER = Environment.GetEnvironmentVariable("MAX_ACTIVE_VOICE_SESSIONS_PER_USER") ?? config["EnvironmentConfig:MaxActiveVoiceSessionsPerUser"] ?? "2";
+        var MAX_ACTIVE_VOICE_SESSIONS_PER_USER = Environment.GetEnvironmentVariable("MAX_ACTIVE_VOICE_SESSIONS_PER_USER") ?? config["EnvironmentConfig:MaxActiveVoiceSessionsPerUser"] ?? "50";
 
         // Identity and security settings environment variables
         var MAX_ACTIVE_SESSION_ALLOWED = Environment.GetEnvironmentVariable("MAX_ACTIVE_SESSION_ALLOWED") ?? config["EnvironmentConfig:MaxActiveSessionAllowed"] ?? "50";

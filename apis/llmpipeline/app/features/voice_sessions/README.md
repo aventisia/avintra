@@ -72,13 +72,13 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
    starting audio; if the caller never arrives, the worker deletes the room and
    marks the conversation `Failed`.
 
-A user may hold at most two active voice conversations. WorkspaceAPIs counts
+A user may hold at most 50 active voice conversations. WorkspaceAPIs counts
 that user's `Voice` conversations with `Status = Active` and a heartbeat within
-the last three minutes; a third concurrent create returns 429. A crashed call
+the last three minutes; a create beyond that cap returns 429. A crashed call
 stops blocking after three minutes because its heartbeat stops, and a create
 that is cancelled or cannot reach llmpipeline marks its row `Failed` right away.
 The count spans every space of the user, so switching spaces does not raise the
-cap. Raise `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` (WorkspaceAPIs, default 2) only
+cap. Raise `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` (WorkspaceAPIs, default 50) only
 for a load test.
 
 WorkspaceAPIs adds the resolved `noiseCancellation` mode (`none` or `auto`) to its
@@ -240,7 +240,7 @@ in production.
 | `JWT_SECRET_KEY` | llmpipeline, worker | Signs the short-lived worker credential. |
 | `SSL_VERIFY` | worker | Set `false` only for a local self-signed WorkspaceAPIs certificate. |
 | `POSTGRESQL_WORKSPACE_DB_NAME` | worker | Workspace database holding conversations and messages. |
-| `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` | WorkspaceAPIs | Concurrent active calls one user may hold; defaults to `2`. Raise only for a load test. |
+| `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` | WorkspaceAPIs | Concurrent active calls one user may hold; defaults to `50`. Raise only for a load test. |
 | Provider keys / BYOK credential names | llmpipeline | Resolved by the existing LiteLLM STT/TTS/LLM providers; no separate voice provider configuration. |
 
 ## Event and error contract
@@ -404,10 +404,9 @@ Add `--abandon N` to create N extra sessions that never join. The worker's
 30-second join timeout must delete each room; the run fails if any room is left
 behind.
 
-A capacity run needs the per-user cap raised: set
+A capacity run may need the per-user cap raised: set
 `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` in `apis/WorcBackend-legacy/WorkspaceAPIs/.env.local`
-to at least `--sessions` and restart WorkspaceAPIs. The default of `2` returns
-429 on the third call.
+to at least `--sessions` and restart WorkspaceAPIs. The default is `50`.
 
 Results below are from local `test`-mode pipeline calls (BYOK OpenAI and
 ElevenLabs) on 2026-11-23, on an AMD Ryzen 5 5600H (6 cores / 12 threads),
@@ -533,7 +532,7 @@ before quoting a latency number.
   earlier events and must load persisted messages separately.
 - A worker that dies is reconciled only on the 5-minute sweep after a 10-minute
   stale cutoff, so the UI can show the call as active for up to ~15 minutes.
-- The two-call per-user cap is a cost guard that spans all of the user's spaces.
+- The per-user active-session cap is a cost guard that spans all of the user's spaces.
   Raise `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` only for a load test.
 - Concurrent capacity is memory-bound: each call holds one worker job process at
   roughly 0.5 GB RSS. The measured dev-host ceiling and method are in
