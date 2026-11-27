@@ -1,10 +1,10 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "one",
-    "label": "One",
-    "description": "One for Buildkite.",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Buildkite.",
     "defaultValue": "",
     "required": true
   }

@@ -2,6 +2,15 @@
   {
     "direction": "Input",
     "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Datadog.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
     "name": "app_key",
     "label": "App_key",
     "description": "App_key for Datadog.",

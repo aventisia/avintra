@@ -135,4 +135,19 @@ export type GenerateDcpOptions = {
    * <c>outputDir/CloudConnectorActionSelectorMappingFile.json</c>.
    */
   globalMappingFile?: string;
+  /**
+   * Absolute path to the frontend catalog copy read by the workspace app.
+   * Defaults to the committed path; tests pass a temp path to keep repo writes out.
+   */
+  frontendCatalogFile?: string;
+  /**
+   * Absolute path to the vault credential form directory. Defaults to the
+   * committed config-json path; tests pass a temp path to keep repo writes out.
+   */
+  vaultCredentialConfigDir?: string;
+  /**
+   * Rewrite catalog-owned forms whose fields do not satisfy their default auth
+   * mode. Normal generation only writes missing or empty forms.
+   */
+  regenerateVaultCredentialConfigs?: boolean;
 };

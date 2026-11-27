@@ -196,6 +196,23 @@ for (const integration of catalog) {
   }
 }
 
+const oauthConfiguredTypes = new Set(
+  catalog
+    .filter((integration) => integration.oauthConfig)
+    .map((integration) => integration.vaultCredentialType),
+);
+
+/** Catalog types whose default is OAuth but that cannot complete consent: no OAuth app settings. */
+const hiddenVaultCredentialTypes = new Set(
+  catalog
+    .filter(
+      (integration) =>
+        integration.defaultAuthMode === "oauth_2" &&
+        !oauthConfiguredTypes.has(integration.vaultCredentialType),
+    )
+    .map((integration) => integration.vaultCredentialType),
+);
+
 export function getDistinctVaultCredentialAppSelectOptions(): Array<{
   label: string;
   value: string;
@@ -204,6 +221,7 @@ export function getDistinctVaultCredentialAppSelectOptions(): Array<{
 
   return Object.values(vaultCredentialAppsSelectOptions).filter((option) => {
     const providerKey = option.value.toLowerCase();
+    if (hiddenVaultCredentialTypes.has(option.value)) return false;
     if (seenProviders.has(providerKey)) return false;
     seenProviders.add(providerKey);
     return true;

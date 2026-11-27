@@ -96,7 +96,14 @@ pipeline {
                         env.BUILD_GLOBALADMIN_API = hasChangesInPath(changes, 'apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath(changes, 'apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = hasChangesInPath(changes, 'apis/apache-camel') ? 'true' : 'false'
-                        env.BUILD_CORSAIR_API = hasChangesInPath(changes, 'apis/corsair') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = (
+                            hasChangesInPath(changes, 'apis/corsair') ||
+                            hasChangesInPath(changes, 'clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials') ||
+                            hasChangesInPath(changes, 'clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs/Features/Corsair') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/AspNetToolkit/Enums')
+                        ) ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath(changes, 'clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath(changes, 'clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath(changes, 'clients/RunnerApp') ? 'true' : 'false'
@@ -218,6 +225,14 @@ pipeline {
                             // --force: @corsair-dev/onepassword pins zod@4.1.13 while
                             // other plugins require ^4.1.13; force resolves the conflict.
                             sh 'npm ci --force'
+                        }
+                    }
+                }
+                stage('Test - Corsair API') {
+                    steps {
+                        dir('apis/corsair') {
+                            // AC7: fail naming catalog/list/form/registry/deps/gate drift; keep before Generate, which rewrites the copies asserted here.
+                            sh 'npm run test:dcp'
                         }
                     }
                 }

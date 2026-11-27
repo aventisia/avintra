@@ -515,7 +515,7 @@
         "accountFields": []
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/anthropicadministrator.png",
     "vaultCredentialType": "Anthropic",
     "configFile": "Anthropic.json"
@@ -679,7 +679,7 @@
         "accountFields": ["workspace_gid", "project_gid"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Asana",
       "authUrl": "https://app.asana.com/-/oauth_authorize",
@@ -974,7 +974,7 @@
         "accountFields": ["username"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/beeminder.png",
     "vaultCredentialType": "Beeminder",
     "configFile": "Beeminder.json"
@@ -1287,7 +1287,7 @@
         "accountFields": ["base_url"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/borneo.png",
     "vaultCredentialType": "Borneo",
     "configFile": "Borneo.json"
@@ -1441,7 +1441,7 @@
         "accountFields": ["company_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Brex",
       "authUrl": "https://accounts-api.brex.com/oauth2/default/v1/authorize",
@@ -1680,7 +1680,7 @@
         "accountFields": ["base_url"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/canvas.svg",
     "vaultCredentialType": "Canvas",
     "configFile": "Canvas.json"
@@ -1699,7 +1699,7 @@
         "accountFields": ["subdomain"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Capsule CRM",
       "authUrl": "https://api.capsulecrm.com/oauth/authorise",
@@ -1919,7 +1919,7 @@
         "accountFields": ["cloud_id", "cloud_url"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Confluence",
       "authUrl": "https://auth.atlassian.com/authorize",
@@ -2088,7 +2088,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/databricks.svg",
     "vaultCredentialType": "Databricks",
     "configFile": "Databricks.json"
@@ -2320,7 +2320,7 @@
         "accountFields": []
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/dropboxsign.png",
     "vaultCredentialType": "Dropboxsign",
     "configFile": "Dropboxsign.json"
@@ -2520,7 +2520,7 @@
         "accountFields": ["form_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Fillout",
       "authUrl": "https://build.fillout.com/authorize/oauth",
@@ -2624,7 +2624,7 @@
         "accountFields": ["installation_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "GitHub",
       "authUrl": "https://github.com/login/oauth/authorize",
@@ -2649,7 +2649,7 @@
         "accountFields": ["project_id", "group_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "GitLab",
       "authUrl": "https://gitlab.com/oauth/authorize",
@@ -2872,7 +2872,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/googlecloudvision.svg",
     "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
@@ -2978,7 +2978,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/googlemaps.svg",
     "vaultCredentialType": "GoogleWorkspace",
     "configFile": "GoogleWorkspace.json"
@@ -3229,7 +3229,7 @@
         "accountFields": ["portal_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "HubSpot",
       "authUrl": "https://app.hubspot.com/oauth/authorize",
@@ -3261,7 +3261,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/huggingface.svg",
     "vaultCredentialType": "Huggingface",
     "configFile": "Huggingface.json"
@@ -3295,7 +3295,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/insightoai.png",
     "vaultCredentialType": "Insightoai",
     "configFile": "Insightoai.json"
@@ -3434,7 +3434,7 @@
         "accountFields": ["organization_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Linear",
       "authUrl": "https://linear.app/oauth/authorize",
@@ -3642,7 +3642,7 @@
         "accountFields": ["workspace_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Notion",
       "authUrl": "https://api.notion.com/v1/oauth/authorize",
@@ -3699,7 +3699,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/ollama.svg",
     "vaultCredentialType": "Ollama",
     "configFile": "Ollama.json"
@@ -3790,8 +3790,8 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/openrouter.svg",
-    "vaultCredentialType": "Openrouter",
-    "configFile": "Openrouter.json"
+    "vaultCredentialType": "OpenRouter",
+    "configFile": "OpenRouter.json"
   },
   {
     "pluginId": "openweathermap",
@@ -4031,7 +4031,7 @@
         "accountFields": ["tenant_external_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/retailed.png",
     "vaultCredentialType": "Retailed",
     "configFile": "Retailed.json"
@@ -4160,8 +4160,8 @@
     ],
     "defaultAuthMode": "api_key",
     "icon": "/brand-img/sendgrid.svg",
-    "vaultCredentialType": "Sendgrid",
-    "configFile": "Sendgrid.json"
+    "vaultCredentialType": "SendGrid",
+    "configFile": "SendGrid.json"
   },
   {
     "pluginId": "sentry",
@@ -4255,7 +4255,7 @@
         "accountFields": ["team_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Slack",
       "authUrl": "https://slack.com/oauth/v2/authorize",
@@ -4388,7 +4388,7 @@
         "accountFields": ["account_id"]
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Stripe",
       "authUrl": "https://marketplace.stripe.com/oauth/v2/authorize",
@@ -4430,7 +4430,7 @@
         "accountFields": []
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Supabase",
       "authUrl": "https://api.supabase.com/v1/oauth/authorize",
@@ -4926,7 +4926,7 @@
         "accountFields": []
       }
     ],
-    "defaultAuthMode": "oauth_2",
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Webflow",
       "authUrl": "https://webflow.com/oauth/authorize",

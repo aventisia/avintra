@@ -272,7 +272,8 @@ public class CorsairConfigRepository
         var catalog = GetCatalogEntries();
         return catalog?
             .Where(entry => string.Equals(entry.VaultCredentialType, vaultCredentialType, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(entry.DefaultAuthMode, "oauth_2", StringComparison.OrdinalIgnoreCase))
+                && string.Equals(entry.DefaultAuthMode, "oauth_2", StringComparison.OrdinalIgnoreCase)
+                && entry.OAuthConfig is not null)
             .Select(entry => entry.PluginId)
             .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
             .FirstOrDefault();
@@ -350,6 +351,7 @@ public class CorsairConfigRepository
         public string PluginId { get; set; } = string.Empty;
         public string VaultCredentialType { get; set; } = string.Empty;
         public string DefaultAuthMode { get; set; } = string.Empty;
+        public System.Text.Json.JsonElement? OAuthConfig { get; set; }
     }
 
     /// <summary>

@@ -1,19 +1,19 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "ClientId",
-    "label": "Client Id",
-    "description": "Client Id for Brex.",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Brex.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "password",
-    "name": "ClientSecret",
-    "label": "Client Secret",
-    "description": "Client Secret for Brex.",
+    "type": "text",
+    "name": "company_id",
+    "label": "Company_id",
+    "description": "Company_id for Brex.",
     "defaultValue": "",
     "required": true
   }

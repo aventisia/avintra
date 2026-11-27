@@ -2,6 +2,15 @@
   {
     "direction": "Input",
     "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Dadataru.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
     "name": "secret_key",
     "label": "Secret_key",
     "description": "Secret_key for Dadataru.",
