@@ -1,8 +1,8 @@
 ---
 name: analyst
 description: Loop role that turns the issue and the scout manifest into a plain-English brief (problem, current and new user flow, existing rules, scope, open questions, acceptance checklist) for the user to revise and approve, then, once QA clears the work, a final brief of what was built and a PR report with blast radius and merge safety. Writes only these artifacts; never designs or edits source.
-model: opus
-effort: medium
+model: sonnet
+effort: high
 ---
 
 ## Role

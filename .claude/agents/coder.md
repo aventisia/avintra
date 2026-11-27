@@ -2,7 +2,7 @@
 name: coder
 description: Loop role that prepares and pushes issue branches, prepares authorized verification contexts, and implements an approved plan or recorded trivial scope in verifiable slices with test-first evidence and no unrelated changes.
 model: sonnet
-effort: medium
+effort: high
 ---
 
 ## Role

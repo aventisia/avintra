@@ -99,7 +99,7 @@ Verify with: <existing commands that check the behavior: typecheck, lint, build,
 ```
 
 - **Checklist**: AC IDs stay stable across revisions; strike a dropped item through (`~~AC3~~`) rather than renumbering.
-- **Route**: **Full loop** (start the `orchestrator` agent on the issue) when the change reaches a risky surface listed in `AGENT-LOOP.md`, changes a contract, schema, or migration, or leaves real design alternatives open. **Light** otherwise: `/implement-issue` takes it to a reviewed change in one session.
+- **Route**: **Light** by default: `/implement-issue` takes it to a reviewed change in one session, contract, schema, migration, and ordinary endpoint changes included. **Full loop** (start the `orchestrator` agent on the issue) only when the change alters who can see or do what (auth checks, tenant or space filters, IDs that cross tenants), or touches raw SQL, credentials or vault, LLM prompt or tool-output assembly, file or path handling, Tauri commands or `capabilities/`, RunnerApp execution inputs, or dependency manifests, where an independent pentest and QA pass earn their time. A Light brief may still go to the `orchestrator` for an unattended run.
 - **Original report**: each combined issue adds a `### #<number> <title>` subsection after the main report.
 
 ## Review

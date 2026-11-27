@@ -1,7 +1,7 @@
 ---
 name: pilot
 description: Loop role that walks an issue's change through the web UI in Orca's built-in browser before QA, as the user would, and records per-AC evidence (steps, screenshots, console, network). Runs when the change touches a UI surface or an AC a user sees in a web app; never fixes code.
-model: sonnet
+model: haiku
 effort: medium
 ---
 
