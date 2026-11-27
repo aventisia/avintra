@@ -1,10 +1,12 @@
 import { ChatFilePreview } from "@avplatform/chat";
-import { Skeleton } from "@avplatform/ui";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { getSharedChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
+
+import { HomeChatSkeleton } from "./HomeChatSkeleton";
+import { SharedLinkUnavailable } from "./SharedLinkUnavailable";
 
 /** A shared chat file as a read-only preview for signed-in members. */
 export const SharedArtifactLayout = ({ shareToken }: { shareToken: string }) => {
@@ -18,29 +20,9 @@ export const SharedArtifactLayout = ({ shareToken }: { shareToken: string }) => 
   useDocumentTitle(file?.name ?? "Shared file");
   const navigate = useNavigate();
 
-  if (artifact.isPending)
-    return (
-      <div
-        role="status"
-        aria-label="Loading shared file"
-        className="mx-auto w-full max-w-3xl space-y-3 p-6"
-      >
-        <Skeleton className="h-6 w-1/2 rounded" />
-        <Skeleton className="h-40 w-full rounded-xl" />
-      </div>
-    );
+  if (artifact.isPending) return <HomeChatSkeleton label="Loading shared file" />;
 
-  if (artifact.isError || !file)
-    return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-2 p-6 text-center">
-        <h1 className="text-base font-medium text-ink">
-          This link is invalid or sharing was stopped
-        </h1>
-        <Link to="/" className="text-sm text-muted-foreground underline">
-          Back to Home
-        </Link>
-      </div>
-    );
+  if (artifact.isError || !file) return <SharedLinkUnavailable kind="file" />;
 
   return (
     <div className="flex h-full min-h-0 flex-col">

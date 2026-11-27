@@ -2,6 +2,7 @@ import type { IconProps } from "@avplatform/ui/types";
 import { CpuIcon, FolderSimpleUserIcon, ShieldIcon, UsersIcon } from "@phosphor-icons/react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
+import { MODEL_PROVIDERS_ROUTE } from "@/features/05-tenant-admin/model-providers";
 
 export type GetStartedStep = {
   /** Stable id stored in the user's progress; never renumber. */
@@ -39,7 +40,7 @@ export const GET_STARTED_STEPS: GetStartedStep[] = [
     step: 4,
     title: "Enable AI models",
     description: "Connect a model provider and choose the models your agents use.",
-    route: "/tenant/model-providers",
+    route: MODEL_PROVIDERS_ROUTE,
     Icon: CpuIcon,
   },
   {

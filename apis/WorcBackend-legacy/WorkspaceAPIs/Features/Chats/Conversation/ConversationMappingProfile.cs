@@ -13,7 +13,8 @@ namespace WorkspaceAPIs.MappingProfiles
                     .Map(dest => dest.UserId, src => src.UserId)
                     .Map(dest => dest.FlowVersionId, src => src.FlowVersionId)
                     .Map(dest => dest.Title, src => ConversationTitle(src))
-                    .Map(dest => dest.Status, src => src.Status);
+                    .Map(dest => dest.Status, src => src.Status)
+                    .Map(dest => dest.IsShared, src => src.ShareToken != null);
 
                config.NewConfig<ConversationDto, Conversation>()
                    .Ignore(dest => dest.Id)
@@ -29,6 +30,11 @@ namespace WorkspaceAPIs.MappingProfiles
 
           private static string ConversationTitle(Conversation conversation)
           {
+               if (conversation.FlowVersionId == null)
+               {
+                    return conversation.Title ?? string.Empty;
+               }
+
                var content = conversation.Messages?
                     .OrderByDescending(message => message.CreatedOn)
                     .Select(message => message.Content)

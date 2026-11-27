@@ -1,5 +1,6 @@
 import { type IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
+import { type AxiosRequestConfig } from "axios";
 
 import { getSpaceHeaders } from "@/utils/space-headers";
 
@@ -7,21 +8,31 @@ import { type ConversationDto } from "../dtos/conversation.dto";
 import { type LandingConversationDto } from "../dtos/landing-conversation.dto";
 import { type UpdateConversationPinDto } from "../dtos/update-conversation-pin.dto";
 import { type UpdateConversationProjectDto } from "../dtos/update-conversation-project.dto";
+import { type UpdateConversationSettingsDto } from "../dtos/update-conversation-settings.dto";
 import { type UpdateConversationTitleDto } from "../dtos/update-conversation-title.dto";
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 
-/** Lists a page of the user's titled Home conversations, pinned then most recent first. */
+/** Lists a page of the user's titled Home conversations, pinned then most recent first; with `shared`, every shared one, archived or not. */
 export const getLandingConversations = (params: {
   search?: string;
   archived: boolean;
   projectId?: string;
+  shared?: boolean;
   skip: number;
   take: number;
 }) =>
   axiosInstance
     .get<IHttpResponse<LandingConversationDto[]>>(`${baseAPIURL}/landing/list`, {
       params,
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
+/** Gets one of the user's conversations by its ID. */
+export const getConversation = (conversationId: string) =>
+  axiosInstance
+    .get<IHttpResponse<ConversationDto>>(`${baseAPIURL}/${conversationId}`, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -50,6 +61,16 @@ export const updateLandingConversationPin = (updateConversationPinDto: UpdateCon
     })
     .then((res) => res.data);
 
+/** Remembers the model, effort and web search of one of the user's Home conversations. */
+export const updateLandingConversationSettings = (
+  updateConversationSettingsDto: UpdateConversationSettingsDto,
+) =>
+  axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/landing/settings`, updateConversationSettingsDto, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
 /** Files one of the user's Home conversations under a project, or ungroups it. */
 export const updateLandingConversationProject = (
   updateConversationProjectDto: UpdateConversationProjectDto,
@@ -70,10 +91,19 @@ export const setConversationArchived = ({ id, archived }: { id: string; archived
     )
     .then((res) => res.data);
 
+/** Archives several of the user's conversations. */
+export const archiveConversations = (conversationIds: string[]) =>
+  axiosInstance
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/bulk/archive`, conversationIds, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
 /** Deletes one of the user's conversations with its messages. */
-export const deleteConversation = (conversationId: string) =>
+export const deleteConversation = (conversationId: string, config?: AxiosRequestConfig) =>
   axiosInstance
     .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${conversationId}`, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -102,6 +132,18 @@ export const unshareConversation = (conversationId: string) =>
 export const getSharedConversation = (shareToken: string) =>
   axiosInstance
     .get<IHttpResponse<ConversationDto>>(`${baseAPIURL}/shared/${shareToken}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+
+/** Deletes several of the user's conversations with their messages. */
+export const deleteMultipleConversations = (
+  conversationIds: string[],
+  config?: AxiosRequestConfig,
+) =>
+  axiosInstance
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, conversationIds, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

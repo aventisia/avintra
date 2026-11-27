@@ -9,6 +9,8 @@
     ".": "./src/index.ts",
     "./content-parts": "./src/lib/content-parts.ts",
     "./conversation-messages": "./src/lib/conversation-messages.ts",
+    "./model-adapter": "./src/adapters/create-assistant-ui-model-adapter.ts",
+    "./release-at-done": "./src/lib/release-at-done.ts",
     "./package.json": "./package.json"
   },
   "scripts": {

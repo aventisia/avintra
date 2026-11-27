@@ -1,13 +1,18 @@
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { FIELD_SURFACE, cn } from "@avplatform/ui/lib";
+import { toast } from "@avplatform/ui/sonner";
+import { downloadBlob } from "@avplatform/ui/utils";
 import {
+  ArrowCounterClockwiseIcon,
   ArrowSquareOutIcon,
   CodeIcon,
+  ColumnsIcon,
   CornersInIcon,
   CornersOutIcon,
   DownloadSimpleIcon,
   EyeIcon,
+  FileImageIcon,
   MagnifyingGlassMinusIcon,
   MagnifyingGlassPlusIcon,
   PencilSimpleIcon,
@@ -28,11 +33,19 @@ import remarkGfm from "remark-gfm";
 import { chatProseComponents } from "../constants/chat-prose.constant";
 import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.util";
 import { openHtmlInPreviewTab } from "../utils/chat-preview-host.util";
+import { defaultComparePair, sortVersions } from "../utils/chat-version-diff.util";
+import { escapeHtml } from "../utils/escape-html.util";
+import { buildJsxAppPage } from "../utils/jsx-app.util";
 import { printArtifact } from "../utils/print-chat.util";
+import { type ChatSelectionQuote } from "../utils/selection-quote.util";
+import { pngFileName, svgToPngBlob } from "../utils/svg-image.util";
 import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 import { ChatHtmlPreviewFrame } from "./ChatHtmlPreviewFrame";
 import { ChatIconButton } from "./ChatIconButton";
+import { ChatJsxPreviewFrame } from "./ChatJsxPreviewFrame";
+import { ChatQuoteSelectionButton } from "./ChatQuoteSelectionButton";
+import { ChatVersionCompare } from "./ChatVersionCompare";
 
 export type ChatPreviewFile = {
   name: string;
@@ -60,18 +73,17 @@ type ChatFilePreviewProps = {
   onSaveVersion?: (body: string) => void | Promise<unknown>;
   /** True while the edited text is being saved. */
   isSavingVersion?: boolean;
+  /** Reads one version's text; without it no Compare button is shown. */
+  loadVersionText?: (id: string) => Promise<string | null>;
+  /** Quotes selected text into the chat; without it no selection button is shown. */
+  onQuoteSelection?: (quote: ChatSelectionQuote) => void;
 };
 
 const linkClassName =
   "inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus [&_svg]:size-4";
 
-const escapeHtml = (text: string) =>
-  text.replace(
-    /[&<>"']/g,
-    (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!,
-  );
-
 const FILL = "position:fixed;inset:0;width:100%;height:100%;border:0";
+const SANDBOXED_PAGE_TYPES = ["text/html", "text/jsx"];
 
 const standalonePage = (file: ChatPreviewFile & { url: string }, body: string | null) => {
   const content = file.contentType.startsWith("image/")
@@ -99,12 +111,13 @@ const openInNewTab = (
   file: ChatPreviewFile & { url: string },
 ) => {
   const body = readDataUrl(file.url);
-  if (file.contentType.toLowerCase() !== "text/html" || body === null) {
+  const type = file.contentType.toLowerCase();
+  if (!SANDBOXED_PAGE_TYPES.includes(type) || body === null) {
     pointAtStandalonePage(event.currentTarget, file);
     return;
   }
   event.preventDefault();
-  openHtmlInPreviewTab(body, file.name);
+  openHtmlInPreviewTab(type === "text/jsx" ? buildJsxAppPage(body, file.name) : body, file.name);
 };
 
 const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -121,6 +134,7 @@ const useIsFullscreen = (ref: RefObject<HTMLElement>) => {
 
 const SOURCE_LANGUAGES: Record<string, string> = {
   "text/html": "html",
+  "text/jsx": "jsx",
   "image/svg+xml": "xml",
   "text/csv": "csv",
   "text/tab-separated-values": "tsv",
@@ -190,6 +204,7 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
     return <iframe src={file.url} title={file.name} className="size-full border-0" />;
   if (body === null) return null;
   if (type === "text/html") return <ChatHtmlPreviewFrame html={body} title={file.name} />;
+  if (type === "text/jsx") return <ChatJsxPreviewFrame source={body} title={file.name} />;
   if (type === "text/csv" || type === "text/tab-separated-values")
     return <DelimitedTable rows={parseDelimited(body, type === "text/csv" ? "," : "\t")} />;
   if (type === "text/markdown")
@@ -225,33 +240,69 @@ export const ChatFilePreview = ({
   onSelectVersion,
   onSaveVersion,
   isSavingVersion,
+  loadVersionText,
+  onQuoteSelection,
 }: ChatFilePreviewProps) => {
   const loadable = file?.url ? { ...file, url: file.url } : null;
   const language = loadable && SOURCE_LANGUAGES[loadable.contentType.toLowerCase()];
   const body = loadable ? readDataUrl(loadable.url) : null;
   const source = language && body !== null ? body : null;
-  const canEdit =
-    !!onSaveVersion &&
+  const isTextual =
     !!loadable &&
     body !== null &&
     (loadable.contentType.toLowerCase().startsWith("text/") || !!language);
+  const canEdit = !!onSaveVersion && isTextual;
+  const canCompare = !!loadVersionText && isTextual && versions.length > 1;
   const [draft, setDraft] = useState<string | null>(null);
+  const [compare, setCompare] = useState<{ leftId: string; rightId: string } | null>(null);
   useEffect(() => {
     setDraft(null);
+    setCompare(null);
   }, [loadable?.url]);
   const isEditing = draft !== null && canEdit;
+  const isComparing = compare !== null && canCompare;
+  const toggleCompare = () =>
+    setCompare(
+      isComparing || !activeVersionId ? null : defaultComparePair(versions, activeVersionId),
+    );
   const saveDraft = () => {
     if (draft !== null) void onSaveVersion?.(draft);
+  };
+  const latestVersion = versions.reduce<ChatPreviewVersion | null>(
+    (latest, version) =>
+      !latest || version.versionNumber > latest.versionNumber ? version : latest,
+    null,
+  );
+  const canRestore = canEdit && !!latestVersion && latestVersion.id !== activeVersionId;
+  const isSvg = loadable?.contentType.toLowerCase() === "image/svg+xml" && body !== null;
+  const downloadPng = async () => {
+    if (!loadable || body === null) return;
+    downloadBlob(await svgToPngBlob(body), pngFileName(loadable.name));
   };
   const [sourceShownFor, setSourceShownFor] = useState<string | null>(null);
   const showsSource = source !== null && sourceShownFor === loadable?.url;
   const isPrintable =
-    !!loadable && body !== null && !isEditing && !showsSource && isPrintableType(loadable);
+    !!loadable &&
+    body !== null &&
+    !isEditing &&
+    !isComparing &&
+    !showsSource &&
+    isPrintableType(loadable);
   const [zoomFor, setZoomFor] = useState({ url: "", index: ZOOM_LEVELS.indexOf(1) });
   const zoomIndex = zoomFor.url === loadable?.url ? zoomFor.index : ZOOM_LEVELS.indexOf(1);
   const zoom = ZOOM_LEVELS[zoomIndex]!;
   const zoomTo = (index: number) => setZoomFor({ url: loadable!.url, index });
   const sectionRef = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const quoteSelection = (quote: ChatSelectionQuote) => {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    onQuoteSelection?.(quote);
+  };
+  const canQuote =
+    !!onQuoteSelection &&
+    !!loadable &&
+    (showsSource ||
+      (isPrintable && !SANDBOXED_PAGE_TYPES.includes(loadable.contentType.toLowerCase())));
   const isFullscreen = useIsFullscreen(sectionRef);
   const toggleFullscreen = () =>
     void (
@@ -280,7 +331,7 @@ export const ChatFilePreview = ({
             {formatFileSize(file.sizeBytes)}
           </span>
         )}
-        {versions.length > 1 && (
+        {versions.length > 1 && !isComparing && (
           <select
             value={activeVersionId ?? ""}
             onChange={(event) => onSelectVersion?.(event.target.value)}
@@ -288,16 +339,14 @@ export const ChatFilePreview = ({
             title="Artifact version"
             className={cn(FIELD_SURFACE, "h-8 shrink-0 px-1 text-xs")}
           >
-            {[...versions]
-              .sort((a, b) => a.versionNumber - b.versionNumber)
-              .map((version) => (
-                <option key={version.id} value={version.id}>
-                  v{version.versionNumber}
-                </option>
-              ))}
+            {sortVersions(versions).map((version) => (
+              <option key={version.id} value={version.id}>
+                v{version.versionNumber}
+              </option>
+            ))}
           </select>
         )}
-        {source !== null && (
+        {source !== null && !isComparing && (
           <>
             <ChatIconButton
               label={showsSource ? "Show preview" : "Show code"}
@@ -319,14 +368,42 @@ export const ChatFilePreview = ({
           </>
         ) : (
           <>
-            {canEdit && (
+            {canCompare && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 [&_svg]:size-3.5"
+                title={isComparing ? "Close compare" : "Compare two versions"}
+                aria-label={isComparing ? "Close compare" : "Compare"}
+                onClick={toggleCompare}
+              >
+                <ColumnsIcon />
+                <span className="hidden sm:inline">
+                  {isComparing ? "Close compare" : "Compare"}
+                </span>
+              </Button>
+            )}
+            {canRestore && !isComparing && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 [&_svg]:size-3.5"
+                title="Save this version again as the latest"
+                disabled={isSavingVersion}
+                onClick={() => void onSaveVersion?.(body!)}
+              >
+                <ArrowCounterClockwiseIcon />
+                {isSavingVersion ? "Restoring…" : "Restore"}
+              </Button>
+            )}
+            {canEdit && !isComparing && (
               <ChatIconButton label="Edit file" onClick={() => setDraft(body)}>
                 <PencilSimpleIcon />
               </ChatIconButton>
             )}
             {loadable && (
               <>
-                <div className="hidden items-center sm:flex">
+                <div className={cn("hidden items-center", !isComparing && "sm:flex")}>
                   <ChatIconButton
                     label="Zoom out"
                     disabled={zoomIndex === 0}
@@ -368,6 +445,16 @@ export const ChatFilePreview = ({
                 >
                   <DownloadSimpleIcon />
                 </a>
+                {isSvg && !isComparing && (
+                  <ChatIconButton
+                    label="Download as PNG"
+                    onClick={() =>
+                      void downloadPng().catch(() => toast.error("Couldn't create the PNG."))
+                    }
+                  >
+                    <FileImageIcon />
+                  </ChatIconButton>
+                )}
                 <a
                   href="about:blank"
                   target="_blank"
@@ -399,12 +486,20 @@ export const ChatFilePreview = ({
           <XIcon />
         </ChatIconButton>
       </header>
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         {isLoading ? (
           <div role="status" aria-label="Loading preview" className="space-y-3 p-6">
             <Skeleton className="h-6 w-1/2 rounded" />
             <Skeleton className="h-40 w-full rounded-xl" />
           </div>
+        ) : isComparing && compare && loadVersionText ? (
+          <ChatVersionCompare
+            versions={versions}
+            leftId={compare.leftId}
+            rightId={compare.rightId}
+            onChange={setCompare}
+            loadVersionText={loadVersionText}
+          />
         ) : isEditing ? (
           <textarea
             value={draft}
@@ -414,16 +509,26 @@ export const ChatFilePreview = ({
             className="h-full w-full resize-none bg-surface p-6 font-mono text-[13px] leading-6 text-ink focus:outline-none"
           />
         ) : fileBody ? (
-          <div
-            className="origin-top-left"
-            style={{
-              width: `${100 / zoom}%`,
-              height: `${100 / zoom}%`,
-              transform: zoom === 1 ? undefined : `scale(${zoom})`,
-            }}
-          >
-            {fileBody}
-          </div>
+          <>
+            <div
+              ref={bodyRef}
+              className="origin-top-left"
+              style={{
+                width: `${100 / zoom}%`,
+                height: `${100 / zoom}%`,
+                transform: zoom === 1 ? undefined : `scale(${zoom})`,
+              }}
+            >
+              {fileBody}
+            </div>
+            {canQuote && (
+              <ChatQuoteSelectionButton
+                bodyRef={bodyRef}
+                fileName={loadable.name}
+                onQuote={quoteSelection}
+              />
+            )}
+          </>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">
             {loadable

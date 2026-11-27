@@ -58,6 +58,15 @@ public class ChatArtifactsController : BaseApiController
     }
 
     /// <summary>
+    /// Updates an existing chat artifact.
+    /// </summary>
+    [HttpPut]
+    public async Task<ActionResult<ServiceResponse<ChatArtifactDto>>> UpdateChatArtifact([FromBody] UpdateChatArtifactDto updateChatArtifactDto)
+    {
+        return ResultHelper(await _chatArtifactsService.UpdateChatArtifactAsync(updateChatArtifactDto));
+    }
+
+    /// <summary>
     /// Deletes an existing chat artifact.
     /// </summary>
     [HttpDelete("{chatArtifactId}")]

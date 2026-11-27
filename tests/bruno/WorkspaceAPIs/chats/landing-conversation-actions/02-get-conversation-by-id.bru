@@ -1,0 +1,28 @@
+meta {
+  name: Get conversation by id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/{{ACTIONS_CONVERSATION_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the owner can read the conversation", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.id).to.equal(bru.getVar("ACTIONS_CONVERSATION_ID"));
+  });
+  test("a landing chat has no title before its first turn", function() {
+    expect(res.getBody().data.title).to.equal("");
+  });
+  test("a new chat is not shared", function() {
+    expect(res.getBody().data.isShared).to.equal(false);
+  });
+}

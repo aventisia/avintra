@@ -22,8 +22,8 @@ public class ConversationDto
     public Guid? FlowVersionId { get; set; }
 
     /// <summary>
-    /// Gets or sets the conversation title, taken from the most recent message content
-    /// and truncated to 120 characters. Defaults to "Untitled Conversation" if no message content is available.
+    /// Gets or sets the conversation title. Landing conversations use their stored title, empty until the first turn titles them;
+    /// agent conversations use the most recent message content truncated to 120 characters, or "Untitled Conversation".
     /// </summary>
     public string Title { get; set; } = "Untitled Conversation";
 
@@ -46,4 +46,29 @@ public class ConversationDto
     /// Gets or sets the date and time when the conversation was last modified.
     /// </summary>
     public DateTimeOffset LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the conversation has a live read-only share link.
+    /// </summary>
+    public bool IsShared { get; set; }
+
+    /// <summary>
+    /// Gets or sets the LiteLLM provider of the model last used in this landing chat. Max-100 characters.
+    /// </summary>
+    public string? ModelProvider { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model last used in this landing chat. Max-255 characters.
+    /// </summary>
+    public string? ModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reasoning effort last picked for this landing chat. Max-20 characters.
+    /// </summary>
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether web search was last enabled for this landing chat.
+    /// </summary>
+    public bool? WebSearch { get; set; }
 }

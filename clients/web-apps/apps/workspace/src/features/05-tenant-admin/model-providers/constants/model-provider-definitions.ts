@@ -926,3 +926,10 @@ export const getVaultCredentialTypeForProvider = (providerType: ModelProviderEnu
     modelProviderDefinitions.find((p) => p.value === providerType)?.vaultCredentialType ??
       VaultCredentialAppsEnum.GeneralCredentials
   ];
+
+const providerIcons = new Map(
+  modelProviderDefinitions.map((provider) => [provider.value, getProviderIcon(provider)]),
+);
+
+export const getProviderIconByType = (providerType: ModelProviderEnum): string | undefined =>
+  providerIcons.get(providerType);

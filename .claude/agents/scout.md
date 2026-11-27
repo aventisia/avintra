@@ -1,7 +1,7 @@
 ---
 name: scout
 description: Loop role that retrieves a GitHub issue read-only and maps verified code paths, current behavior, contracts, and verification commands into a manifest. Investigates; never designs or edits.
-model: opus
+model: haiku
 effort: medium
 ---
 

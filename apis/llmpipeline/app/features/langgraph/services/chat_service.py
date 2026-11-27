@@ -18,7 +18,12 @@ from app.features.auth.authenticated_user import User
 from app.features.langgraph.checkpoint.memory import graph_memory
 from app.features.langgraph.graphs.graph_factory import build_chat_graph
 from app.features.langgraph.services.chat_agent_text_stream import ChatAgentTextStream
+from app.features.langgraph.services.follow_up_suggestions import (
+    generate_follow_up_suggestions,
+    suggestion_request,
+)
 from app.features.langgraph.services.request_context import restore_request
+from app.features.langgraph.services.web_sources import CitationMarkers, SourceCollector
 from app.features.langgraph.services.tool_approval import (
     APPROVAL_EXPIRED,
     APPROVAL_MARKER_KEY,
@@ -406,6 +411,7 @@ class ChatService:
         - ``{"type": "delta", "output": "<partial text>"}`` token deltas
         - ``{"type": "tool_call", "output": {tool payload}}`` tool invocations
         - ``{"type": "approval_required", "output": {...}}`` pending approvals
+        - ``{"type": "sources", "output": [{title, url, domain}]}`` web search citations
         - ``{"type": "followup", "output": [...]}`` suggested follow-ups
         - ``{"type": "done", "output": "<final text>"}`` final completion
 
@@ -542,6 +548,8 @@ class ChatService:
         # IMPORTANT NOTE: a chat agent may answer in JSON, so only the reply text read from its tokens is sent.
         suppress_raw_deltas = request.is_chat_agent
         chat_agent_text = ChatAgentTextStream()
+        web_sources = SourceCollector()
+        citation_markers = CitationMarkers()
 
         async for event in graph.astream_events(
             graph_input,
@@ -563,6 +571,15 @@ class ChatService:
                     continue
                 chunk = data.get("chunk")
                 if chunk is not None:
+                    cited_numbers = web_sources.add(chunk)
+                    if marker := citation_markers.before(chunk):
+                        yield LLMChunkResponse(
+                            provider=request.provider,
+                            model=request.model,
+                            output=marker,
+                            type="delta",
+                            conversation_id=conversation_id,
+                        )
                     # Reasoning/thinking deltas (when the model emits them).
                     reasoning = self._extract_reasoning_delta(chunk)
                     if reasoning:
@@ -578,14 +595,18 @@ class ChatService:
                         text_buffer.append(text)
                         if suppress_raw_deltas:
                             text = chat_agent_text.feed(text)
-                        if text:
-                            yield LLMChunkResponse(
-                                provider=request.provider,
-                                model=request.model,
-                                output=text,
-                                type="delta",
-                                conversation_id=conversation_id,
-                            )
+                    # IMPORTANT NOTE: models do not write [n] markers when a provider's built-in search is on,
+                    # and Anthropic streams a block's citations before its text, so each marker is released
+                    # once its block has ended; markers stay out of the saved reply text.
+                    text = citation_markers.track(chunk, text or "", cited_numbers)
+                    if text:
+                        yield LLMChunkResponse(
+                            provider=request.provider,
+                            model=request.model,
+                            output=text,
+                            type="delta",
+                            conversation_id=conversation_id,
+                        )
                 continue
 
             # Tools node starting: surface every pending call as a preliminary
@@ -884,6 +905,24 @@ class ChatService:
                 )
             final_text = ""
 
+        if marker := citation_markers.flush():
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=marker,
+                type="delta",
+                conversation_id=conversation_id,
+            )
+
+        if cited_sources := web_sources.sources():
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=cited_sources,
+                type="sources",
+                conversation_id=conversation_id,
+            )
+
         yield LLMChunkResponse(
             provider=request.provider,
             model=request.model,
@@ -892,6 +931,50 @@ class ChatService:
             conversation_id=conversation_id,
             metadata=self._voice_frame_metadata(request),
         )
+        async for frame in self._follow_up_frames(
+            request, user, final_text, bool(pending_calls), conversation_id
+        ):
+            yield frame
+
+    async def _follow_up_frames(
+        self,
+        request: LLMRequest,
+        user: User,
+        reply: str,
+        has_pending_approval: bool,
+        conversation_id: str | None = None,
+    ) -> AsyncIterator[LLMChunkResponse]:
+        """Home chat only: one ``followup`` frame of suggested next questions, after ``done``."""
+        if (
+            request.action != "LandingChat"
+            or request.is_temp_chat
+            or request.is_voice_agent
+            or request.channel == "voice"
+            or has_pending_approval
+            or not reply.strip()
+        ):
+            return
+
+        start_time = time.perf_counter()
+        suggestions, message = await generate_follow_up_suggestions(request, user, reply)
+        if message is not None:
+            usage_request = suggestion_request(request)
+            self._create_final_response(
+                request=usage_request,
+                response=self._create_initial_response(usage_request),
+                graph_response=message,
+                start_time=start_time,
+                jwt=user.access_token,
+                space_id=user.space_id,
+            )
+        if suggestions:
+            yield LLMChunkResponse(
+                provider=request.provider,
+                model=request.model,
+                output=suggestions,
+                type="followup",
+                conversation_id=conversation_id or request.conversation_id,
+            )
 
     @staticmethod
     def _voice_frame_metadata(request: LLMRequest) -> dict | None:
@@ -1134,7 +1217,7 @@ class ChatService:
         if not sections:
             return messages
 
-        return [SystemMessage(content="\n\n".join(sections)), *messages]
+        return [SystemMessage(content="\n\n".join(sections), id="voice-context"), *messages]
 
     def _latest_ai_message(
         self,
@@ -1230,6 +1313,8 @@ class ChatService:
             tool_config_key,
             skill_config_key,
             request.is_temp_chat,
+            request.reasoning_effort,
+            request.web_search,
         )
 
         if cache_key not in self._graphs:

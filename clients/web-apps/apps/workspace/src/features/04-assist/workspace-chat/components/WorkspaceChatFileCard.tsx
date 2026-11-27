@@ -1,9 +1,19 @@
-import { CHAT_FILE_ICONS } from "@avplatform/chat";
+import { CHAT_FILE_ICONS, ChatNameInput } from "@avplatform/chat";
 import { Checkbox } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
+import {
+  DeleteDDMenuItem,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  MenuContent,
+  SimpleDDMenuItem,
+} from "@avplatform/ui/dropdown-menu";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import {
+  ChatCenteredTextIcon,
   ChatCircleIcon,
+  DotsThreeIcon,
   EyeIcon,
   FileDocIcon,
   FileImageIcon,
@@ -11,11 +21,11 @@ import {
   FilePptIcon,
   FileTextIcon,
   FileXlsIcon,
-  LinkBreakIcon,
   LinkSimpleIcon,
-  TrashIcon,
+  PencilSimpleIcon,
+  ShareNetworkIcon,
 } from "@phosphor-icons/react";
-import type { FC, MouseEvent } from "react";
+import { type FC, useState } from "react";
 import { Link } from "react-router-dom";
 
 type WorkspaceChatFileCardProps = {
@@ -31,10 +41,14 @@ type WorkspaceChatFileCardProps = {
   chatHref?: string;
   onPreview?: (artifactId: string) => void;
   onDelete?: (artifactId: string) => void;
-  /** Copies the read-only share link; without it no share button is shown. */
-  onCopyShareLink?: (artifactId: string) => void;
-  /** Stops sharing; without it no stop-sharing button is shown. */
-  onStopSharing?: (artifactId: string) => void;
+  /** Opens the share dialog; without it no share item is shown. */
+  onShare?: (artifactId: string) => void;
+  /** Shows a "Shared" badge while a read-only link is active. */
+  isShared?: boolean;
+  /** Saves a new name for the file and its versions; without it no rename action is shown. */
+  onRename?: (artifactId: string, name: string) => void;
+  /** Starts a new chat with the file mentioned; without it no such action is shown. */
+  onUseInNewChat?: (artifactId: string) => void;
   /** Shows a selection checkbox when set. */
   onSelectedChange?: (artifactId: string, selected: boolean) => void;
   selected?: boolean;
@@ -86,11 +100,14 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
   chatHref,
   onPreview,
   onDelete,
-  onCopyShareLink,
-  onStopSharing,
+  onShare,
+  isShared = false,
+  onRename,
+  onUseInNewChat,
   onSelectedChange,
   selected = false,
 }) => {
+  const [isRenaming, setIsRenaming] = useState(false);
   const label = name?.trim() ? name.trim() : "Stored file";
   const Icon = iconForWorkspaceChatFile(contentType, label);
   const details = [
@@ -100,17 +117,8 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
     conversationTitle?.trim() || null,
   ].filter(Boolean);
 
-  const hasActions = Boolean(chatHref || onCopyShareLink || onStopSharing || onDelete);
-
-  const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    onDelete?.(artifactId);
-  };
-
-  const handleShare = (event: MouseEvent<HTMLButtonElement>, action: (id: string) => void) => {
-    event.stopPropagation();
-    action(artifactId);
-  };
+  const hasMenu = Boolean(onUseInNewChat || onRename || onShare || onDelete);
+  const hasActions = Boolean(chatHref || hasMenu);
 
   return (
     <div
@@ -128,28 +136,52 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
             className="mt-2.5"
           />
         )}
-        <button
-          type="button"
-          onClick={() => onPreview?.(artifactId)}
-          aria-label={`Preview ${label}`}
-          className="flex min-w-0 flex-1 items-start gap-3 text-left"
-        >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground ring-1 ring-line/60 group-hover:text-primary">
-            <Icon className="size-5" />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="line-clamp-2 break-words text-sm font-medium leading-5 text-ink">
-              {label}
+        {isRenaming ? (
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground ring-1 ring-line/60">
+              <Icon className="size-5" />
             </span>
-            <span className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground">
-              {details.length ? details.join(" · ") : "Stored artifact"}
+            <ChatNameInput
+              initialName={label}
+              label="File name"
+              maxLength={255}
+              className="h-8 text-sm"
+              onDone={(newName) => {
+                setIsRenaming(false);
+                if (newName && newName !== label) onRename?.(artifactId, newName);
+              }}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onPreview?.(artifactId)}
+            aria-label={`Preview ${label}`}
+            className="flex min-w-0 flex-1 items-start gap-3 text-left"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground ring-1 ring-line/60 group-hover:text-primary">
+              <Icon className="size-5" />
             </span>
-          </span>
-          <EyeIcon className="mt-1 size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
-        </button>
+            <span className="min-w-0 flex-1">
+              <span className="line-clamp-2 break-words text-sm font-medium leading-5 text-ink">
+                {label}
+              </span>
+              {isShared && (
+                <Badge variant="secondary" className="mt-1 gap-1">
+                  <LinkSimpleIcon className="size-3" />
+                  Shared
+                </Badge>
+              )}
+              <span className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground">
+                {details.length ? details.join(" · ") : "Stored artifact"}
+              </span>
+            </span>
+            <EyeIcon className="mt-1 size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
+          </button>
+        )}
       </div>
       {hasActions && (
-        <div className="flex flex-wrap items-center gap-1 border-t border-line/60 pt-2">
+        <div className="flex items-center gap-1 border-t border-line/60 pt-2">
           {chatHref && (
             <Link
               to={chatHref}
@@ -161,41 +193,42 @@ export const WorkspaceChatFileCard: FC<WorkspaceChatFileCardProps> = ({
               Open chat
             </Link>
           )}
-          {onCopyShareLink && (
-            <button
-              type="button"
-              title="Copy read-only link"
-              aria-label={`Copy read-only link for ${label}`}
-              onClick={(event) => handleShare(event, onCopyShareLink)}
-              className={actionClassName}
-            >
-              <LinkSimpleIcon className="size-4" />
-              Share link
-            </button>
-          )}
-          {onStopSharing && (
-            <button
-              type="button"
-              title="Stop sharing"
-              aria-label={`Stop sharing ${label}`}
-              onClick={(event) => handleShare(event, onStopSharing)}
-              className={actionClassName}
-            >
-              <LinkBreakIcon className="size-4" />
-              Stop sharing
-            </button>
-          )}
-          {onDelete && (
-            <button
-              type="button"
-              title="Delete artifact"
-              aria-label={`Delete ${label}`}
-              onClick={handleDelete}
-              className={cn(actionClassName, "ml-auto hover:text-bad")}
-            >
-              <TrashIcon className="size-4" />
-              Delete
-            </button>
+          {hasMenu && (
+            <div className="ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  aria-label={`More actions for ${label}`}
+                  title="More actions"
+                  className={cn(actionClassName, "w-7 justify-center px-0")}
+                >
+                  <DotsThreeIcon className="size-4" weight="bold" />
+                </DropdownMenuTrigger>
+                <MenuContent align="end" className="w-48">
+                  {onUseInNewChat && (
+                    <SimpleDDMenuItem
+                      content="Use in new chat"
+                      Icon={ChatCenteredTextIcon}
+                      onSelect={() => onUseInNewChat(artifactId)}
+                    />
+                  )}
+                  {onRename && (
+                    <SimpleDDMenuItem
+                      content="Rename"
+                      Icon={PencilSimpleIcon}
+                      onSelect={() => setIsRenaming(true)}
+                    />
+                  )}
+                  {onShare && (
+                    <SimpleDDMenuItem
+                      content="Share"
+                      Icon={ShareNetworkIcon}
+                      onSelect={() => onShare(artifactId)}
+                    />
+                  )}
+                  {onDelete && <DeleteDDMenuItem onSelect={() => onDelete(artifactId)} />}
+                </MenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       )}

@@ -51,6 +51,29 @@ public class Conversation : BaseEntity, IMustHaveTenant
     public virtual ChatProject? Project { get; set; }
 
     /// <summary>
+    /// Gets or sets the LiteLLM provider of the model last used in this landing chat. Max-100 characters.
+    /// </summary>
+    [MaxLength(100)]
+    public string? ModelProvider { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model last used in this landing chat. Max-255 characters.
+    /// </summary>
+    [MaxLength(255)]
+    public string? ModelId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reasoning effort last picked for this landing chat. Max-20 characters.
+    /// </summary>
+    [MaxLength(20)]
+    public string? ReasoningEffort { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether web search was last enabled for this landing chat.
+    /// </summary>
+    public bool? WebSearch { get; set; }
+
+    /// <summary>
     /// Gets or sets the read-only share token. Null when the conversation is not shared. Max-64 characters.
     /// </summary>
     [MaxLength(64)]

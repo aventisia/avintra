@@ -1,4 +1,8 @@
-import { ComposerPrimitive, unstable_useMentionAdapter } from "@assistant-ui/react";
+import {
+  ComposerPrimitive,
+  type DirectiveFormatter,
+  unstable_useMentionAdapter,
+} from "@assistant-ui/react";
 import { type Icon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 
@@ -10,6 +14,12 @@ export type ChatMention = {
   label: string;
   description: string;
   icon: Icon;
+};
+
+/** Inserts a picked file as readable `@name` text instead of the default `:file[name]{name=id}` directive. */
+const plainMentionFormatter: DirectiveFormatter = {
+  serialize: (item) => `@${item.label}`,
+  parse: (text) => [{ kind: "text", text }],
 };
 
 type ChatMentionMenuProps = {
@@ -29,6 +39,7 @@ export const ChatMentionMenu = ({ mentions }: ChatMentionMenuProps) => {
         })),
       [mentions],
     ),
+    formatter: plainMentionFormatter,
   });
 
   return (
@@ -36,7 +47,7 @@ export const ChatMentionMenu = ({ mentions }: ChatMentionMenuProps) => {
       char="@"
       adapter={mention.adapter}
       aria-label="Mentions"
-      className="absolute inset-x-0 bottom-full z-20 mb-2 max-h-72 overflow-y-auto rounded-2xl border border-line bg-surface p-1.5 shadow-lg"
+      className="absolute inset-x-0 bottom-full z-20 mb-2 max-h-72 overflow-y-auto rounded-xl border border-line bg-surface p-1.5 shadow-lg"
     >
       <ComposerPrimitive.TriggerPopover.Directive {...mention.directive} />
       <ComposerPrimitive.TriggerPopoverItems>

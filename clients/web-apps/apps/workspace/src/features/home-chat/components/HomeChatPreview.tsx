@@ -1,4 +1,12 @@
-import { ChatFilePreview, type ChatPreviewFile, type ChatPreviewVersion } from "@avplatform/chat";
+import { useAui } from "@assistant-ui/react";
+import {
+  ChatFilePreview,
+  type ChatPreviewFile,
+  type ChatPreviewVersion,
+  type ChatSelectionQuote,
+  composeSelectionQuote,
+  focusComposerAtEnd,
+} from "@avplatform/chat";
 import { Dialog, DialogContent, DialogTitle } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { type KeyboardEvent, type PointerEvent, useEffect, useRef, useState } from "react";
@@ -12,6 +20,7 @@ type HomeChatPreviewProps = {
   onSelectVersion?: (id: string) => void;
   onSaveVersion?: (body: string) => void | Promise<unknown>;
   isSavingVersion?: boolean;
+  loadVersionText?: (id: string) => Promise<string | null>;
   isLoading: boolean;
   onClose: () => void;
 };
@@ -36,10 +45,12 @@ export const HomeChatPreview = ({
   onSelectVersion,
   onSaveVersion,
   isSavingVersion,
+  loadVersionText,
   isLoading,
   onClose,
 }: HomeChatPreviewProps) => {
   useReturnFocusOnClose();
+  const aui = useAui();
   const isWide = useMediaQuery("(min-width: 1024px)");
   const asideRef = useRef<HTMLElement>(null);
   const [panelWidth, setPanelWidth] = useState<number | null>(null);
@@ -70,6 +81,14 @@ export const HomeChatPreview = ({
     setPanelWidth(clampWidth(currentWidth() + step));
   };
 
+  const quoteSelection = (quote: ChatSelectionQuote) => {
+    const next = composeSelectionQuote(aui.composer.getState().text, quote);
+    if (next === null) return;
+    aui.composer.setText(next);
+    if (!isWide) onClose();
+    focusComposerAtEnd();
+  };
+
   const preview = (
     <ChatFilePreview
       file={file}
@@ -78,6 +97,8 @@ export const HomeChatPreview = ({
       onSelectVersion={onSelectVersion}
       onSaveVersion={onSaveVersion}
       isSavingVersion={isSavingVersion}
+      loadVersionText={loadVersionText}
+      onQuoteSelection={quoteSelection}
       isLoading={isLoading}
       onClose={onClose}
     />

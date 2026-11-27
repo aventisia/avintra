@@ -26,18 +26,18 @@ const GenerateButton = ({
   // Get nodes from the react flow store
   const { nodes } = useReactFlowExtStore(useShallow((state) => ({ nodes: state.nodes })));
 
-  const actionSelectorData = useNodeSelectorStore((state) => state.actionSelectorData);
+  const catalogData = useNodeSelectorStore((state) => state.unfilteredActionSelectorData);
 
   const actionDescriptions = useMemo(
     () =>
       new Map(
-        actionSelectorData.flatMap((primary) =>
+        catalogData.flatMap((primary) =>
           primary.actionCategories.flatMap((category) =>
             (category.actions ?? []).map((action) => [action.name, action.description] as const),
           ),
         ),
       ),
-    [actionSelectorData],
+    [catalogData],
   );
 
   const { currentFlow } = useCurrentFlowStore(

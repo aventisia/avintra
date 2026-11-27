@@ -21,7 +21,7 @@ const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
 ];
 
 /**
- * Segmented control to switch the Assist > Queues overview between the user's
+ * Segmented control to switch the Build > Queues overview between the user's
  * own queues and the agent queues they have access to. Uses the same tabbed
  * style as the Usage screen's Platform Credits / BYOK Consumption switch.
  */

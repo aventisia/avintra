@@ -1,0 +1,25 @@
+meta {
+  name: Get shared chat artifact
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-artifacts/shared/{{CHAT_ARTIFACT_SHARE_TOKEN}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the shared file is readable", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.id).to.equal(bru.getVar("CHAT_ARTIFACT_ID"));
+  });
+  test("the file reports that it is shared", function() {
+    expect(res.getBody().data.isShared).to.equal(true);
+  });
+}

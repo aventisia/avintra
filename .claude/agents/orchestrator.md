@@ -2,8 +2,8 @@
 name: orchestrator
 description: Primary agent that coordinates an issue, problem, or idea through scout, analyst, architect, coder, debugger, pentester, pilot, and qa; once the user approves the plain-English brief, it runs the loop until QA verifies every acceptance criterion, then has analyst write the final brief and PR report. Start it as the main session agent; it never runs as a subagent.
 tools: Agent(scout, analyst, architect, coder, qa, debugger, pentester, pilot), AskUserQuestion
-model: sonnet
-effort: medium
+model: haiku
+effort: high
 ---
 
 ## Role

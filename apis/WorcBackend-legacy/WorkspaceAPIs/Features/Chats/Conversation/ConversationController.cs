@@ -45,13 +45,13 @@ public class ConversationController : BaseApiController
     }
 
     /// <summary>
-    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by title; archived ones when asked.
+    /// Retrieves a page of the current user's titled landing conversations, most recent first, optionally filtered by project or by text in the title or messages; archived ones when asked, or every shared one, archived or not.
     /// </summary>
     [HttpGet("landing/list")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<LandingConversationDto>>>> GetLandingConversations(
-        [FromQuery] string? search, [FromQuery] bool archived = false, [FromQuery] Guid? projectId = null, [FromQuery] int skip = 0, [FromQuery] int take = 30)
+        [FromQuery] string? search, [FromQuery] bool archived = false, [FromQuery] Guid? projectId = null, [FromQuery] bool shared = false, [FromQuery] int skip = 0, [FromQuery] int take = 30)
     {
-        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, archived, projectId, skip, take));
+        return ResultHelper(await _conversationService.GetLandingConversationsAsync(search, archived, projectId, shared, skip, take));
     }
 
     // Gets a conversation by its ID.
@@ -100,6 +100,15 @@ public class ConversationController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationPin([FromBody] UpdateConversationPinDto updateConversationPinDto)
     {
         return ResultHelper(await _conversationService.UpdateLandingConversationPinAsync(updateConversationPinDto));
+    }
+
+    /// <summary>
+    /// Remembers the model, effort and web search of one of the current user's landing conversations.
+    /// </summary>
+    [HttpPut("landing/settings")]
+    public async Task<ActionResult<ServiceResponse<bool>>> UpdateLandingConversationSettings([FromBody] UpdateConversationSettingsDto updateConversationSettingsDto)
+    {
+        return ResultHelper(await _conversationService.UpdateLandingConversationSettingsAsync(updateConversationSettingsDto));
     }
 
     // Archives a conversation (moves it to archived state).
@@ -155,5 +164,14 @@ public class ConversationController : BaseApiController
     public async Task<ActionResult<ServiceResponse<bool>>> Delete(Guid conversationId)
     {
         return ResultHelper(await _conversationService.DeleteAsync(conversationId));
+    }
+
+    /// <summary>
+    /// Deletes multiple conversations by their IDs.
+    /// </summary>
+    [HttpPost("delete-multiple")]
+    public async Task<ActionResult<ServiceResponse<int>>> DeleteMultipleConversations([FromBody] IEnumerable<Guid> conversationIds)
+    {
+        return ResultHelper(await _conversationService.DeleteMultipleConversationsAsync(conversationIds));
     }
 }

@@ -8,6 +8,7 @@ import {
 } from "../apis/streaming-chat-apis";
 import { isPendingApprovalPart } from "../lib/approval-parts";
 import { createContentPartsBuilder } from "../lib/content-parts";
+import { readFollowUps, untilDone } from "../lib/release-at-done";
 import { LLMMessageType } from "../types/llm-message.type";
 
 export type CreateAssistantUIModelAdapterParams = {
@@ -16,6 +17,8 @@ export type CreateAssistantUIModelAdapterParams = {
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
   onSuggestionsUpdate?: (actions: string[]) => void;
+  /** Ends the run at the done frame and delivers later follow-up suggestions through onSuggestionsUpdate. */
+  releaseRunAtDone?: boolean;
   /** Called for every streamed text delta so observers can synthesize speech incrementally. */
   onTextDelta?: (delta: string) => void;
   /** Called once with the turn's full assistant text when a fresh run finishes streaming. */
@@ -52,6 +55,7 @@ export type ChatModelSelection = {
   model: string;
   credentialName?: string;
   reasoningEffort?: "low" | "medium" | "high";
+  webSearch?: boolean;
 };
 
 /**
@@ -166,6 +170,7 @@ export const createAssistantUIModelAdapter = ({
   getConversationId,
   onRequestComplete,
   onSuggestionsUpdate,
+  releaseRunAtDone = false,
   onTextDelta,
   onTextComplete,
   onRunStart,
@@ -189,9 +194,11 @@ export const createAssistantUIModelAdapter = ({
   // resume reports the earlier decisions too. Resubmitting a consumed decision
   // is rejected by the server, so only send each one once.
   const submittedApprovalIds = new Set<string>();
+  let latestRunId = 0;
 
   return {
     async *run(options) {
+      const runId = ++latestRunId;
       onRunStart?.();
       // Persisted chats own their history server-side (checkpoint + DB); only
       // temporary chats rely on the client sending the prior turns.
@@ -270,6 +277,22 @@ export const createAssistantUIModelAdapter = ({
         yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
       };
 
+      let streamEnd: Promise<void> | null = null;
+      const releaseAtDone = (frames: AsyncGenerator<string>) =>
+        releaseRunAtDone
+          ? untilDone(frames, (rest) => {
+              streamEnd = readFollowUps(rest).then((suggestions) => {
+                if (suggestions && runId === latestRunId) onSuggestionsUpdate?.(suggestions);
+              });
+            })
+          : frames;
+      // IMPORTANT NOTE: the server saves the reply's files only after its stream
+      // closes, so turn-end refreshes wait for a released stream to finish.
+      const afterStreamEnd = (callback: () => void) => {
+        if (streamEnd) void streamEnd.then(callback);
+        else callback();
+      };
+
       // Processes normalized SSE frames into the assistant message content.
       // Shared by regular completions and approval resumes.
       async function* processFrames(frames: AsyncGenerator<string>) {
@@ -321,46 +344,51 @@ export const createAssistantUIModelAdapter = ({
             submittedApprovalIds.add(decision.toolCallId);
           }
           yield* processFrames(
-            streamApprovalDecisions(
-              {
-                flowVersionId: flowVersionId ?? "",
-                conversationId: conversationId ?? "",
-                isTempChat,
-                decisions: approvalDecisions,
-              },
-              options.abortSignal,
-              getExtraHeaders?.(),
+            releaseAtDone(
+              streamApprovalDecisions(
+                {
+                  flowVersionId: flowVersionId ?? "",
+                  conversationId: conversationId ?? "",
+                  isTempChat,
+                  decisions: approvalDecisions,
+                },
+                options.abortSignal,
+                getExtraHeaders?.(),
+              ),
             ),
           );
         } else {
           const modelSelection = getModelSelection?.();
           yield* processFrames(
-            streamChatCompletion(
-              {
-                flowVersionId,
-                conversationId: conversationId || null,
-                threadMessages,
-                userInput: userInputText,
-                files: files.length > 0 ? files : undefined,
-                isTempChat,
-                modelProvider: modelSelection?.provider,
-                modelId: modelSelection?.model,
-                credentialName: modelSelection?.credentialName,
-                reasoningEffort: modelSelection?.reasoningEffort,
-                destinations: getDestinations?.(),
-                keepUserTurns: getKeepUserTurns?.(
-                  options.messages.filter((message) => message.role === "user").length - 1,
-                ),
-              },
-              options.abortSignal,
-              getExtraHeaders?.(),
+            releaseAtDone(
+              streamChatCompletion(
+                {
+                  flowVersionId,
+                  conversationId: conversationId || null,
+                  threadMessages,
+                  userInput: userInputText,
+                  files: files.length > 0 ? files : undefined,
+                  isTempChat,
+                  modelProvider: modelSelection?.provider,
+                  modelId: modelSelection?.model,
+                  credentialName: modelSelection?.credentialName,
+                  reasoningEffort: modelSelection?.reasoningEffort,
+                  webSearch: modelSelection?.webSearch,
+                  destinations: getDestinations?.(),
+                  keepUserTurns: getKeepUserTurns?.(
+                    options.messages.filter((message) => message.role === "user").length - 1,
+                  ),
+                },
+                options.abortSignal,
+                getExtraHeaders?.(),
+              ),
             ),
           );
           const fullText = builder.parts
             .filter((part) => (part as { type?: string }).type === "text")
             .map((part) => (part as { text?: string }).text ?? "")
             .join("");
-          onTextComplete?.(fullText);
+          afterStreamEnd(() => onTextComplete?.(fullText));
         }
 
         // Ensure at least a placeholder is rendered.
@@ -402,7 +430,7 @@ export const createAssistantUIModelAdapter = ({
         }
         yield { content: builder.parts.map((part) => ({ ...part })) as any[] };
       } finally {
-        onRunFinished?.();
+        afterStreamEnd(() => onRunFinished?.());
       }
     },
   };

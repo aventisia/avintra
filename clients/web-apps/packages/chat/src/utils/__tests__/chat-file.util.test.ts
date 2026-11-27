@@ -27,6 +27,20 @@ describe("findChatFile", () => {
     expect(findChatFile(svg)?.name).toBe("Intake flow.svg");
     expect(findChatFile(md)?.name).toBe("Vendor checklist.md");
     expect(findChatFile("```csv\na,b\n```")?.name).toBe("Data.csv");
+    expect(findChatFile("```svg\n<svg></svg>\n```")?.name).toBe("Diagram.svg");
+  });
+
+  it("names a file after the name on its fence line, adding the type's extension", () => {
+    const named =
+      "Saved as packing-list.md:\n```markdown packing-list.md\n# Weekend trip\n- socks\n```";
+    expect(findChatFile(named)).toMatchObject({
+      name: "packing-list.md",
+      body: "# Weekend trip\n- socks",
+    });
+    expect(textBeforeChatFile(named)).toBe("Saved as packing-list.md:");
+    expect(findChatFile("```csv sales q3\na,b\n```")?.name).toBe("sales q3.csv");
+    const longName = `${"a".repeat(79)} b`;
+    expect(findChatFile(`\`\`\`csv ${longName}\na,b\n\`\`\``)?.name).toBe(`${"a".repeat(79)}.csv`);
   });
 
   it("marks a fence that is still streaming as incomplete and hides it", () => {
@@ -77,6 +91,53 @@ describe("findChatFile", () => {
     const text = "```python\nprint(1)\n```\n```chart\n{}\n```\n```blueprint\n{}\n```";
     expect(findChatFile(text)).toBeNull();
     expect(textBeforeChatFile(text)).toBe(text.trim());
+  });
+
+  it("finds a jsx fence with the default name", () => {
+    const text = "Here you go\n```jsx\nexport default () => null;\n```";
+    expect(findChatFile(text)).toEqual({
+      name: "Generated App.jsx",
+      contentType: "text/jsx",
+      body: "export default () => null;",
+      isComplete: true,
+    });
+  });
+
+  it("names a jsx file from the fence line", () => {
+    expect(findChatFile("```jsx budget.jsx\nexport default () => null;\n```")?.name).toBe(
+      "budget.jsx",
+    );
+    expect(findChatFile("```jsx budget\nexport default () => null;\n```")?.name).toBe("budget.jsx");
+  });
+
+  it("streams an unterminated jsx fence", () => {
+    expect(findChatFile("```jsx\nexport default () => <")).toMatchObject({
+      contentType: "text/jsx",
+      body: "export default () => <",
+      isComplete: false,
+    });
+  });
+
+  it("keeps prose after a jsx fence out of the body", () => {
+    const text = "```jsx\nexport default () => null;\n```\nTry the buttons.";
+    expect(findChatFile(text)?.body).toBe("export default () => null;");
+    expect(textAfterChatFile(text)).toBe("Try the buttons.");
+  });
+
+  it("does not store jsx written inside another fence language", () => {
+    expect(findChatFile("```js\nexport default () => null;\n```")).toBeNull();
+  });
+
+  it("keeps a finished jsx example without an export default inline", () => {
+    const text = "Like this:\n```jsx\nuseEffect(() => {}, []);\n```\nThat runs once.";
+    expect(findChatFile(text)).toBeNull();
+    expect(textBeforeChatFile(text)).toBe(text);
+  });
+
+  it("stores the jsx app that follows a jsx example", () => {
+    const text = "```jsx\n<Button />\n```\nFull app:\n```jsx\nexport default () => null;\n```";
+    expect(findChatFile(text)?.body).toBe("export default () => null;");
+    expect(textBeforeChatFile(text)).toBe("```jsx\n<Button />\n```\nFull app:");
   });
 
   it("takes a bare HTML document as a file", () => {

@@ -58,6 +58,11 @@ public class StreamingChatRequestDto
     public string? ReasoningEffort { get; set; }
 
     /// <summary>
+    /// Landing chat only: lets a model that supports it search the web for this message.
+    /// </summary>
+    public bool WebSearch { get; set; }
+
+    /// <summary>
     /// Workspace pages the user can open, offered to the landing chat's navigate tool.
     /// Advisory only: the client re-checks every route before showing it.
     /// </summary>

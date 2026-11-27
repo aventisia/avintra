@@ -1,0 +1,23 @@
+meta {
+  name: Share chat artifact
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-artifacts/{{CHAT_ARTIFACT_ID}}/share
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("a share token is returned", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.be.a("string").and.not.empty;
+  });
+  if (res.getStatus() == 200) bru.setVar("CHAT_ARTIFACT_SHARE_TOKEN", res.getBody().data);
+}

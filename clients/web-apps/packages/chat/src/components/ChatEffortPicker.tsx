@@ -56,7 +56,7 @@ export const ChatEffortPicker = ({ value, onChange }: ChatEffortPickerProps) => 
     <Popover>
       <PopoverTrigger
         aria-label={`Effort: ${current.label}`}
-        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
+        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
       >
         <BrainIcon
           weight={value ? "fill" : "regular"}

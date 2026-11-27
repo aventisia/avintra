@@ -1,0 +1,26 @@
+meta {
+  name: Pin landing conversation
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/landing/pin
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "id": "{{ACTIONS_CONVERSATION_ID}}", "isPinned": true }
+}
+
+script:post-response {
+  test("conversation is pinned", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}

@@ -21,4 +21,10 @@ public class ChatProject : BaseEntity, IMustHaveTenant
     /// </summary>
     [MaxLength(100)]
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the instructions applied to every chat in the project. Max-4000 characters.
+    /// </summary>
+    [MaxLength(4000)]
+    public string? Instructions { get; set; }
 }

@@ -1,0 +1,29 @@
+meta {
+  name: Restore chat profile
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "customInstructions": "", "memoryNotes": "" }
+}
+
+script:pre-request {
+  req.setBody({ customInstructions: bru.getVar("CHAT_PROFILE_INSTRUCTIONS") ?? "", memoryNotes: bru.getVar("CHAT_PROFILE_MEMORY") ?? "" });
+}
+
+script:post-response {
+  test("profile is restored", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

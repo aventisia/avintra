@@ -1,0 +1,23 @@
+meta {
+  name: Get chat projects
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the new project is listed", function() {
+    expect(res.getStatus()).to.equal(200);
+    const ids = res.getBody().data.map((p) => p.id);
+    expect(ids).to.include(bru.getVar("CHAT_PROJECT_ID"));
+  });
+}

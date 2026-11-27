@@ -44,6 +44,30 @@ describe("stream frames → parts", () => {
     expect(parts[1]).toEqual({ type: "text", text: "Model unavailable" });
   });
 
+  it("adds a sources part after the text and replays it from recorded frames", () => {
+    const source = { title: "Docs", url: "https://docs.dev/a", domain: "docs.dev" };
+    const parts = buildContentPartsFromFrames([
+      { type: "delta", output: "Answer [1]." },
+      { type: "sources", output: [source, { title: "bad" }, 7] },
+      { type: "done", output: "Answer [1]." },
+    ]);
+
+    expect(parts).toEqual([
+      { type: "text", text: "Answer [1]." },
+      { type: "data", name: "sources", data: [source] },
+    ]);
+  });
+
+  it("ignores a malformed sources frame", () => {
+    const parts = buildContentPartsFromFrames([
+      { type: "delta", output: "Hi" },
+      { type: "sources", output: "nope" },
+      { type: "sources", output: [{ title: "no url" }] },
+    ]);
+
+    expect(parts).toEqual([{ type: "text", text: "Hi" }]);
+  });
+
   it("uses the done text when no deltas streamed", () => {
     expect(buildContentPartsFromFrames([{ type: "done", output: "Hi" }])).toEqual([
       { type: "text", text: "Hi" },

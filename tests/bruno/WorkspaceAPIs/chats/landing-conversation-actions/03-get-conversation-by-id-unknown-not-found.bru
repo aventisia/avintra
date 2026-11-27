@@ -1,0 +1,19 @@
+meta {
+  name: Get unknown conversation not found
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/00000000-0000-0000-0000-000000000001
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("an unknown conversation is not found", function() { expect(res.getStatus()).to.equal(404); });
+}

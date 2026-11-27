@@ -10,7 +10,7 @@ export const ChatBlueprint = ({ data }: { data: unknown }) => {
   return (
     <section
       aria-label={`Blueprint: ${blueprint.title}`}
-      className="my-3 rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none dark:bg-fill/40"
+      className="my-3 rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none dark:bg-fill/40"
     >
       <div className="flex items-start gap-3 border-b border-line px-4 py-3.5">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">

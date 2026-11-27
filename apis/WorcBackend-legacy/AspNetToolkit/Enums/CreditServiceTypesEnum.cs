@@ -54,6 +54,11 @@ public enum CreditServicesEnum
     Claude45HaikuOutput,
     Claude45HaikuCached,
 
+    CustomInputService,
+    CustomOutputService,
+    CustomCacheReadService,
+    CustomCacheWriteService,
+
     // Embedding models
     OpenAIEmbeddingAda002,
     OpenAIEmbedding3Small,

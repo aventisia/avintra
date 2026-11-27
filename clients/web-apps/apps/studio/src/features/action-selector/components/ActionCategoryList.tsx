@@ -11,6 +11,8 @@ import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
 import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
 import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
 import { useReplaceNode } from "@/hooks/useReplaceNode";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { isNodeInsideLoopBody } from "@/utils/is-node-inside-loop-body.util";
 
 import { CUSTOM_TOOLS_L1_LABEL } from "../constants/custom-tools.constant";
 import { triggersList } from "../constants/trigger-data";
@@ -93,8 +95,36 @@ export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryLis
   const rightRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const backButtonRef = useRef<HTMLButtonElement | null>(null);
 
+  const { nodes, edges } = useReactFlowExtStore(
+    useShallow((state) => ({ nodes: state.nodes, edges: state.edges })),
+  );
+
+  const showLoopControls = useMemo(() => {
+    if (origin === "plusNode") return isNodeInsideLoopBody(originId, nodes, edges);
+    if (origin === "PlusEdgeLabel") {
+      const edge = edges.find((e) => e.id === originId);
+      if (!edge) return false;
+      return (
+        isNodeInsideLoopBody(edge.source, nodes, edges) ||
+        isNodeInsideLoopBody(edge.target, nodes, edges)
+      );
+    }
+    return false;
+  }, [origin, originId, nodes, edges]);
+
   const activeCategory = actionCategories[leftIndex];
-  const activeActions = activeCategory?.actions?.filter((a) => !a.hidden) || [];
+
+  const activeActions = useMemo(
+    () =>
+      (actionCategories[leftIndex]?.actions ?? [])
+        .filter((a) => !a.hidden)
+        .map((a) =>
+          !showLoopControls && (a.type === "breakLoopNode" || a.type === "continueLoopNode")
+            ? { ...a, disabled: true, disabledHint: "Loop only" }
+            : a,
+        ),
+    [actionCategories, leftIndex, showLoopControls],
+  );
 
   const addFirstNodeToFlow = useAddFirstNodeToFlow();
   const addNodeFromEdge = useAddNodeFromEdge();

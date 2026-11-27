@@ -1,0 +1,26 @@
+meta {
+  name: Add file with a disallowed type
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}/files
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"name": "data.exe", "content": "hello"}
+}
+
+script:post-response {
+  test("a disallowed extension is refused", function() {
+    expect(res.getStatus()).to.equal(400);
+    expect(String(res.getBody())).to.contain("txt");
+  });
+}

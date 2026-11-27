@@ -9,6 +9,12 @@ type State = {
 
   actionSelectorData: PrimaryCategoryType[];
 
+  /**
+   * The full catalog for the deployment, including library integrations the
+   * tenant has not enabled, for metadata lookups outside the picker.
+   */
+  unfilteredActionSelectorData: PrimaryCategoryType[];
+
   /** Origin from where node selector popover is triggered */
   origin: ActionSelectorOriginType;
 
@@ -37,6 +43,7 @@ type State = {
 
 type Actions = {
   setActionSelectorData: (data: PrimaryCategoryType[]) => void;
+  setUnfilteredActionSelectorData: (data: PrimaryCategoryType[]) => void;
   setOrigin: (origin: ActionSelectorOriginType, originId: string) => void;
   setPrimaryCategoryLabel: (primaryCategoryLabel: string | null) => void;
   setActionCategory: (actionCategory: string) => void;
@@ -48,6 +55,7 @@ type Actions = {
 export const useNodeSelectorStore = create<State & Actions>((set) => ({
   showDialog: false,
   actionSelectorData: [],
+  unfilteredActionSelectorData: [],
   origin: "plusFirstNode",
   originId: "",
   primaryCategoryLabel: null,
@@ -60,6 +68,11 @@ export const useNodeSelectorStore = create<State & Actions>((set) => ({
   setActionSelectorData: (data) =>
     set(() => ({
       actionSelectorData: data,
+    })),
+
+  setUnfilteredActionSelectorData: (data) =>
+    set(() => ({
+      unfilteredActionSelectorData: data,
     })),
 
   setOrigin: (origin, originId) =>

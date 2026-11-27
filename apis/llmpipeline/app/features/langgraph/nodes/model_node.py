@@ -4,6 +4,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.logger import logger
+from app.features.langgraph.providers.web_search import without_search_blocks
 from app.features.langgraph.schemas.graph_state import ChatState
 
 
@@ -31,7 +32,9 @@ def create_model_node(
     """
 
     async def call_model(state: ChatState):
-        messages = _apply_short_term_window(state["messages"], max_short_term_turns)
+        messages = without_search_blocks(
+            _apply_short_term_window(state["messages"], max_short_term_turns)
+        )
 
         if skill_prompt:
             messages = _inject_skill_prompt(messages, skill_prompt)
@@ -47,6 +50,7 @@ def create_model_node(
             response = AIMessage(content=json.dumps(response, ensure_ascii=False))
 
         if isinstance(response, AIMessage):
+            response = _with_text_blocks(response)
             logger.debug(
                 "LLM response generated. tool_calls=%s",
                 bool(response.tool_calls),
@@ -57,6 +61,35 @@ def create_model_node(
         }
 
     return call_model
+
+
+def _with_text_blocks(response: AIMessage) -> AIMessage:
+    # IMPORTANT NOTE: a model that thinks while the request sets no thinking
+    # option streams text as bare strings beside dict thinking blocks, so the
+    # merged content reads ["", {thinking}, "text"]. Persistence drops bare
+    # strings, and Anthropic rejects an empty or whitespace-only text block
+    # with a 400 on the next turn.
+    if not isinstance(response.content, list):
+        return response
+    blocks = [
+        block
+        for block in (
+            {"type": "text", "text": part} if isinstance(part, str) else part
+            for part in response.content
+        )
+        if not _is_blank_text_block(block)
+    ]
+    if blocks == response.content:
+        return response
+    return response.model_copy(update={"content": blocks})
+
+
+def _is_blank_text_block(block) -> bool:
+    return (
+        isinstance(block, dict)
+        and block.get("type") == "text"
+        and not str(block.get("text") or "").strip()
+    )
 
 
 def _inject_skill_prompt(messages, skill_prompt: str) -> list:
@@ -101,9 +134,10 @@ def _apply_short_term_window(messages, max_short_term_turns: int | None) -> list
     kept, de-duplicated by content, and moved to the front, with or without a limit.
     Older turns are dropped without summarization. ``None`` or ``0`` means no limit.
 
-    IMPORTANT NOTE: the system prompt is re-sent on every request and accumulates
-    mid-conversation in the checkpoint; Anthropic rejects system messages that follow
-    a user or assistant turn, so they are hoisted even when nothing is trimmed (#623).
+    IMPORTANT NOTE: system messages can sit mid-conversation in the checkpoint (the
+    request prompt replaces its earlier copy by id, but id-less ones still append);
+    Anthropic rejects system messages that follow a user or assistant turn, so they
+    are hoisted even when nothing is trimmed (#623).
     """
 
     messages = list(messages)

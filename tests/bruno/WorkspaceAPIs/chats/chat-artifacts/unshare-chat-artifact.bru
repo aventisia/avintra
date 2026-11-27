@@ -1,0 +1,22 @@
+meta {
+  name: Unshare chat artifact
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-artifacts/{{CHAT_ARTIFACT_ID}}/unshare
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("sharing is stopped", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}

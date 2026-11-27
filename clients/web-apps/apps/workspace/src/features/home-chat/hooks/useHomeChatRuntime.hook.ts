@@ -5,6 +5,7 @@ import {
   createAssistantUIModelAdapter,
 } from "@avplatform/assistant-chat";
 import {
+  type ChatMention,
   createChatAttachmentAdapter,
   createConversationHistoryAdapter,
   createConversationIdAllocator,
@@ -14,22 +15,30 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { getChatArtifact } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
 import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { getMessages, setMessageFeedback } from "../apis/conversation-message.apis";
 import { createConversation } from "../apis/conversation.apis";
 import { HOME_CHAT_HISTORY_QUERY_KEY } from "../constants/home-chat.constant";
+import { withMentionedFiles } from "../utils/mentioned-files.util";
 
 type HomeChatRuntimeInput = {
   conversationId?: string;
+  /** A temporary chat sends its earlier turns with each message and is never saved. */
+  isTemporary?: boolean;
   onConversationCreated: (conversationId: string) => void;
   onConversationMissing: () => void;
   /** Read on every send; null lets the server pick the tenant's default model. */
   getModelSelection: () => ChatModelSelection | null;
   /** Pages the assistant may send the user to, read on every send. */
   getDestinations: () => readonly ChatDestination[];
+  /** Files the user can `@`-mention, read on every send. */
+  getMentions: () => readonly ChatMention[];
   /** Receives each finished reply's full text. */
   onReplyComplete: (text: string) => void;
+  /** Receives the suggested next messages for the latest reply; an empty list clears them. */
+  onSuggestions: (suggestions: readonly string[]) => void;
 };
 
 /**
@@ -39,11 +48,14 @@ type HomeChatRuntimeInput = {
  */
 export const useHomeChatRuntime = ({
   conversationId,
+  isTemporary = false,
   onConversationCreated,
   onConversationMissing,
   getModelSelection,
   getDestinations,
+  getMentions,
   onReplyComplete,
+  onSuggestions,
 }: HomeChatRuntimeInput) => {
   const isMountedRef = useRef(false);
   useEffect(() => {
@@ -81,17 +93,31 @@ export const useHomeChatRuntime = ({
   );
 
   const [adapter] = useState(() =>
-    withAttachmentText(
-      createAssistantUIModelAdapter({
-        getConversationId,
-        getExtraHeaders: getSpaceHeaders,
-        getModelSelection,
-        getDestinations,
-        getKeepUserTurns,
-        onTextDelta: () => refreshHistory(true),
-        onTextComplete: onReplyComplete,
-        onRunFinished: () => refreshHistory(false),
-      }),
+    withMentionedFiles(
+      withAttachmentText(
+        createAssistantUIModelAdapter({
+          getConversationId,
+          isTempChat: isTemporary,
+          getExtraHeaders: getSpaceHeaders,
+          getModelSelection,
+          getDestinations,
+          getKeepUserTurns: isTemporary ? undefined : getKeepUserTurns,
+          onTextDelta: () => refreshHistory(true),
+          onTextComplete: onReplyComplete,
+          releaseRunAtDone: true,
+          onSuggestionsUpdate: onSuggestions,
+          onRunStart: () => onSuggestions([]),
+          onRunFinished: () => refreshHistory(false),
+        }),
+      ),
+      {
+        getMentions,
+        loadFile: async (id) => {
+          const file = (await getChatArtifact(id)).data;
+          return { name: file.name, contentType: file.contentType, dataUrl: file.blobPath };
+        },
+        onLoadFailed: (name) => toast.error(`Couldn't read ${name}; sent without it`),
+      },
     ),
   );
 

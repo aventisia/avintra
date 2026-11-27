@@ -30,7 +30,7 @@ export const ChatStarters = ({ groups, onPick }: ChatStartersProps) => {
             aria-controls={label === activeLabel ? listId : undefined}
             onClick={() => setActiveLabel(label === activeLabel ? undefined : label)}
             className={cn(
-              "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
+              "inline-flex h-9 items-center gap-2 rounded-lg border px-3.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus",
               label === activeLabel
                 ? "border-line-strong bg-sunken text-ink dark:bg-fill"
                 : "border-line text-ink-2 hover:bg-hover hover:text-ink",

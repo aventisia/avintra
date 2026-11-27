@@ -1,0 +1,25 @@
+meta {
+  name: Add file with control bytes
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}/files
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"name": "bin.txt", "content": "a\u0000b"}
+}
+
+script:post-response {
+  test("control bytes are refused", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+}

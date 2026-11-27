@@ -137,6 +137,14 @@ def is_community_deployment() -> bool:
     )
 
 
+def is_community_deployment() -> bool:
+    """True when the deployment runs as Community (no on-prem tenant identity configured)."""
+
+    return not (
+        settings.ON_PREM_TENANT_ID.strip() and settings.ON_PREM_INSTANCE_KEY.strip()
+    )
+
+
 def workspace_api_url() -> str:
     """The WorkspaceAPIs base URL, including the ``/api`` path base."""
 

@@ -1,0 +1,22 @@
+meta {
+  name: Delete chat project
+  type: http
+  seq: 30
+}
+
+delete {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects/{{CHAT_PROJECT_ID}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("project is deleted", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data).to.equal(true);
+  });
+}

@@ -1,0 +1,26 @@
+meta {
+  name: Rename without instructions keeps them
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {"id": "{{CHAT_PROJECT_ID}}", "name": "Renamed again"}
+}
+
+script:post-response {
+  test("a name-only update leaves instructions alone", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.instructions).to.equal("Always answer in French.");
+  });
+}

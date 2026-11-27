@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { useComposerDraft } from "../hooks/useComposerDraft.hook";
 import { CHAT_ATTACHMENT_LIMIT } from "../utils/chat-attachment-adapter.util";
 import { ChatAttachment } from "./ChatAttachment";
 import { type ChatCommand, ChatCommandMenu } from "./ChatCommandMenu";
@@ -26,13 +27,15 @@ type ChatComposerProps = {
   commands?: readonly ChatCommand[];
   /** Offered when the message contains `@`. */
   mentions?: readonly ChatMention[];
+  /** Keeps unsent text across reloads under this key; without it the draft is not kept. */
+  draftKey?: string;
 };
 
 const UNSUPPORTED_FILE =
   "That file type isn't supported. Attach images, PDFs, text, Word or Excel files.";
 
-const roundButtonClass =
-  "inline-flex size-9 items-center justify-center rounded-full transition-[background-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface active:scale-95";
+const SEND_STOP_BUTTON_CLASS =
+  "inline-flex size-9 items-center justify-center rounded-lg transition-[background-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface active:scale-95";
 
 /**
  * Auto-growing message box that takes dropped, pasted or picked files. Enter
@@ -47,8 +50,10 @@ export const ChatComposer = ({
   transcribe,
   commands,
   mentions,
+  draftKey,
 }: ChatComposerProps) => {
   const aui = useAui();
+  useComposerDraft(draftKey);
   const attachmentCount = useAuiState((s) => s.composer.attachments.length);
   const isOverLimit = attachmentCount > CHAT_ATTACHMENT_LIMIT;
   const [attachmentError, setAttachmentError] = useState<string>();
@@ -92,7 +97,7 @@ export const ChatComposer = ({
           <ChatCommandMenu commands={commands} inputRef={inputRef} />
         )}
         {mentions && mentions.length > 0 && <ChatMentionMenu mentions={mentions} />}
-        <ComposerPrimitive.AttachmentDropzone className="flex w-full flex-col rounded-[1.375rem] border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_32px_-16px_rgb(0_0_0/0.18)] transition-[border-color,box-shadow] focus-within:border-line-strong data-[dragging=true]:border-primary data-[dragging=true]:ring-4 data-[dragging=true]:ring-primary/15 dark:bg-surface dark:shadow-[0_0_0_1px_rgb(255_255_255/0.02),0_16px_40px_-20px_rgb(0_0_0/0.8)]">
+        <ComposerPrimitive.AttachmentDropzone className="flex w-full flex-col rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_32px_-16px_rgb(0_0_0/0.18)] transition-[border-color,box-shadow] focus-within:border-line-strong data-[dragging=true]:border-primary data-[dragging=true]:ring-4 data-[dragging=true]:ring-primary/15 dark:bg-surface dark:shadow-[0_0_0_1px_rgb(255_255_255/0.02),0_16px_40px_-20px_rgb(0_0_0/0.8)]">
           <AuiIf condition={(s) => s.composer.attachments.length > 0}>
             <div className="flex flex-wrap gap-2 px-3 pt-3">
               <ComposerPrimitive.Attachments>
@@ -107,7 +112,7 @@ export const ChatComposer = ({
             placeholder={placeholder}
             aria-label="Message"
             onKeyDown={recallLastMessage}
-            className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-5 pb-1 pt-4 text-base leading-6 text-ink outline-none placeholder:text-muted-foreground"
+            className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-5 pb-1 pt-4 text-[14.5px] leading-6 text-ink outline-none placeholder:text-muted-foreground"
           />
           {notice && (
             <p role="alert" className="px-5 pb-1 text-sm text-bad">
@@ -118,7 +123,7 @@ export const ChatComposer = ({
             <ComposerPrimitive.AddAttachment asChild>
               <ChatIconButton
                 label={`Attach up to ${CHAT_ATTACHMENT_LIMIT} images, PDFs, text, Word or Excel files (10 MB each)`}
-                className="size-9 rounded-full"
+                className="size-9 rounded-lg"
               >
                 <PaperclipIcon />
               </ChatIconButton>
@@ -130,7 +135,7 @@ export const ChatComposer = ({
                 <ComposerPrimitive.Send
                   disabled={isOverLimit}
                   aria-label="Send message"
-                  className={`${roundButtonClass} bg-primary text-white hover:bg-primary-hover disabled:pointer-events-none disabled:bg-fill disabled:text-muted-foreground`}
+                  className={`${SEND_STOP_BUTTON_CLASS} bg-primary text-white hover:bg-primary-hover disabled:pointer-events-none disabled:bg-fill disabled:text-muted-foreground`}
                 >
                   <ArrowUpIcon weight="bold" className="size-4" />
                 </ComposerPrimitive.Send>
@@ -138,7 +143,7 @@ export const ChatComposer = ({
               <AuiIf condition={(s) => s.thread.isRunning}>
                 <ComposerPrimitive.Cancel
                   aria-label="Stop generating"
-                  className={`${roundButtonClass} bg-ink text-surface hover:bg-ink-2`}
+                  className={`${SEND_STOP_BUTTON_CLASS} bg-ink text-surface hover:bg-ink-2`}
                 >
                   <SquareIcon weight="fill" className="size-3.5" />
                 </ComposerPrimitive.Cancel>

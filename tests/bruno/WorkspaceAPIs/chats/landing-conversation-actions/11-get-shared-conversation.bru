@@ -1,0 +1,25 @@
+meta {
+  name: Get shared conversation
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/conversations/shared/{{ACTIONS_SHARE_TOKEN}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("the shared conversation is readable", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.id).to.equal(bru.getVar("ACTIONS_CONVERSATION_ID"));
+  });
+  test("the conversation reports that it is shared", function() {
+    expect(res.getBody().data.isShared).to.equal(true);
+  });
+}

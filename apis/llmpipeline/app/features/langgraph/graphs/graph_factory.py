@@ -31,6 +31,11 @@ from app.features.langgraph.skills.skill_loader import (
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.langgraph.tools.tool_resolver import resolve_tools
+from app.features.langgraph.providers.web_search import (
+    WEB_SEARCH_INSTRUCTION,
+    web_search_enabled,
+    web_search_tool,
+)
 from app.features.llm_providers.chat_agent_response_schema import (
     CHAT_AGENT_RESPONSE_SCHEMA,
 )
@@ -224,6 +229,12 @@ def _create_agent_selector_node(
     return identify_tools_and_skills
 
 
+def _prepend_instruction(instruction: str | None, prompt: str | None) -> str | None:
+    if not instruction:
+        return prompt
+    return f"{instruction}\n\n{prompt}" if prompt else instruction
+
+
 def _create_dynamic_model_node(
     model: BaseChatModel,
     tool_registry: ToolRegistry,
@@ -251,14 +262,21 @@ def _create_dynamic_model_node(
             current_request,
         )
 
+        search_enabled = web_search_enabled(current_request)
+        bound_tools = (
+            [*tools, web_search_tool(current_request.provider)]
+            if search_enabled
+            else tools
+        )
+
         # Enable tool calling when tools are available
-        if tools:
+        if bound_tools:
             logger.debug(
                 "Binding selected tools: %s",
-                [tool.name for tool in tools],
+                [getattr(tool, "name", tool) for tool in bound_tools],
             )
 
-            node_model = node_model.bind_tools(tools)
+            node_model = node_model.bind_tools(bound_tools)
 
         # Inject selected skill instructions into system prompt
         skill_prompt = build_skill_prompt(selected_skills)
@@ -268,21 +286,13 @@ def _create_dynamic_model_node(
         # block. This is independent of skill selection so the agent reliably
         # uses retrieved KB content even when no skill is applied.
         kb_directive = _build_kb_directive(current_request)
-        if kb_directive:
-            if skill_prompt:
-                skill_prompt = f"{kb_directive}\n\n{skill_prompt}"
-            else:
-                skill_prompt = kb_directive
+        skill_prompt = _prepend_instruction(kb_directive, skill_prompt)
 
         # When tools are bound, add a strong instruction that the model must
         # actually call them for matching requests rather than simulating the
         # action or apologizing.
         tool_instruction = _build_tool_instruction(tools)
-        if tool_instruction:
-            if skill_prompt:
-                skill_prompt = f"{tool_instruction}\n\n{skill_prompt}"
-            else:
-                skill_prompt = tool_instruction
+        skill_prompt = _prepend_instruction(tool_instruction, skill_prompt)
 
         # A denial recorded earlier in the conversation otherwise makes the
         # model refuse to act even when the user explicitly asks again. When
@@ -292,11 +302,9 @@ def _create_dynamic_model_node(
             state.get("messages"),
             tools,
         )
-        if retry_instruction:
-            if skill_prompt:
-                skill_prompt = f"{retry_instruction}\n\n{skill_prompt}"
-            else:
-                skill_prompt = retry_instruction
+        skill_prompt = _prepend_instruction(retry_instruction, skill_prompt)
+        if search_enabled:
+            skill_prompt = _prepend_instruction(WEB_SEARCH_INSTRUCTION, skill_prompt)
 
         # Structured output cannot be combined with tool calling
         # because both control the model response format

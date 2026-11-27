@@ -1,46 +1,34 @@
 import {
   ChatHistory,
-  type ChatHistoryItem,
+  ChatIconButton,
   ChatTitle,
   printChat,
   toChatMarkdown,
 } from "@avplatform/chat";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { cn } from "@avplatform/ui/lib";
 import { downloadBlob } from "@avplatform/ui/utils";
+import { EyeSlashIcon, ShareNetworkIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { getMessages } from "../apis/conversation-message.apis";
-import { shareConversation, unshareConversation } from "../apis/conversation.apis";
+import { HOME_CHAT_TEMPORARY_PARAM } from "../constants/home-chat.constant";
+import { useHomeChatActiveChat } from "../hooks/useHomeChatActiveChat.hook";
 import { useHomeChatHistory } from "../hooks/useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "../hooks/useHomeChatHistoryActions.hook";
 import { useHomeChatHistoryPanel } from "../hooks/useHomeChatHistoryPanel.hook";
 import { useHomeChatSession } from "../hooks/useHomeChatSession.hook";
+import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { HomeChatFrame } from "./HomeChatFrame";
 import { HomeChatPreferencesDialog } from "./HomeChatPreferencesDialog";
+import { HomeChatProjectDialog } from "./HomeChatProjectDialog";
+import { HomeChatShareDialog } from "./HomeChatShareDialog";
+import { HomeChatSharedLinksDialog } from "./HomeChatSharedLinksDialog";
 import { HomeChatThread } from "./HomeChatThread";
 
-const copyShareLink = async (id: string) => {
-  try {
-    const token = (await shareConversation(id)).data;
-    await navigator.clipboard.writeText(`${window.location.origin}/s/${token}`);
-    toast.success("Read-only link copied");
-  } catch {
-    toast.error("Couldn't create the share link");
-  }
-};
-
-const stopSharing = async (id: string) => {
-  try {
-    await unshareConversation(id);
-    toast.success("Sharing stopped");
-  } catch {
-    toast.error("Couldn't stop sharing");
-  }
-};
-
-const exportChat = async ({ id, title }: ChatHistoryItem) => {
+const exportChat = async ({ id, title }: HomeChatActiveChat) => {
   try {
     const markdown = toChatMarkdown(title, (await getMessages(id)).data);
     const fileName = `${title.replace(/[\\/:*?"<>|]+/g, "-").trim() || "Chat"}.md`;
@@ -56,10 +44,19 @@ export const HomeChatLayout = () => {
   const { sessionKey, ...session } = useHomeChatSession();
   const navigate = useNavigate();
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [areSharedLinksOpen, setAreSharedLinksOpen] = useState(false);
   const titles = useHomeChatHistory(false);
   const { renameChat } = useHomeChatHistoryActions();
-  const { props: historyProps, confirmDelete } = useHomeChatHistoryPanel();
-  const activeChat = titles.items.find((item) => item.id === session.conversationId);
+  const {
+    props: historyProps,
+    confirmDelete,
+    editingProjectId,
+    closeProjectDialog,
+    sharingChat,
+    openShare,
+    closeShare,
+  } = useHomeChatHistoryPanel();
+  const activeChat = useHomeChatActiveChat(session.conversationId, titles.items, titles.isLoading);
 
   return (
     <>
@@ -68,21 +65,46 @@ export const HomeChatLayout = () => {
         onNewChat={() => navigate("/")}
         onOpenPreferences={() => setIsPreferencesOpen(true)}
         header={
-          // shortcut: the title comes from the loaded history pages, so a chat outside them shows no title; add a get-conversation endpoint if that matters.
-          activeChat && (
-            <ChatTitle
-              key={activeChat.id}
-              title={activeChat.title}
-              onRename={(title) => renameChat(activeChat.id, title)}
-              onExport={() => void exportChat(activeChat)}
-              onExportPdf={() =>
-                printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
-              }
-              onCopyShareLink={() => void copyShareLink(activeChat.id)}
-              onStopSharing={() => void stopSharing(activeChat.id)}
-              onDelete={() => confirmDelete(activeChat)}
-            />
+          session.isTemporary ? (
+            <span className="flex items-center gap-1.5 px-1 text-sm font-medium text-ink">
+              <EyeSlashIcon className="size-4 text-muted-foreground" />
+              Temporary chat
+            </span>
+          ) : (
+            activeChat && (
+              <ChatTitle
+                key={activeChat.id}
+                title={activeChat.title}
+                onRename={(title) => renameChat(activeChat.id, title)}
+                onExport={() => void exportChat(activeChat)}
+                onExportPdf={() =>
+                  printChat(activeChat.title).catch(() => toast.error("Couldn't export this chat"))
+                }
+                onShare={() => openShare(activeChat)}
+                isShared={activeChat.isShared}
+                onDelete={() => confirmDelete(activeChat)}
+              />
+            )
           )
+        }
+        actions={
+          <>
+            {!session.conversationId && (
+              <ChatIconButton
+                label={session.isTemporary ? "Turn off temporary chat" : "Start a temporary chat"}
+                aria-pressed={session.isTemporary}
+                className={cn(session.isTemporary && "bg-hover text-ink")}
+                onClick={() =>
+                  navigate(session.isTemporary ? "/" : `/?${HOME_CHAT_TEMPORARY_PARAM}=1`)
+                }
+              >
+                <EyeSlashIcon />
+              </ChatIconButton>
+            )}
+            <ChatIconButton label="Shared links" onClick={() => setAreSharedLinksOpen(true)}>
+              <ShareNetworkIcon />
+            </ChatIconButton>
+          </>
         }
         renderHistory={(close) => (
           <ChatHistory {...historyProps} onNewChat={() => navigate("/")} onCollapse={close} />
@@ -91,6 +113,9 @@ export const HomeChatLayout = () => {
         <HomeChatThread key={sessionKey} {...session} />
       </HomeChatFrame>
       <HomeChatPreferencesDialog open={isPreferencesOpen} onOpenChange={setIsPreferencesOpen} />
+      <HomeChatProjectDialog projectId={editingProjectId} onClose={closeProjectDialog} />
+      <HomeChatShareDialog chat={sharingChat} onClose={closeShare} />
+      <HomeChatSharedLinksDialog open={areSharedLinksOpen} onOpenChange={setAreSharedLinksOpen} />
     </>
   );
 };

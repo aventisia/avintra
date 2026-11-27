@@ -14,8 +14,9 @@ const iconFor = (contentType: string) =>
 
 const describeType = (contentType: string) =>
   ({
-    "text/html": "Interface",
-    "image/svg+xml": "Image",
+    "text/html": "Web page",
+    "text/jsx": "React app",
+    "image/svg+xml": "Diagram",
     "text/csv": "Spreadsheet",
     "text/tab-separated-values": "Spreadsheet",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Spreadsheet",
@@ -72,7 +73,7 @@ export const ChatFileCard = ({
     </>
   );
   const className =
-    "my-3 flex w-full items-center gap-3.5 rounded-2xl border border-line bg-surface px-4 py-3 text-left shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 motion-reduce:animate-none dark:bg-fill/40";
+    "my-3 flex w-full items-center gap-3.5 rounded-xl border border-line bg-surface px-4 py-3 text-left shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 motion-reduce:animate-none dark:bg-fill/40";
 
   if (!onOpen)
     return (

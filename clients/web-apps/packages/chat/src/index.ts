@@ -1,11 +1,13 @@
 export { ChatHistory } from "./components/ChatHistory";
-export type { ChatHistoryProps } from "./components/ChatHistory";
+export type { ChatHistoryProject, ChatHistoryProps } from "./components/ChatHistory";
 export { ChatSidebarHistory } from "./components/ChatSidebarHistory";
 export type { ChatSidebarHistoryProps } from "./components/ChatSidebarHistory";
 export { ChatTitle } from "./components/ChatTitle";
 export { ChatIconButton } from "./components/ChatIconButton";
 export { ChatEffortPicker } from "./components/ChatEffortPicker";
 export type { ChatEffortPickerProps } from "./components/ChatEffortPicker";
+export { ChatWebSearchToggle } from "./components/ChatWebSearchToggle";
+export type { ChatWebSearchToggleProps } from "./components/ChatWebSearchToggle";
 export { ChatModelPicker } from "./components/ChatModelPicker";
 export type {
   ChatModelGroup,
@@ -23,6 +25,7 @@ export type { ChatBlueprint, ChatDestinationOption } from "./utils/chat-intent.u
 export { withAttachmentText } from "./utils/attachment-text.util";
 export { printArtifact, printChat } from "./utils/print-chat.util";
 export { createChatAttachmentAdapter } from "./utils/chat-attachment-adapter.util";
+export { extractOfficeText } from "./utils/office-text.util";
 export {
   createConversationHistoryAdapter,
   toChatMarkdown,
@@ -31,16 +34,25 @@ export { createConversationIdAllocator } from "./utils/conversation-id-allocator
 export type { ConversationIdAllocatorInput } from "./utils/conversation-id-allocator.util";
 export { ChatFileCard } from "./components/ChatFileCard";
 export { ChatFilePreview } from "./components/ChatFilePreview";
+export { ChatNameInput } from "./components/ChatNameInput";
+export { appendToComposerDraft } from "./utils/composer-draft.util";
+export { focusComposerAtEnd } from "./utils/composer-focus.util";
+export { composeSelectionQuote } from "./utils/selection-quote.util";
+export type { ChatSelectionQuote } from "./utils/selection-quote.util";
 export type { ChatPreviewFile, ChatPreviewVersion } from "./components/ChatFilePreview";
 export type { ChatFileHandlers, ChatFileState } from "./constants/chat-file.constant";
 export { CHAT_FILE_ICONS } from "./constants/chat-file.constant";
+export { PROJECT_NAME_MAX_LENGTH } from "./constants/chat-name.constant";
 export {
   SYNTHESIZED_FILE_TYPES,
   chatFileSize,
   findChatFile,
+  formatFileSize,
+  readDataUrl,
   toDataUrl,
 } from "./utils/chat-file.util";
 export type { ChatFile } from "./utils/chat-file.util";
 export { modelDisplayName } from "./utils/model-name.util";
 export { modelSupportsEffort } from "./utils/model-effort.util";
+export { modelSupportsWebSearch } from "./utils/model-web-search.util";
 export type { ChatEffort } from "./utils/model-effort.util";

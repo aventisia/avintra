@@ -6,10 +6,24 @@ const greetingFor = (hour: number) => {
   return "Good evening";
 };
 
-/** Home's empty-state greeting: time of day, the user's first name, and what Home can do. A saved chat with no messages says so instead. */
-export const HomeChatWelcome = ({ isSavedChat = false }: { isSavedChat?: boolean }) => {
+type HomeChatWelcomeProps = { isSavedChat?: boolean; isTemporary?: boolean };
+
+/** Home's empty-state greeting: time of day, the user's first name, and what Home can do. A saved or temporary chat says what it is instead. */
+export const HomeChatWelcome = ({
+  isSavedChat = false,
+  isTemporary = false,
+}: HomeChatWelcomeProps) => {
   const firstName = useUserSessionStore((state) => state.userSession?.firstName?.trim());
   const greeting = greetingFor(new Date().getHours());
+  if (isTemporary)
+    return (
+      <div className="text-center">
+        <h2 className="text-xl font-semibold tracking-tight text-ink">Temporary chat</h2>
+        <p className="mt-2 text-base text-ink-2">
+          This chat won't appear in your history, and its files aren't saved.
+        </p>
+      </div>
+    );
   if (isSavedChat)
     return (
       <div className="text-center">

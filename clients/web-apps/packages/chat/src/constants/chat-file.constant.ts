@@ -29,6 +29,7 @@ export const ChatFileContext = createContext<ChatFileHandlers | null>(null);
 /** The icon for each type a reply can store as a file, shared by chat cards and the Artifacts page. */
 export const CHAT_FILE_ICONS: Record<string, Icon> = {
   "text/html": FileCodeIcon,
+  "text/jsx": FileCodeIcon,
   "image/svg+xml": FileImageIcon,
   "text/csv": FileCsvIcon,
   "text/tab-separated-values": FileTextIcon,

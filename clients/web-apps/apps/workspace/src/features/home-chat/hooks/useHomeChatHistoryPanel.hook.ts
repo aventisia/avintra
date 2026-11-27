@@ -1,9 +1,10 @@
-import { type ChatHistoryItem, type ChatSidebarHistoryProps } from "@avplatform/chat";
+import { type ChatHistoryProject, type ChatSidebarHistoryProps } from "@avplatform/chat";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useState } from "react";
 import { useHref, useMatch, useNavigate } from "react-router-dom";
 
 import { HOME_CHAT_CONVERSATION_ROUTE } from "../constants/home-chat.constant";
+import type { HomeChatActiveChat } from "../types/home-chat-active-chat.type";
 import { useChatProjects } from "./useChatProjects.hook";
 import { useHomeChatHistory } from "./useHomeChatHistory.hook";
 import { useHomeChatHistoryActions } from "./useHomeChatHistoryActions.hook";
@@ -21,9 +22,18 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     .conversationId;
   const [showArchived, setShowArchived] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [sharingChat, setSharingChat] = useState<HomeChatActiveChat | null>(null);
   const history = useHomeChatHistory(showArchived, showArchived ? null : projectId);
-  const { renameChat, togglePin, setArchived, deleteChat, moveToProject } =
-    useHomeChatHistoryActions();
+  const {
+    renameChat,
+    togglePin,
+    setArchived,
+    deleteChat,
+    archiveChats,
+    deleteChats,
+    moveToProject,
+  } = useHomeChatHistoryActions();
   const chatProjects = useChatProjects();
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -31,16 +41,46 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     if (id === activeId) navigate("/", { replace: true });
   };
 
-  const confirmDelete = (item: ChatHistoryItem) =>
+  const confirmDelete = (item: Pick<HomeChatActiveChat, "id" | "title">) =>
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete chat?",
-      description: `“${item.title}” and its messages will be deleted. This can't be undone.`,
+      description: `“${item.title}”, its messages and the files made in it will be deleted. You can undo this for a few seconds.`,
+      confirmBtnText: "Delete",
+      confirmActionFn: () => {
+        deleteChat(item.id);
+        leaveIfOpen(item.id);
+      },
+    });
+
+  const leaveIfOpenAmong = (ids: string[]) => {
+    if (activeId && ids.includes(activeId)) navigate("/", { replace: true });
+  };
+
+  const confirmDeleteMany = (ids: string[], onDone: () => void) =>
+    showCustomAlertDialog({
+      isDestructive: true,
+      title: ids.length === 1 ? "Delete 1 chat?" : `Delete ${ids.length} chats?`,
+      description:
+        "Their messages and the files made in them will be deleted. You can undo this for a few seconds.",
+      confirmBtnText: "Delete",
+      confirmActionFn: () => {
+        deleteChats(ids);
+        leaveIfOpenAmong(ids);
+        onDone();
+      },
+    });
+
+  const confirmDeleteProject = (project: ChatHistoryProject) =>
+    showCustomAlertDialog({
+      isDestructive: true,
+      title: "Delete project?",
+      description: `“${project.name}” will be deleted. Its chats stay in your history, ungrouped.`,
       confirmBtnText: "Delete",
       showLoadingOnConfirm: true,
       confirmActionFn: async () => {
-        await deleteChat(item.id);
-        leaveIfOpen(item.id);
+        await chatProjects.deleteProject(project.id);
+        if (project.id === projectId) setProjectId(null);
       },
     });
 
@@ -54,6 +94,8 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     },
     onRename: renameChat,
     onTogglePin: togglePin,
+    onShare: ({ id, title, isShared }) =>
+      setSharingChat({ id, title, isShared: isShared ?? false }),
     showArchived,
     onShowArchivedChange: setShowArchived,
     onToggleArchive: ({ id }) => {
@@ -61,10 +103,20 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
       if (!showArchived) leaveIfOpen(id);
     },
     onDelete: confirmDelete,
+    onArchiveMany: showArchived
+      ? undefined
+      : async (ids) => {
+          await archiveChats(ids);
+          leaveIfOpenAmong(ids);
+        },
+    onDeleteMany: confirmDeleteMany,
     projects: chatProjects.projects,
     activeProjectId: showArchived ? null : projectId,
     onProjectFilterChange: setProjectId,
     onCreateProject: (name) => chatProjects.createProject(name, setProjectId),
+    onRenameProject: chatProjects.renameProject,
+    onEditProject: (project) => setEditingProjectId(project.id),
+    onDeleteProject: confirmDeleteProject,
     onMoveToProject: (item, nextProjectId) => moveToProject(item.id, nextProjectId),
     search: history.search,
     onSearchChange: history.setSearch,
@@ -76,5 +128,13 @@ export const useHomeChatHistoryPanel = (onNavigate?: () => void) => {
     onLoadMore: history.loadMore,
   };
 
-  return { props, confirmDelete };
+  return {
+    props,
+    confirmDelete,
+    editingProjectId,
+    closeProjectDialog: () => setEditingProjectId(null),
+    sharingChat,
+    openShare: setSharingChat,
+    closeShare: () => setSharingChat(null),
+  };
 };

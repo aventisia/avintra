@@ -25,3 +25,8 @@ body:json {
     "origin": "Generated"
   }
 }
+
+script:post-response {
+  test("the file is added", function() { expect(res.getStatus()).to.equal(201); });
+  if (res.getStatus() == 201) bru.setVar("CHAT_ARTIFACT_ID", res.getBody().data.id);
+}

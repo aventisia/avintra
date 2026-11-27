@@ -1,0 +1,26 @@
+meta {
+  name: Get chat profile
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-profile
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+script:post-response {
+  test("profile is returned", function() {
+    expect(res.getStatus()).to.equal(200);
+    const data = res.getBody().data;
+    bru.setVar("CHAT_PROFILE_INSTRUCTIONS", data.customInstructions);
+    bru.setVar("CHAT_PROFILE_MEMORY", data.memoryNotes);
+    expect(data).to.have.property("customInstructions");
+    expect(data).to.have.property("memoryNotes");
+  });
+}

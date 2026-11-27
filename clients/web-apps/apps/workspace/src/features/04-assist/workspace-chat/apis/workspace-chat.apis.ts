@@ -1,4 +1,5 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { type AxiosRequestConfig } from "axios";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getSpaceHeaders } from "@/utils/space-headers";
@@ -7,6 +8,7 @@ import { ChatArtifactDto } from "../dtos/chat-artifact.dto";
 import { ConversationDto } from "../dtos/conversation.dto";
 import { GenerateFromSpecDto } from "../dtos/generate-from-spec.dto";
 import { InsertChatArtifactDto } from "../dtos/insert-chat-artifact.dto";
+import { UpdateChatArtifactDto } from "../dtos/update-chat-artifact.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/conversations`;
 const artifactAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chat-artifacts`;
@@ -93,11 +95,23 @@ export const generateFromSpec = (generateFromSpecDto: GenerateFromSpecDto) => {
 };
 
 /**
+ * Updates an existing chat artifact.
+ */
+export const updateChatArtifact = (updateChatArtifactDto: UpdateChatArtifactDto) => {
+  return axiosInstance
+    .put<IHttpResponse<ChatArtifactDto>>(artifactAPIURL, updateChatArtifactDto, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
  * Deletes an existing chat artifact.
  */
-export const deleteChatArtifact = (chatArtifactId: string) => {
+export const deleteChatArtifact = (chatArtifactId: string, config?: AxiosRequestConfig) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${artifactAPIURL}/${chatArtifactId}`, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
@@ -143,9 +157,13 @@ export const getSharedChatArtifact = (shareToken: string) => {
 /**
  * Deletes multiple chat artifacts by their IDs.
  */
-export const deleteMultipleChatArtifacts = (chatArtifactIds: string[]) => {
+export const deleteMultipleChatArtifacts = (
+  chatArtifactIds: string[],
+  config?: AxiosRequestConfig,
+) => {
   return axiosInstance
     .post<IHttpResponse<number>>(`${artifactAPIURL}/delete-multiple`, chatArtifactIds, {
+      ...config,
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

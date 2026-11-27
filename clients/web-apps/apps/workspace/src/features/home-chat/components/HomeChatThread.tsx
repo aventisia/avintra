@@ -5,23 +5,29 @@ import {
   ChatEffortPicker,
   ChatModelPicker,
   ChatThread,
+  ChatWebSearchToggle,
   toDataUrl,
 } from "@avplatform/chat";
 import { useBranding, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import {
   createChatArtifact,
   getChatArtifact,
 } from "@/features/04-assist/workspace-chat/apis/workspace-chat.apis";
+import { useChatArtifactText } from "@/features/04-assist/workspace-chat/hooks/useChatArtifactText.hook";
 
+import { getConversation, updateLandingConversationSettings } from "../apis/conversation.apis";
 import { transcribeSpeech } from "../apis/speech.apis";
 import {
+  HOME_CHAT_CONVERSATION_QUERY_KEY,
   HOME_CHAT_FILES_QUERY_KEY,
   HOME_CHAT_FILE_QUERY_KEY,
+  HOME_CHAT_NEW_DRAFT_KEY,
 } from "../constants/home-chat.constant";
 import { useHomeChatCommands } from "../hooks/useHomeChatCommands.hook";
 import { useHomeChatDestinations } from "../hooks/useHomeChatDestinations.hook";
@@ -31,10 +37,12 @@ import { useHomeChatModels } from "../hooks/useHomeChatModels.hook";
 import { useHomeChatRuntime } from "../hooks/useHomeChatRuntime.hook";
 import { useHomeChatStarters } from "../hooks/useHomeChatStarters.hook";
 import {
-  getHomeChatModelKey,
+  type HomeChatComposerPreferences,
+  getHomeChatComposerPreferences,
   resolveHomeChatModel,
-  saveHomeChatModelKey,
+  saveHomeChatComposerPreferences,
 } from "../utils/home-chat-model-preference.util";
+import { HomeChatNoModelNotice } from "./HomeChatNoModelNotice";
 import { HomeChatPreview } from "./HomeChatPreview";
 import { HomeChatWelcome } from "./HomeChatWelcome";
 
@@ -42,21 +50,58 @@ const PREVIEW_PARAM = "file";
 
 type HomeChatThreadProps = {
   conversationId?: string;
+  isTemporary?: boolean;
   onConversationCreated: (conversationId: string) => void;
   onConversationMissing: () => void;
 };
 
 /** One Home conversation, from its first message or its saved history. */
 export const HomeChatThread = (props: HomeChatThreadProps) => {
-  const { models, groups, speechModel } = useHomeChatModels();
+  const {
+    models,
+    groups,
+    speechModel,
+    hasUsableModel,
+    isSuccess: areModelsLoaded,
+  } = useHomeChatModels();
   const tenantId = useUserSessionStore((state) => state.userSession?.tenantId ?? "");
   const userEmail = useUserSessionStore((state) => state.userSession?.email ?? "");
-  const [pickedModelKey, setPickedModelKey] = useState<string | null>(null);
-  const [effort, setEffort] = useState<ChatEffort | null>(null);
-  const selectedModel = resolveHomeChatModel(
-    models,
-    pickedModelKey ?? getHomeChatModelKey(tenantId, userEmail),
-  );
+  const [preferences] = useState(() => getHomeChatComposerPreferences(tenantId, userEmail));
+  const [pickedModelKey, setPickedModelKey] = useState<string | null>(preferences.modelKey);
+  const [effort, setEffort] = useState<ChatEffort | null>(preferences.effort);
+  const [webSearch, setWebSearch] = useState(preferences.webSearch);
+  const selectedModel = resolveHomeChatModel(models, pickedModelKey);
+
+  const initialConversationIdRef = useRef(props.conversationId);
+  const conversationQuery = useQuery({
+    queryKey: [...HOME_CHAT_CONVERSATION_QUERY_KEY, props.conversationId],
+    queryFn: () => getConversation(props.conversationId!),
+    enabled:
+      !!props.conversationId &&
+      !props.isTemporary &&
+      initialConversationIdRef.current === props.conversationId,
+    retry: false,
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+  const hasAppliedSettingsRef = useRef(false);
+  useEffect(() => {
+    if (hasAppliedSettingsRef.current || !conversationQuery.data) return;
+    hasAppliedSettingsRef.current = true;
+    const conversation = conversationQuery.data.data;
+    if (conversation.modelProvider && conversation.modelId) {
+      setPickedModelKey(`${conversation.modelProvider}::${conversation.modelId}`);
+    }
+    if (
+      conversation.reasoningEffort === "low" ||
+      conversation.reasoningEffort === "medium" ||
+      conversation.reasoningEffort === "high"
+    ) {
+      setEffort(conversation.reasoningEffort);
+    }
+    if (conversation.webSearch !== null) setWebSearch(conversation.webSearch);
+  }, [conversationQuery.data]);
+
   const modelSelectionRef = useRef<ChatModelSelection | null>(null);
   modelSelectionRef.current = selectedModel
     ? {
@@ -64,12 +109,40 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         model: selectedModel.modelId,
         credentialName: selectedModel.credentialName ?? undefined,
         reasoningEffort: (selectedModel.supportsEffort && effort) || undefined,
+        webSearch: (selectedModel.supportsWebSearch && webSearch) || undefined,
       }
     : null;
+  const rememberPreferences = (next: HomeChatComposerPreferences) =>
+    saveHomeChatComposerPreferences(tenantId, userEmail, next);
+  const persistSettings = (
+    model: { provider: string; modelId: string } | undefined,
+    nextEffort: ChatEffort | null,
+    nextWebSearch: boolean,
+  ) => {
+    if (!props.conversationId || props.isTemporary) return;
+    void updateLandingConversationSettings({
+      id: props.conversationId,
+      modelProvider: model?.provider ?? null,
+      modelId: model?.modelId ?? null,
+      reasoningEffort: nextEffort,
+      webSearch: nextWebSearch,
+    }).catch(() => toast.error("Couldn't save the chat settings"));
+  };
   const selectModel = (key: string | null) => {
     if (!key) return;
     setPickedModelKey(key);
-    saveHomeChatModelKey(tenantId, userEmail, key);
+    rememberPreferences({ modelKey: key, effort, webSearch });
+    persistSettings(resolveHomeChatModel(models, key), effort, webSearch);
+  };
+  const selectEffort = (next: ChatEffort | null) => {
+    setEffort(next);
+    rememberPreferences({ modelKey: selectedModel?.key ?? null, effort: next, webSearch });
+    persistSettings(selectedModel, next, webSearch);
+  };
+  const toggleWebSearch = (next: boolean) => {
+    setWebSearch(next);
+    rememberPreferences({ modelKey: selectedModel?.key ?? null, effort, webSearch: next });
+    persistSettings(selectedModel, effort, next);
   };
 
   const destinations = useHomeChatDestinations();
@@ -77,6 +150,8 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
   destinationsRef.current = destinations;
   const starters = useHomeChatStarters(destinations);
   const mentions = useHomeChatMentions();
+  const mentionsRef = useRef(mentions);
+  mentionsRef.current = mentions;
   const navigate = useNavigate();
   const commands = useHomeChatCommands();
 
@@ -117,6 +192,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
     [files.artifacts, preview.data],
   );
 
+  const [suggestions, setSuggestions] = useState<readonly string[]>([]);
   const runtime = useHomeChatRuntime({
     ...props,
     getModelSelection: () => modelSelectionRef.current,
@@ -125,10 +201,13 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         route,
         label: `${section} › ${label}`,
       })),
+    getMentions: () => mentionsRef.current,
     onReplyComplete: files.refreshAfterReply,
+    onSuggestions: setSuggestions,
   });
   const { companyName } = useBranding();
   const queryClient = useQueryClient();
+  const loadVersionText = useChatArtifactText(HOME_CHAT_FILE_QUERY_KEY);
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const { showCustomAlertDialog } = useShowAlertHandler();
 
@@ -177,16 +256,29 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
         <div className="min-w-0 flex-1">
           <ChatThread
             placeholder={`Ask ${companyName ?? "anything"}…`}
-            welcome={<HomeChatWelcome isSavedChat={!!props.conversationId} />}
+            welcome={
+              <HomeChatWelcome
+                isSavedChat={!!props.conversationId}
+                isTemporary={props.isTemporary}
+              />
+            }
             starters={starters}
+            suggestions={suggestions}
             destinations={destinations}
             onNavigate={navigate}
             files={files.handlers}
             commands={commands}
             mentions={mentions}
+            draftKey={
+              props.isTemporary
+                ? undefined
+                : props.conversationId
+                  ? `home:${props.conversationId}`
+                  : HOME_CHAT_NEW_DRAFT_KEY
+            }
             transcribe={(audio) => transcribeSpeech(audio, speechModel, props.conversationId)}
             composerTools={
-              groups.length > 0 && (
+              groups.length > 0 ? (
                 <div className="flex min-w-0 items-center gap-0.5">
                   <ChatModelPicker
                     groups={groups}
@@ -195,9 +287,14 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
                     allowAuto={false}
                   />
                   {selectedModel?.supportsEffort && (
-                    <ChatEffortPicker value={effort} onChange={setEffort} />
+                    <ChatEffortPicker value={effort} onChange={selectEffort} />
+                  )}
+                  {selectedModel?.supportsWebSearch && (
+                    <ChatWebSearchToggle value={webSearch} onChange={toggleWebSearch} />
                   )}
                 </div>
+              ) : (
+                areModelsLoaded && !hasUsableModel && <HomeChatNoModelNotice />
               )
             }
           />
@@ -210,6 +307,7 @@ export const HomeChatThread = (props: HomeChatThreadProps) => {
             onSelectVersion={setPreviewId}
             onSaveVersion={saveVersion}
             isSavingVersion={isSavingVersion}
+            loadVersionText={loadVersionText}
             isLoading={preview.isLoading}
             onClose={() => setPreviewId(null)}
           />

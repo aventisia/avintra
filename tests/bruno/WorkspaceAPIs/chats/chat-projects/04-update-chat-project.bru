@@ -1,0 +1,26 @@
+meta {
+  name: Rename chat project
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "id": "{{CHAT_PROJECT_ID}}", "name": "Renamed project" }
+}
+
+script:post-response {
+  test("project is renamed", function() {
+    expect(res.getStatus()).to.equal(200);
+    expect(res.getBody().data.name).to.equal("Renamed project");
+  });
+}

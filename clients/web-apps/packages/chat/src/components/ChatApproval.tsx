@@ -87,7 +87,7 @@ export const ChatApproval = ({
     <div
       role="group"
       aria-label={`Approval needed: ${label}`}
-      className="my-3 rounded-2xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none dark:bg-fill/40"
+      className="my-3 rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-16px_rgb(0_0_0/0.2)] duration-200 animate-in fade-in-0 slide-in-from-bottom-1 motion-reduce:animate-none dark:bg-fill/40"
     >
       <div className="flex items-start gap-3 px-4 pt-3.5">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-warn/10 text-warn">
@@ -156,7 +156,7 @@ export const ChatApprovalBulkBar = () => {
   };
 
   return (
-    <div className="my-3 flex flex-wrap items-center gap-2 rounded-2xl border border-dashed border-line-strong px-4 py-2.5">
+    <div className="my-3 flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-line-strong px-4 py-2.5">
       <span className="mr-auto text-sm text-ink-2">{pendingCount} actions need your approval</span>
       <div className="ml-auto flex gap-2">
         <Button variant="ghost" disabled={isBusy} onClick={() => void decideAll(false)}>

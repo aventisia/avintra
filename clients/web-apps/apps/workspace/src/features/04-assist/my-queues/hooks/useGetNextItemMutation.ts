@@ -30,7 +30,7 @@ export const useGetNextItemMutation = () => {
       // Invalidate the current queue's work-item list and open the claimed item.
       queryClient.invalidateQueries({ queryKey: [...DATA_QUERY_KEY, queueId] });
       queryClient.invalidateQueries({ queryKey: [EVENT_QUERY_KEY, workItem.id] });
-      navigate(`/assist/queues?qid=${queueId}&wid=${workItem.id}`);
+      navigate(`/queues?qid=${queueId}&wid=${workItem.id}`);
     },
 
     onError: (error) => {

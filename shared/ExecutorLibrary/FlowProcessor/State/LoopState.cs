@@ -27,5 +27,8 @@ public class LoopState
 
     public int PreviousLoopIterationIndex { get; set; } = -1;
 
+    /// <summary>Routers that were already open when this loop was entered.</summary>
+    public HashSet<string> EnclosingConditionalStateIds { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     public bool IsCompleted { get; set; }
 }

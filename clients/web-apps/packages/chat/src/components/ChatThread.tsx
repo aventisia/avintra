@@ -12,6 +12,7 @@ import { ChatComposer } from "./ChatComposer";
 import { type ChatMention } from "./ChatMentionMenu";
 import { ChatMessage } from "./ChatMessage";
 import { type ChatStarterGroup, ChatStarters } from "./ChatStarters";
+import { ChatSuggestions } from "./ChatSuggestions";
 
 export type ChatThreadProps = {
   /** Shown above the composer while the thread is empty. */
@@ -36,6 +37,10 @@ export type ChatThreadProps = {
   onNavigate?: (route: string) => void;
   /** Turns files in replies into cards; without it they render as code. */
   files?: ChatFileHandlers;
+  /** Keeps unsent text across reloads under this key; without it the draft is not kept. */
+  draftKey?: string;
+  /** Suggested next messages shown under the latest reply; a click fills the composer. */
+  suggestions?: readonly string[];
 };
 
 const columnStyle = { "--chat-column": "46rem" } as CSSProperties;
@@ -45,7 +50,7 @@ const NO_DESTINATIONS: readonly ChatDestinationOption[] = [];
 const ScrollToLatest = () => (
   <ThreadPrimitive.ScrollToBottom
     aria-label="Scroll to latest message"
-    className="absolute -top-12 left-1/2 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-ink-2 shadow-[0_4px_16px_-6px_rgb(0_0_0/0.2)] transition-opacity hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:invisible disabled:opacity-0 dark:bg-fill"
+    className="absolute -top-12 left-1/2 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-lg border border-line bg-surface text-ink-2 shadow-[0_4px_16px_-6px_rgb(0_0_0/0.2)] transition-opacity hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:invisible disabled:opacity-0 dark:bg-fill"
   >
     <ArrowDownIcon weight="bold" className="size-4" />
   </ThreadPrimitive.ScrollToBottom>
@@ -57,7 +62,7 @@ const ThreadSkeleton = () => (
     aria-label="Loading chat"
     className="mx-auto w-full max-w-[var(--chat-column)] flex-1 space-y-8 pt-8 delay-300 duration-300 animate-in fade-in-0 fill-mode-backwards"
   >
-    <Skeleton className="ml-auto h-11 w-2/5 rounded-3xl" />
+    <Skeleton className="ml-auto h-11 w-2/5 rounded-xl" />
     <div className="space-y-2.5">
       <Skeleton className="h-4 w-11/12 rounded" />
       <Skeleton className="h-4 w-4/5 rounded" />
@@ -92,6 +97,8 @@ export const ChatThread = ({
   destinations = NO_DESTINATIONS,
   onNavigate,
   files,
+  draftKey,
+  suggestions,
 }: ChatThreadProps) => {
   const [mountedAt] = useState(Date.now);
   const aui = useAui();
@@ -131,6 +138,11 @@ export const ChatThread = ({
               <ThreadPrimitive.Messages>
                 {() => <ChatMessage readOnly={readOnly} />}
               </ThreadPrimitive.Messages>
+              {!readOnly && suggestions && suggestions.length > 0 && (
+                <AuiIf condition={(s) => !s.thread.isRunning && !s.thread.isEmpty}>
+                  <ChatSuggestions suggestions={suggestions} onPick={fillComposer} />
+                </AuiIf>
+              )}
               {!readOnly && (
                 <ThreadPrimitive.ViewportFooter
                   data-chat-print-hide
@@ -144,6 +156,7 @@ export const ChatThread = ({
                     transcribe={transcribe}
                     commands={commands}
                     mentions={mentions}
+                    draftKey={draftKey}
                   />
                 </ThreadPrimitive.ViewportFooter>
               )}

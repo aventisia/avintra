@@ -14,4 +14,9 @@ public class ChatProjectDto
     /// Gets or sets the project name.
     /// </summary>
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the instructions applied to every chat in the project.
+    /// </summary>
+    public string? Instructions { get; set; }
 }

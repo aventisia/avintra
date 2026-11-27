@@ -1,4 +1,4 @@
-import { ChatFilePreview, toDataUrl } from "@avplatform/chat";
+import { ChatFilePreview, appendToComposerDraft, toDataUrl } from "@avplatform/chat";
 import { Input, Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useDocumentTitle, useShowAlertHandler } from "@avplatform/ui/hooks";
@@ -10,22 +10,35 @@ import {
   SelectValue,
 } from "@avplatform/ui/select";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getMutationErrorMessage } from "@avplatform/ui/utils";
 import { MagnifyingGlassIcon, TrashIcon } from "@phosphor-icons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { GroupImperativeHandle } from "react-resizable-panels";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
-import { HOME_CHAT_CONVERSATION_ROUTE, useIsHomeChatAvailable } from "@/features/home-chat";
+import { ShareLinkDialog } from "@/components/share-link-dialog/ShareLinkDialog";
+import {
+  HOME_CHAT_CONVERSATION_ROUTE,
+  HOME_CHAT_FILES_QUERY_KEY,
+  HOME_CHAT_NEW_DRAFT_KEY,
+  buildSharedFileLink,
+  useIsHomeChatAvailable,
+} from "@/features/home-chat";
+import { deleteWithUndo, useHiddenDeleteIds } from "@/hooks/useDeferredDelete";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 
 import {
   createChatArtifact,
+  deleteChatArtifact,
+  deleteMultipleChatArtifacts,
   getChatArtifact,
   shareChatArtifact,
   unshareChatArtifact,
 } from "../apis/workspace-chat.apis";
+import { useChatArtifactText } from "../hooks/useChatArtifactText.hook";
 import {
   WORKSPACE_CHAT_ARTIFACTS_KEY,
   useWorkspaceChatArtifacts,
@@ -56,8 +69,16 @@ export const WorkspaceChatArtifactsGallery = () => {
       userSession: state.userSession,
     })),
   );
-  const { all, deleteArtifact, deleteArtifacts } = useWorkspaceChatArtifacts();
-  const artifacts = useMemo(() => latestArtifacts(all.data?.data ?? []), [all.data]);
+  const { all, renameArtifact } = useWorkspaceChatArtifacts();
+  const hiddenIds = useHiddenDeleteIds();
+  const artifacts = useMemo(
+    () => latestArtifacts(all.data?.data ?? [], hiddenIds),
+    [all.data, hiddenIds],
+  );
+  const [sharingArtifactId, setSharingArtifactId] = useState<string | null>(null);
+  const sharedArtifact = useRef(artifacts[0]);
+  const sharingArtifact = artifacts.find((artifact) => artifact.id === sharingArtifactId);
+  if (sharingArtifact) sharedArtifact.current = sharingArtifact;
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<ArtifactKind>("all");
   const [sort, setSort] = useState<ArtifactSort>("newest");
@@ -82,6 +103,7 @@ export const WorkspaceChatArtifactsGallery = () => {
     queryFn: async () => (await getChatArtifact(previewArtifactId!)).data,
     enabled: !!previewArtifactId,
   });
+  const loadVersionText = useChatArtifactText(["workspace-chat-artifact"]);
   const previewVersions = useMemo(
     () =>
       previewArtifact.data
@@ -99,6 +121,7 @@ export const WorkspaceChatArtifactsGallery = () => {
   const queryClient = useQueryClient();
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const isHomeChatAvailable = useIsHomeChatAvailable();
+  const navigate = useNavigate();
 
   const saveVersion = async (body: string) => {
     const current = previewArtifact.data;
@@ -139,34 +162,69 @@ export const WorkspaceChatArtifactsGallery = () => {
     }
   };
 
-  const copyShareLink = async (artifactId: string) => {
+  const refreshSharing = () => {
+    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+  };
+
+  const createFileShareLink = async (artifactId: string) => {
     try {
-      const token = (await shareChatArtifact(artifactId)).data;
-      await navigator.clipboard.writeText(`${window.location.origin}/s/file/${token}`);
-      toast.success("Read-only link copied");
-    } catch {
-      toast.error("Couldn't create the share link");
+      return buildSharedFileLink((await shareChatArtifact(artifactId)).data);
+    } finally {
+      refreshSharing();
     }
   };
 
-  const stopSharing = async (artifactId: string) => {
+  const stopFileSharing = async (artifactId: string) => {
     try {
       await unshareChatArtifact(artifactId);
       toast.success("Sharing stopped");
-    } catch {
-      toast.error("Couldn't stop sharing");
+    } finally {
+      refreshSharing();
     }
+  };
+
+  const renameFile = async (artifactId: string, name: string) => {
+    const original = artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "";
+    const extension = original.match(/\.[^.]+$/)?.[0] ?? "";
+    const fullName =
+      extension && !/\.[a-z][a-z0-9]{0,9}$/i.test(name) ? `${name}${extension}` : name;
+    try {
+      await renameArtifact.mutateAsync({ id: artifactId, name: fullName });
+      void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
+      toast.success("File renamed");
+    } catch (error) {
+      toast.error(getMutationErrorMessage(error));
+    }
+  };
+
+  const startChatWithFile = (artifactId: string) => {
+    const name = artifacts.find((artifact) => artifact.id === artifactId)?.name;
+    if (!name) return;
+    appendToComposerDraft(HOME_CHAT_NEW_DRAFT_KEY, `@${name} `);
+    navigate("/");
+  };
+
+  const refreshAfterDelete = () => {
+    void queryClient.invalidateQueries({ queryKey: WORKSPACE_CHAT_ARTIFACTS_KEY });
+    void queryClient.invalidateQueries({ queryKey: HOME_CHAT_FILES_QUERY_KEY });
   };
 
   const confirmDeleteArtifact = (artifactId: string) =>
     showCustomAlertDialog({
       isDestructive: true,
       title: "Delete artifact?",
-      description: `“${artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "This artifact"}” will be deleted. This can't be undone.`,
+      description: `“${artifacts.find((artifact) => artifact.id === artifactId)?.name ?? "This artifact"}” will be deleted. You can undo this for a few seconds.`,
       confirmBtnText: "Delete",
       confirmActionFn: () => {
         if (previewArtifactId === artifactId) setPreviewArtifactId(null);
-        deleteArtifact.mutate(artifactId);
+        deleteWithUndo({
+          ids: [artifactId],
+          message: "File deleted",
+          failureMessage: "Couldn't delete that file",
+          commit: (config) => deleteChatArtifact(artifactId, config),
+          onSettled: refreshAfterDelete,
+        });
       },
     });
 
@@ -174,11 +232,17 @@ export const WorkspaceChatArtifactsGallery = () => {
     showCustomAlertDialog({
       isDestructive: true,
       title: `Delete ${selectedArtifactIds.length} ${selectedArtifactIds.length === 1 ? "artifact" : "artifacts"}?`,
-      description: "The selected files will be deleted. This can't be undone.",
+      description: "The selected files will be deleted. You can undo this for a few seconds.",
       confirmBtnText: "Delete",
-      showLoadingOnConfirm: true,
-      confirmActionFn: async () => {
-        await deleteArtifacts.mutateAsync(selectedArtifactIds);
+      confirmActionFn: () => {
+        const ids = selectedArtifactIds;
+        deleteWithUndo({
+          ids,
+          message: ids.length === 1 ? "File deleted" : `${ids.length} files deleted`,
+          failureMessage: "Couldn't delete those files",
+          commit: (config) => deleteMultipleChatArtifacts(ids, config),
+          onSettled: refreshAfterDelete,
+        });
         if (previewArtifactId && selectedArtifactIds.includes(previewArtifactId))
           setPreviewArtifactId(null);
         setSelectedIds(new Set());
@@ -337,9 +401,11 @@ export const WorkspaceChatArtifactsGallery = () => {
                             : undefined
                         }
                         onPreview={setPreviewArtifactId}
+                        onRename={(id, name) => void renameFile(id, name)}
+                        onUseInNewChat={isHomeChatAvailable ? startChatWithFile : undefined}
                         onDelete={confirmDeleteArtifact}
-                        onCopyShareLink={(id) => void copyShareLink(id)}
-                        onStopSharing={(id) => void stopSharing(id)}
+                        onShare={setSharingArtifactId}
+                        isShared={artifact.isShared}
                       />
                     ))}
                   </div>
@@ -375,6 +441,7 @@ export const WorkspaceChatArtifactsGallery = () => {
                 onSelectVersion={setPreviewArtifactId}
                 onSaveVersion={saveVersion}
                 isSavingVersion={isSavingVersion}
+                loadVersionText={loadVersionText}
                 isLoading={previewArtifact.isLoading}
                 onClose={() => setPreviewArtifactId(null)}
               />
@@ -382,6 +449,20 @@ export const WorkspaceChatArtifactsGallery = () => {
           </>
         )}
       </ResizablePanelGroup>
+      {sharedArtifact.current && (
+        <ShareLinkDialog
+          key={sharedArtifact.current.id}
+          open={sharingArtifactId !== null}
+          onOpenChange={(open) => {
+            if (!open) setSharingArtifactId(null);
+          }}
+          kind="file"
+          name={sharedArtifact.current.name}
+          isShared={sharedArtifact.current.isShared}
+          createLink={() => createFileShareLink(sharedArtifact.current!.id)}
+          stopSharing={() => stopFileSharing(sharedArtifact.current!.id)}
+        />
+      )}
     </div>
   );
 };

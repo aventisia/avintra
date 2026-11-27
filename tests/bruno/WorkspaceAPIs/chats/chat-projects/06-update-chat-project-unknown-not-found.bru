@@ -1,0 +1,25 @@
+meta {
+  name: Rename unknown chat project not found
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/assist/chat-projects
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  { "id": "00000000-0000-0000-0000-000000000001", "name": "Nope" }
+}
+
+script:post-response {
+  test("an unknown project is not found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

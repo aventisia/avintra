@@ -14,7 +14,10 @@ export const DCPTabsContent = ({
   footer?: React.ReactNode;
 }) => {
   return (
-    <TabsContent className="mt-0 flex min-h-0 flex-1 flex-col" value={tabValue}>
+    <TabsContent
+      className="mt-0 flex min-h-0 flex-1 flex-col data-[state=inactive]:hidden"
+      value={tabValue}
+    >
       <ScrollArea className={cn("min-h-0 flex-1 px-3 pb-2", className)}>
         <div className="px-1 pt-1.5">{children}</div>
       </ScrollArea>

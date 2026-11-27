@@ -14,6 +14,8 @@ export type ChatModelOption = {
 /** A provider's models in the composer's model picker. */
 export type ChatModelGroup = {
   label: string;
+  /** Provider logo shown next to the group label. */
+  icon?: string;
   models: readonly ChatModelOption[];
 };
 
@@ -28,7 +30,7 @@ export type ChatModelPickerProps = {
 
 const AUTO = "auto";
 
-type Option = ChatModelOption & { groupLabel: string | null };
+type Option = ChatModelOption & { groupLabel: string | null; groupIcon?: string };
 
 const AUTO_OPTION: Option = {
   key: AUTO,
@@ -51,7 +53,11 @@ export const ChatModelPicker = ({
   const listRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const allModels = useMemo(() => groups.flatMap((group) => group.models), [groups]);
+  const allModels = useMemo(
+    () =>
+      groups.flatMap((group) => group.models.map((model) => ({ ...model, groupIcon: group.icon }))),
+    [groups],
+  );
   const selected = allModels.find((model) => model.key === value);
   const needle = query.trim().toLowerCase();
 
@@ -63,7 +69,9 @@ export const ChatModelPicker = ({
     return [
       ...(needle || !allowAuto ? [] : [AUTO_OPTION]),
       ...groups.flatMap((group) =>
-        group.models.filter(matches).map((model) => ({ ...model, groupLabel: group.label })),
+        group.models
+          .filter(matches)
+          .map((model) => ({ ...model, groupLabel: group.label, groupIcon: group.icon })),
       ),
     ];
   }, [allowAuto, groups, needle]);
@@ -115,10 +123,17 @@ export const ChatModelPicker = ({
     <Popover open={isOpen} onOpenChange={openChange}>
       <PopoverTrigger
         aria-label={`Model: ${chipLabel}`}
-        className="inline-flex h-8 min-w-0 max-w-56 items-center gap-1.5 rounded-full px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
+        className="inline-flex h-8 min-w-0 max-w-56 items-center gap-1.5 rounded-lg px-2.5 text-sm text-ink-2 transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus data-[state=open]:bg-hover data-[state=open]:text-ink"
       >
         {value === null && allowAuto && (
           <SparkleIcon weight="fill" className="size-3.5 shrink-0 text-primary" />
+        )}
+        {value !== null && selected?.groupIcon && (
+          <img
+            src={selected.groupIcon}
+            alt=""
+            className="size-3.5 shrink-0 rounded-sm object-contain"
+          />
         )}
         <span className="truncate">{chipLabel}</span>
         <CaretDownIcon weight="bold" className="size-3 shrink-0 opacity-70" />
@@ -181,10 +196,17 @@ export const ChatModelPicker = ({
                   <p
                     role="presentation"
                     className={cn(
-                      "px-2.5 pb-1 text-[11.5px] font-medium text-muted-foreground",
+                      "flex items-center gap-1.5 px-2.5 pb-1 text-[11.5px] font-medium text-muted-foreground",
                       index === 0 ? "pt-1.5" : "mt-1 border-t border-line pt-2.5",
                     )}
                   >
+                    {option.groupIcon && (
+                      <img
+                        src={option.groupIcon}
+                        alt=""
+                        className="size-3.5 shrink-0 rounded-sm object-contain"
+                      />
+                    )}
                     {option.groupLabel}
                   </p>
                 )}

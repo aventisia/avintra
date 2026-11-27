@@ -40,7 +40,10 @@ class LLMRequest(LegacyByokWarningModel):
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
     credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name') # Credential reference (unique name)
-    reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
+    temperature: Optional[float] = 1.0
+    top_p: Optional[float] = 1.0
+    reasoning_effort: Optional[str] = None  # OpenAI reasoning models (o1/o3/gpt-5); Claude Opus/Sonnet 4.6+, Haiku 5+, Fable, Mythos in Home chat only: low | medium | high
+    web_search: Optional[bool] = False  # Home chat only, on the caller's own key: lets a supporting Anthropic or OpenAI model search the web for this message
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
     is_voice_agent: Optional[bool] = False   # Whether the request originates from a voice agent

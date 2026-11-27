@@ -6,9 +6,10 @@ import {
   ErrorPrimitive,
   MessagePrimitive,
   type PartState,
+  useAui,
   useAuiState,
 } from "@assistant-ui/react";
-import { ThinkingIndicator } from "@avplatform/assistant-chat";
+import { type ChatSource, ThinkingIndicator } from "@avplatform/assistant-chat";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import {
@@ -18,6 +19,8 @@ import {
   CheckIcon,
   CopyIcon,
   PencilSimpleIcon,
+  SpeakerHighIcon,
+  StopIcon,
   ThumbsDownIcon,
   ThumbsUpIcon,
   WarningCircleIcon,
@@ -26,6 +29,8 @@ import { useContext } from "react";
 
 import { ChatFileContext } from "../constants/chat-file.constant";
 import { ChatThreadMountedAtContext } from "../constants/chat-thread-mounted-at.constant";
+import { useReadAloud } from "../hooks/useReadAloud.hook";
+import { linkCitations } from "../utils/chat-citations.util";
 import {
   chatFileSize,
   findChatFile,
@@ -34,6 +39,7 @@ import {
 } from "../utils/chat-file.util";
 import { NAVIGATE_TOOL_NAME } from "../utils/chat-intent.util";
 import { formatMessageTime } from "../utils/message-time.util";
+import { toSpeechText } from "../utils/speech-text.util";
 import { ChatActivity, ChatReasoningStep, ChatSkillStep, ChatToolStep } from "./ChatActivity";
 import { ChatApproval, ChatApprovalBulkBar } from "./ChatApproval";
 import { ChatAttachment } from "./ChatAttachment";
@@ -41,6 +47,7 @@ import { ChatDestination } from "./ChatDestination";
 import { ChatFileCard } from "./ChatFileCard";
 import { ChatIconButton } from "./ChatIconButton";
 import { ChatMarkdown } from "./ChatMarkdown";
+import { ChatSources } from "./ChatSources";
 
 const useMessageEntranceClass = () => {
   const mountedAt = useContext(ChatThreadMountedAtContext);
@@ -78,6 +85,28 @@ const MessageCopy = () => (
     </ChatIconButton>
   </ActionBarPrimitive.Copy>
 );
+
+const MessageReadAloud = () => {
+  const aui = useAui();
+  const { isAvailable, isSpeaking, toggle } = useReadAloud();
+  if (!isAvailable) return null;
+  const readMessage = () =>
+    toggle(
+      aui.message
+        .getState()
+        .content.flatMap((part) => (part.type === "text" ? [toSpeechText(part.text)] : []))
+        .join("\n\n"),
+    );
+  return (
+    <ChatIconButton
+      label={isSpeaking ? "Stop reading" : "Read aloud"}
+      aria-pressed={isSpeaking}
+      onClick={readMessage}
+    >
+      {isSpeaking ? <StopIcon /> : <SpeakerHighIcon />}
+    </ChatIconButton>
+  );
+};
 
 const MessageRegenerate = () => (
   <ActionBarPrimitive.Reload asChild>
@@ -141,27 +170,47 @@ const MessageBranches = () => (
   </BranchPickerPrimitive.Root>
 );
 
-const MessageError = () => (
+const MessageError = ({ canRetry }: { canRetry: boolean }) => (
   <MessagePrimitive.Error>
     <ErrorPrimitive.Root
       role="alert"
       className="mt-3 flex items-start gap-2.5 rounded-xl border border-bad/25 bg-bad/5 px-4 py-3 text-sm leading-6 text-bad"
     >
       <WarningCircleIcon weight="bold" className="mt-1 size-4 shrink-0" />
-      <ErrorPrimitive.Message className="line-clamp-4" />
+      <ErrorPrimitive.Message className="line-clamp-4 flex-1" />
+      {canRetry && (
+        <ActionBarPrimitive.Reload asChild>
+          <Button variant="outline" size="sm" className="-my-0.5 shrink-0">
+            <ArrowClockwiseIcon className="size-4" />
+            Try again
+          </Button>
+        </ActionBarPrimitive.Reload>
+      )}
     </ErrorPrimitive.Root>
   </MessagePrimitive.Error>
 );
 
+const useMessageSources = () =>
+  useAuiState(
+    (s) =>
+      (
+        s.message.content.find((part) => part.type === "data" && part.name === "sources") as
+          { data: ChatSource[] } | undefined
+      )?.data,
+  );
+
 const AssistantText = ({ text }: { text: string }) => {
   const files = useContext(ChatFileContext);
   const isRunning = useAuiState((s) => s.message.status?.type === "running");
+  const sources = useMessageSources();
   const file = files ? findChatFile(text) : null;
-  if (!files || !file) return text.trim() ? <ChatMarkdown /> : null;
+  const withCitations = (value: string) => (sources ? linkCitations(value, sources) : value);
+  if (!files || !file) return text.trim() ? <ChatMarkdown preprocess={withCitations} /> : null;
 
   const state = file.isComplete ? files.resolveFile(file) : "saving";
-  // A file that never got stored shows as code, so nothing is lost.
-  if (state === null && !isRunning) return <ChatMarkdown />;
+  // A file that never got stored, or was cut off by Stop, shows as code, so nothing is lost.
+  if ((state === null || !file.isComplete) && !isRunning)
+    return <ChatMarkdown preprocess={withCitations} />;
 
   const card =
     state && state !== "saving" ? (
@@ -180,9 +229,13 @@ const AssistantText = ({ text }: { text: string }) => {
     );
   return (
     <>
-      {textBeforeChatFile(text) && <ChatMarkdown preprocess={textBeforeChatFile} />}
+      {textBeforeChatFile(text) && (
+        <ChatMarkdown preprocess={(value) => withCitations(textBeforeChatFile(value))} />
+      )}
       {card}
-      {textAfterChatFile(text) && <ChatMarkdown preprocess={textAfterChatFile} />}
+      {textAfterChatFile(text) && (
+        <ChatMarkdown preprocess={(value) => withCitations(textAfterChatFile(value))} />
+      )}
     </>
   );
 };
@@ -224,7 +277,7 @@ const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
       </div>
       {hasText && (
         <>
-          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-[1.25rem] bg-sunken px-4 py-2.5 text-base leading-7 text-ink dark:bg-fill">
+          <div className="max-w-[85%] whitespace-pre-wrap break-words rounded-xl bg-sunken px-4 py-2.5 text-[14.5px] leading-7 text-ink dark:bg-fill">
             <MessagePrimitive.Parts />
           </div>
           {!readOnly && (
@@ -247,11 +300,11 @@ const UserMessage = ({ readOnly }: { readOnly?: boolean }) => {
 
 const EditComposer = () => (
   <MessagePrimitive.Root className="mx-auto flex w-full max-w-[var(--chat-column)] flex-col items-end pb-2 pt-6">
-    <ComposerPrimitive.Root className="flex w-full max-w-[85%] flex-col rounded-[1.25rem] border border-line bg-surface focus-within:border-line-strong">
+    <ComposerPrimitive.Root className="flex w-full max-w-[85%] flex-col rounded-xl border border-line bg-surface focus-within:border-line-strong">
       <ComposerPrimitive.Input
         autoFocus
         aria-label="Edit message"
-        className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-4 pb-1 pt-3 text-base leading-7 text-ink outline-none"
+        className="max-h-[min(40vh,18rem)] min-h-[3.25rem] w-full resize-none bg-transparent px-4 pb-1 pt-3 text-[14.5px] leading-7 text-ink outline-none"
       />
       <div className="flex justify-end gap-2 px-3 pb-3">
         <ComposerPrimitive.Cancel asChild>
@@ -276,7 +329,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         useMessageEntranceClass(),
       )}
     >
-      <div className="text-base leading-7 text-ink">
+      <div className="text-[14.5px] leading-7 text-ink">
         <MessagePrimitive.GroupedParts groupBy={groupActivity} indicator="empty">
           {({ part, children }) => {
             switch (part.type) {
@@ -288,6 +341,8 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
                 return part.text.trim() ? <ChatReasoningStep text={part.text} /> : null;
               case "data":
                 if (part.name === "skill") return <ChatSkillStep name={skillName(part.data)} />;
+                if (part.name === "sources")
+                  return <ChatSources sources={part.data as ChatSource[]} />;
                 return null;
               case "tool-call":
                 if (part.toolName === NAVIGATE_TOOL_NAME)
@@ -302,7 +357,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         </MessagePrimitive.GroupedParts>
         <ChatApprovalBulkBar />
       </div>
-      <MessageError />
+      <MessageError canRetry={!readOnly && isLast} />
       {!readOnly && (hasText || isLast) && (
         <ActionBarPrimitive.Root
           data-chat-print-hide
@@ -314,6 +369,7 @@ const AssistantMessage = ({ readOnly }: { readOnly?: boolean }) => {
         >
           {hasText && <MessageBranches />}
           {hasText && <MessageCopy />}
+          {hasText && <MessageReadAloud />}
           {hasText && <MessageFeedback />}
           {isLast && <MessageRegenerate />}
           {hasText && <MessageTime />}
