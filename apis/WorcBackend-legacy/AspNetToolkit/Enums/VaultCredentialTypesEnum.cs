@@ -483,7 +483,27 @@ public enum VaultCredentialTypesEnum
     Formbricks,
     Gitlab,
     Gladia,
+    [Description("Gmail Credentials")]
+    Gmail,
+    [Description("Google Address Validation Credentials")]
+    Googleaddressvalidation,
     Googleanalytics,
+    [Description("Google BigQuery Credentials")]
+    Googlebigquery,
+    [Description("Google Calendar Credentials")]
+    Googlecalendar,
+    [Description("Google Cloud Vision Credentials")]
+    Googlecloudvision,
+    [Description("Google Docs Credentials")]
+    Googledocs,
+    [Description("Google Drive Credentials")]
+    Googledrive,
+    [Description("Google Maps Credentials")]
+    Googlemaps,
+    [Description("Google Meet Credentials")]
+    Googlemeet,
+    [Description("Google Sheets Credentials")]
+    Googlesheets,
     Grafana,
     Griptape,
     Groqcloud,
@@ -521,6 +541,8 @@ public enum VaultCredentialTypesEnum
     Onepassword,
     Openweathermap,
     Oura,
+    [Description("Outlook Credentials")]
+    Outlook,
     Pagerduty,
     Parseur,
     Pdfmonkey,
@@ -530,6 +552,8 @@ public enum VaultCredentialTypesEnum
     Razorpay,
     Reddit,
     Removebg,
+    [Description("Resend Credentials")]
+    Resend,
     Retailed,
     Runpod,
     Salesforce,

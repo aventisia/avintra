@@ -40,6 +40,16 @@ public interface ICorsairSidecarService
     Task<bool> StoreIntegrationKeysAsync(Guid connectionId, string plugin, string clientId, string clientSecret, string redirectUrl, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Copies a credential's existing base-plugin connection data (keys + OAuth tokens)
+    /// into its per-credential plugin instance row, preserving tokens.
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Base OAuth plugin identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><c>true</c> when the sidecar acknowledged the backfill.</returns>
+    Task<bool> BackfillIntegrationKeysAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Mints a connect link for a tenant/plugin so the user can complete OAuth consent.
     /// </summary>
     /// <param name="connectionId">Stable connection handle (VaultCredential Id) used as the Corsair tenant.</param>

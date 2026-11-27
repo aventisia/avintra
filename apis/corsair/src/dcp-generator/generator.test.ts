@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import { fileURLToPath } from "node:url";
 import { createCorsair } from "corsair";
 import { plugins } from "../plugins.js";
@@ -23,6 +24,7 @@ import { generateDcpFiles } from "./index.js";
 import { deriveDefaultAuthType } from "./auth-type.js";
 import {
   formSatisfiesDefaultAuthMode,
+  getVaultCredentialType,
   isPlatformOwnedVaultCredentialType,
 } from "./integration-catalog.js";
 import { isOAuthTwoPlugin } from "../corsair.js";
@@ -197,7 +199,7 @@ async function main() {
       "App Integrations has no Corsair action categories",
     );
 
-    // 5. Microsoft plugins use distinct labels while sharing the M365 vault credential.
+    // 5. Microsoft plugins use distinct labels.
     const microsoftLabels = new Map(
       appIntegrations.actionCategories
         .filter((category: any) => ["outlook", "teams", "onedrive", "sharepoint"].some(
@@ -210,7 +212,7 @@ async function main() {
     assert(microsoftLabels.get("Onedrive") === "OneDrive", "OneDrive category has no canonical name");
     assert(microsoftLabels.get("Sharepoint") === "SharePoint", "SharePoint category has no canonical name");
 
-    // 5b. Google plugins use distinct labels while sharing the Google vault credential.
+    // 5b. Google plugins use distinct labels.
     const googleLabels = new Map(
       appIntegrations.actionCategories
         .filter((category: any) => ["gmail", "googlecalendar", "googlesheets", "googledocs", "googledrive", "googlemeet", "googlebigquery", "googlecloudvision", "googlemaps", "googleaddressvalidation", "youtube"].some(
@@ -296,19 +298,52 @@ async function main() {
     const catalog: any[] = JSON.parse(
       fs.readFileSync(path.join(tmpDir, "CorsairIntegrationCatalog.json"), "utf8"),
     );
+
+    // 5f. Every vault type maps to exactly one service (no family grouping).
+    for (const entry of catalog) {
+      assert(
+        entry.pluginIds.length === 1 && entry.pluginIds[0] === entry.pluginId,
+        `catalog entry '${entry.pluginId}' still groups sibling plugins during flattening`,
+      );
+      assert(
+        entry.vaultCredentialType === getVaultCredentialType(entry.pluginId),
+        `catalog entry '${entry.pluginId}' has vault type '${entry.vaultCredentialType}' instead of its own service`,
+      );
+    }
+
+    const expectedServiceTypes: Record<string, string> = {
+      outlook: "Outlook",
+      teams: "Teams",
+      onedrive: "Onedrive",
+      sharepoint: "Sharepoint",
+      gmail: "Gmail",
+      googlecalendar: "Googlecalendar",
+      googlesheets: "Googlesheets",
+      googledrive: "Googledrive",
+      resend: "Resend",
+      sendgrid: "SendGrid",
+    };
+    for (const [pluginId, expectedType] of Object.entries(expectedServiceTypes)) {
+      const entry = catalog.find((candidate: any) => candidate.pluginId === pluginId);
+      assert(entry, `catalog is missing plugin '${pluginId}'`);
+      assert(
+        entry.vaultCredentialType === expectedType,
+        `plugin '${pluginId}' maps to '${entry.vaultCredentialType}' instead of '${expectedType}'`,
+      );
+    }
+
     const microsoftEntries = catalog.filter((entry: any) =>
       ["outlook", "teams", "onedrive", "sharepoint"].includes(entry.pluginId),
     );
-    assert(microsoftEntries.length === 4, "M365 catalog is missing a Microsoft plugin");
-    assert(microsoftEntries.every((entry: any) => entry.vaultCredentialType === "M365"), "Microsoft plugins do not share M365");
+    assert(microsoftEntries.length === 4, "Microsoft service entries are missing");
     assert(
-      microsoftEntries.every((entry: any) => entry.pluginIds.join(",") === "onedrive,outlook,sharepoint,teams"),
-      "M365 catalog does not contain the complete shared plugin family",
+      microsoftEntries.every((entry: any) => entry.oauthConfig?.scopes?.length > 0),
+      "a Microsoft service entry has no own OAuth scopes",
     );
-    const m365Scopes = new Set(microsoftEntries[0].oauthConfig?.scopes ?? []);
-    assert(m365Scopes.has("Mail.ReadWrite"), "M365 scopes are missing Outlook permissions");
-    assert(m365Scopes.has("Chat.ReadWrite"), "M365 scopes are missing Teams permissions");
-    assert(m365Scopes.has("Sites.FullControl.All"), "M365 scopes are missing SharePoint permissions");
+    assert(
+      new Set(microsoftEntries.map((entry: any) => entry.oauthConfig?.scopes?.join(" "))).size > 1,
+      "Microsoft service entries do not carry their own per-service scopes",
+    );
 
     // 6. Every credential-select field name must use the canonical catalog vault credential
     //    type (VaultCredentialTypesEnum-compatible), never the display providerName.
@@ -473,8 +508,13 @@ async function main() {
       path.join(tmpDir, "CorsairIntegrationCatalog.json"),
       "utf8",
     );
+    // IMPORTANT NOTE: the frontend copy is prettier-formatted by the repo hook, so
+    // compare its content rather than its bytes.
     assert(
-      fs.readFileSync(frontendCatalogPath, "utf8") === generatedCatalogBytes,
+      isDeepStrictEqual(
+        JSON.parse(fs.readFileSync(frontendCatalogPath, "utf8")),
+        JSON.parse(generatedCatalogBytes),
+      ),
       "frontend catalog is stale; run `npm run generate:configs`",
     );
     assert(

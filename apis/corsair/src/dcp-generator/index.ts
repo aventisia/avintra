@@ -235,12 +235,18 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // Write the credential mapping consumed by vault credential and backend integrations.
   const integrationCatalog = buildIntegrationCatalog(pluginMetas);
   writeJson(integrationCatalogFile, integrationCatalog);
-  const vaultCredentialTypeToPluginId = Object.fromEntries(
-    integrationCatalog.reduce<Map<string, string>>((map, entry) => {
-      if (!map.has(entry.vaultCredentialType)) map.set(entry.vaultCredentialType, entry.pluginId);
-      return map;
-    }, new Map()),
-  );
+  const vaultCredentialTypeToPluginId = {
+    ...Object.fromEntries(
+      integrationCatalog.reduce<Map<string, string>>((map, entry) => {
+        if (!map.has(entry.vaultCredentialType)) map.set(entry.vaultCredentialType, entry.pluginId);
+        return map;
+      }, new Map()),
+    ),
+    // IMPORTANT NOTE: the pre-flattening family names stay resolvable server-side for
+    // stored credentials and rollback, but are hidden from the picker.
+    M365: "outlook",
+    GoogleWorkspace: "gmail",
+  };
   writeJson(vaultCredentialTypeMapFile, vaultCredentialTypeToPluginId);
   writeJson(frontendCatalogFile, integrationCatalog);
   writeVaultCredentialConfigs(

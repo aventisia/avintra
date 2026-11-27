@@ -4,7 +4,7 @@
     "type": "text",
     "name": "ClientId",
     "label": "Client Id",
-    "description": "Client Id for Microsoft.",
+    "description": "Client Id for SharePoint.",
     "defaultValue": "",
     "required": true
   },
@@ -13,8 +13,17 @@
     "type": "password",
     "name": "ClientSecret",
     "label": "Client Secret",
-    "description": "Client Secret for Microsoft.",
+    "description": "Client Secret for SharePoint.",
     "defaultValue": "",
     "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AzureTenantId",
+    "label": "Directory (tenant) ID",
+    "description": "Directory (tenant) ID",
+    "defaultValue": "",
+    "required": false
   }
 ]

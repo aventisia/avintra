@@ -3144,6 +3144,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("LegacyFamilyAccess")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");

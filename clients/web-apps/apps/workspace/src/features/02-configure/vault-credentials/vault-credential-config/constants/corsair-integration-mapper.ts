@@ -18,11 +18,7 @@ export function getCorsairPluginIcon(pluginId: string | undefined): string | und
 }
 
 export function isCorsairOAuthCredentialType(type: string | undefined): boolean {
-  return Boolean(
-    getCorsairIntegration(type)?.authModes.some(({ mode }) => mode === "oauth_2") ||
-    type === "M365" ||
-    type === "GoogleWorkspace",
-  );
+  return Boolean(getCorsairIntegration(type)?.authModes.some(({ mode }) => mode === "oauth_2"));
 }
 
 export function getCorsairCredentialName(type: string | undefined): string | undefined {

@@ -201,6 +201,7 @@ public static class AppServicesExtension
         services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
         services.AddHostedService<BackfillTimeTriggerCronHostedService>();
+        services.AddHostedService<CorsairOAuthAliasBackfillHostedService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultCredentialService, CloudConnectorsVaultCredentialService>();
