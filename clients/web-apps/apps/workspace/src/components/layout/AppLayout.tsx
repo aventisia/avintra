@@ -40,6 +40,9 @@ import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 /** localStorage key used to persist the user's selected sidebar roles across sessions. */
 export const SELECTED_ROLES_STORAGE_KEY = "workspace_selected_roles";
 
+/** Removed Assist Agents address; the router redirects it to Build > Agents. */
+const LEGACY_ASSIST_AGENTS_ROUTE = "/assist/agents";
+
 export const AppLayout = () => {
   const [connectWebsocket, setConnectWebsocket] = useState<boolean>(false);
   const [landingUrl, setLandingUrl] = useState<string>("");
@@ -167,6 +170,7 @@ export const AppLayout = () => {
     setAllowedRoutes([
       ...(isHomeChatAvailable ? [HOME_CHAT_CONVERSATION_ROUTE] : []),
       ...allowedRoutes,
+      LEGACY_ASSIST_AGENTS_ROUTE,
       DESKTOP_DOWNLOAD_ROUTE,
       NOTIFICATIONS_ROUTE,
     ]);

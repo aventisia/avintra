@@ -6,19 +6,21 @@ import { AgentAvatar } from "@/components/AgentAvatar";
 
 import { AGENTS_PAGE_SIZE_OPTIONS, AGENTS_ROW_LABELS } from "../constants/agents-table.constant";
 import { AGENT_DRAG_PREVIEW_ID } from "../constants/folder-motion.constant";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
 import { FlowsViewMode } from "../hooks/useFlowsView";
+import { AgentRow } from "../types/agent-row.type";
 import { getAgentDragProps } from "../utils/agent-drag.util";
 import { FlowCard } from "./FlowCard";
 import { FlowsBulkActions } from "./FlowsBulkActions";
 
 type AgentsListViewProps = {
-  table: Table<FlowsTableDto>;
+  table: Table<AgentRow>;
   view: FlowsViewMode;
   emptyState: ReactNode;
   /** Folders by id; when given, agents in a folder show a chip linking to it. */
   folderById?: ReadonlyMap<string, FoldersTableRowDto>;
+  /** False for TU-only callers, whose cards show no developer actions. */
+  showActions?: boolean;
 };
 
 const AGENTS_PAGINATION_PROPS = {
@@ -41,7 +43,13 @@ const AgentDragPreview = () => (
  * Grid or table view of an agents list with its empty state and pagination, shared by the
  * main Agents page and the folder page. Selecting agents (table view) shows the bulk actions.
  */
-export const AgentsListView = ({ table, view, emptyState, folderById }: AgentsListViewProps) => {
+export const AgentsListView = ({
+  table,
+  view,
+  emptyState,
+  folderById,
+  showActions = true,
+}: AgentsListViewProps) => {
   const rows = table.getRowModel().rows;
   const searchText = String(table.getState().globalFilter ?? "");
 
@@ -59,6 +67,7 @@ export const AgentsListView = ({ table, view, emptyState, folderById }: AgentsLi
                 flow={row.original}
                 searchText={searchText}
                 folder={row.original.folderId ? folderById?.get(row.original.folderId) : undefined}
+                showActions={showActions}
               />
             ))}
           </div>

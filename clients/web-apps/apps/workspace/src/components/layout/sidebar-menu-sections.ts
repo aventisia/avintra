@@ -42,7 +42,7 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
         Icon: NewAgentIcon,
         name: "Agents",
         route: "/agents",
-        permissions: ["TD"],
+        permissions: ["TD", "TU"],
         type: ["Commercial", "Enterprise", "Community"],
       },
       {
@@ -150,14 +150,6 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
     // sectionInternalName: assist
     sectionName: "Assist",
     menuItems: [
-      {
-        permissions: ["TU"],
-        Icon: NewAgentIcon,
-        name: "Agents",
-        route: "/assist/agents",
-        hub: "assist",
-        type: ["Commercial", "Enterprise", "Community"],
-      },
       {
         permissions: ["TU"],
         Icon: ListIcon,

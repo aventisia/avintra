@@ -44,13 +44,14 @@ export const TableActions = ({
 
   return (
     <TableCNRowActionsMenu ariaLabel="Open agent actions">
-      {type == "ChatAgent" ? (
+      {type == "ChatAgent" || type == "VoiceAgent" ? (
         <ResourceUserAccessRowAction
           rowId={rowId}
           resourceName={flowName ?? ""}
           isTenantWideAccess={isTenantWideAccess}
           resourceType={ResourceTypeEnum.FlowVersion}
           disabled={isDisabled}
+          onlyTu
         />
       ) : (
         <AssignMachineRowAction

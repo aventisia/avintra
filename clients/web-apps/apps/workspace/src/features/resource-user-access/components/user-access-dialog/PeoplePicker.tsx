@@ -15,18 +15,20 @@ import { SharePerson } from "../../types/resource-user-access-draft.type";
 type PeoplePickerProps = {
   draft: ResourceUserAccessDraft;
   spaceName: string;
+  /** Only list people who hold the Tenant User role; off for every picker but the Published share. */
+  onlyTu?: boolean;
 };
 
 /**
  * Search combobox for adding people from the current space to the share list.
  */
-export const PeoplePicker = ({ draft, spaceName }: PeoplePickerProps) => {
+export const PeoplePicker = ({ draft, spaceName, onlyTu = false }: PeoplePickerProps) => {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   const trimmedQuery = query.trim();
   const debouncedQuery = useDebounce(trimmedQuery);
-  const { data, isFetching, isError } = useSearchUsersList(debouncedQuery);
+  const { data, isFetching, isError } = useSearchUsersList(debouncedQuery, onlyTu);
   const isSearching = trimmedQuery !== debouncedQuery || isFetching;
 
   const people = useMemo<SharePerson[]>(

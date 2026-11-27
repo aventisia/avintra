@@ -1,16 +1,18 @@
 import {
+  TABLE_CN_ACTIONS_COLUMN_ID,
   TableCNColumnHeader,
-  getTableCNActionsColumn,
+  TableCNRowActionsMenu,
   getTableCNSelectColumn,
 } from "@avplatform/ui/table-cn";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 
+import { AgentRunControl, AgentStatusBadge } from "../components/run-agent/AgentRunControl";
 import { AGENT_PLATFORMS, AGENT_TYPES } from "../constants/agent-attributes.constant";
 import { getColumnName } from "../constants/column-display-names";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
 import { AgentFilterOptions } from "../types/agent-filter-options.type";
+import { AgentRow } from "../types/agent-row.type";
 import { getAgentPlatform } from "../utils/agent-attributes.util";
 import {
   AccessLevelCell,
@@ -23,7 +25,7 @@ import { FlowRowActionItems } from "./flow-row-actions/FlowRowActionItems";
 
 const renderHeader =
   (columnKey: string) =>
-  ({ column }: HeaderContext<FlowsTableDto, unknown>) => (
+  ({ column }: HeaderContext<AgentRow, unknown>) => (
     <TableCNColumnHeader column={column} label={getColumnName(columnKey)} />
   );
 
@@ -33,6 +35,10 @@ type FlowsTableColumnsOptions = {
   filterOptions: AgentFilterOptions;
   /** Folders by id; when given, agents in a folder show a chip linking to it. */
   folderById?: ReadonlyMap<string, FoldersTableRowDto>;
+  /** False for TU-only callers: no selection, no developer actions. */
+  canManageActions?: boolean;
+  /** True when the caller holds TU: show machine status and the Run action. */
+  canRun?: boolean;
 };
 
 /**
@@ -41,8 +47,12 @@ type FlowsTableColumnsOptions = {
 export const flowsTableColumns = ({
   filterOptions,
   folderById,
-}: FlowsTableColumnsOptions): ColumnDef<FlowsTableDto>[] => [
-  getTableCNSelectColumn<FlowsTableDto>({ enableHiding: true, meta: getLabelMeta("select") }),
+  canManageActions = true,
+  canRun = false,
+}: FlowsTableColumnsOptions): ColumnDef<AgentRow>[] => [
+  ...(canManageActions
+    ? [getTableCNSelectColumn<AgentRow>({ enableHiding: true, meta: getLabelMeta("select") })]
+    : []),
   {
     accessorKey: "name",
     meta: getLabelMeta("name"),
@@ -52,9 +62,33 @@ export const flowsTableColumns = ({
         flow={row.original}
         searchText={String(table.getState().globalFilter ?? "")}
         folder={row.original.folderId ? folderById?.get(row.original.folderId) : undefined}
+        showLink={row.original.hasStudioLink !== false}
       />
     ),
   },
+  ...(canRun
+    ? [
+        {
+          id: "status",
+          accessorFn: (row: AgentRow) => row.run?.status,
+          meta: getLabelMeta("status"),
+          header: renderHeader("status"),
+          cell: ({ row }: { row: { original: AgentRow } }) => (
+            <AgentStatusBadge status={row.original.run?.status} />
+          ),
+        },
+        {
+          id: "run",
+          meta: getLabelMeta("run"),
+          header: renderHeader("run"),
+          enableSorting: false,
+          cell: ({ row }: { row: { original: AgentRow } }) =>
+            row.original.run ? (
+              <AgentRunControl run={row.original.run} flowName={row.original.name} />
+            ) : null,
+        },
+      ]
+    : []),
   {
     accessorKey: "type",
     meta: {
@@ -105,19 +139,33 @@ export const flowsTableColumns = ({
       </span>
     ),
   },
-  getTableCNActionsColumn<FlowsTableDto>({
-    getAriaLabel: (row) => `Open actions for ${row.original.name}`,
-    menuClassName: "w-44 min-w-44",
-    actions: ({ row }) => (
-      <FlowRowActionItems
-        rowId={row.original.id || "rowId"}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
-        folderId={row.original.folderId}
-        isArchived={row.original.isArchived || false}
-        isPublished={row.original.isPublished || false}
-      />
-    ),
-  }),
+  ...(canManageActions
+    ? [
+        {
+          id: TABLE_CN_ACTIONS_COLUMN_ID,
+          header: () => <span className="sr-only">Actions</span>,
+          cell: ({ row }: { row: { original: AgentRow } }) =>
+            row.original.hasStudioLink === false ? null : (
+              <TableCNRowActionsMenu
+                ariaLabel={`Open actions for ${row.original.name}`}
+                contentClassName="w-44 min-w-44"
+              >
+                <FlowRowActionItems
+                  rowId={row.original.id || "rowId"}
+                  name={row.original.name}
+                  accessLevel={row.original.accessLevel}
+                  isTenantWideAccess={row.original.isTenantWideAccess || false}
+                  folderId={row.original.folderId}
+                  isArchived={row.original.isArchived || false}
+                  isPublished={row.original.isPublished || false}
+                />
+              </TableCNRowActionsMenu>
+            ),
+          size: 48,
+          enableHiding: false,
+          enableSorting: false,
+          meta: { headerClassName: "pl-1 pr-3", cellClassName: "pl-1 pr-3" },
+        },
+      ]
+    : []),
 ];

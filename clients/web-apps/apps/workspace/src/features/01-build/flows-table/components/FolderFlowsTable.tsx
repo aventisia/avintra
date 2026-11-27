@@ -12,18 +12,14 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 import ResourceUserAccessDialog from "@/features/resource-user-access/components/ResourceUserAccessDialog";
 
 import { FLOWS_QUERY_KEY, FOLDER_NOT_FOUND_TOAST_ID } from "../constants";
+import { useAgentRoles } from "../hooks/useAgentRoles.hook";
+import { useAgentRows } from "../hooks/useAgentRows.hook";
 import { useAgentsPagePaths } from "../hooks/useAgentsPagePaths.hook";
 import { useAgentsTable } from "../hooks/useAgentsTable.hook";
-import { useFetchFlows } from "../hooks/useFetchFlows";
-import { useFetchFolders } from "../hooks/useFetchFolders.hook";
 import { useFlowsView } from "../hooks/useFlowsView";
 import { useShowArchived } from "../hooks/useShowArchived.hook";
 import { getAgentFilterOptions } from "../utils/agent-attributes.util";
-import {
-  buildFolderPageAgents,
-  buildFolderSummaries,
-  filterArchivedAgents,
-} from "../utils/agents-list-items.util";
+import { buildFolderPageAgents, buildFolderSummaries } from "../utils/agents-list-items.util";
 import { AgentsCreateButton } from "./AgentsCreateButton";
 import { AgentsListView } from "./AgentsListView";
 import { FlowsGridSkeleton } from "./FlowsGridSkeleton";
@@ -39,23 +35,19 @@ import { FolderHero } from "./folder-page/FolderHero";
 export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
   const navigate = useNavigate();
   const { agentsPagePath } = useAgentsPagePaths();
+  const { isTuOnly } = useAgentRoles();
+
+  useEffect(() => {
+    if (isTuOnly) navigate(agentsPagePath, { replace: true });
+  }, [isTuOnly, navigate, agentsPagePath]);
 
   const { view, setView } = useFlowsView();
 
-  const { data, isLoading: isFlowsLoading } = useFetchFlows();
-  const { folders, isSuccess: isFoldersLoaded, isError: isFoldersFailed } = useFetchFolders();
-
   const { showArchived, setShowArchived } = useShowArchived();
-  const allFlows = isFlowsLoading ? undefined : data?.data;
-  const flows = useMemo(
-    () => filterArchivedAgents(allFlows, showArchived),
-    [allFlows, showArchived],
-  );
+  const { allRows, rows, folders, isFoldersLoaded, isFoldersFailed, isListReady, hasTU } =
+    useAgentRows(showArchived);
 
-  const folderSummaries = useMemo(
-    () => buildFolderSummaries(flows ?? [], folders ?? []),
-    [flows, folders],
-  );
+  const folderSummaries = useMemo(() => buildFolderSummaries(rows, folders), [rows, folders]);
   const currentSummary = folderSummaries.find(({ folder }) => folder.id === folderId);
   const isFolderMissing = !currentSummary && (isFoldersLoaded || isFoldersFailed);
 
@@ -71,16 +63,16 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
   const [searchText, setSearchText] = useState("");
   const isSearching = searchText.trim() !== "";
 
-  const agents = useMemo(() => buildFolderPageAgents(flows ?? [], folderId), [flows, folderId]);
+  const agents = useMemo(() => buildFolderPageAgents(rows, folderId), [rows, folderId]);
   const archivedCount = useMemo(
-    () => buildFolderPageAgents(allFlows ?? [], folderId).filter((flow) => flow.isArchived).length,
-    [allFlows, folderId],
+    () => buildFolderPageAgents(allRows, folderId).filter((flow) => flow.isArchived).length,
+    [allRows, folderId],
   );
 
   const filterOptions = useMemo(() => getAgentFilterOptions(agents), [agents]);
   const flowsTableColumnsArray = useMemo(
-    () => flowsTableColumns({ filterOptions }),
-    [filterOptions],
+    () => flowsTableColumns({ filterOptions, canRun: hasTU }),
+    [filterOptions, hasTU],
   );
 
   const { table } = useAgentsTable({
@@ -94,7 +86,7 @@ export const FolderFlowsTable = ({ folderId }: { folderId: string }) => {
 
   return (
     <>
-      {flows && currentSummary ? (
+      {isListReady && currentSummary ? (
         <div className="space-y-5 pb-4 pt-[17px]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2">
