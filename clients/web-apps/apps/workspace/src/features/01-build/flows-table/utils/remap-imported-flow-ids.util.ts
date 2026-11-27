@@ -5,21 +5,24 @@ import { validateImportedFlowGraph } from "./flow-import.util";
 
 type ImportedNode = Node<Record<string, unknown>>;
 
-const NODE_REFERENCE_KEYS = [
-  "mergeBranchesNodeId",
-  "defaultBranchNodeId",
-  "customParentId",
-  "groupId",
-];
+const readGroupId = (data: unknown): string | undefined => {
+  if (!data || typeof data !== "object") return undefined;
+  const groupId = (data as Record<string, unknown>).groupId;
+  return typeof groupId === "string" ? groupId : undefined;
+};
 
-const remapNodeReference = (value: unknown, nodeIdMap: Map<string, string>) =>
-  typeof value === "string" ? nodeIdMap.get(value) || value : value;
+const isTemporaryEdge = (edge: Edge): boolean =>
+  (edge.data as Record<string, unknown> | undefined)?.isTemporary === true;
 
-// IMPORTANT NOTE: copied from the Studio's import-flow remap, which the workspace app cannot
-// import; like the Studio copy it validates the remapped graph, since the parser runs the same
-// check before the agent is created and this copy repeats it after ids are reassigned.
+// IMPORTANT NOTE: group markers (`group-<timestamp>`, minted by Studio when nodes are grouped)
+// are canvas-scoped ids like node and edge ids, not references to outside the canvas, so they get
+// fresh values on import exactly like node and edge ids do. Temporary bypass edges keep the
+// `temp-<group>-<target>` shape Studio's expand/collapse/ungroup cleanup matches on, so they are
+// rewritten from their parts instead of getting unrelated UUIDs.
 /**
- * Gives an imported canvas fresh node and edge ids and repoints every reference to them.
+ * Gives an imported canvas fresh node, edge, and group ids and rewrites every occurrence of the
+ * old ids across the whole canvas, so the graph stays internally consistent without allowlisting
+ * each id-carrying key.
  */
 export const remapImportedFlowIds = (
   flow: FlowImportCanvas,
@@ -27,76 +30,36 @@ export const remapImportedFlowIds = (
 ) => {
   const nodeIdMap = new Map<string, string>();
   const edgeIdMap = new Map<string, string>();
+  const groupIdMap = new Map<string, string>();
 
-  (flow.nodes as ImportedNode[]).forEach((node) =>
-    nodeIdMap.set(node.id, globalThis.crypto.randomUUID()),
-  );
-  flow.edges.forEach((edge) => edgeIdMap.set(edge.id, globalThis.crypto.randomUUID()));
-
-  const importedNodeIds = new Set(nodeIdMap.keys());
-
-  const nodes = (flow.nodes as ImportedNode[]).map((node) => {
-    const data = { ...node.data } as Record<string, unknown>;
-
-    NODE_REFERENCE_KEYS.forEach((key) => {
-      if (key in data) {
-        const value = data[key];
-        if (key === "groupId" && typeof value === "string" && !importedNodeIds.has(value)) {
-          delete data[key];
-        } else {
-          data[key] = remapNodeReference(value, nodeIdMap);
-        }
-      }
-    });
-
-    if (Array.isArray(data.branches)) {
-      data.branches = data.branches.map((branchId) => remapNodeReference(branchId, nodeIdMap));
+  const mintGroupId = (groupId: string) => {
+    if (!groupIdMap.has(groupId)) {
+      groupIdMap.set(groupId, `group-${Date.now()}-${groupIdMap.size}`);
     }
-
-    if ("conditional2DefaultBranchEdgeId" in data) {
-      const edgeRef = data.conditional2DefaultBranchEdgeId;
-      data.conditional2DefaultBranchEdgeId =
-        typeof edgeRef === "string" ? edgeIdMap.get(edgeRef) || edgeRef : edgeRef;
-    }
-
-    const parentId = remapNodeReference(node.parentId, nodeIdMap);
-
-    return {
-      ...node,
-      id: nodeIdMap.get(node.id) || node.id,
-      data,
-      ...(typeof parentId === "string" ? { parentId } : {}),
-    };
-  });
-
-  const remapMarkerEnd = (markerEnd: unknown, oldEdgeId: string, newEdgeId: string): unknown => {
-    if (typeof markerEnd === "string") {
-      return markerEnd.replace(oldEdgeId, newEdgeId);
-    }
-    if (markerEnd && typeof markerEnd === "object" && "id" in markerEnd) {
-      const marker = markerEnd as { id?: string };
-      if (marker.id === oldEdgeId) {
-        return { ...marker, id: newEdgeId };
-      }
-    }
-    return markerEnd;
   };
 
-  const edges = flow.edges.map((edge) => {
-    const newEdgeId = edgeIdMap.get(edge.id) || edge.id;
-    const newEdge: Edge = {
-      ...edge,
-      id: newEdgeId,
-      source: nodeIdMap.get(edge.source) || edge.source,
-      target: nodeIdMap.get(edge.target) || edge.target,
-    };
-
-    if (edge.markerEnd !== undefined) {
-      newEdge.markerEnd = remapMarkerEnd(edge.markerEnd, edge.id, newEdgeId) as Edge["markerEnd"];
-    }
-
-    return newEdge;
+  (flow.nodes as ImportedNode[]).forEach((node) => {
+    nodeIdMap.set(node.id, globalThis.crypto.randomUUID());
+    const groupId = readGroupId(node.data);
+    if (groupId) mintGroupId(groupId);
   });
+
+  flow.edges.forEach((edge) => {
+    if (!isTemporaryEdge(edge)) edgeIdMap.set(edge.id, globalThis.crypto.randomUUID());
+    const groupId = readGroupId(edge.data);
+    if (groupId) mintGroupId(groupId);
+  });
+
+  const replacements = [...nodeIdMap, ...edgeIdMap, ...groupIdMap].sort(
+    ([oldA], [oldB]) => oldB.length - oldA.length,
+  );
+
+  const remappedCanvas = JSON.parse(
+    replacements.reduce(
+      (json, [oldId, newId]) => json.split(oldId).join(newId),
+      JSON.stringify(flow),
+    ),
+  ) as FlowImportCanvas;
 
   const remappedFlowVariablesObject = flowVariablesObject.map((flowVariable) => ({
     ...flowVariable,
@@ -104,17 +67,21 @@ export const remapImportedFlowIds = (
   }));
 
   const graphError = validateImportedFlowGraph(
-    (nodes as ImportedNode[]).map((node) => ({
+    (remappedCanvas.nodes as ImportedNode[]).map((node) => ({
       id: node.id,
       type: node.type,
       data: node.data as Record<string, unknown> | undefined,
     })),
-    edges.map((edge) => ({ id: edge.id, source: edge.source, target: edge.target })),
+    (remappedCanvas.edges as Edge[]).map((edge) => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+    })),
   );
   if (graphError) throw new Error(graphError);
 
   return {
-    reactFlowObject: { ...flow, nodes: nodes as Node[], edges },
+    reactFlowObject: remappedCanvas,
     flowVariablesObject: remappedFlowVariablesObject,
   };
 };
