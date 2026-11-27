@@ -29,13 +29,14 @@ const SKIP_REFRESH_URLS = [
   "/me/refresh-session",
   "/me/my-session",
   "/me/logoff",
+  "/auth/desktop/exchange",
 ];
 
 const shouldSkipRefresh = (url: string) => SKIP_REFRESH_URLS.some((path) => url.endsWith(path));
 
-// Boot-time requests that handle their own failures and must not raise global notifications
-// (e.g. the optional branding endpoint falls back to defaults silently).
-const SKIP_ERROR_NOTIFICATION_URLS = ["/branding"];
+// Requests that handle their own failures and must not raise global notifications: the optional
+// branding endpoint falls back to defaults, and the desktop exchange landing shows its own error.
+const SKIP_ERROR_NOTIFICATION_URLS = ["/branding", "/auth/desktop/exchange"];
 
 const shouldSkipErrorNotification = (url: string) =>
   SKIP_ERROR_NOTIFICATION_URLS.some((path) => url.endsWith(path));

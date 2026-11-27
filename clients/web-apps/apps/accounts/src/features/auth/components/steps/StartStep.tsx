@@ -1,6 +1,5 @@
 import { SeparatorWithText } from "@avplatform/ui";
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
-import { IS_TAURI } from "@avplatform/ui/constants";
 import { Form, InputField } from "@avplatform/ui/form";
 import { useCarryParams } from "@avplatform/ui/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +7,8 @@ import { EnvelopeSimpleIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
+
+import { hasDesktopIntent } from "@/constants/desktop-intent.util";
 
 import { emailFormSchema } from "../../constants/auth-zod-schemas";
 import { useDiscoverAccountMutation } from "../../hooks/useDiscoverAccountMutation.hook";
@@ -78,8 +79,9 @@ const StartStep = ({ intent }: StartStepProps) => {
   const hasStoreEmail = useAuthStore((state) => Boolean(state.email));
   const [lastSignInMethod] = useState(getLastSignInMethod);
   const [isEmailOpen, setIsEmailOpen] = useState(
-    () => IS_TAURI || hasStoreEmail || lastSignInMethod === "email",
+    () => hasStoreEmail || lastSignInMethod === "email",
   );
+  const isDesktop = hasDesktopIntent();
   const { socialSignInMutation, pendingProvider } = useSocialSignInMutation();
 
   const { title, description } = COPY[intent];
@@ -90,7 +92,7 @@ const StartStep = ({ intent }: StartStepProps) => {
       description={description}
       footer={
         intent === "sign-in" ? (
-          !IS_TAURI && (
+          !isDesktop && (
             <>
               New here?
               <AuthRouteLink to={withQueryParams("/create-account")} onClick={reset}>
@@ -109,16 +111,12 @@ const StartStep = ({ intent }: StartStepProps) => {
       }
     >
       <div className="flex flex-col gap-5">
-        {!IS_TAURI && (
-          <>
-            <SocialButtons
-              onProviderClick={socialSignInMutation}
-              pendingProvider={pendingProvider}
-              lastUsedProvider={isSocialProvider(lastSignInMethod) ? lastSignInMethod : null}
-            />
-            <SeparatorWithText overlayText="or" />
-          </>
-        )}
+        <SocialButtons
+          onProviderClick={socialSignInMutation}
+          pendingProvider={pendingProvider}
+          lastUsedProvider={isSocialProvider(lastSignInMethod) ? lastSignInMethod : null}
+        />
+        <SeparatorWithText overlayText="or" />
 
         {isEmailOpen ? (
           <EmailForm intent={intent} />

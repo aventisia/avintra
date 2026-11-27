@@ -1,0 +1,47 @@
+meta {
+  name: Mint a desktop sign-in code
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-rfc7636-example",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://127.0.0.1:49152/"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns a single-use code", function() {
+    const code = res.getBody().data.code;
+
+    expect(code).to.be.a("string");
+    expect(code.length).to.be.greaterThan(32);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("DESKTOP_SIGN_IN_CODE", res.getBody().data.code);
+  }
+}
+
+docs {
+  > Happy-path mint for the confirmed browser session. The state and PKCE pair are the RFC 7636 example
+  > values, so the verifier at exchange is known. The code lives 5 minutes and is consumed on first read.
+}

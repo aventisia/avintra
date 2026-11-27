@@ -1,0 +1,50 @@
+meta {
+  name: Exchange the desktop sign-in code for a session
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/exchange
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code": "{{DESKTOP_SIGN_IN_CODE}}",
+    "state": "desktop-state-rfc7636-example",
+    "codeVerifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("creates a new user session", function() {
+    expect(res.getBody().message).to.equal("New session has been created successfully.");
+  });
+
+  test("returns the session the cookie and header clients share", function() {
+    const session = res.getBody().data;
+
+    expect(session.accessToken).to.be.a("string");
+    expect(session.accessToken.length).to.be.greaterThan(100);
+    expect(session.refreshToken).to.be.a("string");
+    expect(session.refreshToken.length).to.be.greaterThan(20);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("DESKTOP_ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > The exchange runs unauthenticated: the single-use code is the bearer credential. The new session is
+  > created through the normal session issuance, so the exchange response also sets the four session
+  > cookies for this origin and returns the same `UserSessionDto` a cookie or header client uses.
+}

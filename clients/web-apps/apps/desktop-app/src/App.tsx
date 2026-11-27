@@ -1,45 +1,40 @@
 import { ThemeSwitcher } from "@avplatform/layout/header";
-import { Button } from "@avplatform/ui/buttons";
 import { useThemeStore } from "@avplatform/ui/stores";
-import { ArrowSquareOutIcon } from "@phosphor-icons/react";
 import { invoke } from "@tauri-apps/api/core";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { type ReactNode, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import ServiceUrlPage from "./ServiceUrlPage";
+import SignInPage from "./SignInPage";
 import { TauriAppFooter } from "./TauriAppFooter";
+import WaitingPage from "./WaitingPage";
 import { GetRunnerApp } from "./components/GetRunnerApp";
 import { UpdateDesktopApp } from "./components/UpdateDesktopApp";
 import { UpdateRunnerApp } from "./components/UpdateRunnerApp";
+import { useDesktopSignIn } from "./hooks/useDesktopSignIn.hook";
 import { type RunnerCheckResult } from "./hooks/useRunnerProvisioning";
-import {
-  clearSetupState,
-  getSavedServiceUrl,
-  getSavedSetupStep,
-  isTauriEnv,
-  setSavedServiceUrl,
-  setSetupStep,
-} from "./lib/setupStore";
+import { useShellCloseRequest } from "./hooks/useShellCloseRequest.hook";
 
 type RunnerStep = "install" | "update";
 
 /** Union of all top-level setup states. */
-type Step = "service-url" | "desktop-update" | { type: "runner"; kind: RunnerStep };
-
-const LS_BASE_URL_KEY = "aventisia:baseUrl";
+type Step =
+  | "service-url"
+  | "desktop-update"
+  | "sign-in"
+  | { type: "runner"; kind: RunnerStep }
+  | { type: "waiting" };
 
 function App() {
   return <SetupFlow />;
 }
 
-function AppHeader({ children }: { children?: ReactNode }) {
+function AppHeader() {
   const isDark = useThemeStore((state) => state.isDark);
 
   return (
     <header className="absolute left-1 right-0 top-3 flex items-center justify-between px-8 py-6">
       <img src={isDark ? "/logo_light.svg" : "/logo.svg"} alt="Aventisia" className="h-7" />
       <div className="flex items-center gap-2">
-        {children}
         <ThemeSwitcher className="px-0" />
       </div>
     </header>
@@ -47,57 +42,19 @@ function AppHeader({ children }: { children?: ReactNode }) {
 }
 
 function SetupFlow() {
+  useShellCloseRequest();
   const [step, setStep] = useState<Step>("service-url");
   const [appBaseUrl, setAppBaseUrl] = useState("");
   const [checkResult, setCheckResult] = useState<RunnerCheckResult | null>(null);
-  const [isResuming, setIsResuming] = useState(true);
 
-  /**
-   * On startup, check if the app is resuming after a desktop update restart.
-   * If a saved service URL and step exist, restore them so the user does not
-   * have to re-enter the URL or re-check the desktop app.
-   */
-  useEffect(() => {
-    let cancelled = false;
-
-    async function resume() {
-      const savedStep = await getSavedSetupStep();
-      const savedUrl = await getSavedServiceUrl();
-
-      if (cancelled) return;
-
-      if (savedStep === "runner" && savedUrl) {
-        // Resume directly at runner check after a desktop update restart.
-        setAppBaseUrl(savedUrl);
-        setStep({ type: "runner", kind: "install" });
-        void runRunnerCheck(savedUrl);
-      } else if (savedStep === "desktop-update" && savedUrl) {
-        // Resume at the desktop update step.
-        setAppBaseUrl(savedUrl);
-        setStep("desktop-update");
-      } else {
-        // Fresh start: prefer localStorage for the URL if it exists.
-        const localUrl = localStorage.getItem(LS_BASE_URL_KEY);
-        if (localUrl) {
-          setAppBaseUrl(localUrl);
-        }
-      }
-
-      setIsResuming(false);
-    }
-
-    void resume();
-    return () => {
-      cancelled = true;
-    };
-    // runRunnerCheck is defined inside the component but has no dependencies that
-    // change between renders, so it is safe to omit from the dependency array.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleDelivered = useCallback((url: string) => {
+    window.location.href = url;
   }, []);
 
+  const desktopSignIn = useDesktopSignIn(appBaseUrl, handleDelivered);
+
   const handleRunnerAppComplete = () => {
-    void clearSetupState();
-    window.location.href = `${appBaseUrl}/accounts/login`;
+    setStep("sign-in");
   };
 
   const runRunnerCheck = async (baseUrl: string) => {
@@ -116,66 +73,43 @@ function SetupFlow() {
         type: "runner",
         kind: result.installed && result.update_available ? "update" : "install",
       });
-      await setSetupStep("runner");
       return;
     } catch {
       // Let the runner page surface the error so the user can retry.
     }
 
     setStep({ type: "runner", kind: "install" });
-    await setSetupStep("runner");
   };
 
-  const handleServiceUrlContinue = async (baseUrl: string) => {
+  const handleServiceUrlContinue = (baseUrl: string) => {
     setAppBaseUrl(baseUrl);
-    await setSavedServiceUrl(baseUrl);
-    await setSetupStep("desktop-update");
-
     setStep("desktop-update");
   };
 
-  const handleDesktopUpdateSkip = async () => {
-    await setSetupStep("runner");
-    await runRunnerCheck(appBaseUrl);
+  const handleDesktopUpdateSkip = () => {
+    void runRunnerCheck(appBaseUrl);
   };
 
-  const handleDesktopUpdateInstall = async () => {
-    // The Rust install_update command restarts the app. We keep the saved
-    // service URL and mark that we should resume at the runner check.
-    await setSetupStep("runner");
+  const handleDesktopUpdateInstall = () => {
+    // The Rust install_update command restarts the app, which starts over at the URL screen.
   };
 
-  const handleOpenWebApp = async () => {
-    try {
-      await openUrl(`${appBaseUrl}/accounts/login`);
-    } catch (err) {
-      console.error("Open web app error:", err);
+  const handleSignIn = async () => {
+    const attempt = await desktopSignIn.start();
+
+    if (attempt) {
+      setStep({ type: "waiting" });
     }
   };
 
-  if (isResuming) {
-    return (
-      <div className="relative flex min-h-screen flex-col bg-bg text-ink">
-        <AppHeader />
-        <div className="flex flex-1 items-center justify-center p-6">
-          <span className="text-body text-muted-foreground">Resuming setup...</span>
-        </div>
-      </div>
-    );
-  }
+  const handleSignInCancel = async () => {
+    await desktopSignIn.cancel();
+    setStep("sign-in");
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col bg-bg pb-8 text-ink">
-      <AppHeader>
-        {isTauriEnv() && step !== "service-url" && appBaseUrl !== "" && (
-          <Button type="button" variant="outline" size="sm" onClick={handleOpenWebApp}>
-            <span className="inline-flex items-center gap-1.5">
-              Open web app
-              <ArrowSquareOutIcon className="h-4 w-4" />
-            </span>
-          </Button>
-        )}
-      </AppHeader>
+      <AppHeader />
 
       {step === "service-url" ? (
         <ServiceUrlPage onContinue={handleServiceUrlContinue} />
@@ -184,6 +118,17 @@ function SetupFlow() {
           domain={appBaseUrl}
           onSkip={handleDesktopUpdateSkip}
           onInstall={handleDesktopUpdateInstall}
+        />
+      ) : step === "sign-in" ? (
+        <SignInPage
+          isStarting={desktopSignIn.isStarting}
+          error={desktopSignIn.error}
+          onSignIn={handleSignIn}
+        />
+      ) : step.type === "waiting" ? (
+        <WaitingPage
+          onOpenBrowserAgain={desktopSignIn.openBrowserAgain}
+          onCancel={handleSignInCancel}
         />
       ) : step.type === "runner" ? (
         step.kind === "install" ? (

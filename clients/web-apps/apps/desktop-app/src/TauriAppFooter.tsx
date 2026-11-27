@@ -1,8 +1,7 @@
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-
-import { isTauriEnv } from "./lib/setupStore";
 
 interface UserMetaData {
   os_id: string;
@@ -20,7 +19,7 @@ const TauriAppFooter = () => {
     let isMounted = true;
 
     const getUserMetadata = async () => {
-      if (!isTauriEnv()) {
+      if (!IS_TAURI) {
         if (isMounted) {
           setIsLoading(false);
         }
@@ -57,7 +56,7 @@ const TauriAppFooter = () => {
     os_id: "browser",
   };
 
-  if (!isTauriEnv() && !import.meta.env.DEV) {
+  if (!IS_TAURI && !import.meta.env.DEV) {
     return null;
   }
 

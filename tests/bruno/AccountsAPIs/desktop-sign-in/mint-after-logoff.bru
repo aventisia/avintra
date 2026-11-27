@@ -1,0 +1,38 @@
+meta {
+  name: Mint refuses a token whose session was ended
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-after-logoff",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://127.0.0.1:49155/"
+  }
+}
+
+tests {
+  test("responds with 401", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("names the ended session", function() {
+    expect(res.getBody()).to.contain("Session expired.");
+  });
+}
+
+docs {
+  > The token is still a validly signed JWT, but its session was terminated by `Log off`, so minting a
+  > desktop code is refused. This is the live-session check the mint applies on top of the JWT signature.
+}

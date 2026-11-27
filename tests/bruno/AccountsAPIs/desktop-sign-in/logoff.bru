@@ -1,0 +1,28 @@
+meta {
+  name: Log off the browser session that minted the codes
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{ACCOUNTS_API_BASE_URL}}/me/logoff
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+tests {
+  test("ends the current session", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+docs {
+  > Terminates exactly the session whose token `Login` returned (the `sid` claim), like the app's own sign-out.
+  > Nothing else is affected: the exchange-created desktop session from earlier in this run stays live.
+  >
+  > `Mint after logoff` then proves the mint refuses a token whose server session has ended.
+}

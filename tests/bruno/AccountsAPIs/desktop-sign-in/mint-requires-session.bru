@@ -1,0 +1,31 @@
+meta {
+  name: Mint requires a browser session
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "state": "desktop-state-rfc7636-example",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://127.0.0.1:49152/"
+  }
+}
+
+tests {
+  test("responds with 401", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+}
+
+docs {
+  > The desktop sign-in code is minted only for a browser session that has already signed in, so an
+  > unauthenticated caller gets the plain 401 the JwtBearer challenge writes. Run this request first in
+  > a fresh CLI run: the later requests use the token `Login` returns.
+}

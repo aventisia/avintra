@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop-sign-in",
+  "description": "Grants the desktop sign-in commands to the app's own screens only, never to remote pages.",
+  "windows": ["main"],
+  "local": true,
+  "permissions": [
+    "allow-start-desktop-sign-in",
+    "allow-get-desktop-sign-in-code",
+    "allow-cancel-desktop-sign-in"
+  ]
+}

@@ -1,0 +1,35 @@
+meta {
+  name: Exchange refuses an unknown or expired code
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/exchange
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "code": "desktop-sign-in-code-that-was-never-minted",
+    "state": "desktop-state-rfc7636-example",
+    "codeVerifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("refuses the unknown code", function() {
+    expect(res.getBody()).to.contain("Invalid or expired desktop sign-in code.");
+  });
+}
+
+docs {
+  > A code that was never minted and a code whose 5-minute entry has expired are the same lookup miss, so
+  > both answer the same 400. The run does not wait 5 minutes; real expiry is verified manually against the
+  > running stack.
+}

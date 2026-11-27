@@ -3,10 +3,7 @@ import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import {
-  buildOnboardingUrl,
-  resolvePostLoginDestination,
-} from "@/constants/post-login-destination";
+import { buildOnboardingUrl } from "@/constants/post-login-destination";
 import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
@@ -18,7 +15,7 @@ import {
 import { authenticateUser } from "../apis/auth.apis";
 import { useAuthStore } from "../stores/auth-store";
 import { rememberSignInMethod } from "../utils/last-sign-in-method.util";
-import { buildRedirectPath } from "../utils/sign-in-destination.util";
+import { getPostLoginPath } from "../utils/sign-in-destination.util";
 
 type UseSignInMutationOptions = {
   /** Shows a rejected sign-in, such as a wrong password; a toast when omitted */
@@ -63,7 +60,7 @@ const useSignInMutation = ({ onRejected }: UseSignInMutationOptions = {}) => {
       reset();
       markFreshLogin();
       const userSession = setUserSessionLocally(data);
-      navigate(buildRedirectPath(resolvePostLoginDestination(userSession.email)));
+      navigate(getPostLoginPath(userSession.email));
     },
     onError: (error: unknown) => {
       const message = String(error);

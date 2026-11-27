@@ -1,7 +1,8 @@
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { type RightContainerProps } from "@/components/ui/RightContainer";
+import { isSwitchingDesktopAccount, rememberDesktopIntent } from "@/constants/desktop-intent.util";
 import { RedirectPage } from "@/pages/default-pages";
 
 import { useValidateExistingSession } from "../hooks/useValidateExistingSession.hook";
@@ -65,7 +66,9 @@ const AuthMain = ({ intent }: AuthMainProps) => {
       changeEmail: state.changeEmail,
     })),
   );
-  const { isPending } = useValidateExistingSession({ enabled: intent === "sign-in" });
+  const { isPending } = useValidateExistingSession({
+    enabled: intent === "sign-in" && !isSwitchingDesktopAccount(),
+  });
 
   const isStaleForReset = intent === "reset" && !isResetStep(storeStep, purpose);
   const step = isStaleForReset ? "start" : storeStep;
@@ -73,6 +76,10 @@ const AuthMain = ({ intent }: AuthMainProps) => {
   useLayoutEffect(() => {
     if (isStaleForReset) changeEmail();
   }, [isStaleForReset, changeEmail]);
+
+  useEffect(() => {
+    rememberDesktopIntent();
+  }, []);
 
   if (isPending) return <RedirectPage />;
 

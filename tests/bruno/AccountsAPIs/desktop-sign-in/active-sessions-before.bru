@@ -1,0 +1,32 @@
+meta {
+  name: Count active sessions before the exchange
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/me/active-sessions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("ACTIVE_SESSION_COUNT_BEFORE", res.getBody().data.length);
+  }
+}
+
+docs {
+  > Records how many sessions the account holds before the desktop exchange, so the exchange request can
+  > assert that it created exactly one more.
+}

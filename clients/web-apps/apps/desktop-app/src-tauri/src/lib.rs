@@ -1,6 +1,7 @@
 use tauri::Manager;
 
 mod commands;
+mod desktop_sign_in;
 mod runner_management;
 mod updater_commands;
 mod websocket;
@@ -25,6 +26,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         // Register the PendingUpdate wrapper so commands can find it
         .manage(PendingUpdate::new())
+        .manage(desktop_sign_in::DesktopSignInState::default())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
@@ -33,6 +35,9 @@ pub fn run() {
             commands::get_user_metadata,
             runner_management::check_runner_app,
             runner_management::download_runner_app,
+            desktop_sign_in::start_desktop_sign_in,
+            desktop_sign_in::get_desktop_sign_in_code,
+            desktop_sign_in::cancel_desktop_sign_in,
             websocket::get_websocket_port,
             // updater commands
             updater_commands::check_update_for_domain,

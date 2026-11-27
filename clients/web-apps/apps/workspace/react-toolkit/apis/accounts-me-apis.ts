@@ -27,8 +27,8 @@ const refreshSession = () => {
     )
     .then((res) => res.data)
     .catch((error) => {
-      // Show error toast
-      toast.error(error);
+      // The interceptor already toasts HTTP failures; only its returned messages still need showing.
+      if (typeof error === "string") toast.error(error);
 
       // Redirect to login page after 2 seconds
       redirectToLoginOn401Util();

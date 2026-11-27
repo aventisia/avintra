@@ -1,3 +1,5 @@
+import { withDesktopIntent } from "./desktop-intent.util";
+
 /**
  * The email domain that identifies Aventisia employees. Users logging in with
  * this domain are routed to the Atlas app; everyone else goes to the workspace app.
@@ -67,7 +69,8 @@ const ONBOARDING_QUERY_KEYS = ["plan", "currency", "frequency"];
  * Builds the onboarding URL, keeping the chosen plan, currency and frequency from the
  * current query string. Social sign-in loses the query on the provider round trip, so
  * callers with a server-confirmed intent pass `fallbackPlan` to land on a generic Pro
- * checkout instead of bouncing back to workspace.
+ * checkout instead of bouncing back to workspace. A desktop hand-back keeps its attempt
+ * through onboarding so the confirmation is reached after the plan step.
  */
 const buildOnboardingUrl = (fallbackPlan = false): string => {
   const kept = new URLSearchParams();
@@ -76,10 +79,11 @@ const buildOnboardingUrl = (fallbackPlan = false): string => {
     const value = current.get(key);
     if (value) kept.set(key, value);
   }
+  if (fallbackPlan && !kept.has("plan")) kept.set("plan", "Pro");
+  withDesktopIntent(kept);
   const base = `${import.meta.env.VITE_ACCOUNTS_PATH}onboarding`;
   const search = kept.toString();
-  if (search) return `${base}?${search}`;
-  return fallbackPlan ? `${base}?plan=Pro` : base;
+  return search ? `${base}?${search}` : base;
 };
 
 export {
