@@ -1,12 +1,11 @@
+import { escapeHtml } from "./escape-html.util";
+
 const PRINT_CSS = `
 @page { margin: 14mm; }
 body { margin: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 [data-chat-transcript] { overflow: visible !important; height: auto !important; padding: 0 !important; }
 pre, table, svg, img { break-inside: avoid; }
 `;
-
-const escapeHtml = (text: string) =>
-  text.replace(/[&<>"]/g, (char) => `&${{ "&": "amp", "<": "lt", ">": "gt", '"': "quot" }[char]};`);
 
 const stylesheetLoaded = (link: HTMLLinkElement) =>
   link.sheet

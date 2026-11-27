@@ -15,7 +15,7 @@ type MessageTarget = Pick<Window, "addEventListener" | "removeEventListener">;
  */
 export const serveHtmlToPreviewHost = (
   getHost: () => MessageEventSource | null,
-  html: string,
+  html: string | Promise<string>,
   title: string,
   listener: MessageTarget = window,
 ): (() => void) => {
@@ -23,15 +23,18 @@ export const serveHtmlToPreviewHost = (
     const host = getHost();
     if (!host || event.source !== host) return;
     if ((event.data as { type?: unknown } | null)?.type !== PREVIEW_READY) return;
-    // IMPORTANT NOTE: the host's origin is opaque under its sandbox, so no narrower target origin matches.
-    (host as Window).postMessage({ type: PREVIEW_RENDER, html, title }, "*");
+    const send = (page: string) =>
+      // IMPORTANT NOTE: the host's origin is opaque under its sandbox, so no narrower target origin matches.
+      (host as Window).postMessage({ type: PREVIEW_RENDER, html: page, title }, "*");
+    if (typeof html === "string") send(html);
+    else void html.then(send);
   };
   listener.addEventListener("message", onMessage as EventListener);
   return () => listener.removeEventListener("message", onMessage as EventListener);
 };
 
 /** Opens generated HTML in a new tab through the preview page; the page drops its opener once it renders. */
-export const openHtmlInPreviewTab = (html: string, title: string): void => {
+export const openHtmlInPreviewTab = (html: string | Promise<string>, title: string): void => {
   const tab = window.open(chatPreviewHostUrl(), "_blank");
   if (!tab) return;
   const stop = serveHtmlToPreviewHost(() => tab, html, title);

@@ -32,12 +32,15 @@ public static class ChatArtifactsHelpers
         ["tsv"] = ("Data.tsv", "text/tab-separated-values"),
         ["markdown"] = ("Document.md", "text/markdown"),
         ["md"] = ("Document.md", "text/markdown"),
+        ["jsx"] = ("Generated App.jsx", "text/jsx"),
     };
 
     // IMPORTANT NOTE: mirrors findChatFile in @avplatform/chat; the browser matches a stored file to its reply by type and UTF-8 size, so both must extract the same body.
     private static readonly Regex FileFencePattern = new(
-        @"^```(html|svg|csv|tsv|markdown|md)(?:[ \t]+([^\n`]*\S))?[ \t]*\n([\s\S]*?)^```[ \t]*$",
+        @"^```(html|svg|csv|tsv|markdown|md|jsx)(?:[ \t]+([^\n`]*\S))?[ \t]*\n([\s\S]*?)^```[ \t]*$",
         RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+    private static readonly Regex ExportDefaultPattern = new(@"\bexport\s+default\b");
 
     private static readonly Regex BareHtmlPattern = new(@"^(<!doctype html|<html[\s>])[\s\S]*</html>$", RegexOptions.IgnoreCase);
     private static readonly Regex TitlePattern = new(@"<title[^>]*>([^<]*)</title>", RegexOptions.IgnoreCase);
@@ -218,14 +221,17 @@ public static class ChatArtifactsHelpers
         if (BareHtmlPattern.IsMatch(trimmed))
             return new GeneratedChatFile(NameFromContent(trimmed, FileFences["html"]), "text/html", trimmed);
 
-        var match = FileFencePattern.Match(replyText);
-        if (!match.Success)
+        var match = FileFencePattern.Matches(replyText).FirstOrDefault(IsStoredFileFence);
+        if (match is null)
             return null;
 
         var fence = FileFences[match.Groups[1].Value];
         var body = match.Groups[3].Value.Trim();
         return new GeneratedChatFile(NameFromFence(match.Groups[2].Value, fence.Name) ?? NameFromContent(body, fence), fence.ContentType, body);
     }
+
+    private static bool IsStoredFileFence(Match match) =>
+        !match.Groups[1].Value.Equals("jsx", StringComparison.OrdinalIgnoreCase) || ExportDefaultPattern.IsMatch(match.Groups[3].Value);
 
     private static string? NameFromFence(string fenceName, string fallbackName)
     {

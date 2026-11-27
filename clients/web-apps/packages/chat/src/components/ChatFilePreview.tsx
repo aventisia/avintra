@@ -34,6 +34,8 @@ import { chatProseComponents } from "../constants/chat-prose.constant";
 import { formatFileSize, parseDelimited, readDataUrl } from "../utils/chat-file.util";
 import { openHtmlInPreviewTab } from "../utils/chat-preview-host.util";
 import { defaultComparePair, sortVersions } from "../utils/chat-version-diff.util";
+import { escapeHtml } from "../utils/escape-html.util";
+import { buildJsxAppPage } from "../utils/jsx-app.util";
 import { printArtifact } from "../utils/print-chat.util";
 import { type ChatSelectionQuote } from "../utils/selection-quote.util";
 import { pngFileName, svgToPngBlob } from "../utils/svg-image.util";
@@ -41,6 +43,7 @@ import { ChatCodeBlock } from "./ChatCodeBlock";
 import { ChatCopyButton } from "./ChatCopyButton";
 import { ChatHtmlPreviewFrame } from "./ChatHtmlPreviewFrame";
 import { ChatIconButton } from "./ChatIconButton";
+import { ChatJsxPreviewFrame } from "./ChatJsxPreviewFrame";
 import { ChatQuoteSelectionButton } from "./ChatQuoteSelectionButton";
 import { ChatVersionCompare } from "./ChatVersionCompare";
 
@@ -79,13 +82,8 @@ type ChatFilePreviewProps = {
 const linkClassName =
   "inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-hover hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus [&_svg]:size-4";
 
-const escapeHtml = (text: string) =>
-  text.replace(
-    /[&<>"']/g,
-    (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!,
-  );
-
 const FILL = "position:fixed;inset:0;width:100%;height:100%;border:0";
+const SANDBOXED_PAGE_TYPES = ["text/html", "text/jsx"];
 
 const standalonePage = (file: ChatPreviewFile & { url: string }, body: string | null) => {
   const content = file.contentType.startsWith("image/")
@@ -113,12 +111,13 @@ const openInNewTab = (
   file: ChatPreviewFile & { url: string },
 ) => {
   const body = readDataUrl(file.url);
-  if (file.contentType.toLowerCase() !== "text/html" || body === null) {
+  const type = file.contentType.toLowerCase();
+  if (!SANDBOXED_PAGE_TYPES.includes(type) || body === null) {
     pointAtStandalonePage(event.currentTarget, file);
     return;
   }
   event.preventDefault();
-  openHtmlInPreviewTab(body, file.name);
+  openHtmlInPreviewTab(type === "text/jsx" ? buildJsxAppPage(body, file.name) : body, file.name);
 };
 
 const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -135,6 +134,7 @@ const useIsFullscreen = (ref: RefObject<HTMLElement>) => {
 
 const SOURCE_LANGUAGES: Record<string, string> = {
   "text/html": "html",
+  "text/jsx": "jsx",
   "image/svg+xml": "xml",
   "text/csv": "csv",
   "text/tab-separated-values": "tsv",
@@ -204,6 +204,7 @@ const renderFileBody = (file: ChatPreviewFile & { url: string }) => {
     return <iframe src={file.url} title={file.name} className="size-full border-0" />;
   if (body === null) return null;
   if (type === "text/html") return <ChatHtmlPreviewFrame html={body} title={file.name} />;
+  if (type === "text/jsx") return <ChatJsxPreviewFrame source={body} title={file.name} />;
   if (type === "text/csv" || type === "text/tab-separated-values")
     return <DelimitedTable rows={parseDelimited(body, type === "text/csv" ? "," : "\t")} />;
   if (type === "text/markdown")
@@ -300,7 +301,8 @@ export const ChatFilePreview = ({
   const canQuote =
     !!onQuoteSelection &&
     !!loadable &&
-    (showsSource || (isPrintable && loadable.contentType.toLowerCase() !== "text/html"));
+    (showsSource ||
+      (isPrintable && !SANDBOXED_PAGE_TYPES.includes(loadable.contentType.toLowerCase())));
   const isFullscreen = useIsFullscreen(sectionRef);
   const toggleFullscreen = () =>
     void (

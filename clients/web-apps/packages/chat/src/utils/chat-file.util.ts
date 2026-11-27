@@ -21,6 +21,7 @@ const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
   tsv: { name: "Data.tsv", contentType: "text/tab-separated-values" },
   markdown: { name: "Document.md", contentType: "text/markdown" },
   md: { name: "Document.md", contentType: "text/markdown" },
+  jsx: { name: "Generated App.jsx", contentType: "text/jsx" },
   "doc-spec": { name: "Document.docx", contentType: DOCX_TYPE },
   "sheet-spec": { name: "Data.xlsx", contentType: XLSX_TYPE },
   "slide-spec": { name: "Slides.pptx", contentType: PPTX_TYPE },
@@ -28,7 +29,12 @@ const FILE_FENCES: Record<string, { name: string; contentType: string }> = {
 
 // Code, ```chart and ```blueprint fences stay inline; only these languages are stored as files.
 const FILE_FENCE_PATTERN =
-  /^```(html|svg|csv|tsv|markdown|md)(?:[ \t]+[^\n`]*)?[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/im;
+  /^```(html|svg|csv|tsv|markdown|md|jsx)(?:[ \t]+[^\n`]*)?[ \t]*\n([\s\S]*?)(^```[ \t]*$|$(?![\s\S]))/gim;
+const isStoredFileFence = (match: RegExpExecArray) =>
+  match[1]!.toLowerCase() !== "jsx" || !match[3] || /\bexport\s+default\b/.test(match[2]!);
+const fileFence = {
+  exec: (text: string) => [...text.matchAll(FILE_FENCE_PATTERN)].find(isStoredFileFence) ?? null,
+};
 // IMPORTANT NOTE: mirrors the backend spec match; doc-spec bodies hold markdown that can
 // itself contain fenced code blocks, so the reply's last fence closes a doc-spec.
 const SPEC_FENCE_PATTERN =
@@ -77,7 +83,7 @@ const nameFromContent = (body: string, fallback: { name: string; contentType: st
 
 /** The leftmost complete file fence, or the leftmost still-streaming one when nothing closed. */
 const findFileMatch = (text: string) => {
-  const complete = [FILE_FENCE_PATTERN, SPEC_FENCE_PATTERN, DOC_SPEC_FENCE_PATTERN]
+  const complete = [fileFence, SPEC_FENCE_PATTERN, DOC_SPEC_FENCE_PATTERN]
     .map((pattern) => ({ pattern, match: pattern.exec(text) }))
     .filter((entry) => entry.match !== null)
     .sort((a, b) => a.match!.index - b.match!.index)[0];
@@ -90,7 +96,7 @@ const findFileMatch = (text: string) => {
       length: complete.match![0].length,
     };
 
-  const streaming = [FILE_FENCE_PATTERN, SPEC_FENCE_PATTERN, DOC_SPEC_STREAMING_PATTERN]
+  const streaming = [fileFence, SPEC_FENCE_PATTERN, DOC_SPEC_STREAMING_PATTERN]
     .map((pattern) => pattern.exec(text))
     .filter((match) => match !== null)
     .sort((a, b) => a.index - b.index)[0];

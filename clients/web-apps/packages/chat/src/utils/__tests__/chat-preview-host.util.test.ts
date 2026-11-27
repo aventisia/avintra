@@ -37,6 +37,25 @@ describe("serveHtmlToPreviewHost", () => {
     );
   });
 
+  it("sends a page that finishes building after the host is ready", async () => {
+    const host = { postMessage: vi.fn() };
+    const listener = fakeListener();
+    serveHtmlToPreviewHost(
+      () => host as unknown as Window,
+      Promise.resolve("<p>Late</p>"),
+      "App.jsx",
+      listener as never,
+    );
+
+    listener.dispatch({ source: host as unknown as Window, data: ready });
+    await Promise.resolve();
+
+    expect(host.postMessage).toHaveBeenCalledWith(
+      { type: "avintra-chat-preview:render", html: "<p>Late</p>", title: "App.jsx" },
+      "*",
+    );
+  });
+
   it("ignores ready messages from any other window", () => {
     const host = { postMessage: vi.fn() };
     const listener = fakeListener();

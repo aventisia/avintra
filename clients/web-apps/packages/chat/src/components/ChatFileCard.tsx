@@ -15,6 +15,7 @@ const iconFor = (contentType: string) =>
 const describeType = (contentType: string) =>
   ({
     "text/html": "Web page",
+    "text/jsx": "React app",
     "image/svg+xml": "Diagram",
     "text/csv": "Spreadsheet",
     "text/tab-separated-values": "Spreadsheet",

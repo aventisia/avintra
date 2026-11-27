@@ -93,6 +93,53 @@ describe("findChatFile", () => {
     expect(textBeforeChatFile(text)).toBe(text.trim());
   });
 
+  it("finds a jsx fence with the default name", () => {
+    const text = "Here you go\n```jsx\nexport default () => null;\n```";
+    expect(findChatFile(text)).toEqual({
+      name: "Generated App.jsx",
+      contentType: "text/jsx",
+      body: "export default () => null;",
+      isComplete: true,
+    });
+  });
+
+  it("names a jsx file from the fence line", () => {
+    expect(findChatFile("```jsx budget.jsx\nexport default () => null;\n```")?.name).toBe(
+      "budget.jsx",
+    );
+    expect(findChatFile("```jsx budget\nexport default () => null;\n```")?.name).toBe("budget.jsx");
+  });
+
+  it("streams an unterminated jsx fence", () => {
+    expect(findChatFile("```jsx\nexport default () => <")).toMatchObject({
+      contentType: "text/jsx",
+      body: "export default () => <",
+      isComplete: false,
+    });
+  });
+
+  it("keeps prose after a jsx fence out of the body", () => {
+    const text = "```jsx\nexport default () => null;\n```\nTry the buttons.";
+    expect(findChatFile(text)?.body).toBe("export default () => null;");
+    expect(textAfterChatFile(text)).toBe("Try the buttons.");
+  });
+
+  it("does not store jsx written inside another fence language", () => {
+    expect(findChatFile("```js\nexport default () => null;\n```")).toBeNull();
+  });
+
+  it("keeps a finished jsx example without an export default inline", () => {
+    const text = "Like this:\n```jsx\nuseEffect(() => {}, []);\n```\nThat runs once.";
+    expect(findChatFile(text)).toBeNull();
+    expect(textBeforeChatFile(text)).toBe(text);
+  });
+
+  it("stores the jsx app that follows a jsx example", () => {
+    const text = "```jsx\n<Button />\n```\nFull app:\n```jsx\nexport default () => null;\n```";
+    expect(findChatFile(text)?.body).toBe("export default () => null;");
+    expect(textBeforeChatFile(text)).toBe("```jsx\n<Button />\n```\nFull app:");
+  });
+
   it("takes a bare HTML document as a file", () => {
     expect(findChatFile("<!DOCTYPE html><html><body>Hi</body></html>")?.contentType).toBe(
       "text/html",
