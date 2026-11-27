@@ -1,0 +1,30 @@
+meta {
+  name: The exchange created exactly one session
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{ACCOUNTS_API_BASE_URL}}/me/active-sessions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{DESKTOP_ACCESS_TOKEN}}
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("adds one active session", function() {
+    expect(res.getBody().data.length).to.equal(Number(bru.getVar("ACTIVE_SESSION_COUNT_BEFORE")) + 1);
+  });
+}
+
+docs {
+  > The desktop session counts toward the active-session limit like any web session, and the bearer header
+  > proves the exchange response's access token is a working session, not just a payload.
+}

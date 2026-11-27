@@ -7,7 +7,12 @@ export default defineConfig(({ mode }): UserConfig => {
   const env = loadEnv(mode, process.cwd());
   const config: UserConfig = {
     base: "/",
-    server: resolveDevServerOptions(env, 2999),
+    server: {
+      ...resolveDevServerOptions(env, 2999),
+      // IMPORTANT NOTE: cargo rewrites target/ while tauri dev starts; watching it makes Vite
+      // crash with EBUSY on locked build artifacts.
+      watch: { ignored: ["**/src-tauri/**"] },
+    },
     resolve: {
       alias: [
         { find: "@/ui", replacement: path.resolve(__dirname, "../../packages/ui/src") },

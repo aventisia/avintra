@@ -8,8 +8,13 @@ import { IconContext } from "@phosphor-icons/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 
+import { captureDesktopCallbackFragment } from "@/features/desktop-sign-in/utils/desktop-callback.util";
+
 import App from "./App.tsx";
 import "./index.css";
+
+// Clear the desktop sign-in fragment before any boot request runs.
+captureDesktopCallbackFragment();
 
 initTheme();
 

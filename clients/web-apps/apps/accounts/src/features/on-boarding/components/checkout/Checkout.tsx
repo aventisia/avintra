@@ -19,6 +19,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 
+import { getDesktopConfirmationPath } from "@/constants/desktop-intent.util";
 import { resolvePostLoginDestination } from "@/constants/post-login-destination";
 import { COUNTRY_LS_KEY } from "@/constants/variables";
 
@@ -117,8 +118,9 @@ export const Checkout = ({ hasActiveSubscription }: { hasActiveSubscription: boo
 
   const continueOnStarter = () =>
     navigate(
-      "/redirect?msg=Opening your workspace...&url=" +
-        resolvePostLoginDestination(userSession?.email ?? ""),
+      getDesktopConfirmationPath() ??
+        "/redirect?msg=Opening your workspace...&url=" +
+          resolvePostLoginDestination(userSession?.email ?? ""),
     );
 
   const onSubmit = async (formData: z.infer<typeof billingInfoSchema>) => {

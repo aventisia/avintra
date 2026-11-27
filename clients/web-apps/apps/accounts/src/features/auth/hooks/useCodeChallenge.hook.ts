@@ -9,6 +9,7 @@ import type { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import type * as z from "zod";
 
+import { getDesktopConfirmationPath } from "@/constants/desktop-intent.util";
 import {
   buildOnboardingUrl,
   hasPlanIntent,
@@ -21,7 +22,11 @@ import { resendSocialChallenge, verifySocialLink } from "../apis/social-sign-in.
 import type { codeFormSchema } from "../constants/auth-zod-schemas";
 import { useAuthStore } from "../stores/auth-store";
 import { rememberSignInMethod } from "../utils/last-sign-in-method.util";
-import { buildRedirectPath, getSocialSignInDestination } from "../utils/sign-in-destination.util";
+import {
+  buildRedirectPath,
+  getPostLoginPath,
+  getSocialSignInDestination,
+} from "../utils/sign-in-destination.util";
 import { useCompleteSocialSignIn } from "./useCompleteSocialSignIn.hook";
 import { useSendCodeMutation } from "./useSendCodeMutation.hook";
 import { useSignInMutation } from "./useSignInMutation.hook";
@@ -68,11 +73,12 @@ const useCodeChallenge = (form: UseFormReturn<CodeFormValues>) => {
       }
 
       navigate(
-        buildRedirectPath(
-          userSession.deploymentType == "Enterprise"
-            ? import.meta.env.VITE_WORKSPACE_PATH
-            : resolvePostLoginDestination(userSession.email),
-        ),
+        getDesktopConfirmationPath() ??
+          buildRedirectPath(
+            userSession.deploymentType == "Enterprise"
+              ? import.meta.env.VITE_WORKSPACE_PATH
+              : resolvePostLoginDestination(userSession.email),
+          ),
       );
     },
     onError: rejectCode,
@@ -108,7 +114,7 @@ const useCodeChallenge = (form: UseFormReturn<CodeFormValues>) => {
 
       rememberSignInMethod("email");
       reset();
-      navigate(buildRedirectPath(resolvePostLoginDestination(userSession.email)));
+      navigate(getPostLoginPath(userSession.email));
     },
     onError: rejectCode,
   });

@@ -1,0 +1,35 @@
+meta {
+  name: Mint a third code for the verifier check
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-wrong-verifier-case",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://127.0.0.1:49154/"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("DESKTOP_SIGN_IN_CODE_WRONG_VERIFIER", res.getBody().data.code);
+  }
+}

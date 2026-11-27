@@ -3,6 +3,7 @@ import { markFreshLogin, setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
+import { getDesktopConfirmationAppPath } from "@/constants/desktop-intent.util";
 import { buildOnboardingUrl, getPostLoginDestination } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
@@ -26,7 +27,9 @@ export const useValidateEntraTokenMutation = () => {
           new URLSearchParams(window.location.search).get("redirect"),
           window.location.origin,
         );
-        window.location.assign(redirect ?? getPostLoginDestination(userSession.email));
+        window.location.assign(
+          redirect ?? getDesktopConfirmationAppPath() ?? getPostLoginDestination(userSession.email),
+        );
       }
     },
     onError: () => {

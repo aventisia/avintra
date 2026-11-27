@@ -1,4 +1,6 @@
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { getSessionEndedUrl } from "@avplatform/ui/utils/redirect-util";
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +33,12 @@ export function useAutoLogout() {
       await logOffFromCurrentSession();
       localStorage.setItem("logout", "true");
       setUserSession(null);
+
+      if (IS_TAURI) {
+        window.location.assign(getSessionEndedUrl());
+        return;
+      }
+
       const accountsBase = import.meta.env.VITE_ACCOUNTS_PATH;
       navigate("/redirect?msg=Logging out...&url=" + accountsBase);
     } catch (err) {

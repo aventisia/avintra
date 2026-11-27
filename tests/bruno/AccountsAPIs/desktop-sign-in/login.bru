@@ -1,0 +1,46 @@
+meta {
+  name: Login for the desktop sign-in checks
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "email": "{{MY_EMAIL}}",
+      "pwd": "{{MY_PWD}}"
+  }
+}
+
+tests {
+  test("signs the browser session in", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("returns the session token the mint requests carry", function() {
+    const session = res.getBody().data;
+
+    expect(session.accessToken).to.be.a("string");
+    expect(session.accessToken.length).to.be.greaterThan(100);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("LOGIN_ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > Precondition for the mint requests below. The session cookies are scoped to `AppBaseUrl`
+  > (`local-avintra.aventisia.com`), so a direct call to the API port cannot use them; the mint requests
+  > send the access token from this response as a bearer token instead, as the other AccountsAPIs folders do.
+  >
+  > Requires: `MY_EMAIL`, `MY_PWD` for an account whose two-step code is not enforced on this environment;
+  > a two-step account answers 200 with no session and the mint checks then fail as an environment gap.
+}

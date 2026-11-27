@@ -1,0 +1,39 @@
+meta {
+  name: Mint refuses a forwarded return address
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-forwarded",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://127.0.0.1:49152@evil.example/"
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the loopback rule", function() {
+    expect(res.getBody()).to.contain("Only a loopback return address is allowed.");
+  });
+}
+
+docs {
+  > User-info in the address (`127.0.0.1:port@evil.example`) looks loopback at a glance but resolves to the
+  > foreign host, so it is refused. A lookalike host such as `localhost.evil.example` is refused by the same
+  > exact-host rule.
+}

@@ -3,6 +3,8 @@ import { clearLocalStorageKeepingOnboarding, markFreshLogin } from "@avplatform/
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
+import { getDesktopConfirmationPath } from "@/constants/desktop-intent.util";
+
 import { purchasePlan } from "../apis/tenant-subscription-apis";
 import { useRazorpayPayment } from "./useRazorpayPayment";
 
@@ -29,6 +31,11 @@ export const useInsertSubscriptionMutation = () => {
       if (variables.amount === 0) {
         clearLocalStorageKeepingOnboarding();
         markFreshLogin();
+        const desktopConfirmation = getDesktopConfirmationPath();
+        if (desktopConfirmation) {
+          navigate(desktopConfirmation);
+          return;
+        }
         navigate("/redirect?url=" + import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview");
       }
     },

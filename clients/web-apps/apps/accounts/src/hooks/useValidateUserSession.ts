@@ -6,8 +6,9 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { hasPlanIntent, resolvePostLoginDestination } from "@/constants/post-login-destination";
+import { hasPlanIntent } from "@/constants/post-login-destination";
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
+import { getPostLoginPath } from "@/features/auth";
 
 /**
  * Custom hook to validate user session and handle session refresh.
@@ -41,7 +42,7 @@ export const useValidateUserSession = () => {
         lacksSubscription(data.message) || (!userSession.hasPaidPlan && hasPlanIntent());
       if (staysOnOnboarding) return;
 
-      navigate("/redirect?msg=Logging In...&url=" + resolvePostLoginDestination(userSession.email));
+      navigate(getPostLoginPath(userSession.email));
     },
     onError: () => {
       // Remove user session from store

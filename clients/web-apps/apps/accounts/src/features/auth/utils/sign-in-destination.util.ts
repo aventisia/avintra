@@ -1,4 +1,12 @@
-import { buildOnboardingUrl, getPostLoginDestination } from "@/constants/post-login-destination";
+import {
+  getDesktopConfirmationAppPath,
+  getDesktopConfirmationPath,
+} from "@/constants/desktop-intent.util";
+import {
+  buildOnboardingUrl,
+  getPostLoginDestination,
+  resolvePostLoginDestination,
+} from "@/constants/post-login-destination";
 import { getSameOriginRedirectPath } from "@/features/sso-redirect/utils/same-origin-redirect.util";
 
 type SocialSignInIntent = { redirectUrl: string | null; hasPlanIntent: boolean };
@@ -7,9 +15,13 @@ type SocialSignInIntent = { redirectUrl: string | null; hasPlanIntent: boolean }
 const buildRedirectPath = (destination: string, msg = "Logging in...") =>
   `/redirect?msg=${encodeURIComponent(msg)}&url=${encodeURIComponent(destination)}`;
 
+/** The next screen after a sign-in: the desktop confirmation during a hand-back, else the redirect screen. */
+const getPostLoginPath = (email: string): string =>
+  getDesktopConfirmationPath() ?? buildRedirectPath(resolvePostLoginDestination(email));
+
 /**
  * Where a Google or GitHub sign-in lands: onboarding when a paid plan was chosen, otherwise the
- * same-origin page it started from, or the default app.
+ * same-origin page it started from, the desktop confirmation during a hand-back, or the default app.
  */
 const getSocialSignInDestination = (
   { redirectUrl, hasPlanIntent }: SocialSignInIntent,
@@ -18,8 +30,10 @@ const getSocialSignInDestination = (
   if (hasPlanIntent) return buildOnboardingUrl(true);
 
   return (
-    getSameOriginRedirectPath(redirectUrl, window.location.origin) ?? getPostLoginDestination(email)
+    getSameOriginRedirectPath(redirectUrl, window.location.origin) ??
+    getDesktopConfirmationAppPath() ??
+    getPostLoginDestination(email)
   );
 };
 
-export { buildRedirectPath, getSocialSignInDestination };
+export { buildRedirectPath, getPostLoginPath, getSocialSignInDestination };

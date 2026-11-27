@@ -2,6 +2,7 @@ import { getSocialLoginUrl } from "@avplatform/ui/apis/accounts-auth-apis";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 
+import { getDesktopConfirmationAppPath } from "@/constants/desktop-intent.util";
 import { hasPlanIntent } from "@/constants/post-login-destination";
 import { getSameOriginRedirectPath } from "@/features/sso-redirect/utils/same-origin-redirect.util";
 
@@ -17,7 +18,8 @@ const useSocialSignInMutation = () => {
 
       return getSocialLoginUrl(
         provider,
-        getSameOriginRedirectPath(redirect, window.location.origin),
+        getDesktopConfirmationAppPath() ??
+          getSameOriginRedirectPath(redirect, window.location.origin),
         hasPlanIntent(),
       );
     },
