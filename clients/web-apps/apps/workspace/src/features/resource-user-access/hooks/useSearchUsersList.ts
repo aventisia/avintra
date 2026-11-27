@@ -7,17 +7,19 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 /**
  * Custom hook to fetch users using react query.
+ * @param query - Search keyword for the user name or username.
+ * @param onlyTu - When true, restrict results to users who hold the Tenant User role.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useSearchUsersList = (query: string) => {
+export const useSearchUsersList = (query: string, onlyTu = false) => {
   const { currentSpace } = useCurrentSpaceStore(
     useShallow((state) => ({ currentSpace: state.currentSpace })),
   );
 
   return useQuery({
-    queryKey: ["users-list", query, currentSpace?.id],
+    queryKey: ["users-list", query, currentSpace?.id, onlyTu],
     queryFn: () =>
-      searchUsers(query, false, true, getSpaceHeaders()).then((res) => ({
+      searchUsers(query, false, true, getSpaceHeaders(), onlyTu).then((res) => ({
         ...res,
         data: (res.data ?? []).map(toUserSelectItem),
       })),

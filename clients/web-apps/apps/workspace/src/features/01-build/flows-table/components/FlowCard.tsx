@@ -8,8 +8,8 @@ import { AgentAvatar } from "@/components/AgentAvatar";
 import { AgentPublishedMark } from "@/components/AgentIdentity";
 
 import { AGENT_PLATFORMS, AGENT_TYPES } from "../constants/agent-attributes.constant";
-import { FlowsTableDto } from "../dtos/flows-table-dto";
 import { FoldersTableRowDto } from "../dtos/folders-table-row.dto";
+import { AgentRow } from "../types/agent-row.type";
 import {
   getAccessLevelLabel,
   getAgentBuilderLink,
@@ -19,11 +19,14 @@ import { getAgentDragProps } from "../utils/agent-drag.util";
 import { getFlowTypeLabel } from "../utils/flow-type-label.util";
 import { FolderChip } from "./FolderChip";
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
+import { AgentRunControl, AgentStatusBadge } from "./run-agent/AgentRunControl";
 
 type FlowCardProps = {
-  flow: FlowsTableDto;
+  flow: AgentRow;
   searchText: string;
   folder?: FoldersTableRowDto;
+  /** False for TU-only callers, whose cards show no developer actions. */
+  showActions?: boolean;
 };
 
 const META_CLASS_NAME = "inline-flex min-w-0 items-center gap-1 text-xs text-muted-foreground";
@@ -36,19 +39,24 @@ const getQueueUrl = (queueId: string, queueName: string, queueType?: string) =>
  * type, version, description, and a footer with AI model, access level, platform, folder and
  * queues, plus the same actions as the table row.
  */
-export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
+export const FlowCard = ({ flow, searchText, folder, showActions = true }: FlowCardProps) => {
   const agentType = AGENT_TYPES.find((option) => option.value === flow.type);
   const platform = AGENT_PLATFORMS.find((option) => option.value === getAgentPlatform(flow));
   const { href, isExternal } = getAgentBuilderLink(flow.id);
+  const showLink = flow.hasStudioLink !== false;
   const [firstModel, ...otherModels] = flow.aiModels ?? [];
   const [firstQueue, ...otherQueues] = flow.queues ?? [];
 
+  const nameClassName = cn(
+    "min-w-0 truncate rounded-sm text-body font-semibold",
+    flow.isArchived ? "text-muted-foreground" : "text-ink",
+  );
   const linkProps = {
     draggable: false,
     title: `Open ${flow.name} v${flow.versionNumber} in Agent Builder`,
     className: cn(
-      "min-w-0 truncate rounded-sm text-body font-semibold outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
-      flow.isArchived ? "text-muted-foreground" : "text-ink",
+      nameClassName,
+      "outline-none transition-colors hover:text-primary-text focus-visible:ring-2 focus-visible:ring-focus",
     ),
   };
   const name = <HighlightedText text={flow.name ?? "NAME_NOT_FOUND"} query={searchText} />;
@@ -90,7 +98,11 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
           className={cn(agentType?.tint, flow.isArchived && "opacity-50 grayscale")}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          {isExternal ? (
+          {!showLink ? (
+            <span className={nameClassName} title={flow.name}>
+              {name}
+            </span>
+          ) : isExternal ? (
             <a href={href} {...linkProps}>
               {name}
             </a>
@@ -112,16 +124,20 @@ export const FlowCard = ({ flow, searchText, folder }: FlowCardProps) => {
             )}
           </span>
         </div>
-        <div className="-mr-1.5 -mt-1">
-          <FlowRowActions
-            rowId={flow.id || "rowId"}
-            name={flow.name}
-            accessLevel={flow.accessLevel}
-            isTenantWideAccess={flow.isTenantWideAccess || false}
-            folderId={flow.folderId}
-            isArchived={flow.isArchived || false}
-            isPublished={flow.isPublished || false}
-          />
+        <div className="-mr-1.5 -mt-1 flex shrink-0 items-center gap-0.5">
+          {flow.run?.kind === "automation" && <AgentStatusBadge status={flow.run.status} />}
+          {flow.run && <AgentRunControl run={flow.run} flowName={flow.name} />}
+          {showActions && (
+            <FlowRowActions
+              rowId={flow.id || "rowId"}
+              name={flow.name}
+              accessLevel={flow.accessLevel}
+              isTenantWideAccess={flow.isTenantWideAccess || false}
+              folderId={flow.folderId}
+              isArchived={flow.isArchived || false}
+              isPublished={flow.isPublished || false}
+            />
+          )}
         </div>
       </div>
 

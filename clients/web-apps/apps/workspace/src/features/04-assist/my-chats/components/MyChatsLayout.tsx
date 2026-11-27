@@ -1,6 +1,6 @@
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -21,6 +21,7 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
   const layoutMode = mode === "popover" || isMobile ? "stacked" : "split";
   const defaultTab = "active";
   const [tabValue, setTabValue] = useState(defaultTab);
+  const previousTabRef = useRef(tabValue);
 
   const handleTabSelect = (tab: string) => {
     setTabValue(tab);
@@ -68,7 +69,23 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
 
   // Handle selection when TAB changes
   useEffect(() => {
+    const isTabChange = previousTabRef.current !== tabValue;
+    previousTabRef.current = tabValue;
+
     if (!visibleAgents.length) return;
+
+    // IMPORTANT NOTE: a URL that names an agent is already the selection, because Run opens the
+    // agent id alone; only a tab click may move it to that tab's first conversation.
+    if (flowVersionId) {
+      if (visibleAgents.some((agent) => agent.id === flowVersionId)) return;
+
+      const otherAgents = tabValue === "active" ? archivedAgents : activeAgents;
+
+      if (!isTabChange && otherAgents.some((agent) => agent.id === flowVersionId)) {
+        setTabValue(tabValue === "active" ? "archived" : "active");
+        return;
+      }
+    }
 
     // If current conversation already belongs to this tab → do nothing
     const exists = visibleAgents.some((agent) =>
@@ -91,7 +108,16 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
         replace: true,
       });
     }
-  }, [tabValue]); //  ONLY on tab change
+  }, [
+    activeAgents,
+    archivedAgents,
+    conversationId,
+    flowVersionId,
+    layoutMode,
+    navigate,
+    tabValue,
+    visibleAgents,
+  ]);
 
   const showList = layoutMode === "split" || (layoutMode === "stacked" && !isChatActive);
 

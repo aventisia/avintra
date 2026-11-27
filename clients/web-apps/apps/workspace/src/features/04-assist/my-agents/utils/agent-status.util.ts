@@ -1,8 +1,7 @@
-import { AgentsAssistDto } from "../dtos/agent-assist-dto";
+type AgentStatus = { status?: string };
 
-export const isAgentRunning = (agent: Pick<AgentsAssistDto, "status">) =>
-  agent.status?.toLowerCase() === "running";
+export const isAgentRunning = (agent: AgentStatus) => agent.status?.toLowerCase() === "running";
 
 /** Status of the machine hosting the agent, capitalized; "Offline" when unknown. */
-export const getAgentStatusLabel = ({ status }: Pick<AgentsAssistDto, "status">) =>
+export const getAgentStatusLabel = ({ status }: AgentStatus) =>
   status ? status.charAt(0).toUpperCase() + status.slice(1) : "Offline";

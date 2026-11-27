@@ -7,6 +7,10 @@ export interface AgentsAssistDto {
    */
   id: string;
   /**
+   * Gets or sets the ID of the flow this version is associated with.
+   */
+  refId: string;
+  /**
    * Gets or sets Id of the tenant.
    */
   tenantId: string;
