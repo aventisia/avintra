@@ -62,7 +62,10 @@ If Corsair deployment is skipped, the Workspace API continues to function using 
 The sidecar runs as an internal Express service and exposes the following backend flows:
 
 - POST /credentials: store or mirror API-key credentials for a tenant/plugin
-- POST /integration-keys: register OAuth client metadata
+- POST /integration-keys: register OAuth client metadata for one plugin instance
+- POST /integration-keys/backfill: copy a credential's existing base-plugin connection
+  data (client settings + tokens) onto its per-credential plugin instance, once
+- DELETE /credentials: remove one credential's connection data (see below)
 - POST /connect/link: mint a provider connection URL for a tenant
 - POST /connect/status: check whether a tenant is connected
 - POST /connect/status/scoped: check one OAuth plugin's connection state (single-plugin evaluation; accepts the `oauthConfig` set plus plugins whose auth modes include `oauth_2`, and its answers are verified per credential against `/connect/status`, which stays the path for connect, reconnect and test)
@@ -73,6 +76,26 @@ The sidecar runs as an internal Express service and exposes the following backen
 - GET /api/corsair/tools: introspect available operations for debugging and generation
 
 The sidecar is not intended to be called directly by browser clients or end users.
+
+## Per-credential OAuth plugin instances
+
+Each OAuth vault credential owns its plugin instance instead of sharing the provider's
+plugin row, so two credentials for the same provider never overwrite each other's OAuth
+app registration or refresh token.
+
+- Instance id: `<base-plugin>__<credential-id>` (lowercase, the credential UUID with no
+  dashes). The vault credential id is the Corsair tenant id.
+- The base plugin row (`gmail`, `outlook`, ...) still exists for consent links minted
+  before the change; it is never dropped.
+- `POST /integration-keys` writes the client id/secret/redirect to the instance row.
+- `DELETE /credentials` deletes the instance row with its accounts and child rows. For a
+  base plugin id it only clears that tenant's account rows.
+
+Credentials saved before per-credential isolation kept their tokens on the base plugin
+row. The Workspace API calls `POST /integration-keys/backfill` once at startup; the
+sidecar copies the base integration row (config + DEK) and the tenant's account rows to
+the instance id verbatim, under the same KEK, so tokens keep working without a
+reconnect. The copy is idempotent.
 
 ## Config generation workflow
 

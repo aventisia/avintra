@@ -201,6 +201,41 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
     }
 
     /// <inheritdoc />
+    public async Task<bool> BackfillIntegrationKeysAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            return false;
+        }
+
+        try
+        {
+            var body = new
+            {
+                plugin = plugin.ToLowerInvariant(),
+                tenantId = connectionId.ToString()
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/integration-keys/backfill") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to backfill OAuth integration keys for plugin {Plugin} tenant {ConnectionId} in Corsair sidecar.",
+                plugin,
+                connectionId);
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
     public async Task<CorsairConnectLink?> CreateConnectLinkAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(plugin))

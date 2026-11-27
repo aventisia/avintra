@@ -1,0 +1,43 @@
+meta {
+  name: Reject retired family credential type on update
+  type: http
+  seq: 5.1
+}
+
+put {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "id": "{{VAULT_CREDENTIAL_ID}}",
+    "name": "{{VAULT_CREDENTIAL_NAME}}",
+    "description": "Retired family type must not retype a credential",
+    "type": "GoogleWorkspace",
+    "data": {
+      "ApiKey": "bruno-test-api-key"
+    },
+    "isDisabled": false
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the type as retired", function() {
+    expect(res.getBody()).to.contain("retired");
+  });
+}
+
+docs {
+  > Changing an existing credential's type to a retired family name is refused for the same reason as
+  > creating one; updates that keep the credential's type (rename, data edit) are unaffected.
+}

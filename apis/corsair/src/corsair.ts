@@ -3,6 +3,7 @@ import pg from "pg";
 import { createCorsair, setupCorsair } from "corsair";
 import { plugins as registeredPlugins } from "./plugins.js";
 import { deriveDefaultAuthType } from "./dcp-generator/auth-type.js";
+import { isAliasId, parseAliasId, toAliasId } from "./alias.js";
 
 // --- Variable selection precedence ---
 // Config is resolved in this order (highest wins):
@@ -33,7 +34,10 @@ export const pool = new Pool({
 // For now the sidecar is backend-only and private to the deployment network;
 // the Workspace API is the authorization boundary.
 
-export const plugins = registeredPlugins;
+export type RegisteredPlugin = (typeof registeredPlugins)[number];
+
+/** Mutable registry: per-credential alias instances are pushed into it at runtime. */
+export const plugins: RegisteredPlugin[] = [...registeredPlugins];
 
 // --- URL domains (two distinct ones) ---
 //
@@ -99,16 +103,23 @@ export function getOAuthPlugins(): PluginMeta[] {
     .filter((p) => p.oauthConfig !== undefined);
 }
 
-/** True if a registered plugin supports OAuth. */
-export function isOAuthPlugin(pluginId: string): boolean {
-  return getOAuthPlugins().some((p) => p.id === pluginId.toLowerCase());
+/** Resolves a plugin instance id to the base plugin it overrides. */
+export function resolveBasePluginId(pluginId: string): string {
+  return parseAliasId(pluginId)?.basePluginId ?? pluginId.trim().toLowerCase();
 }
 
-/** Resolve a plugin id to its metadata, or undefined if unknown. */
+/** True if a registered plugin (or one of its per-credential instances) supports OAuth. */
+export function isOAuthPlugin(pluginId: string): boolean {
+  const basePluginId = resolveBasePluginId(pluginId);
+  return getOAuthPlugins().some((p) => p.id === basePluginId);
+}
+
+/** Resolve a plugin instance id to its base plugin metadata, or undefined if unknown. */
 export function getPluginMeta(pluginId: string): PluginMeta | undefined {
+  const basePluginId = resolveBasePluginId(pluginId);
   return plugins
     .map((p) => p as unknown as PluginMeta)
-    .find((p) => p.id === pluginId.toLowerCase());
+    .find((p) => p.id === basePluginId);
 }
 
 /**
@@ -123,10 +134,61 @@ export function isOAuthTwoPlugin(pluginId: string): boolean {
 }
 
 /**
+ * Registers a per-credential plugin instance (a spread copy of its base plugin
+ * under an alias id) so the SDK resolves it to its own integration row.
+ * Returns the alias id, or null when the id is malformed or its base plugin is
+ * unknown or not OAuth-capable.
+ */
+export function ensureAliasPlugin(aliasId: string): string | null {
+  const parsed = parseAliasId(aliasId);
+  if (!parsed) return null;
+  if (plugins.some((plugin) => plugin.id === aliasId)) return aliasId;
+
+  const basePlugin = plugins.find((plugin) => plugin.id === parsed.basePluginId);
+  if (!basePlugin || basePlugin.oauthConfig === undefined) return null;
+
+  plugins.push({ ...basePlugin, id: aliasId } as RegisteredPlugin);
+  return aliasId;
+}
+
+/**
+ * Picks the registered per-credential instance for a plugin/tenant pair, else
+ * the base plugin. OAuth accounts live on the instance row, so invocation must
+ * address the same instance the connect flow wrote tokens to.
+ */
+export function resolveRegisteredPluginId(pluginId: string, tenantId: string): string {
+  const normalized = pluginId.trim().toLowerCase();
+  if (isAliasId(normalized)) return normalized;
+  try {
+    const aliasId = toAliasId(normalized, tenantId);
+    return plugins.some((plugin) => plugin.id === aliasId) ? aliasId : normalized;
+  } catch {
+    return normalized;
+  }
+}
+
+/** Re-registers aliases persisted in the integration table at startup. */
+async function rehydrateAliasPlugins(): Promise<void> {
+  const { rows } = await pool.query<{ name: string }>(
+    "SELECT name FROM corsair_integrations",
+  );
+  let registered = 0;
+  for (const row of rows) {
+    if (!isAliasId(row.name)) continue;
+    if (ensureAliasPlugin(row.name)) registered += 1;
+  }
+  if (registered > 0) {
+    console.log(`Registered ${registered} per-credential plugin instance(s).`);
+  }
+}
+
+/**
  * Idempotent: creates integration rows in the Corsair DB for all registered
- * plugins. Must be called once at startup after running migration.sql.
+ * plugins, including per-credential aliases persisted by earlier runs. Must be
+ * called once at startup after running migration.sql.
  */
 export async function provision() {
+  await rehydrateAliasPlugins();
   await setupCorsair(corsair);
   console.log(
     "Provisioned Corsair integration rows for:",

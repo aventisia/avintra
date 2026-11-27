@@ -60,6 +60,12 @@ public class VaultCredential : BaseEntity, IMustHaveTenant
     public bool IsResourceAccessRestricted { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this credential keeps the pre-flattening family-wide
+    /// plugin access it had before each vault type mapped to exactly one service.
+    /// </summary>
+    public bool LegacyFamilyAccess { get; set; }
+
+    /// <summary>
     /// Gets or sets the encrypted key-value pairs associated with the vault credential.
     /// </summary>
     public ICollection<EncryptedKeyValue>? EncryptedKeyValues { get; set; }

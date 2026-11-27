@@ -220,11 +220,11 @@ public class CorsairConfigRepository
             .FirstOrDefault(vaultCredentialType => !string.IsNullOrWhiteSpace(vaultCredentialType));
     }
 
-    private static string NormalizeVaultCredentialType(string vaultCredentialType) => vaultCredentialType.Trim() switch
-    {
-        "Teams" or "Onedrive" or "Sharepoint" => "M365",
-        _ => vaultCredentialType.Trim(),
-    };
+    /// <summary>
+    /// Trims a vault credential type name. Legacy family names (M365, GoogleWorkspace)
+    /// stay resolvable through their retained type-map rows.
+    /// </summary>
+    private static string NormalizeVaultCredentialType(string vaultCredentialType) => vaultCredentialType.Trim();
 
     /// <summary>
     /// Resolves a sibling artifact (action map, integration catalog, vault

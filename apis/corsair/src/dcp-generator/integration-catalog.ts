@@ -21,42 +21,23 @@ export type VaultCredentialConfig = {
 const LEGACY_VAULT_CREDENTIAL_ALIASES: Record<string, string> = {
   github: "GitHub",
   openai: "OpenAI",
-  outlook: "M365",
-  teams: "M365",
-  onedrive: "M365",
-  sharepoint: "M365",
   gemini: "GoogleGemini",
   twilio: "Twilio",
-  resend: "SendGrid",
   sendgrid: "SendGrid",
   openrouter: "OpenRouter",
   anthropicadministrator: "Anthropic",
 };
 
-const GOOGLE_WORKSPACE_PLUGINS = new Set([
-  "gmail",
-  "googleaddressvalidation",
-  "googlebigquery",
-  "googlecalendar",
-  "googlecloudvision",
-  "googledocs",
-  "googledrive",
-  "googlemaps",
-  "googlemeet",
-  "googlesheets",
-]);
-
-const M365_PLUGINS = new Set(["outlook", "teams", "onedrive", "sharepoint"]);
+/** Microsoft services that keep the optional Directory (tenant) ID on their form. */
+export const MICROSOFT_SERVICE_PLUGIN_IDS = new Set(["outlook", "teams", "onedrive", "sharepoint"]);
 
 /**
  * Vault credential types whose forms are owned by the platform: the hand-authored
- * shared/special forms (M365, Google Workspace, Salesforce, Twilio, SendGrid) and
- * the LiteLLM model-provider types that also appear in the Corsair catalog. The
- * catalog generator never creates or rewrites these forms.
+ * shared/special forms (Salesforce, Twilio, SendGrid) and the LiteLLM
+ * model-provider types that also appear in the Corsair catalog. The catalog
+ * generator never creates or rewrites these forms.
  */
 export const PLATFORM_OWNED_VAULT_CREDENTIAL_TYPES = new Set([
-  "M365",
-  "GoogleWorkspace",
   "Salesforce",
   "Twilio",
   "SendGrid",
@@ -87,7 +68,6 @@ function fieldLabel(field: string): string {
 }
 
 export function getVaultCredentialType(pluginId: string): string {
-  if (GOOGLE_WORKSPACE_PLUGINS.has(pluginId)) return "GoogleWorkspace";
   return LEGACY_VAULT_CREDENTIAL_ALIASES[pluginId] ?? titleCase(pluginId);
 }
 
@@ -95,29 +75,16 @@ export function getVaultCredentialType(pluginId: string): string {
 export function buildIntegrationCatalog(
   pluginMetas: readonly PluginMetadata[],
 ): CorsairIntegrationCatalogEntry[] {
-  const m365Scopes = [...new Set(
-    pluginMetas
-      .filter((meta) => M365_PLUGINS.has(meta.id))
-      .flatMap((meta) => meta.oauthConfig?.scopes ?? []),
-  )].sort();
-
   const entries = pluginMetas.map((meta) => {
     const vaultCredentialType = getVaultCredentialType(meta.id);
-    const pluginIds = GOOGLE_WORKSPACE_PLUGINS.has(meta.id)
-      ? [...GOOGLE_WORKSPACE_PLUGINS].sort()
-      : M365_PLUGINS.has(meta.id)
-        ? [...M365_PLUGINS].sort()
-      : [meta.id];
 
     return {
       pluginId: meta.id,
-      pluginIds,
+      pluginIds: [meta.id],
       providerName: meta.providerName,
       authModes: meta.authModes,
       defaultAuthMode: meta.authType,
-      oauthConfig: M365_PLUGINS.has(meta.id) && meta.oauthConfig
-        ? { ...meta.oauthConfig, scopes: m365Scopes }
-        : meta.oauthConfig,
+      oauthConfig: meta.oauthConfig,
       icon: meta.img ?? "/function.png",
       vaultCredentialType,
       configFile: `${vaultCredentialType}.json`,
@@ -126,6 +93,15 @@ export function buildIntegrationCatalog(
 
   return entries.sort((left, right) => left.pluginId.localeCompare(right.pluginId));
 }
+
+/** Form copy overrides for fields whose generated wording differs from the product label. */
+const FORM_FIELD_OVERRIDES: Record<string, { label: string; description: string; required: boolean }> = {
+  AzureTenantId: {
+    label: "Directory (tenant) ID",
+    description: "Directory (tenant) ID",
+    required: false,
+  },
+};
 
 /** Build one generic vault credential form for each generated credential type. */
 export function buildVaultCredentialConfigs(
@@ -139,16 +115,17 @@ export function buildVaultCredentialConfigs(
 
     for (const name of fieldNames) {
       if (fields.some((field) => field.name === name)) continue;
+      const override = FORM_FIELD_OVERRIDES[name];
       fields.push({
         direction: "Input",
         type: name.toLowerCase().includes("secret") || name.toLowerCase().includes("key")
           ? "password"
           : "text",
         name,
-        label: fieldLabel(name),
-        description: `${fieldLabel(name)} for ${entry.providerName}.`,
+        label: override?.label ?? fieldLabel(name),
+        description: override?.description ?? `${fieldLabel(name)} for ${entry.providerName}.`,
         defaultValue: "",
-        required: true,
+        required: override?.required ?? true,
       });
     }
 
@@ -173,7 +150,11 @@ function buildFieldNames(entry: CorsairIntegrationCatalogEntry): string[] {
     .filter((name) => !CLIENT_ID_FIELD_NAMES.has(normalizeFieldName(name)));
 
   if (entry.defaultAuthMode === "oauth_2") {
-    return ["ClientId", "ClientSecret"];
+    const fields = ["ClientId", "ClientSecret"];
+    if (MICROSOFT_SERVICE_PLUGIN_IDS.has(entry.pluginId)) {
+      fields.push("AzureTenantId");
+    }
+    return fields;
   }
   if (entry.defaultAuthMode === "none" || entry.defaultAuthMode === "managed") {
     return declaredFields;
@@ -203,7 +184,10 @@ export function formSatisfiesDefaultAuthMode(
   const hasClientIdFields = [...CLIENT_ID_FIELD_NAMES].some((name) => names.has(name));
 
   if (entry.defaultAuthMode === "oauth_2") {
-    return !hasPlaceholder && [...CLIENT_ID_FIELD_NAMES].every((name) => names.has(name));
+    if (hasPlaceholder || ![...CLIENT_ID_FIELD_NAMES].every((name) => names.has(name))) {
+      return false;
+    }
+    return !MICROSOFT_SERVICE_PLUGIN_IDS.has(entry.pluginId) || names.has("azuretenantid");
   }
   if (entry.defaultAuthMode === "none" || entry.defaultAuthMode === "managed") {
     return !hasPlaceholder;
