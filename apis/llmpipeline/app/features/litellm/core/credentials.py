@@ -62,6 +62,7 @@ def resolve_credentials(provider: str, credential_name: str | None, user: User) 
         env_type=user.env_type,
         tenant_id=str(user.tenant_id) if user.tenant_id else None,
         space_id=user.space_id,
+        model_call=True,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid BYOK credentials for provider {provider}")
@@ -181,6 +182,7 @@ def resolve_credential_name(
             env_type=env_type,
             tenant_id=tenant_id,
             space_id=space_id,
+            model_call=True,
         )
         if not credential:
             return credential_name

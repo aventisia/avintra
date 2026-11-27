@@ -1,4 +1,5 @@
-import { DATA_QUERY_KEY } from "../constants";
+import { DATA_QUERY_KEY, TENANT_DATA_QUERY_KEY } from "../constants";
+import { useVaultCredentialScope } from "../contexts/vault-credential-scope.context";
 
 /**
  * Returns the query key used to invalidate the merged vault list.
@@ -8,7 +9,9 @@ import { DATA_QUERY_KEY } from "../constants";
  * Invalidating this prefix refetches both lists after a mutation.
  */
 export const useTableTab = () => {
+  const scope = useVaultCredentialScope();
+
   return {
-    queryKey: DATA_QUERY_KEY,
+    queryKey: scope === "tenant" ? TENANT_DATA_QUERY_KEY : DATA_QUERY_KEY,
   };
 };

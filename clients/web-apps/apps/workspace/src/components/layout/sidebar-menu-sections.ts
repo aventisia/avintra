@@ -280,6 +280,14 @@ const sidebarMenuSections: SidebarMenuSectionType<HubId>[] = [
       },
       {
         permissions: ["TA"],
+        Icon: PasswordIcon,
+        name: "Credentials",
+        route: "/tenant/credentials",
+        hub: "admin",
+        type: ["Commercial", "Enterprise", "Community"],
+      },
+      {
+        permissions: ["TA"],
         Icon: WalletIcon,
         name: "Usage",
         route: "/tenant/usage",

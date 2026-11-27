@@ -50,3 +50,15 @@ OAuth-capable credential types (M365, Google Workspace, and catalog integrations
    callback `postMessage`) until consent completes, then the dialog closes.
 
 Row actions allow reconnecting, testing the connection, and deleting.
+
+## Tenant scope
+
+The same table, form, mutations, and row delete serve tenant-level credentials through
+`VaultCredentialScopeProvider` (`scope="tenant"`, default `space`):
+
+- The Tenant Admin page `/tenant/credentials` (`TenantVaultCredentialsPage`) and the `tenantVaultCredential` crud dialog
+  (also opened by "Create credential" in the Models dialog) provide the tenant scope.
+- Tenant scope talks to `/tenant-vault-credential` with no space headers, keeps its list under `["tenant-vault-credential"]`,
+  offers AI model types only (`getTenantVaultCredentialAppSelectOptions`), and hides sharing, agent assignment,
+  bulk actions, OAuth and custom API tool.
+- Tenant credentials never appear in the space `["vault"]` lists or pickers.

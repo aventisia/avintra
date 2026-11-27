@@ -9,6 +9,7 @@ import { ResourceUserAccessRowAction } from "@/features/resource-user-access/com
 import { ResourceAccessTypeEnum } from "@/features/resource-user-access/enums/resource-access-type-enum";
 import { ResourceTypeEnum } from "@/features/resource-user-access/enums/resource-type-enum";
 
+import { useVaultCredentialScope } from "../../contexts/vault-credential-scope.context";
 import { useTableTab } from "../../hooks/useTableTab";
 import { isCorsairCredentialType } from "../../vault-credential-config/constants/corsair-integration-mapper";
 import { isOAuthCredentialType } from "../../vault-credential-config/constants/vault-credential-oauth-types.constant";
@@ -34,8 +35,20 @@ export const VaultCredentialRowActions = ({
   isResourceAccessRestricted,
 }: VaultCredentialRowActionsProps) => {
   const { queryKey } = useTableTab();
+  const isTenantScope = useVaultCredentialScope() === "tenant";
 
   const { actions, isProd, resourceActions } = useConfigureResourceAccessActions(accessLevel);
+
+  if (isTenantScope) {
+    return (
+      <TableCNRowActionsMenu ariaLabel="Open credential actions" contentClassName="w-36 min-w-36">
+        <CrudRowAction rowId={rowId} crudAction="read" entity="tenantVaultCredential" />
+        <CrudRowAction rowId={rowId} crudAction="update" entity="tenantVaultCredential" />
+        <DropdownMenuSeparator />
+        <VaultCredentialRowDeleteAction rowId={rowId} />
+      </TableCNRowActionsMenu>
+    );
+  }
 
   return (
     <TableCNRowActionsMenu

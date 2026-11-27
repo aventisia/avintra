@@ -96,3 +96,31 @@ Legacy `ResourceType` strings persisted before this rename (the former credentia
 `RenameAppSecretToVaultCredential` migration. The legacy `Vault` entity, its table
 (`Vaults`), controller, service, repo, and DTO were removed; the `RemoveVaultEntity`
 migration drops the table.
+
+## Tenant-level credentials
+
+A credential has a `Scope` (`VaultCredentialScopeEnum`): `Space` (the default, everything above) or
+`Tenant`. Invariant: a `Tenant` row has `EnvType == Any` and `SpaceId == null`, and is not a Central row.
+
+- The `WorkspaceDbContext` query filter excludes `Tenant` rows, and the `SpaceId` stamp on save skips them, so no
+  space list, picker, by-id or decrypt endpoint on `VaultCredentialController` can see one. Code that must see them
+  (tenant endpoints, provider credential resolution, StreamingChat) uses `IgnoreQueryFilters()` and filters on `Scope`.
+- Admin endpoints live on `TenantVaultCredentialController` (`tenant-vault-credential`, role `TA`): `list`,
+  `option-to-select`, `is-available`, `POST`, `PUT`, `DELETE {id}`. AI model provider types only
+  (`IsAllowedTenantCredentialType`: a `LLMProviderTypesEnum` name or `GoogleGemini`, with no Corsair OAuth plugin).
+- Uniqueness: a tenant name is unique among tenant credentials and against every Dev/Prod/space credential of the
+  tenant, and the other way round. Update never changes a name.
+- Delete is blocked while a `TenantModelProvider` references the credential (`CredentialId`); the message names the provider.
+- `TenantResolver.ResolveEnvType` accepts only a trimmed, case-insensitive `dev` or `prod`; anything else is Dev, so a
+  forged env header cannot reach `Any`.
+- Decrypt: a tenant secret is returned only by `decrypted-data/by-name/{name}` and only with a valid `X-Model-Call-Token`
+  (`ModelCallTokenHelper`: HS512, signed with `JWT_SECRET_KEY`, `iss` `https://{APP_BASE_URL}`, `aud`
+  `https://{APP_BASE_URL}/model-credential`, claim `cred` = the name, 60 s). The LLM pipeline mints it only for model calls
+  (`model_call=True` in `vault_credential_manager.py`), and the token reaches only a credential that an enabled
+  `TenantModelProvider` uses (`TenantCredentialAccessEnum.ProviderCredentials`); the tenant admin's model list in the
+  provider dialog reads any tenant credential (`All`). Otherwise the response is identical to a missing name.
+- Provider credential id-to-name resolution (StreamingChat, `TenantModelProviderService`) goes through
+  `IVaultCredentialRepo.GetProviderCredentialNamesAsync`.
+- Older provider rows keep their space credential (shown as "legacy"). Roll back by deleting the tenant rows and
+  reverting the migration `AddScopeToVaultCredentials`; existing credentials are untouched.
+

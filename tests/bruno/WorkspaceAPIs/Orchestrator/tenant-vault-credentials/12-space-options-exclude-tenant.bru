@@ -1,0 +1,23 @@
+meta {
+  name: Space credential options hide the tenant credential
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential/option-to-select?type=OpenAI
+  body: none
+  auth: none
+}
+
+headers {
+  X-Env-Type: Dev
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const message = typeof body.message === "string" ? body.message : "";
+  const status = res.getStatus();
+  const text = JSON.stringify(body.data || []);
+  if (status === 200 && !text.includes(bru.getVar("TENANT_CRED_NAME"))) { bru.pass("Tenant credential absent"); } else { bru.fail("Tenant credential absent: got " + status + " - " + message); }
+}

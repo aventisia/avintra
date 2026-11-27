@@ -4,15 +4,18 @@ public class LLMProviderService : ILLMProviderService
 {
     private readonly ILogger<LLMProviderService> _logger;
     private readonly Guid _userId;
+    private readonly bool _isTenantAdmin;
     private readonly IVaultCredentialService _vaultCredentialService;
 
     public LLMProviderService(
         ILogger<LLMProviderService> logger,
         IHttpContextAccessor httpContextAccessor,
-        IVaultCredentialService vaultCredentialService)
+        IVaultCredentialService vaultCredentialService,
+        IUserManagementGuardService userManagementGuardService)
     {
         _logger = logger;
         _vaultCredentialService = vaultCredentialService;
+        _isTenantAdmin = userManagementGuardService.HasRole(CustomRolesEnum.TA.ToString());
 
         // Initialize the user ID by extracting it from the JWT claims in the HTTP context.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -36,7 +39,7 @@ public class LLMProviderService : ILLMProviderService
                 ? requestDto.CredentialId
                 : requestDto.CredentialName;
 
-            var credential = await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(credentialName ?? string.Empty);
+            var credential = await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(credentialName ?? string.Empty, _isTenantAdmin ? TenantCredentialAccessEnum.All : TenantCredentialAccessEnum.None);
 
             // If credentials are not valid, return the error message.
             if (credential.StatusCode != 200)

@@ -1,0 +1,17 @@
+meta {
+  name: Tenant vault credentials
+  seq: 91
+}
+
+docs {
+  > Tenant-level model-provider credentials (issue #708). Run the folder in order; `01-` stores
+  > `TENANT_CRED_ID` / `TENANT_CRED_NAME` for the later requests.
+  >
+  > Prerequisites: the default session is a tenant admin (TA). `SPACE_USER_ACCESS_TOKEN` is a
+  > non-admin tenant user's token. `PROVIDER_CRED_ID` / `PROVIDER_CRED_NAME` is a space credential an
+  > enabled model provider already uses (for `20-`). `21-` needs an OpenAI provider enabled on
+  > `TENANT_CRED_NAME`: run `tenant-model-provider/upsert-provider-with-tenant-credential-cross-space.bru`
+  > first, and do not run `tenant-model-provider/legacy-provider-flag.bru` between that and `21-`
+  > (it moves the OpenAI provider onto a space credential, so `21-` would delete the credential).
+  > `22-` and `28-` call the LLM pipeline (`LLMPIPELINE_API_BASE_URL`) as the non-admin user.
+}

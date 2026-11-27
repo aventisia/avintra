@@ -2,7 +2,9 @@ import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
-import { createVaultCredential } from "../../apis/vault-credentials.apis";
+import { vaultCredentialScopeApis } from "../../apis/vault-credentials.apis";
+import { TENANT_OPTIONS_QUERY_KEY } from "../../constants";
+import { useVaultCredentialScope } from "../../contexts/vault-credential-scope.context";
 import { type VaultCredentialDto } from "../../dtos/vault-credentials.dto";
 import { useTableTab } from "../../hooks/useTableTab";
 import { isOAuthCredentialType } from "../constants/vault-credential-oauth-types.constant";
@@ -10,6 +12,7 @@ import { useOAuthConnect } from "./useOAuthConnect";
 
 export const useAddVaultCredentialMutation = () => {
   const { queryKey } = useTableTab();
+  const scope = useVaultCredentialScope();
 
   const queryClient = useQueryClient();
 
@@ -19,7 +22,7 @@ export const useAddVaultCredentialMutation = () => {
   const [hasFailed, setHasFailed] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: createVaultCredential,
+    mutationFn: vaultCredentialScopeApis[scope].create,
 
     onError: (error) => {
       oauthPopupRef.current?.close();
@@ -72,6 +75,7 @@ export const useAddVaultCredentialMutation = () => {
       queryClient.invalidateQueries({
         queryKey: queryKey,
       });
+      if (scope === "tenant") queryClient.invalidateQueries({ queryKey: TENANT_OPTIONS_QUERY_KEY });
     },
   });
 

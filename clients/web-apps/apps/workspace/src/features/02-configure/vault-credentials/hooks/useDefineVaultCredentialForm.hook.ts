@@ -12,13 +12,14 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
-import { isVaultCredentialNameAvailable } from "../apis/vault-credentials.apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { vaultCredentialScopeApis } from "../apis/vault-credentials.apis";
 import {
   vaultCredentialNameSchema,
   vaultCredentialZodSchema,
 } from "../constants/vault-credential-zod-schema.constant";
+import { useVaultCredentialScope } from "../contexts/vault-credential-scope.context";
 import { VaultCredentialDto } from "../dtos/vault-credentials.dto";
+import { useTableTab } from "./useTableTab";
 
 interface UseDefineVaultCredentialFormOptions {
   rowId: string;
@@ -43,6 +44,8 @@ export const useDefineVaultCredentialForm = ({
   );
 
   const queryClient = useQueryClient();
+  const { queryKey } = useTableTab();
+  const scope = useVaultCredentialScope();
 
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof vaultCredentialZodSchema>>({
@@ -66,7 +69,7 @@ export const useDefineVaultCredentialForm = ({
   } = form;
 
   useEffect(() => {
-    const configsData = getMergedQueryData<VaultCredentialDto>(queryClient, DATA_QUERY_KEY);
+    const configsData = getMergedQueryData<VaultCredentialDto>(queryClient, queryKey);
 
     const configData = configsData?.data.find((item) => item.id === rowId);
 
@@ -86,7 +89,7 @@ export const useDefineVaultCredentialForm = ({
         ? new Date(configData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, queryKey, userSession]);
 
   const {
     isAvailable,
@@ -99,7 +102,7 @@ export const useDefineVaultCredentialForm = ({
     fieldName: "name",
     form,
     fieldSchema: vaultCredentialNameSchema,
-    checkAvailabilityAPIFn: isVaultCredentialNameAvailable,
+    checkAvailabilityAPIFn: vaultCredentialScopeApis[scope].isNameAvailable,
   });
 
   const refineFormData = (formData: z.infer<typeof vaultCredentialZodSchema>) => {

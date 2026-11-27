@@ -1,0 +1,22 @@
+meta {
+  name: Direct decrypt by name refused for non-admin
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential/decrypted-data/by-name/{{TENANT_CRED_NAME}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{SPACE_USER_ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const message = typeof body.message === "string" ? body.message : "";
+  const status = res.getStatus();
+  if (!JSON.stringify(body).includes("sk-bruno-fake") && message.includes("not found")) { bru.pass("Non-admin gets not-found, no secret"); } else { bru.fail("Non-admin gets not-found, no secret: got " + status + " - " + message); }
+}

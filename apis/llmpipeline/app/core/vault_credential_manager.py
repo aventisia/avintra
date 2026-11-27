@@ -1,3 +1,5 @@
+import time
+import jwt as pyjwt
 import requests
 from fastapi import HTTPException
 from app.core.logger import logger
@@ -18,6 +20,7 @@ class VaultCredentialManager:
         env_type: str = "dev",
         tenant_id: str = None,
         space_id: str = None,
+        model_call: bool = False,
     ) -> Dict[str, Any]:
         """
         Fetches vault credential details by its NAME from the API.
@@ -31,6 +34,7 @@ class VaultCredentialManager:
         :param env_type: The deployment environment ("dev" or "prod") forwarded as X-Env-Type.
         :param tenant_id: The tenant id used to scope the credential lookup (X-Tenant-Id header).
         :param space_id: The space id used to scope the credential lookup (X-Space-Id header).
+        :param model_call: True only at sites that run or attribute a model call; it attaches a short-lived token that lets the backend also resolve tenant-level credentials.
         :return: A dictionary containing vault credential data or an error message.
         """
         return self._get_vault_credential_secret_by_name(
@@ -39,6 +43,16 @@ class VaultCredentialManager:
             env_type=env_type,
             tenant_id=tenant_id,
             space_id=space_id,
+            model_call=model_call,
+        )
+
+    def _issue_model_call_token(self, credential_name: str) -> str:
+        base = f"https://{settings.APP_BASE_URL}"
+        now = int(time.time())
+        return pyjwt.encode(
+            {"cred": credential_name, "iss": base, "aud": f"{base}/model-credential", "iat": now, "exp": now + 60},
+            settings.JWT_SECRET_KEY,
+            algorithm="HS512",
         )
 
     def _get_vault_credential_secret_by_name(
@@ -48,6 +62,7 @@ class VaultCredentialManager:
         env_type: str = "dev",
         tenant_id: str = None,
         space_id: str = None,
+        model_call: bool = False,
     ) -> Dict[str, Any]:
         """Fetches vault credential details by its NAME from the API."""
         try:
@@ -63,6 +78,9 @@ class VaultCredentialManager:
                 headers["X-Tenant-Id"] = str(tenant_id)
             if space_id:
                 headers["X-Space-Id"] = str(space_id)
+
+            if model_call:
+                headers["X-Model-Call-Token"] = self._issue_model_call_token(vault_credential_name)
 
             # Include Authorization header if JWT is provided
             if jwt:

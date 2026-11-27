@@ -822,7 +822,7 @@ public partial class UiBuilderService : IUiBuilderService
 
             var models = providers
                 .SelectMany(provider => GetTextModelIds(provider)
-                    .Select(modelId => BuildUiBuilderModel(provider, modelId, credentialsById)))
+                    .Select(modelId => BuildUiBuilderModel(provider, modelId, credentialsById, _currentTenantService.CurrentEnvType)))
                 .GroupBy(model => new { model.ProviderType, model.ModelId })
                 .Select(group => group
                     .OrderByDescending(model => !string.IsNullOrEmpty(model.CredentialName))
@@ -1273,7 +1273,7 @@ public partial class UiBuilderService : IUiBuilderService
             .Select(model => model.ModelId.Trim());
     }
 
-    private static UiBuilderModelDto BuildUiBuilderModel(TenantModelProvider provider, string modelId, Dictionary<Guid, VaultCredential> credentialsById)
+    private static UiBuilderModelDto BuildUiBuilderModel(TenantModelProvider provider, string modelId, Dictionary<Guid, VaultCredential> credentialsById, ConfigureEnvironmentType currentEnvType)
     {
         var credential = provider.CredentialId.HasValue && credentialsById.TryGetValue(provider.CredentialId.Value, out var resolvedCredential)
             ? resolvedCredential
@@ -1284,7 +1284,7 @@ public partial class UiBuilderService : IUiBuilderService
             ProviderType = provider.ProviderType.ToString(),
             ModelId = modelId,
             CredentialName = credential?.Name,
-            CredentialEnvType = credential != null ? UiBuilderDataConnectionHelpers.ToEnvTypeName(credential.EnvType) : null,
+            CredentialEnvType = credential != null ? UiBuilderDataConnectionHelpers.ToEnvTypeName(credential.EnvType == ConfigureEnvironmentType.Any ? currentEnvType : credential.EnvType) : null,
             ProviderUrl = string.IsNullOrWhiteSpace(provider.ProviderUrl) ? null : provider.ProviderUrl
         };
     }

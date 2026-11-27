@@ -1,5 +1,6 @@
 import { Switch } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
+import { CrudCreateButton } from "@avplatform/ui/crud-dialog";
 import { crudDialogFieldClasses } from "@avplatform/ui/form";
 import { FIELD_CONTAINER, cn } from "@avplatform/ui/lib";
 import {
@@ -13,14 +14,15 @@ import { toast } from "@avplatform/ui/sonner";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatCapabilityLabel, toModelCapability } from "@avplatform/ui/utils";
 import { CircleNotchIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useId, useMemo, useState } from "react";
 
 import { CardDialog } from "@/components/card-dialog/CardDialog";
 import { CardDialogButton } from "@/components/card-dialog/CardDialogButton";
 import { FormField } from "@/components/card-dialog/FormField";
 import { StatusLine } from "@/components/card-dialog/StatusLine";
-import { getVaultCredentialSelectOptions } from "@/features/02-configure/queues/queues-table/apis/vault-credential-select.apis";
+import { getSelectableTenantVaultCredentialOptions } from "@/features/02-configure/vault-credentials/apis/vault-credentials.apis";
+import { TENANT_OPTIONS_QUERY_KEY } from "@/features/02-configure/vault-credentials/constants";
 import { pluralize } from "@/utils/pluralize.util";
 
 import { getLlmModelsV2, upsertModelProvider } from "../apis/model-provider-apis";
@@ -54,10 +56,6 @@ export const ModelProviderSetupDialog = () => {
   const disabledId = `${fieldId}-disabled`;
 
   const [step, setStep] = useState<Step>("credential");
-  const [credentialOptions, setCredentialOptions] = useState<{ value: string; label: string }[]>(
-    [],
-  );
-  const [isCredentialLoading, setIsCredentialLoading] = useState(false);
   const [selectedCredentialName, setSelectedCredentialName] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
   const [enabledModels, setEnabledModels] = useState<EnabledModelDto[]>([]);
@@ -72,7 +70,6 @@ export const ModelProviderSetupDialog = () => {
     setSelectedCredentialName("");
     setEnabledModelIds([]);
     setEnabledModels([]);
-    setCredentialOptions([]);
     setIsDisabled(false);
     setProviderModels([]);
     setModelSearch("");
@@ -83,28 +80,31 @@ export const ModelProviderSetupDialog = () => {
 
     resetState();
 
-    setIsCredentialLoading(true);
-    getVaultCredentialSelectOptions(getVaultCredentialTypeForProvider(provider.value))
-      .then((res) => {
-        const options = res?.data ?? [];
-        setCredentialOptions(options);
-
-        if (config) {
-          const savedCredential = config.credentialName ?? config.credentialId ?? "";
-          setSelectedCredentialName(savedCredential);
-          setEnabledModelIds(canonicalizeModelIds(provider.value, config.enabledModelIds ?? []));
-          setEnabledModels(canonicalizeEnabledModels(provider.value, config.enabledModels ?? []));
-          setIsDisabled(Boolean(config.isDisabled));
-          setStep("models");
-          void loadProviderModels(savedCredential);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch credentials", err);
-        toast.error("Failed to load credentials.");
-      })
-      .finally(() => setIsCredentialLoading(false));
+    if (config) {
+      const savedCredential = config.credentialName ?? config.credentialId ?? "";
+      setSelectedCredentialName(savedCredential);
+      setEnabledModelIds(canonicalizeModelIds(provider.value, config.enabledModelIds ?? []));
+      setEnabledModels(canonicalizeEnabledModels(provider.value, config.enabledModels ?? []));
+      setIsDisabled(Boolean(config.isDisabled));
+      setStep("models");
+      void loadProviderModels(savedCredential);
+    }
   }, [isOpen, provider, config]);
+
+  const credentialType = provider ? getVaultCredentialTypeForProvider(provider.value) : "";
+  const { data: tenantCredentialOptions, isLoading: isCredentialLoading } = useQuery({
+    queryKey: [...TENANT_OPTIONS_QUERY_KEY, credentialType],
+    queryFn: () => getSelectableTenantVaultCredentialOptions(credentialType),
+    enabled: isOpen && Boolean(credentialType),
+    staleTime: 0,
+    select: (res) => res?.data ?? [],
+  });
+  const credentialOptions = useMemo(() => {
+    const options = tenantCredentialOptions ?? [];
+    const legacyName = config?.isLegacyCredential ? config.credentialName : null;
+    if (!legacyName || options.some((option) => option.value === legacyName)) return options;
+    return [...options, { value: legacyName, label: `${legacyName} (legacy)` }];
+  }, [tenantCredentialOptions, config]);
 
   const handleClose = () => {
     closeDialog();
@@ -235,6 +235,7 @@ export const ModelProviderSetupDialog = () => {
           ))}
         </SelectContent>
       </Select>
+      <CrudCreateButton buttonText="Create credential" entity="tenantVaultCredential" />
     </FormField>
   );
 

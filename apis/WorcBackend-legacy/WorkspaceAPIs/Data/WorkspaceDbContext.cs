@@ -58,7 +58,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<UiBuilderAsset>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<ConfigStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
-        modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<VaultCredential>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && qf.Scope != VaultCredentialScopeEnum.Tenant && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
@@ -143,6 +143,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         modelBuilder.Entity<Trigger>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Queue>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
+        modelBuilder.Entity<VaultCredential>().Property(e => e.Scope).HasConversion(new EnumToStringConverter<VaultCredentialScopeEnum>()).HasDefaultValue(VaultCredentialScopeEnum.Space);
         modelBuilder.Entity<VaultCredential>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
         modelBuilder.Entity<VaultCredential>().Property(e => e.Type).HasConversion(new EnumToStringConverter<VaultCredentialTypesEnum>());
@@ -346,6 +347,10 @@ public class WorkspaceDbContext : DbContext
             {
                 if (entry.State == EntityState.Added)
                 {
+                    // IMPORTANT NOTE: tenant-level vault credentials must stay outside every space, so they are never stamped.
+                    if (entry.Entity is VaultCredential { Scope: VaultCredentialScopeEnum.Tenant })
+                        continue;
+
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?) &&
                         spaceIdProp.GetValue(entry.Entity) == null)
@@ -388,6 +393,10 @@ public class WorkspaceDbContext : DbContext
             {
                 if (entry.State == EntityState.Added)
                 {
+                    // IMPORTANT NOTE: tenant-level vault credentials must stay outside every space, so they are never stamped.
+                    if (entry.Entity is VaultCredential { Scope: VaultCredentialScopeEnum.Tenant })
+                        continue;
+
                     var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
                     if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?) &&
                         spaceIdProp.GetValue(entry.Entity) == null)

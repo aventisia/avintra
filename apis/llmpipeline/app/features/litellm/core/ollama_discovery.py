@@ -96,6 +96,7 @@ def _credential_base_url_and_key(
         env_type=user.env_type,
         tenant_id=str(user.tenant_id) if user.tenant_id else None,
         space_id=user.space_id,
+        model_call=True,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid Ollama credentials for provider {provider}")

@@ -6,10 +6,12 @@ namespace WorkspaceAPIs.Controllers;
 public class VaultCredentialController : BaseApiController
 {
     private readonly IVaultCredentialService _vaultCredentialService;
+    private readonly EnvironmentConfig _environmentConfig;
 
-    public VaultCredentialController(IVaultCredentialService vaultCredentialService)
+    public VaultCredentialController(IVaultCredentialService vaultCredentialService, EnvironmentConfig environmentConfig)
     {
         _vaultCredentialService = vaultCredentialService;
+        _environmentConfig = environmentConfig;
     }
 
     /// <summary>Retrieves list of vault credentials.</summary>
@@ -93,7 +95,15 @@ public class VaultCredentialController : BaseApiController
     [HttpGet("decrypted-data/by-name/{vaultCredentialName}")]
     public async Task<ActionResult<ServiceResponse<VaultCredentialDto>>> GetVaultCredentialDetailByName(string vaultCredentialName)
     {
-        return ResultHelper(await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(vaultCredentialName));
+        // IMPORTANT NOTE: without a valid model-call token a tenant-level credential must look exactly like a missing name, so a caller cannot learn it exists.
+        var isModelCall = await ModelCallTokenHelper.IsValidAsync(
+            Request.Headers[ModelCallTokenHelper.HeaderName].ToString(),
+            _environmentConfig,
+            vaultCredentialName);
+
+        return ResultHelper(await _vaultCredentialService.GetVaultCredentialDetailByNameAsync(
+            vaultCredentialName,
+            isModelCall ? TenantCredentialAccessEnum.ProviderCredentials : TenantCredentialAccessEnum.None));
     }
 
     /// <summary>Creates a Corsair OAuth connect link for a vault credential.</summary>

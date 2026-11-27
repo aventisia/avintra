@@ -12,12 +12,16 @@ import { z } from "zod";
 import { RenderField, shouldRenderField } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
 
+import { useVaultCredentialScope } from "../../contexts/vault-credential-scope.context";
 import { VaultCredentialAppsEnum } from "../../enums/vault-credential-apps.enum";
 import {
   buildCustomApiToolPayload,
   customApiToolSchema,
 } from "../constants/custom-api-tool-schema.constant";
-import { getDistinctVaultCredentialAppSelectOptions } from "../constants/vault-credential-app-select-options.constant";
+import {
+  getDistinctVaultCredentialAppSelectOptions,
+  getTenantVaultCredentialAppSelectOptions,
+} from "../constants/vault-credential-app-select-options.constant";
 import { OAUTH_CREDENTIAL_TYPES } from "../constants/vault-credential-oauth-types.constant";
 import { useAddVaultCredentialMutation } from "../hooks/useAddVaultCredentialMutation";
 import { useUpdateVaultCredentialMutation } from "../hooks/useUpdateVaultCredentialMutation";
@@ -37,6 +41,7 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
   // credentials require the dialog to remain busy until consent completes.
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { onCloseConfirmed } = useCrudDialogDirty();
+  const isTenantScope = useVaultCredentialScope() === "tenant";
 
   const {
     form,
@@ -177,7 +182,11 @@ const VaultCredentialDynamicForm = ({ rowId, crudAction }: VaultCredentialDynami
             render={({ field }) => (
               <AppSelector
                 defaultOpen={!field.value}
-                options={getDistinctVaultCredentialAppSelectOptions()}
+                options={
+                  isTenantScope
+                    ? getTenantVaultCredentialAppSelectOptions()
+                    : getDistinctVaultCredentialAppSelectOptions()
+                }
                 selectedItem={field.value || null}
                 onItemSelect={(item) => field.onChange(item)}
               />

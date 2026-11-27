@@ -1,0 +1,22 @@
+meta {
+  name: Tenant endpoints refuse a non-admin (expect 403)
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-vault-credential/list
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{SPACE_USER_ACCESS_TOKEN}}
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const message = typeof body.message === "string" ? body.message : "";
+  const status = res.getStatus();
+  if (status === 403) { bru.pass("Non-admin refused"); } else { bru.fail("Non-admin refused: got " + status + " - " + message); }
+}

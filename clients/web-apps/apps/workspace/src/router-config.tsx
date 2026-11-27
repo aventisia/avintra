@@ -55,6 +55,7 @@ import SupportTicketV2DetailPage from "./pages/05-tenant-admin/SupportTicketV2De
 import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
+import { TenantVaultCredentialsPage } from "./pages/05-tenant-admin/TenantVaultCredentialsPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
@@ -349,6 +350,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "model-providers",
             element: <ModelProvidersPage />,
+          },
+          {
+            path: "credentials",
+            element: <TenantVaultCredentialsPage />,
           },
           {
             path: "usage",

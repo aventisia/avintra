@@ -1,0 +1,26 @@
+meta {
+  name: OpenAI provider on a space credential is flagged legacy
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider/list
+  body: none
+  auth: none
+}
+
+headers {
+  X-Env-Type: Dev
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const status = res.getStatus();
+  const p = (Array.isArray(body.data) ? body.data : []).find((x) => x.providerType === "OpenAI") || {};
+  if (status === 200 && p.credentialName === bru.getVar("SPACE_CRED_NAME") && p.isLegacyCredential === true) { bru.pass("OpenAI provider on a space credential is flagged legacy"); } else { bru.fail("OpenAI provider on a space credential is flagged legacy: got " + status + " " + p.credentialName + " legacy=" + p.isLegacyCredential); }
+}
+
+docs {
+  > Run right after legacy-provider-flag.
+}

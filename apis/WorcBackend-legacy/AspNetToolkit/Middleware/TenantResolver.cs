@@ -55,17 +55,14 @@ public class TenantResolver
     }
 
     // Resolves the current environment from the "X-Env-Type" request header.
-    // Returns Dev when the header is missing or holds an unsupported value.
+    // IMPORTANT NOTE: only "prod" maps to Prod and everything else to Dev, so a client can never select tenant-level rows (EnvType Any) by sending "any" or a number.
     private static ConfigureEnvironmentType ResolveEnvType(HttpContext context)
     {
-        if (context.Request.Headers.TryGetValue("X-Env-Type", out var envTypeHeader) &&
-            Enum.TryParse<ConfigureEnvironmentType>(envTypeHeader.ToString(), ignoreCase: true, out var envType))
-        {
-            return envType;
-        }
+        var value = context.Request.Headers.TryGetValue("X-Env-Type", out var envTypeHeader) ? envTypeHeader.ToString().Trim() : null;
 
-        // No environment selected -> Dev.
-        return ConfigureEnvironmentType.Dev;
+        return string.Equals(value, "prod", StringComparison.OrdinalIgnoreCase)
+            ? ConfigureEnvironmentType.Prod
+            : ConfigureEnvironmentType.Dev;
     }
 
     // Resolves the current space ID from the "X-Space-Id" header, falling back to the "spid" JWT claim.

@@ -9,6 +9,16 @@ import { columnVisibilityState } from "./column-visibility-state";
 const DATA_QUERY_KEY = ["vault"];
 
 /**
+ * The query key of the tenant-level credential list, kept outside DATA_QUERY_KEY so space lists never merge it.
+ */
+const TENANT_DATA_QUERY_KEY = ["tenant-vault-credential"];
+
+/**
+ * The query key of the tenant-level credential select options used by the Models dialog.
+ */
+const TENANT_OPTIONS_QUERY_KEY = ["tenant-vault-credential-options"];
+
+/**
  * The heading for the configs table.
  */
 const TABLE_HEADING = "Vault";
@@ -41,6 +51,8 @@ export {
   getDialogHeadingDescription,
   TABLE_HEADING,
   TABLE_KEY,
+  TENANT_DATA_QUERY_KEY,
+  TENANT_OPTIONS_QUERY_KEY,
   VAULT_INITIAL_STATE,
   VAULT_PAGE_SIZE_OPTIONS,
 };

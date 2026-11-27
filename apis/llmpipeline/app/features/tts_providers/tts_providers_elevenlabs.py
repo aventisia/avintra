@@ -189,6 +189,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                 env_type=user.env_type,
                 tenant_id=str(user.tenant_id) if user.tenant_id else None,
                 space_id=user.space_id,
+                model_call=True,
             )
 
             if not credential:

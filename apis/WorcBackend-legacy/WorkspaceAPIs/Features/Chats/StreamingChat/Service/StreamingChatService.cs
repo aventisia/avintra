@@ -956,13 +956,12 @@ public class StreamingChatService : IStreamingChatService
         if (!credentialId.HasValue)
             return null;
 
-        var credential = await _unitOfWork.VaultCredentialRepo
-            .GetByConditionAsync(w => w.Id == credentialId.Value && w.EnvType == _currentTenantService.CurrentEnvType)
-            .AsNoTracking()
-            .Select(w => new { w.Name })
-            .FirstOrDefaultAsync();
+        var names = await _unitOfWork.VaultCredentialRepo.GetProviderCredentialNamesAsync(
+            new[] { credentialId.Value },
+            _currentTenantService.CurrentTenantId,
+            _currentTenantService.CurrentEnvType);
 
-        return credential?.Name;
+        return names.TryGetValue(credentialId.Value, out var credential) ? credential.Name : null;
     }
 
     private static IEnumerable<string> ReadEnabledTextModelIds(WorkspaceAPIs.Entities.TenantModelProvider provider)

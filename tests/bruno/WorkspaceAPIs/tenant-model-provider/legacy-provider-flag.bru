@@ -1,0 +1,35 @@
+meta {
+  name: Provider on a space credential reports isLegacyCredential
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_API_BASE_URL}}/tenant-model-provider
+  body: json
+  auth: none
+}
+
+headers {
+  X-Env-Type: Dev
+}
+
+body:json {
+  {
+    "providerType": "OpenAI",
+    "enabledModelIds": ["gpt-4o-mini"],
+    "isDisabled": false,
+    "credentialName": "{{SPACE_CRED_NAME}}"
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+  if (status === 200) { bru.pass("Provider saved with the space credential"); } else { bru.fail("Upsert failed: " + status); }
+}
+
+docs {
+  > Run `Orchestrator/tenant-vault-credentials/03-` first. Replaces the OpenAI provider config, so run
+  > it after `upsert-provider-with-tenant-credential-cross-space`. Then list providers in the same
+  > space: the OpenAI item has `isLegacyCredential: true`.
+}

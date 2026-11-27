@@ -17,8 +17,9 @@ import {
 import { NodeInputType } from "@/features/dynamic-config-panel/types/input-output-types";
 import { getMergedQueryData } from "@/utils/get-merged-query-data.util";
 
-import { isVaultCredentialNameAvailable } from "../../apis/vault-credentials.apis";
+import { vaultCredentialScopeApis } from "../../apis/vault-credentials.apis";
 import { vaultCredentialNameSchema } from "../../constants/vault-credential-zod-schema.constant";
+import { useVaultCredentialScope } from "../../contexts/vault-credential-scope.context";
 import { VaultCredentialDto } from "../../dtos/vault-credentials.dto";
 import { useTableTab } from "../../hooks/useTableTab";
 import { appToVaultCredentialNameMapper } from "../constants/app-to-vault-credential-name-mapper.constant";
@@ -55,6 +56,7 @@ export const useVaultCredentialDynamicForm = ({
   const { setIsDirty } = useCrudDialogDirty();
 
   const { queryKey } = useTableTab();
+  const scope = useVaultCredentialScope();
   const queryClient = useQueryClient();
 
   const vaultCredentialsData = getMergedQueryData<VaultCredentialDto>(queryClient, queryKey);
@@ -144,7 +146,7 @@ export const useVaultCredentialDynamicForm = ({
     fieldName: "name",
     form,
     fieldSchema: vaultCredentialNameSchema,
-    checkAvailabilityAPIFn: isVaultCredentialNameAvailable,
+    checkAvailabilityAPIFn: vaultCredentialScopeApis[scope].isNameAvailable,
   });
 
   useEffect(() => {

@@ -1,7 +1,8 @@
 import { DeleteDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
 
-import { vaultCredentialOptimisticMutationFn } from "../../apis/vault-credentials.apis";
+import { vaultCredentialScopeApis } from "../../apis/vault-credentials.apis";
+import { useVaultCredentialScope } from "../../contexts/vault-credential-scope.context";
 import { VaultCredentialDto } from "../../dtos/vault-credentials.dto";
 import { useTableTab } from "../../hooks/useTableTab";
 
@@ -12,12 +13,13 @@ interface VaultCredentialRowDeleteActionProps {
 export const VaultCredentialRowDeleteAction = ({ rowId }: VaultCredentialRowDeleteActionProps) => {
   const { showCustomAlertDialog } = useShowAlertHandler();
   const { queryKey } = useTableTab();
+  const scope = useVaultCredentialScope();
 
   const { mutate: deleteConfig } = useListOptimisticMutation<
     string,
     VaultCredentialDto | boolean | number,
     VaultCredentialDto
-  >([rowId], vaultCredentialOptimisticMutationFn, queryKey);
+  >([rowId], vaultCredentialScopeApis[scope].optimisticMutationFn, queryKey);
 
   return (
     <DeleteDDMenuItem

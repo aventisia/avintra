@@ -118,7 +118,7 @@ public static class UiBuilderDataConnectionHelpers
             return $"Data connection '{dataConnection.Key}' requires a queue";
         }
 
-        if (!Enum.GetValues<ConfigureEnvironmentType>().Any(envType => ToEnvTypeName(envType) == dataConnection.EnvType))
+        if (!Enum.GetValues<ConfigureEnvironmentType>().Any(envType => envType != ConfigureEnvironmentType.Any && ToEnvTypeName(envType) == dataConnection.EnvType))
         {
             return $"Data connection '{dataConnection.Key}' has an invalid environment. Use 'dev' or 'prod'";
         }

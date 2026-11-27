@@ -1,0 +1,19 @@
+meta {
+  name: Space get by id does not return the tenant credential
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential/{{TENANT_CRED_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const message = typeof body.message === "string" ? body.message : "";
+  const status = res.getStatus();
+  const refused = [400, 404].includes(status) || (status === 200 && !(body.data && (body.data.id || body.data.apiKey)));
+  if (refused && !JSON.stringify(body).includes("sk-bruno-fake")) { bru.pass("Tenant credential not returned by id"); } else { bru.fail("Tenant credential not returned by id: got " + status + " - " + message); }
+}

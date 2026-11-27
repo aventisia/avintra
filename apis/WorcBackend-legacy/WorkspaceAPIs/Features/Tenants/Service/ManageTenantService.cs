@@ -60,7 +60,7 @@ public class ManageTenantService : IManageTenantService
             // Delete EncryptedKeyValue - DeleteBehavior.Cascade set with VaultCredential
 
             // Delete VaultCredential
-            if (!await DeleteEntitiesAsync(_unitOfWork.VaultCredentialRepo, a => a.TenantId == tenantIdToBeDeleted, nameof(VaultCredential), tenantIdToBeDeleted))
+            if (!await DeleteEntitiesAsync(_unitOfWork.VaultCredentialRepo, a => a.TenantId == tenantIdToBeDeleted, nameof(VaultCredential), tenantIdToBeDeleted, ignoreQueryFilters: true))
                 return serviceResponse;
 
             // Delete Job
@@ -157,10 +157,12 @@ public class ManageTenantService : IManageTenantService
         IRepositoryBase<TEntity, WorkspaceDbContext> repository,
         Expression<Func<TEntity, bool>> condition,
         string entityName,
-        Guid tenantId) where TEntity : class
+        Guid tenantId,
+        bool ignoreQueryFilters = false) where TEntity : class
     {
         // Get entities based on the provided condition
-        var entities = await repository.GetByConditionAsync(condition).ToListAsync();
+        var query = repository.GetByConditionAsync(condition);
+        var entities = await (ignoreQueryFilters ? query.IgnoreQueryFilters() : query).ToListAsync();
 
         // Nothing to delete
         if (!entities.Any())

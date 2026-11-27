@@ -4,13 +4,72 @@ import {
   IOptimisticMutation,
   TrueFalseResultDto,
 } from "@avplatform/ui/dtos";
+import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
+import { type VaultCredentialScope } from "../contexts/vault-credential-scope.context";
 import { VaultCredentialDto } from "../dtos/vault-credentials.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/vault-credential`;
+const tenantBaseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-vault-credential`;
+
+/**
+ * Retrieves the tenant-level vault credentials; admin only.
+ */
+export const getTenantVaultCredentials = () => {
+  return axiosInstance
+    .get<IHttpResponse<VaultCredentialDto[]>>(`${tenantBaseAPIURL}/list`)
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves tenant-level vault credentials, optionally of one type, as select options; admin only.
+ */
+export const getSelectableTenantVaultCredentialOptions = (type?: string) => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${tenantBaseAPIURL}/option-to-select`, {
+      params: { type },
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Checks whether a vault credential name is free across the tenant and every space.
+ */
+export const isTenantVaultCredentialNameAvailable = (postObj: CheckAvailabilityDto) => {
+  return axiosInstance
+    .post<IHttpResponse<TrueFalseResultDto>>(`${tenantBaseAPIURL}/is-available`, postObj)
+    .then((res) => res.data);
+};
+
+/**
+ * Inserts a new tenant-level vault credential.
+ */
+export const createTenantVaultCredential = (newConfig: VaultCredentialDto) => {
+  return axiosInstance
+    .post<IHttpResponse<VaultCredentialDto>>(`${tenantBaseAPIURL}`, newConfig)
+    .then((res) => res.data);
+};
+
+/**
+ * Updates an existing tenant-level vault credential.
+ */
+export const updateTenantVaultCredential = (updatedConfig: VaultCredentialDto) => {
+  return axiosInstance
+    .put<IHttpResponse<VaultCredentialDto>>(`${tenantBaseAPIURL}`, updatedConfig)
+    .then((res) => res.data);
+};
+
+/**
+ * Deletes an existing tenant-level vault credential.
+ */
+export const deleteTenantVaultCredential = (id: string) => {
+  return axiosInstance
+    .delete<IHttpResponse<boolean>>(`${tenantBaseAPIURL}/${id}`)
+    .then((res) => res.data);
+};
 
 /**
  * Retrieves list of vault credentials.
@@ -135,3 +194,37 @@ export const vaultCredentialOptimisticMutationFn = ({
       throw new Error("Invalid action type");
   }
 };
+
+const tenantVaultCredentialOptimisticMutationFn = ({
+  payload,
+  crudAction,
+}: IOptimisticMutation<VaultCredentialDto | string | string[]>) => {
+  switch (crudAction) {
+    case "create":
+      return createTenantVaultCredential(payload as VaultCredentialDto);
+    case "update":
+      return updateTenantVaultCredential(payload as VaultCredentialDto);
+    case "delete":
+      return deleteTenantVaultCredential(payload as string);
+    default:
+      throw new Error("Invalid action type");
+  }
+};
+
+/**
+ * The vault credential API calls for each credential scope.
+ */
+export const vaultCredentialScopeApis = {
+  space: {
+    isNameAvailable: isVaultCredentialNameAvailable,
+    create: createVaultCredential,
+    update: updateVaultCredential,
+    optimisticMutationFn: vaultCredentialOptimisticMutationFn,
+  },
+  tenant: {
+    isNameAvailable: isTenantVaultCredentialNameAvailable,
+    create: createTenantVaultCredential,
+    update: updateTenantVaultCredential,
+    optimisticMutationFn: tenantVaultCredentialOptimisticMutationFn,
+  },
+} satisfies Record<VaultCredentialScope, object>;

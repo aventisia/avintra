@@ -1,5 +1,8 @@
+import { modelProviderDefinitions } from "@/features/05-tenant-admin/model-providers/constants/model-provider-definitions";
+
 import { VaultCredentialAppsEnum } from "../../enums/vault-credential-apps.enum";
 import catalog from "./corsair-integration-catalog.json";
+import { isOAuthCredentialType } from "./vault-credential-oauth-types.constant";
 
 export const vaultCredentialAppsSelectOptions: Record<string, { label: string; value: string }> = {
   [VaultCredentialAppsEnum.OpenAI]: { label: "OpenAI", value: "OpenAI" },
@@ -208,4 +211,21 @@ export function getDistinctVaultCredentialAppSelectOptions(): Array<{
     seenProviders.add(providerKey);
     return true;
   });
+}
+
+/**
+ * App options for tenant-level credentials: the types the Models page can use. The backend enforces the same rule.
+ */
+export function getTenantVaultCredentialAppSelectOptions(): Array<{
+  label: string;
+  value: string;
+}> {
+  const modelTypes = new Set<string>(
+    modelProviderDefinitions.map(
+      (definition) => VaultCredentialAppsEnum[definition.vaultCredentialType],
+    ),
+  );
+  return getDistinctVaultCredentialAppSelectOptions().filter(
+    (option) => modelTypes.has(option.value) && !isOAuthCredentialType(option.value),
+  );
 }

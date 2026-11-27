@@ -3068,6 +3068,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Space");
+
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
 

@@ -6,8 +6,9 @@ import { useShallow } from "zustand/react/shallow";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
 import { useEnvironmentStore } from "@/stores/environment-store";
 
-import { getVaultCredentials } from "../apis/vault-credentials.apis";
-import { DATA_QUERY_KEY } from "../constants";
+import { getTenantVaultCredentials, getVaultCredentials } from "../apis/vault-credentials.apis";
+import { DATA_QUERY_KEY, TENANT_DATA_QUERY_KEY } from "../constants";
+import { useVaultCredentialScope } from "../contexts/vault-credential-scope.context";
 
 /**
  * Fetches the current-space (personal) and shared-with-user vault credentials
@@ -22,16 +23,22 @@ export const useFetchVaultCredentials = () => {
   );
   const env = useEnvironmentStore((state) => state.env);
   const space = currentSpace?.id ?? "";
+  const scope = useVaultCredentialScope();
+
+  const isTenantScope = scope === "tenant";
 
   const results = useQueries({
     queries: [
-      {
-        queryKey: [...DATA_QUERY_KEY, space, env],
-        queryFn: () => getVaultCredentials({ isPersonal: true }),
-      },
+      isTenantScope
+        ? { queryKey: TENANT_DATA_QUERY_KEY, queryFn: getTenantVaultCredentials }
+        : {
+            queryKey: [...DATA_QUERY_KEY, space, env],
+            queryFn: () => getVaultCredentials({ isPersonal: true }),
+          },
       {
         queryKey: [...DATA_QUERY_KEY, "SHARED", space, env],
         queryFn: () => getVaultCredentials({ isPersonal: false }),
+        enabled: !isTenantScope,
       },
     ],
   });
@@ -39,14 +46,15 @@ export const useFetchVaultCredentials = () => {
   const [personal, shared] = results;
 
   const data = useMemo(() => {
-    const [personalData, sharedData] = [personal?.data, shared?.data];
+    const personalData = personal?.data;
+    const sharedData = isTenantScope ? undefined : shared?.data;
     if (!personalData && !sharedData) return undefined;
     return {
       statusCode: Math.max(personalData?.statusCode ?? 0, sharedData?.statusCode ?? 0),
       message: "",
       data: [...(personalData?.data ?? []), ...(sharedData?.data ?? [])],
     };
-  }, [personal?.data, shared?.data]);
+  }, [personal?.data, shared?.data, isTenantScope]);
 
   const isError = results.some((r) => r.isError);
   const error = results.find((r) => r.error)?.error;

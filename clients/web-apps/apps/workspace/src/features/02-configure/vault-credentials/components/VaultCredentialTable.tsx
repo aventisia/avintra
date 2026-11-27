@@ -20,6 +20,7 @@ import {
   VAULT_INITIAL_STATE,
   VAULT_PAGE_SIZE_OPTIONS,
 } from "../constants";
+import { useVaultCredentialScope } from "../contexts/vault-credential-scope.context";
 import { useFetchVaultCredentials } from "../hooks/useFetchVaultCredentials.hook";
 import { useTableTab } from "../hooks/useTableTab";
 import { getVaultCredentialAppIcon } from "../vault-credential-config/constants/vault-credential-app-icon-mapper.constant";
@@ -42,6 +43,7 @@ export const VaultCredentialTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
   const { queryKey } = useTableTab();
+  const isTenantScope = useVaultCredentialScope() === "tenant";
 
   const { data, isFetching, isLoading } = useFetchVaultCredentials();
   const isVaultCredentialsLoading = isLoading || isFetching;
@@ -68,7 +70,10 @@ export const VaultCredentialTable = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <CrudCreateButton buttonText="Add credential" entity="vault" />
+              <CrudCreateButton
+                buttonText="Add credential"
+                entity={isTenantScope ? "tenantVaultCredential" : "vault"}
+              />
             </div>
           </div>
           {/* Search for the card list */}
@@ -81,11 +86,13 @@ export const VaultCredentialTable = () => {
                   className="flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3.5 py-2.5 transition-colors hover:border-line-strong"
                 >
                   <div className="flex items-center space-x-4">
-                    <Checkbox
-                      checked={row.getIsSelected()}
-                      onCheckedChange={(value) => row.toggleSelected(!!value)}
-                      aria-label={`Select ${row.original.name ?? "credential"}`}
-                    />
+                    {!isTenantScope && (
+                      <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(value) => row.toggleSelected(!!value)}
+                        aria-label={`Select ${row.original.name ?? "credential"}`}
+                      />
+                    )}
                     <div>
                       <img
                         src={
@@ -145,9 +152,11 @@ export const VaultCredentialTable = () => {
                           </Tooltip>
                         )}
 
-                        <span className="bg-sunken border border-line px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2  rounded-sm">
-                          {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
-                        </span>
+                        {!isTenantScope && (
+                          <span className="bg-sunken border border-line px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-ink-2  rounded-sm">
+                            {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
+                          </span>
+                        )}
                       </div>{" "}
                       <div className="flex items-center">
                         <span className="text-2xs text-muted-foreground">
@@ -181,10 +190,14 @@ export const VaultCredentialTable = () => {
           )}
           <TableCNPagination table={table} {...PAGINATION_PROPS} />
 
-          <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
-          <ResourceFlowAccessDialog queryKey={queryKey} />
+          {!isTenantScope && (
+            <>
+              <ResourceUserAccessDialog queryKey={queryKey} allowInProd />
+              <ResourceFlowAccessDialog queryKey={queryKey} />
 
-          <VaultCredentialBulkActions table={table} />
+              <VaultCredentialBulkActions table={table} />
+            </>
+          )}
         </div>
       ) : (
         <VaultCredentialTableSkeleton />

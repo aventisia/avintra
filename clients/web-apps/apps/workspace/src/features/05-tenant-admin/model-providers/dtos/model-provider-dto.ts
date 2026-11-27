@@ -19,6 +19,9 @@ export interface TenantModelProviderDto {
   /** The name of the vault credential associated with the provider. */
   credentialName?: string | null;
 
+  /** True when the credential is a space-level (older) credential rather than a tenant credential. */
+  isLegacyCredential?: boolean;
+
   /** Deprecated. Base URL for self-hosted providers. Retained for backwards compatibility. */
   providerUrl?: string | null;
 

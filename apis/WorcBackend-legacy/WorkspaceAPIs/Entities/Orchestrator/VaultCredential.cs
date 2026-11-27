@@ -24,6 +24,12 @@ public class VaultCredential : BaseEntity, IMustHaveTenant
     public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
 
     /// <summary>
+    /// Gets or sets whether the credential is space-level or tenant-level.
+    /// Tenant means <see cref="EnvType"/> is Any and <see cref="SpaceId"/> is null.
+    /// </summary>
+    public VaultCredentialScopeEnum Scope { get; set; } = VaultCredentialScopeEnum.Space;
+
+    /// <summary>
     /// Gets or sets the name of the secret (e.g., "Qdrant API Key").
     /// </summary>
     public required string Name { get; set; }

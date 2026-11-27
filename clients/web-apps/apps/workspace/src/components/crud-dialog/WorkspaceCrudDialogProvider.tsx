@@ -112,6 +112,11 @@ const ToolCrudDialogContent = lazy(() =>
     default: m.ToolCrudDialogContent,
   })),
 );
+const TenantVaultCredentialCrudDialogContent = lazy(() =>
+  import("@/features/02-configure/vault-credentials/components/vault-credential-crud-dialog/TenantVaultCredentialCrudDialogContent").then(
+    (m) => ({ default: m.TenantVaultCredentialCrudDialogContent }),
+  ),
+);
 const VaultCredentialCrudDialogContent = lazy(() =>
   import("@/features/02-configure/vault-credentials/components/vault-credential-crud-dialog/VaultCredentialCrudDialogContent").then(
     (m) => ({ default: m.VaultCredentialCrudDialogContent }),
@@ -248,6 +253,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     Icon: ShieldIcon,
     getHeader: getVaultCredentialDialogHeadingDescription,
     Content: VaultCredentialCrudDialogContent,
+  }),
+  tenantVaultCredential: cardDialog({
+    Icon: ShieldIcon,
+    getHeader: getVaultCredentialDialogHeadingDescription,
+    Content: TenantVaultCredentialCrudDialogContent,
   }),
   emailTrigger: cardDialog({
     Icon: EnvelopeIcon,

@@ -15,6 +15,7 @@ public class VaultCredentialService : IVaultCredentialService
     private readonly IResourceFlowAccessService _resourceFlowAccessService;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IUserManagementGuardService _userManagementGuardService;
+    private const string TenantCredentialTypeNotAllowedMessage = "Tenant-level credentials support AI model provider types only.";
     public VaultCredentialService(
         IUnitOfWork unitOfWork,
         ILogger<VaultCredentialService> logger, IHttpContextAccessor
@@ -157,10 +158,10 @@ public class VaultCredentialService : IVaultCredentialService
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == vaultCredentialName.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType
+                    (w.EnvType == _currentTenantService.CurrentEnvType || w.EnvType == ConfigureEnvironmentType.Any)
                 )
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (existingVaultCredential != null)
             {
@@ -343,8 +344,14 @@ public class VaultCredentialService : IVaultCredentialService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<VaultCredentialDto>> CreateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
+    public Task<ServiceResponse<VaultCredentialDto>> CreateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
     {
+        return CreateVaultCredentialAsync(vaultCredentialDto, VaultCredentialScopeEnum.Space);
+    }
+
+    private async Task<ServiceResponse<VaultCredentialDto>> CreateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto, VaultCredentialScopeEnum scope)
+    {
+        var isTenantScope = scope == VaultCredentialScopeEnum.Tenant;
         var serviceResponse = new ServiceResponse<VaultCredentialDto>
         {
             Data = null,
@@ -353,15 +360,24 @@ public class VaultCredentialService : IVaultCredentialService
 
         try
         {
-            var prodBlock = CreateResourceGuard.Validate<VaultCredentialDto>(
-                _currentTenantService.CurrentEnvType,
-                "credential");
+            var prodBlock = isTenantScope
+                ? null
+                : CreateResourceGuard.Validate<VaultCredentialDto>(
+                    _currentTenantService.CurrentEnvType,
+                    "credential");
             if (prodBlock != null)
             {
                 return prodBlock;
             }
 
             vaultCredentialDto = TrimDtoStringPropsUtil.TrimDtoStringProps(vaultCredentialDto);
+
+            if (isTenantScope && !IsAllowedTenantCredentialType(vaultCredentialDto.Type))
+            {
+                serviceResponse.Message = TenantCredentialTypeNotAllowedMessage;
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
 
             var validateData = ValidateData(vaultCredentialDto.Type, vaultCredentialDto.Data);
 
@@ -375,7 +391,7 @@ public class VaultCredentialService : IVaultCredentialService
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == vaultCredentialDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType
+                    (isTenantScope || w.EnvType == _currentTenantService.CurrentEnvType || w.EnvType == ConfigureEnvironmentType.Any)
                 )
                 .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
@@ -396,8 +412,19 @@ public class VaultCredentialService : IVaultCredentialService
             newVaultCredential.Data = validateData.SanitizedDataJson;
             newVaultCredential.CreatedByUserId = _userId;
             newVaultCredential.LastModifiedByUserId = _userId;
-            newVaultCredential.EnvType = _currentTenantService.CurrentEnvType;
             newVaultCredential.IsResourceAccessRestricted = true;
+
+            if (isTenantScope)
+            {
+                newVaultCredential.Scope = VaultCredentialScopeEnum.Tenant;
+                newVaultCredential.EnvType = ConfigureEnvironmentType.Any;
+                newVaultCredential.SpaceId = null;
+                newVaultCredential.IsTenantWideAccess = false;
+            }
+            else
+            {
+                newVaultCredential.EnvType = _currentTenantService.CurrentEnvType;
+            }
 
             await _unitOfWork.VaultCredentialRepo.InsertAsync(newVaultCredential);
 
@@ -421,6 +448,14 @@ public class VaultCredentialService : IVaultCredentialService
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError("Failed to insert encrypted key-values for Credential ID: {VaultCredentialId}", vaultCredentialDto.Id);
+                return serviceResponse;
+            }
+
+            if (isTenantScope)
+            {
+                serviceResponse.Data = newVaultCredential.Adapt<VaultCredentialDto>();
+                serviceResponse.StatusCode = 200;
+                serviceResponse.Message = "Credential created successfully.";
                 return serviceResponse;
             }
 
@@ -457,8 +492,14 @@ public class VaultCredentialService : IVaultCredentialService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<VaultCredentialDto>> UpdateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
+    public Task<ServiceResponse<VaultCredentialDto>> UpdateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
     {
+        return UpdateVaultCredentialAsync(vaultCredentialDto, VaultCredentialScopeEnum.Space);
+    }
+
+    private async Task<ServiceResponse<VaultCredentialDto>> UpdateVaultCredentialAsync(VaultCredentialDto vaultCredentialDto, VaultCredentialScopeEnum scope)
+    {
+        var isTenantScope = scope == VaultCredentialScopeEnum.Tenant;
         var serviceResponse = new ServiceResponse<VaultCredentialDto>
         {
             Data = null,
@@ -467,12 +508,21 @@ public class VaultCredentialService : IVaultCredentialService
 
         try
         {
-            var existingVaultCredential = await _unitOfWork.VaultCredentialRepo
-                .GetByConditionAsync(w =>
-                    string.IsNullOrEmpty(vaultCredentialDto.Name)
-                        ? w.Id == vaultCredentialDto.Id
-                        : w.Name.ToLower() == vaultCredentialDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType
-                )
+            var existingVaultCredentialQuery = isTenantScope
+                ? _unitOfWork.VaultCredentialRepo
+                    .GetByConditionAsync(w =>
+                        w.TenantId == _currentTenantService.CurrentTenantId &&
+                        w.Scope == VaultCredentialScopeEnum.Tenant &&
+                        w.Id == vaultCredentialDto.Id)
+                    .IgnoreQueryFilters()
+                : _unitOfWork.VaultCredentialRepo
+                    .GetByConditionAsync(w =>
+                        string.IsNullOrEmpty(vaultCredentialDto.Name)
+                            ? w.Id == vaultCredentialDto.Id
+                            : w.Name.ToLower() == vaultCredentialDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType
+                    );
+
+            var existingVaultCredential = await existingVaultCredentialQuery
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
 
@@ -483,43 +533,55 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var prodUpdateBlock = ProdResourceUpdateGuard.Validate<VaultCredentialDto>(
-                existingVaultCredential.EnvType,
-                _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
-                "credential");
-            if (prodUpdateBlock != null)
+            if (isTenantScope)
             {
-                return prodUpdateBlock;
-            }
-
-            var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
-                _userId,
-                existingVaultCredential.Id,
-                ResourceTypeEnum.VaultCredential,
-                existingVaultCredential.CreatedByUserId,
-                false,
-                new[]
+                if (!IsAllowedTenantCredentialType(vaultCredentialDto.Type))
                 {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.Edit,
+                    serviceResponse.Message = TenantCredentialTypeNotAllowedMessage;
+                    serviceResponse.StatusCode = 400;
+                    return serviceResponse;
                 }
-            );
-
-            if (!canEdit)
+            }
+            else
             {
-                _logger.LogWarning("User {UserId} is not authorized to update credential ID: {VaultCredentialId}", _userId, vaultCredentialDto.Id);
-                serviceResponse.Message = "You do not have access to update this credential.";
-                return serviceResponse;
+                var prodUpdateBlock = ProdResourceUpdateGuard.Validate<VaultCredentialDto>(
+                    existingVaultCredential.EnvType,
+                    _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()),
+                    "credential");
+                if (prodUpdateBlock != null)
+                {
+                    return prodUpdateBlock;
+                }
+
+                var (canEdit, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
+                    _userId,
+                    existingVaultCredential.Id,
+                    ResourceTypeEnum.VaultCredential,
+                    existingVaultCredential.CreatedByUserId,
+                    false,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.Edit,
+                    }
+                );
+
+                if (!canEdit)
+                {
+                    _logger.LogWarning("User {UserId} is not authorized to update credential ID: {VaultCredentialId}", _userId, vaultCredentialDto.Id);
+                    serviceResponse.Message = "You do not have access to update this credential.";
+                    return serviceResponse;
+                }
             }
 
             var duplicateSecret = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name.ToLower() == vaultCredentialDto.Name.ToLower() &&
-                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    (isTenantScope || w.EnvType == _currentTenantService.CurrentEnvType || w.EnvType == ConfigureEnvironmentType.Any) &&
                     w.Id != vaultCredentialDto.Id)
                 .IgnoreQueryFilters()
-                .SingleOrDefaultAsync();
+                .FirstOrDefaultAsync();
 
             if (duplicateSecret != null)
             {
@@ -540,6 +602,17 @@ public class VaultCredentialService : IVaultCredentialService
             var typeChanged = existingVaultCredential.Type != vaultCredentialDto.Type;
             var previousType = existingVaultCredential.Type;
             var needsRevalidation = isDataChanged || typeChanged;
+
+            if (typeChanged)
+            {
+                var usingProviders = (await GetUsingProviderNamesAsync(new[] { existingVaultCredential.Id })).GetValueOrDefault(existingVaultCredential.Id);
+                if (usingProviders != null)
+                {
+                    serviceResponse.Message = $"Cannot change the type of credential '{existingVaultCredential.Name}' because the model provider(s) {usingProviders} use it.";
+                    serviceResponse.StatusCode = 400;
+                    return serviceResponse;
+                }
+            }
 
             if (needsRevalidation)
             {
@@ -564,7 +637,7 @@ public class VaultCredentialService : IVaultCredentialService
                 existingVaultCredential.Description = vaultCredentialDto.Description;
             }
 
-            if (existingVaultCredential.IsTenantWideAccess != vaultCredentialDto.IsTenantWideAccess)
+            if (!isTenantScope && existingVaultCredential.IsTenantWideAccess != vaultCredentialDto.IsTenantWideAccess)
             {
                 existingVaultCredential.IsTenantWideAccess = vaultCredentialDto.IsTenantWideAccess;
             }
@@ -648,7 +721,7 @@ public class VaultCredentialService : IVaultCredentialService
                 }
             }
 
-            if (needsRevalidation && validateData != null)
+            if (needsRevalidation && validateData != null && !isTenantScope)
             {
                 if (typeChanged)
                 {
@@ -735,6 +808,14 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
+            var usingProviders = (await GetUsingProviderNamesAsync(new[] { vaultCredential.Id })).GetValueOrDefault(vaultCredential.Id);
+            if (usingProviders != null)
+            {
+                serviceResponse.Message = GetProviderBlockedDeleteMessage(vaultCredential.Name, usingProviders);
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
+            }
+
             await _resourceUserAccessService.DeleteResourceUserAccessesAsync(vaultCredential.Id, ResourceTypeEnum.VaultCredential);
             await _resourceFlowAccessService.DeleteResourceFlowAccessesAsync(ResourceTypeEnum.VaultCredential, vaultCredential.Id);
 
@@ -781,6 +862,8 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
             var blockedNames = new List<string>();
+            var providerBlockedMessages = new List<string>();
+            var usingProvidersByCredential = await GetUsingProviderNamesAsync(vaultCredentials.Select(w => w.Id).ToList());
             foreach (var vaultCredential in vaultCredentials)
             {
                 var (canDelete, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
@@ -801,6 +884,11 @@ public class VaultCredentialService : IVaultCredentialService
                     return serviceResponse;
                 }
 
+                if (usingProvidersByCredential.TryGetValue(vaultCredential.Id, out var usingProviders))
+                {
+                    providerBlockedMessages.Add($"'{vaultCredential.Name}' ({usingProviders})");
+                }
+
                 var guardBlock = await DeleteResourceGuard.ValidateAsync(
                     _unitOfWork.VaultCredentialRepo,
                     vaultCredential.EnvType,
@@ -814,6 +902,14 @@ public class VaultCredentialService : IVaultCredentialService
                 {
                     blockedNames.Add(vaultCredential.Name);
                 }
+            }
+
+            if (providerBlockedMessages.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following credential(s) because model providers use them: {string.Join(", ", providerBlockedMessages)}";
+                serviceResponse.StatusCode = 400;
+                return serviceResponse;
             }
 
             if (blockedNames.Count > 0)
@@ -919,7 +1015,7 @@ public class VaultCredentialService : IVaultCredentialService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<VaultCredentialDto>> GetVaultCredentialDetailByNameAsync(string vaultCredentialName)
+    public async Task<ServiceResponse<VaultCredentialDto>> GetVaultCredentialDetailByNameAsync(string vaultCredentialName, TenantCredentialAccessEnum tenantAccess = TenantCredentialAccessEnum.None)
     {
         var serviceResponse = new ServiceResponse<VaultCredentialDto>
         {
@@ -934,11 +1030,18 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
+            // IMPORTANT NOTE: IgnoreQueryFilters below also drops this subquery's tenant filter, so it filters on TenantId itself.
+            var enabledProviderCredentialIds = _unitOfWork.TenantModelProviderRepo
+                .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId && !w.IsDisabled && w.CredentialId != null)
+                .Select(w => w.CredentialId!.Value);
+
             var vaultCredentialCandidates = await _unitOfWork.VaultCredentialRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Name == vaultCredentialName &&
-                    w.EnvType == _currentTenantService.CurrentEnvType
+                    ((w.Scope == VaultCredentialScopeEnum.Space && w.EnvType == _currentTenantService.CurrentEnvType) ||
+                        (tenantAccess != TenantCredentialAccessEnum.None && w.Scope == VaultCredentialScopeEnum.Tenant &&
+                            (tenantAccess == TenantCredentialAccessEnum.All || enabledProviderCredentialIds.Contains(w.Id))))
                 )
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
@@ -961,7 +1064,9 @@ public class VaultCredentialService : IVaultCredentialService
                 return serviceResponse;
             }
 
-            var (canView, accessLevel) = await _resourceUserAccessService.GetResourceAccessAsync(
+            var (canView, accessLevel) = vaultCredential.Scope == VaultCredentialScopeEnum.Tenant
+                ? (true, ResourceAccessTypeEnum.View)
+                : await _resourceUserAccessService.GetResourceAccessAsync(
                 _userId,
                 vaultCredential.Id,
                 ResourceTypeEnum.VaultCredential,
@@ -1004,6 +1109,165 @@ public class VaultCredentialService : IVaultCredentialService
         }
 
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<VaultCredentialDto>>> GetTenantVaultCredentialsAsync()
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<VaultCredentialDto>>.Create("Failed to fetch tenant credentials", 500);
+
+        try
+        {
+            var credentials = await GetTenantScopeQuery()
+                .OrderByDescending(w => w.CreatedOn)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .ToListAsync();
+
+            var dtos = credentials.Adapt<IEnumerable<VaultCredentialDto>>().ToList();
+            dtos.ForEach(dto => dto.AccessLevel = ResourceAccessTypeEnum.Owner);
+
+            return serviceResponse.Update("Tenant credentials fetched", 200, dtos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching tenant-level credentials.");
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableTenantVaultCredentialOptionsAsync(VaultCredentialTypesEnum? type)
+    {
+        var serviceResponse = ServiceResponse<IEnumerable<SelectOption>>.Create("Failed to fetch tenant credential options", 500);
+
+        try
+        {
+            var credentials = await GetTenantScopeQuery()
+                .Where(w => !type.HasValue || w.Type == type)
+                .ToListAsync();
+
+            return serviceResponse.Update("Tenant credential options fetched", 200, credentials.Adapt<IEnumerable<SelectOption>>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while fetching tenant-level credential options.");
+        }
+
+        return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<TrueFalseResultDto>> IsTenantVaultCredentialNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
+    {
+        var serviceResponse = ServiceResponse<TrueFalseResultDto>.Create("Failed to check credential name availability", 500);
+
+        try
+        {
+            var name = checkAvailabilityDto.UserInput?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return serviceResponse.Update("Credential name cannot be empty", 200, new TrueFalseResultDto { Result = false });
+            }
+
+            var isTaken = await _unitOfWork.VaultCredentialRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.Name.ToLower() == name.ToLower())
+                .IgnoreQueryFilters()
+                .AnyAsync();
+
+            return isTaken
+                ? serviceResponse.Update($"A credential named '{name}' already exists", 200, new TrueFalseResultDto { Result = false })
+                : serviceResponse.Update($"Credential name '{name}' is available", 200, new TrueFalseResultDto { Result = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while checking tenant-level credential name availability.");
+        }
+
+        return serviceResponse;
+    }
+
+    public Task<ServiceResponse<VaultCredentialDto>> InsertTenantVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
+    {
+        return CreateVaultCredentialAsync(vaultCredentialDto, VaultCredentialScopeEnum.Tenant);
+    }
+
+    public Task<ServiceResponse<VaultCredentialDto>> UpdateTenantVaultCredentialAsync(VaultCredentialDto vaultCredentialDto)
+    {
+        return UpdateVaultCredentialAsync(vaultCredentialDto, VaultCredentialScopeEnum.Tenant);
+    }
+
+    public async Task<ServiceResponse<bool>> DeleteTenantVaultCredentialAsync(Guid vaultCredentialId)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to delete tenant credential", 500);
+
+        try
+        {
+            var vaultCredential = await GetTenantScopeQuery()
+                .Where(w => w.Id == vaultCredentialId)
+                .SingleOrDefaultAsync();
+
+            if (vaultCredential == null)
+            {
+                return serviceResponse.Update("Credential not found", 404);
+            }
+
+            var usingProviders = (await GetUsingProviderNamesAsync(new[] { vaultCredential.Id })).GetValueOrDefault(vaultCredential.Id);
+            if (usingProviders != null)
+            {
+                return serviceResponse.Update(GetProviderBlockedDeleteMessage(vaultCredential.Name, usingProviders), 400);
+            }
+
+            _unitOfWork.VaultCredentialRepo.Delete(vaultCredential);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                return serviceResponse;
+            }
+
+            return serviceResponse.Update("Tenant credential deleted", 200, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error while deleting tenant-level credential with ID: {VaultCredentialId}", vaultCredentialId);
+        }
+
+        return serviceResponse;
+    }
+
+    private IQueryable<VaultCredential> GetTenantScopeQuery()
+    {
+        return _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w =>
+                w.TenantId == _currentTenantService.CurrentTenantId &&
+                w.Scope == VaultCredentialScopeEnum.Tenant)
+            .IgnoreQueryFilters();
+    }
+
+    private async Task<Dictionary<Guid, string>> GetUsingProviderNamesAsync(IReadOnlyCollection<Guid> vaultCredentialIds)
+    {
+        var providerLinks = await _unitOfWork.TenantModelProviderRepo
+            .GetByConditionAsync(w => w.CredentialId != null && vaultCredentialIds.Contains(w.CredentialId.Value))
+            .Select(w => new { CredentialId = w.CredentialId!.Value, w.ProviderType })
+            .ToListAsync();
+
+        return providerLinks
+            .GroupBy(w => w.CredentialId)
+            .ToDictionary(g => g.Key, g => string.Join(", ", g.Select(w => w.ProviderType)));
+    }
+
+    private static string GetProviderBlockedDeleteMessage(string credentialName, string usingProviders)
+    {
+        return $"Cannot delete credential '{credentialName}' because the model provider(s) {usingProviders} use it.";
+    }
+
+    private bool IsAllowedTenantCredentialType(VaultCredentialTypesEnum type)
+    {
+        var typeName = type.ToString();
+        var isModelType = typeName.Equals(nameof(VaultCredentialTypesEnum.GoogleGemini), StringComparison.OrdinalIgnoreCase) ||
+            Enum.GetNames<LLMProviderTypesEnum>().Any(name => name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+
+        return isModelType && MapVaultCredentialTypeToCorsairOAuthPlugin(type) is null;
     }
 
     public async Task<ServiceResponse<CorsairCredentialTestResult>> TestCorsairCredentialAsync(Guid vaultCredentialId)

@@ -1,0 +1,22 @@
+meta {
+  name: Direct decrypt with a garbage model-call token refused
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{WORKSPACE_API_BASE_URL}}/vault-credential/decrypted-data/by-name/{{TENANT_CRED_NAME}}
+  body: none
+  auth: none
+}
+
+headers {
+  X-Model-Call-Token: garbage
+}
+
+script:post-response {
+  const body = res.getBody() || {};
+  const message = typeof body.message === "string" ? body.message : "";
+  const status = res.getStatus();
+  if (!JSON.stringify(body).includes("sk-bruno-fake") && message.includes("not found")) { bru.pass("Garbage token gets not-found, no secret"); } else { bru.fail("Garbage token gets not-found, no secret: got " + status + " - " + message); }
+}

@@ -31,6 +31,12 @@ public class TenantModelProviderDto
     public string? CredentialName { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the credential is a space-level (legacy) credential rather than a tenant-level one.
+    /// Informational only; not included in API requests.
+    /// </summary>
+    public bool? IsLegacyCredential { get; set; }
+
+    /// <summary>
     /// Gets or sets the base URL for self-hosted providers (e.g. Ollama).
     /// Null/empty for credential-based providers.
     /// </summary>

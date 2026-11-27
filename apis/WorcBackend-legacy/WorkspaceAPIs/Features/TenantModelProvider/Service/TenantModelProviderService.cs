@@ -334,6 +334,15 @@ public class TenantModelProviderService : ITenantModelProviderService
         if (string.IsNullOrWhiteSpace(credentialName))
             return existingCredentialId;
 
+        var tenantCredentialId = await _unitOfWork.VaultCredentialRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.TenantId == _tenantId && w.Scope == VaultCredentialScopeEnum.Tenant)
+            .IgnoreQueryFilters()
+            .Select(w => (Guid?)w.Id)
+            .FirstOrDefaultAsync();
+
+        if (tenantCredentialId.HasValue)
+            return tenantCredentialId;
+
         var credential = await _unitOfWork.VaultCredentialRepo
             .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
             .FirstOrDefaultAsync();
@@ -350,20 +359,15 @@ public class TenantModelProviderService : ITenantModelProviderService
             .Distinct()
             .ToList();
 
-        if (credentialIds.Count == 0) return;
-
-        var credentials = await _unitOfWork.VaultCredentialRepo
-            .GetByConditionAsync(w => credentialIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
-            .Select(w => new { w.Id, w.Name })
-            .ToListAsync();
-
-        var nameById = credentials.ToDictionary(c => c.Id, c => c.Name);
+        var names = await _unitOfWork.VaultCredentialRepo
+            .GetProviderCredentialNamesAsync(credentialIds, _tenantId, _currentTenantService.CurrentEnvType);
 
         foreach (var provider in providers)
         {
-            if (provider.CredentialId.HasValue && nameById.TryGetValue(provider.CredentialId.Value, out var name))
+            if (provider.CredentialId.HasValue && names.TryGetValue(provider.CredentialId.Value, out var credential))
             {
-                provider.CredentialName = name;
+                provider.CredentialName = credential.Name;
+                provider.IsLegacyCredential = !credential.IsTenantScope;
             }
         }
     }

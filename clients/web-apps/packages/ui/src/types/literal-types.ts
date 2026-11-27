@@ -33,6 +33,7 @@ type CrudEntityKey =
   | "skill"
   | "tool"
   | "vault"
+  | "tenantVaultCredential"
   | "emailTrigger"
   | "messageTrigger"
   | "timeTrigger"

@@ -36,7 +36,25 @@ public interface IVaultCredentialService
     Task<ServiceResponse<VaultCredentialDto>> GetVaultCredentialDetailAsync(Guid vaultCredentialId);
 
     /// <summary>Retrieves a vault credential with decrypted values by its name.</summary>
-    Task<ServiceResponse<VaultCredentialDto>> GetVaultCredentialDetailByNameAsync(string vaultCredentialName);
+    Task<ServiceResponse<VaultCredentialDto>> GetVaultCredentialDetailByNameAsync(string vaultCredentialName, TenantCredentialAccessEnum tenantAccess = TenantCredentialAccessEnum.None);
+
+    /// <summary>Retrieves the tenant-level vault credentials with no secret values.</summary>
+    Task<ServiceResponse<IEnumerable<VaultCredentialDto>>> GetTenantVaultCredentialsAsync();
+
+    /// <summary>Retrieves tenant-level vault credentials as selectable options.</summary>
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableTenantVaultCredentialOptionsAsync(VaultCredentialTypesEnum? type);
+
+    /// <summary>Checks whether a name is free across every tenant credential.</summary>
+    Task<ServiceResponse<TrueFalseResultDto>> IsTenantVaultCredentialNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto);
+
+    /// <summary>Inserts a new tenant-level vault credential.</summary>
+    Task<ServiceResponse<VaultCredentialDto>> InsertTenantVaultCredentialAsync(VaultCredentialDto vaultCredentialDto);
+
+    /// <summary>Updates an existing tenant-level vault credential.</summary>
+    Task<ServiceResponse<VaultCredentialDto>> UpdateTenantVaultCredentialAsync(VaultCredentialDto vaultCredentialDto);
+
+    /// <summary>Deletes a tenant-level vault credential unless a model provider uses it.</summary>
+    Task<ServiceResponse<bool>> DeleteTenantVaultCredentialAsync(Guid vaultCredentialId);
 
     /// <summary>Creates a Corsair OAuth connect link for a vault credential.</summary>
     Task<ServiceResponse<CorsairConnectLink>> CreateOAuthConnectLinkAsync(Guid vaultCredentialId);
