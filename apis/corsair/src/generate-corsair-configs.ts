@@ -69,6 +69,7 @@ generateDcpFiles({
   plugins,
   corsair,
   globalMappingFile,
+  regenerateVaultCredentialConfigs: process.env.CORSAIR_REGENERATE_VAULT_FORMS === "1",
 }).catch((err) => {
   console.error(err);
   process.exit(1);

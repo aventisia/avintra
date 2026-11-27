@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import pg from "pg";
 import { createCorsair, setupCorsair } from "corsair";
 import { plugins as registeredPlugins } from "./plugins.js";
+import { deriveDefaultAuthType } from "./dcp-generator/auth-type.js";
 
 // --- Variable selection precedence ---
 // Config is resolved in this order (highest wins):
@@ -111,17 +112,14 @@ export function getPluginMeta(pluginId: string): PluginMeta | undefined {
 }
 
 /**
- * True if the plugin declares an OAuth 2 auth mode. Mirrors the catalog generator's
- * `authType` derivation (`dcp-generator/plugin-metadata.ts`), so this set agrees with the
- * catalog's `defaultAuthMode: "oauth_2"` entries.
+ * True if the plugin's real default auth mode is OAuth 2 and it ships OAuth app
+ * settings. Mirrors the catalog generator's default-mode derivation, so the
+ * sidecar only treats providers the dialog treats as OAuth as OAuth-capable.
  */
 export function isOAuthTwoPlugin(pluginId: string): boolean {
   const meta = getPluginMeta(pluginId);
   if (!meta) return false;
-  const modes = Object.keys(meta.authConfig ?? {});
-  return modes.length > 0
-    ? modes.includes("oauth_2")
-    : meta.options?.authType === "oauth_2";
+  return deriveDefaultAuthType(meta) === "oauth_2" && meta.oauthConfig !== undefined;
 }
 
 /**

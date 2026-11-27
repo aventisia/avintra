@@ -3991,7 +3991,7 @@ public class VaultCredentialService : IVaultCredentialService
         {
             IReadOnlyDictionary<string, string>? credentials = pluginId == "twilio"
                 ? BuildTwilioCredentials(vaultCredential, decryptedValues)
-                : decryptedValues;
+                : BuildApiKeyCredentials(pluginId, decryptedValues);
 
             if (credentials == null)
             {
@@ -4009,6 +4009,24 @@ public class VaultCredentialService : IVaultCredentialService
         }
 
         return allMirrored;
+    }
+
+    /// <summary>
+    /// Builds the fields the sidecar mirrors: every stored value plus the plugin's
+    /// API key under the name its key manager reads (GitHub stores its token as
+    /// <c>AccessToken</c> but the plugin reads <c>api_key</c>).
+    /// </summary>
+    private static IReadOnlyDictionary<string, string> BuildApiKeyCredentials(
+        string pluginId,
+        Dictionary<string, string> decryptedValues)
+    {
+        var credentials = new Dictionary<string, string>(decryptedValues, StringComparer.Ordinal);
+        var apiKey = GetCorsairApiKeyForPlugin(pluginId, decryptedValues);
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            credentials["ApiKey"] = apiKey;
+        }
+        return credentials;
     }
 
     /// <summary>

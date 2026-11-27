@@ -2,9 +2,9 @@
   {
     "direction": "Input",
     "type": "text",
-    "name": "one",
-    "label": "One",
-    "description": "One for Telegram.",
+    "name": "bot_token",
+    "label": "Bot_token",
+    "description": "Bot_token for Telegram.",
     "defaultValue": "",
     "required": true
   }

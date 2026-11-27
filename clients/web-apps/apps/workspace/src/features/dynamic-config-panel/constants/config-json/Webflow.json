@@ -1,19 +1,10 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "ClientId",
-    "label": "Client Id",
-    "description": "Client Id for Webflow.",
-    "defaultValue": "",
-    "required": true
-  },
-  {
-    "direction": "Input",
     "type": "password",
-    "name": "ClientSecret",
-    "label": "Client Secret",
-    "description": "Client Secret for Webflow.",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Webflow.",
     "defaultValue": "",
     "required": true
   }

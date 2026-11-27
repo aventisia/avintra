@@ -1,6 +1,15 @@
 [
   {
     "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Jira.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "cloud_url",
     "label": "Cloud_url",
