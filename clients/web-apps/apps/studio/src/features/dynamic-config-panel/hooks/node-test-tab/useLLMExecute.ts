@@ -128,8 +128,6 @@ export function useLLMExecute(
       json_schema: formData.useJSONSchema ? (formData.JsonSchema as string) : null,
       max_output_tokens: modelConfig.max_output_tokens ?? null,
       credential_name: modelConfig.credential_name?.trim() || null,
-      temperature: modelConfig.temperature,
-      top_p: modelConfig.top_p,
       reasoning_effort: modelConfig.reasoning_effort ?? null,
       kb_names: kbConfigData ? kbConfigData.config.knowledgeBase : null,
       skill_names: skillsConfigData ? skillsConfigData.config.skills : null,

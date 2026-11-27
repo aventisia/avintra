@@ -39,7 +39,13 @@ from voice_agent.realtime_adapters import (
 )
 from voice_agent.session_runtime import run_session
 from voice_agent.tool_bridge import KNOWLEDGE_SYSTEM_INSTRUCTION
-from .voice_test_helpers import FLOW_ID, TENANT_ID, USER_ID, voice_claims
+from .voice_test_helpers import (
+    FLOW_ID,
+    TENANT_ID,
+    USER_ID,
+    FakeConversationLifecycle,
+    voice_claims,
+)
 
 SPOKEN_STYLE_GUIDANCE = (
     "Use short sentences and plain spoken language. Do not use Markdown, "
@@ -413,20 +419,6 @@ class _FakeTurnTimingRecorder:
         self.turns.append((turn_id, timing))
 
 
-class _FakeConversationLifecycle:
-    instances: list["_FakeConversationLifecycle"] = []
-
-    def __init__(self, claims: VoiceJobClaims) -> None:
-        self.claims = claims
-        self.calls = 0
-        self.failed: bool | None = None
-        self.instances.append(self)
-
-    async def finish(self, *, failed: bool) -> None:
-        self.calls += 1
-        self.failed = failed
-
-
 class _FakeTranscriptWriter:
     instances: list["_FakeTranscriptWriter"] = []
 
@@ -477,14 +469,14 @@ class _FakeUsageRecorder:
 @pytest.fixture(autouse=True)
 def voice_persistence(monkeypatch):
     _FakeTurnTimingRecorder.instances = []
-    _FakeConversationLifecycle.instances = []
+    FakeConversationLifecycle.instances = []
     _FakeTranscriptWriter.instances = []
     _FakeUsageRecorder.instances = []
     monkeypatch.setattr(
         session_runtime, "VoiceTurnTimingRecorder", _FakeTurnTimingRecorder
     )
     monkeypatch.setattr(
-        session_runtime, "VoiceConversationLifecycle", _FakeConversationLifecycle
+        session_runtime, "VoiceConversationLifecycle", FakeConversationLifecycle
     )
     monkeypatch.setattr(
         session_runtime, "VoiceRealtimeTranscriptWriter", _FakeTranscriptWriter
@@ -492,7 +484,7 @@ def voice_persistence(monkeypatch):
     monkeypatch.setattr(session_runtime, "RealtimeUsageRecorder", _FakeUsageRecorder)
     return SimpleNamespace(
         recorders=_FakeTurnTimingRecorder.instances,
-        lifecycles=_FakeConversationLifecycle.instances,
+        lifecycles=FakeConversationLifecycle.instances,
         writers=_FakeTranscriptWriter.instances,
         usage=_FakeUsageRecorder.instances,
     )

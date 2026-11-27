@@ -1,0 +1,105 @@
+# Aventisia's stack for one host (UAT, then production server 2), run by deploy.sh next to the host's own nginx,
+# avdb Postgres and Azure Blob; images come from .github/workflows/docker-images.yml. Setup: README.md.
+# /opt/avintra/.env (template: .env.example) fills the ${...} values below; env/*.env hold each container's own settings.
+# IMPORTANT NOTE: Docker-published ports bypass UFW, so every port binds to 127.0.0.1 except LiveKit's media ports.
+# The -apis and corsair aliases are the backend's default service URLs and the edge image's upstreams.
+name: avintra
+
+x-service: &service
+  restart: unless-stopped
+
+x-dotnet: &dotnet
+  <<: *service
+  environment:
+    ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+
+services:
+  frontend:
+    <<: *service
+    image: ${DOCKERHUB_NS:?}/avintra-frontend:${AVINTRA_TAG:?}
+    ports: ["127.0.0.1:8080:8080"]
+
+  docs:
+    <<: *service
+    image: ${DOCKERHUB_NS:?}/avintra-docs:${AVINTRA_TAG:?}
+    ports: ["127.0.0.1:8081:8080"]
+
+  global-admin-app:
+    <<: *service
+    image: ${DOCKERHUB_NS:?}/avintra-global-admin:app-${AVINTRA_TAG:?}
+    ports: ["127.0.0.1:8082:8080"]
+
+  accounts-api:
+    <<: *dotnet
+    image: ${DOCKERHUB_NS:?}/avintra-accounts-api:${AVINTRA_TAG:?}
+    env_file: [env/shared.env, env/accounts-api.env]
+    ports: ["127.0.0.1:4000:4000"]
+    networks:
+      default:
+        aliases: [accounts-apis]
+    volumes:
+      - /var/www/aventisia.com/files:/var/www/aventisia.com/files
+      - ./logs/accounts-api:/app/logs
+
+  workspace-api:
+    <<: *dotnet
+    image: ${DOCKERHUB_NS:?}/avintra-workspace-api:${AVINTRA_TAG:?}
+    env_file: [env/shared.env, env/workspace-api.env]
+    ports: ["127.0.0.1:4001:4001"]
+    networks:
+      default:
+        aliases: [workspace-apis]
+    volumes:
+      - /var/www/aventisia.com/files:/var/www/aventisia.com/files
+      - /var/www/aventisia.com/temp-files:/var/www/aventisia.com/temp-files
+      - ./logs/workspace-api:/app/logs
+
+  global-admin-api:
+    <<: *dotnet
+    image: ${DOCKERHUB_NS:?}/avintra-global-admin:api-${AVINTRA_TAG:?}
+    env_file: [env/shared.env, env/global-admin-api.env]
+    ports: ["127.0.0.1:4004:4004"]
+    volumes:
+      - ./logs/global-admin-api:/app/logs
+
+  # IMPORTANT NOTE: one replica with one uvicorn worker; chat tool-approval pauses live in process memory.
+  llmpipeline-api:
+    <<: *service
+    image: ${DOCKERHUB_NS:?}/avintra-llmpipeline-api:${AVINTRA_TAG:?}
+    env_file: [env/shared.env, env/llmpipeline-api.env]
+    environment:
+      LIVEKIT_HTTP_URL: http://livekit:7880
+      LIVEKIT_WS_URL: ${LIVEKIT_WS_URL:?set the browser URL, wss://<host>/livekit, in .env}
+      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY:?generate a key pair and set it in .env}
+      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET:?generate a key pair and set it in .env}
+    ports: ["127.0.0.1:4003:4003"]
+    networks:
+      default:
+        aliases: [llmpipeline-apis]
+
+  # IMPORTANT NOTE: Corsair has no authentication of its own; only the Workspace API and LLM Pipeline may reach it, so it publishes no port.
+  corsair-api:
+    <<: *service
+    image: ${DOCKERHUB_NS:?}/avintra-corsair-api:${AVINTRA_TAG:?}
+    env_file: [env/shared.env, env/corsair-api.env]
+    networks:
+      default:
+        aliases: [corsair]
+
+  livekit:
+    <<: *service
+    image: livekit/livekit-server:v1.13.11
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY:?}: ${LIVEKIT_API_SECRET:?}"
+      LIVEKIT_CONFIG: |
+        port: 7880
+        logging:
+          level: info
+        rtc:
+          tcp_port: 7881
+          udp_port: 7882
+          use_external_ip: true
+    ports:
+      - "127.0.0.1:7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"

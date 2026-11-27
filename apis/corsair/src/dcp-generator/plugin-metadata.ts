@@ -17,6 +17,7 @@ import type { PluginAuthMode, PluginMetadata, PluginOAuthConfig } from "./types.
 
 import { getVaultCredentialType } from "./integration-catalog.js";
 import { getNodeFieldMapping } from "./node-field-mappings/index.js";
+import { deriveDefaultAuthType } from "./auth-type.js";
 import { PLUGIN_DESCRIPTIONS } from "../plugin-descriptions.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -723,9 +724,7 @@ export function toPluginMetadata(
   if (authModes.length === 0 && raw.options?.authType) {
     authModes.push({ mode: raw.options.authType, accountFields: [] });
   }
-  const authType = authModes.some(({ mode }) => mode === "oauth_2")
-    ? "oauth_2"
-    : authModes[0]?.mode ?? "none";
+  const authType = deriveDefaultAuthType(raw);
 
   return {
     id,

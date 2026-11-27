@@ -783,8 +783,6 @@ public class StreamingChatService : IStreamingChatService
 
         var provider = isVoiceAgent ? voiceSettings?.Llm.Provider : GetStringProperty(modelConfig, "provider");
         var model = isVoiceAgent ? voiceSettings?.Llm.Model : GetStringProperty(modelConfig, "model");
-        var temperature = isVoiceAgent ? voiceSettings?.Llm.Temperature ?? 1 : GetDoubleProperty(modelConfig, "temperature") ?? 1;
-        var topP = isVoiceAgent ? voiceSettings?.Llm.TopP ?? 1 : GetDoubleProperty(modelConfig, "top_p") ?? 1;
         var reasoningEffort = isVoiceAgent ? voiceSettings?.Llm.ReasoningEffort : GetStringProperty(modelConfig, "reasoning_effort");
         var credentialName = isVoiceAgent ? voiceSettings?.Llm.CredentialName : CredentialReferenceUtil.Resolve(modelConfig);
 
@@ -807,8 +805,6 @@ public class StreamingChatService : IStreamingChatService
             stream = true,
             is_temp_chat = request.IsTempChat,
             conversation_id = conversationId,
-            temperature,
-            top_p = topP,
             reasoning_effort = reasoningEffort,
             credential_name = modelSelection?.CredentialName ?? credentialName,
             max_output_tokens = maxOutputTokens,
@@ -932,8 +928,6 @@ public class StreamingChatService : IStreamingChatService
             is_temp_chat = request.IsTempChat && request.ConversationId is null,
             conversation_id = request.ConversationId?.ToString(),
             keep_user_turns = request.KeepUserTurns,
-            temperature = 1.0,
-            top_p = 1.0,
             reasoning_effort = NormalizeReasoningEffort(request.ReasoningEffort),
             web_search = request.WebSearch,
             credential_name = selection.CredentialName,

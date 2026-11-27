@@ -1,19 +1,37 @@
 [
   {
     "direction": "Input",
-    "type": "text",
-    "name": "ClientId",
-    "label": "Client Id",
-    "description": "Client Id for Confluence.",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for Confluence.",
     "defaultValue": "",
     "required": true
   },
   {
     "direction": "Input",
-    "type": "password",
-    "name": "ClientSecret",
-    "label": "Client Secret",
-    "description": "Client Secret for Confluence.",
+    "type": "text",
+    "name": "email",
+    "label": "Email",
+    "description": "Email for Confluence.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "cloud_url",
+    "label": "Cloud_url",
+    "description": "Cloud_url for Confluence.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "cloud_id",
+    "label": "Cloud_id",
+    "description": "Cloud_id for Confluence.",
     "defaultValue": "",
     "required": true
   }

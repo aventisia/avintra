@@ -15,18 +15,13 @@ import {
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
-import {
-  applyTimeZoneOffset,
-  getTimezoneOptions,
-  removeTimeZoneOffset,
-} from "@avplatform/ui/utils/timezone-utils";
+import { getTimezoneOptions } from "@avplatform/ui/utils/timezone-utils";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import { getVaultCredentialSelectOptions } from "../../apis/vault-credential-select.apis.ts";
 import {
-  LOCKED_AGENTS_DESCRIPTION,
   agentsLabelProps,
   credentialProps,
   expiryDateTimeProps,
@@ -39,7 +34,7 @@ import {
   resubscribeFrequencyProps,
   timezoneLabelProps,
 } from "../../constants/trigger-form-field-props.constant.ts";
-import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
+import { MAX_BY_PROVIDER, triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
 import { EmailTriggerDto } from "../../dtos/email-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
 import { useTableTab } from "../../hooks/useTableTab.ts";
@@ -101,27 +96,18 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       });
   }, [provider]);
 
-  const timezone = form.watch("timezone");
+  const isScheduleEdited =
+    Boolean(form.formState.dirtyFields.resubscribeFrequency) ||
+    Boolean(form.formState.dirtyFields.timezone);
 
-  // sync expiry date with selected timezone
   useEffect(() => {
+    if (!isScheduleEdited) return;
+
     const freq = Number(resubscribeFrequency);
-    if (!freq || isNaN(freq) || !timezone) return;
+    if (!freq || isNaN(freq)) return;
 
-    // 1. Get expiry date
-    const currDate = form.getValues("expiryDateTime") || new Date();
-
-    // 2. Convert to selected timezone
-    const tzDate = applyTimeZoneOffset(currDate, timezone);
-
-    // 3. Add minutes in THAT timezone
-    tzDate.setMinutes(tzDate.getMinutes() + freq);
-
-    // 4. (optional) convert back to UTC/system if needed
-    const finalDate = removeTimeZoneOffset(tzDate, timezone);
-
-    form.setValue("expiryDateTime", finalDate);
-  }, [resubscribeFrequency, timezone]);
+    form.setValue("expiryDateTime", new Date(Date.now() + freq * 60_000));
+  }, [form, isScheduleEdited, resubscribeFrequency]);
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
     // Create or update the trigger
@@ -186,7 +172,12 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       />
 
       <div className="grid grid-cols-2 gap-3">
-        <InputField type="number" {...resubscribeFrequencyProps} min={1} max={4320} />
+        <InputField
+          type="number"
+          {...resubscribeFrequencyProps}
+          min={1}
+          max={MAX_BY_PROVIDER[provider] ?? 4320}
+        />
         <DateTimePickerField {...expiryDateTimeProps} disabled />
       </div>
 
@@ -195,17 +186,13 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         control={form.control}
         render={({ field }) => (
           <FormItem className={crudDialogFieldClasses.item}>
-            <FormLabelExt
-              {...agentsLabelProps}
-              description={isUpdateMode ? LOCKED_AGENTS_DESCRIPTION : agentsLabelProps.description}
-            />
+            <FormLabelExt {...agentsLabelProps} />
             <FormControl>
               <AgentsSelector
                 value={field.value ?? []}
                 onChange={field.onChange}
                 id={rowId}
                 crudAction={crudAction}
-                disabled={isUpdateMode}
               />
             </FormControl>
             <FormMessage />

@@ -92,8 +92,6 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const providerSchema = z.string();
   const credentialsSchema = z.string().optional();
   const modelSchema = z.string();
-  const temperatureSchema = z.number();
-  const topPSchema = z.number();
   const voiceSchema = z.string().optional();
   const isJsonOutputSchema = z.boolean().optional();
   const maxOutputTokenSchema = z.number();
@@ -109,12 +107,6 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     if ("model" in field.defaultValue) {
       modelSchema.default(field?.defaultValue?.model as string);
     }
-    if ("temperature" in field.defaultValue) {
-      temperatureSchema.default(field?.defaultValue?.temperature as number);
-    }
-    if ("top_p" in field.defaultValue) {
-      topPSchema.default(field?.defaultValue?.top_p as number);
-    }
     if ("is_json_output" in field.defaultValue) {
       isJsonOutputSchema.default(field?.defaultValue?.is_json_output as boolean);
     }
@@ -129,8 +121,6 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     provider: providerSchema,
     credential_name: credentialsSchema,
     model: modelSchema,
-    temperature: temperatureSchema,
-    top_p: topPSchema,
     voice: voiceSchema,
     is_json_output: isJsonOutputSchema,
     max_output_tokens: maxOutputTokenSchema,

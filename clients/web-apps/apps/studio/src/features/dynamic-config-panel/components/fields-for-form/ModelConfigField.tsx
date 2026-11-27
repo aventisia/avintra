@@ -2,9 +2,8 @@ import { Switch } from "@avplatform/ui";
 import { ModelCapabilityEnum } from "@avplatform/ui/enums";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Controller, useController, useFormContext } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 
-import { SliderField } from "@/components/Slider/SliderField";
 import {
   Model,
   getSpecialtyFromNode,
@@ -94,8 +93,6 @@ const ModelConfigField = ({
         provider: `${name}.provider`,
         model: `${name}.model`,
         voice: `${name}.voice`,
-        temperature: `${name}.temperature`,
-        top_p: `${name}.top_p`,
         is_json_output: `${name}.is_json_output`,
         max_output_tokens: `${name}.max_output_tokens`,
         reasoning_effort: `${name}.reasoning_effort`,
@@ -109,14 +106,6 @@ const ModelConfigField = ({
   });
   const { field: modelField } = useController({
     name: fieldNames.model,
-    control,
-  });
-  const { field: temperatureField } = useController({
-    name: fieldNames.temperature,
-    control,
-  });
-  const { field: topPField } = useController({
-    name: fieldNames.top_p,
     control,
   });
 
@@ -328,20 +317,6 @@ const ModelConfigField = ({
 
   const modelAdvancedSettings = (
     <>
-      <Controller
-        {...temperatureField}
-        render={({ field }) => (
-          <SliderField label="Temperature" name={field.name} min={0} max={1.2} step={0.1} />
-        )}
-      />
-
-      <Controller
-        {...topPField}
-        render={({ field }) => (
-          <SliderField label="TopP" name={field.name} min={0} max={1.2} step={0.1} />
-        )}
-      />
-
       {showJsonOutput && (
         <SwitchField
           size="sm"

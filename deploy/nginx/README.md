@@ -1,22 +1,29 @@
 # Nginx Docker Setup for Aventisia avplatform
 
-This directory contains the Nginx configuration and Dockerfile for containerized deployment.
+This directory holds the Nginx configuration for the `edge` image, which serves the Accounts, Workspace and Studio web apps over HTTPS and proxies the APIs. The image is the `edge` target of `deploy/docker/web.Dockerfile`, which builds the web apps itself.
 
 ## Files
 
 - `nginx.conf`: Main Nginx configuration
-- `common_api_config.conf`, `common_headers.conf`, `common_map.conf`, `common_ssl.conf`: Common config includes
-- `sites-available/aventisia.avplatform`: Site-specific configuration template
-- `Dockerfile`: Builds the Nginx image with all configs
+- `common_map.conf`: `map` blocks, loaded from `conf.d/` at the `http` level
+- `common_api_config.conf`, `common_headers.conf`, `common_ssl.conf`, `common_chat_preview_headers.conf`: snippets, copied to `/etc/nginx/snippets/` and included where needed
+- `sites-available/avintra.app.conf`: Site configuration template
+- `docker-entrypoint.sh`: fills the host name and content security policy placeholders, then starts Nginx
 
-## Usage
+## Runtime settings
 
-1. **Build & Push the Docker image (build from project root):**
+- `APP_BASE_URL` (required): public host name, for example `avintra.your-domain.com`.
+- `ENABLE_RAZORPAY` (optional): `true` adds Razorpay to the content security policy.
+- Certificates: mount `ssl-bundle.crt` and `ssl.key` into `/etc/ssl/avplatform/`.
+- Upstreams: the container must reach `accounts-apis:4000`, `workspace-apis:4001` and `llmpipeline-apis:4003` by those names, the backend's default service URLs (`deploy/docker/compose.yml` gives its services these aliases). `/livekit/` proxies to `livekit:7880`, resolved per request, so the edge also starts without a bundled LiveKit server.
+- Files: mount the shared files folder at `/var/www/aventisia.com/files` for downloads.
+
+## Build
+
+Build from the project root:
 
 ```sh
-# Build
-sudo docker build -f deploy/nginx/Dockerfile -t <registry>/avplatform/frontend:0.4.0 .
-
-# Push
-sudo docker push <registry>/avplatform/frontend:0.4.0
+docker build --platform linux/amd64 -f deploy/docker/web.Dockerfile --target edge -t aventisia/avintra-edge:<tag> .
 ```
+
+The web-app lockfile carries only x64 native binaries, so the build targets `linux/amd64`; on Apple Silicon it runs under emulation and is slow.

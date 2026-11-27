@@ -192,8 +192,6 @@ def create_anthropic_model(
 
     # Create raw Anthropic model.
     # Tool binding and structured output are applied later inside LangGraph nodes.
-    # IMPORTANT NOTE: the anthropic SDK sends API version 2026-10-21, which rejects temperature,
-    # top_p and top_k on every model with a 400, so the request's sampling values are not forwarded.
     return ChatAnthropic(
         model=normalize_anthropic_model_id(llm_request.model),
         max_tokens=llm_request.max_output_tokens,

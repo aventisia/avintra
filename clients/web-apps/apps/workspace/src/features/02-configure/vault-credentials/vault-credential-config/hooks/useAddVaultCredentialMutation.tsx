@@ -62,9 +62,12 @@ export const useAddVaultCredentialMutation = () => {
         }
       } else if (isOAuth) {
         oauthPopupRef.current?.close();
-        toast.error("OAuth connection URL was not returned by the server.", {
-          className: "sonner-toaster-sm",
-        });
+        toast.info(
+          "Credential saved, but consent could not be started. Reconnect from the vault row actions to try again.",
+          {
+            className: "sonner-toaster-sm",
+          },
+        );
       }
 
       setIsComplete(true);

@@ -94,8 +94,6 @@ class LLMResponse(BaseModel):
     finish_reason: Optional[str] = None
     created_on: datetime = datetime.now(timezone.utc)
     max_output_tokens: Optional[int] = None
-    temperature: float = 1.0
-    top_p: float = 1.0
     stream: bool = False
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0

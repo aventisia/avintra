@@ -12,28 +12,28 @@ public class DesktopBinariesController : BaseApiController
     }
 
     // GET: /binaries/desktop/download/
-    [HttpGet("download")]
+    [AcceptVerbs("GET", "HEAD", Route = "download")]
     public IActionResult DownloadVersion()
     {
         return StreamBinary(_clientBinariesService.GetDesktopDownload(null));
     }
 
     // GET: /binaries/desktop/download/{version}
-    [HttpGet("download/{version}")]
+    [AcceptVerbs("GET", "HEAD", Route = "download/{version}")]
     public IActionResult DownloadVersion(string version)
     {
         return StreamBinary(_clientBinariesService.GetDesktopDownload(version));
     }
 
     // GET: /binaries/desktop/download/{version}.sig
-    [HttpGet("download/{version}.sig")]
+    [AcceptVerbs("GET", "HEAD", Route = "download/{version}.sig")]
     public IActionResult DownloadSignature(string version)
     {
         return StreamBinary(_clientBinariesService.GetDesktopSignature(version));
     }
 
     // GET: /binaries/desktop/update/{target}/{arch}/{currentVersion}
-    [HttpGet("update/{target}/{arch}/{currentVersion}")]
+    [AcceptVerbs("GET", "HEAD", Route = "update/{target}/{arch}/{currentVersion}")]
     public async Task<IActionResult> CheckUpdate(string target, string arch, string currentVersion)
     {
         var response = await _clientBinariesService.CheckUpdateAsync(target, arch, currentVersion);

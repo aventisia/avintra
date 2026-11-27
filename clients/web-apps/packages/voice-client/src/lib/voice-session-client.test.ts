@@ -1,23 +1,43 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { VoiceCallSnapshot } from "../types/voice-session.type";
+import type { VoiceCallSnapshot, VoiceSessionResponse } from "../types/voice-session.type";
 import { VoiceSessionClient } from "./voice-session-client";
 
-const { FakeRoom, fakeRooms } = vi.hoisted(() => {
+const { FakeRoom, fakeRooms, connectControl } = vi.hoisted(() => {
   type Listener = (...args: unknown[]) => void;
+  type FakeMicrophoneTrack = { stop: () => void };
 
   class FakeRoom {
     readonly listeners = new Map<string, Listener[]>();
     readonly remoteParticipants = new Map<string, unknown>();
+    disconnected = false;
     readonly localParticipant = {
       isMicrophoneEnabled: false,
+      microphoneTrack: null as FakeMicrophoneTrack | null,
       setMicrophoneEnabled: vi.fn(async (enabled: boolean) => {
         this.localParticipant.isMicrophoneEnabled = enabled;
+        if (enabled && !this.localParticipant.microphoneTrack) {
+          this.localParticipant.microphoneTrack = { stop: vi.fn() };
+        }
       }),
+      getTrackPublication: vi.fn((source: string) =>
+        source === "microphone" && this.localParticipant.microphoneTrack
+          ? { track: this.localParticipant.microphoneTrack }
+          : undefined,
+      ),
     };
     canPlaybackAudio = true;
-    readonly connect = vi.fn(async () => undefined);
-    readonly disconnect = vi.fn(async () => undefined);
+    readonly connect = vi.fn(() => connectControl.promise ?? Promise.resolve());
+    readonly disconnect = vi.fn(async () => {
+      this.disconnected = true;
+      this.localParticipant.isMicrophoneEnabled = false;
+      this.engine = undefined;
+    });
+    engine: { close: ReturnType<typeof vi.fn> } | undefined = {
+      close: vi.fn(async () => {
+        this.disconnected = true;
+      }),
+    };
     readonly startAudio = vi.fn(async () => undefined);
 
     on(event: string, listener: Listener): this {
@@ -30,7 +50,11 @@ const { FakeRoom, fakeRooms } = vi.hoisted(() => {
     }
   }
 
-  return { FakeRoom, fakeRooms: [] as FakeRoom[] };
+  return {
+    FakeRoom,
+    fakeRooms: [] as FakeRoom[],
+    connectControl: { promise: null as Promise<void> | null },
+  };
 });
 
 vi.mock("livekit-client", () => ({
@@ -47,7 +71,7 @@ vi.mock("livekit-client", () => ({
     Disconnected: "disconnected",
     AudioPlaybackStatusChanged: "audioPlaybackStatusChanged",
   },
-  Track: { Kind: { Audio: "audio" } },
+  Track: { Kind: { Audio: "audio" }, Source: { Microphone: "microphone" } },
 }));
 
 const SESSION = {
@@ -62,6 +86,8 @@ const SESSION = {
 } as const;
 
 const RESUME_DELAY_MS = 300;
+const START_TIMEOUT_MS = 45_000;
+const ROOM_LEAVE_TIMEOUT_MS = 5_000;
 
 const emitState = (room: (typeof fakeRooms)[number], state: string): void => {
   const event = new TextEncoder().encode(
@@ -89,6 +115,7 @@ const startCall = async () => {
 beforeEach(() => {
   vi.useFakeTimers();
   fakeRooms.length = 0;
+  connectControl.promise = null;
 });
 
 afterEach(() => {
@@ -166,6 +193,314 @@ describe("VoiceSessionClient call timer", () => {
     expect(snapshots.at(-1)?.callMs).toBe(0);
 
     await client.end();
+  });
+});
+
+describe("VoiceSessionClient start timeout", () => {
+  it("fails a call that never reaches the worker", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: () => new Promise(() => {}),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    void client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(snapshots.at(-1)?.state).toBe("error");
+    expect(snapshots.at(-1)?.isActive).toBe(false);
+    expect(snapshots.at(-1)?.error?.message).toBe("The voice session did not start.");
+  });
+
+  it("ignores a session that arrives after the start timeout", async () => {
+    let resolveSession: (session: VoiceSessionResponse) => void = () => {};
+    const client = new VoiceSessionClient({
+      createSession: () =>
+        new Promise<VoiceSessionResponse>((resolve) => {
+          resolveSession = resolve;
+        }),
+      onSnapshot: () => undefined,
+    });
+
+    void client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+    resolveSession({ ...SESSION });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(fakeRooms).toHaveLength(0);
+  });
+
+  it("keeps a call that reached the worker before the deadline", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    emitState(fakeRooms[0], "listening");
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(snapshots.at(-1)?.state).toBe("listening");
+    expect(snapshots.at(-1)?.isActive).toBe(true);
+
+    await client.end();
+  });
+});
+
+describe("VoiceSessionClient lifecycle races", () => {
+  it("aborts the pending session request when the call ends", async () => {
+    let signal: AbortSignal | undefined;
+    let finishSession: (session: VoiceSessionResponse) => void = () => {};
+    const client = new VoiceSessionClient({
+      createSession: (_request, requestSignal) => {
+        signal = requestSignal;
+        return new Promise((resolve) => {
+          finishSession = resolve;
+        });
+      },
+      onSnapshot: () => undefined,
+    });
+
+    void client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(signal).toBeDefined();
+    const ending = client.end();
+    expect(signal?.aborted).toBe(true);
+
+    finishSession({ ...SESSION });
+    await ending;
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(fakeRooms).toHaveLength(0);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("ends the backend session when the caller hangs up", async () => {
+    const endSession = vi.fn(async () => undefined);
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await client.end();
+    await client.dispose();
+
+    expect(endSession).toHaveBeenCalledTimes(1);
+    expect(endSession).toHaveBeenCalledWith(SESSION.conversationId);
+  });
+
+  it("ends the previous backend session when a new call starts", async () => {
+    const endSession = vi.fn(async () => undefined);
+    let created = 0;
+    const client = new VoiceSessionClient({
+      createSession: async () => ({
+        ...SESSION,
+        conversationId: `conversation-${++created}`,
+      }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+
+    expect(endSession).toHaveBeenCalledWith("conversation-1");
+  });
+
+  it("ends the backend session when the start times out", async () => {
+    const endSession = vi.fn(async () => undefined);
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      endSession,
+      onSnapshot: () => undefined,
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(START_TIMEOUT_MS);
+
+    expect(endSession).toHaveBeenCalledWith(SESSION.conversationId);
+
+    await client.end();
+    expect(endSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not start a call when end arrives during the draft save", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    let startedPrepare = false;
+    let finishPrepare: () => void = () => {};
+    const client = new VoiceSessionClient({
+      prepare: () => {
+        startedPrepare = true;
+        return new Promise((resolve) => {
+          finishPrepare = resolve;
+        });
+      },
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(startedPrepare).toBe(true);
+
+    const ending = client.end();
+    finishPrepare();
+    await Promise.all([starting, ending]);
+
+    expect(fakeRooms).toHaveLength(0);
+    expect(snapshots.at(-1)?.state).toBe("ended");
+    expect(snapshots.at(-1)?.isActive).toBe(false);
+  });
+
+  it("stops a microphone track published after the call ended", async () => {
+    let finishConnect: () => void = () => {};
+    connectControl.promise = new Promise<void>((resolve) => {
+      finishConnect = resolve;
+    });
+
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: () => undefined,
+    });
+
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(0);
+
+    const room = fakeRooms[0];
+    let finishPublish: () => void = () => {};
+    room.localParticipant.setMicrophoneEnabled = vi.fn(async (enabled: boolean) => {
+      if (!enabled) return;
+      await new Promise<void>((resolve) => {
+        finishPublish = resolve;
+      });
+      room.localParticipant.microphoneTrack = { stop: vi.fn() };
+      room.localParticipant.isMicrophoneEnabled = true;
+    });
+
+    finishConnect();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(room.localParticipant.setMicrophoneEnabled).toHaveBeenCalledWith(
+      true,
+      expect.anything(),
+    );
+
+    await client.end();
+    expect(room.disconnected).toBe(true);
+
+    finishPublish();
+    await starting;
+
+    expect(room.localParticipant.microphoneTrack?.stop).toHaveBeenCalled();
+  });
+
+  it("stops a microphone track published after the worker closed the call", async () => {
+    let finishConnect: () => void = () => {};
+    connectControl.promise = new Promise<void>((resolve) => {
+      finishConnect = resolve;
+    });
+
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await vi.advanceTimersByTimeAsync(0);
+
+    const room = fakeRooms[0];
+    let finishPublish: () => void = () => {};
+    room.localParticipant.setMicrophoneEnabled = vi.fn(async (enabled: boolean) => {
+      if (!enabled) return;
+      await new Promise<void>((resolve) => {
+        finishPublish = resolve;
+      });
+      room.localParticipant.microphoneTrack = { stop: vi.fn() };
+      room.localParticipant.isMicrophoneEnabled = true;
+    });
+
+    finishConnect();
+    await vi.advanceTimersByTimeAsync(0);
+    emitData(room, { type: "session.closed", code: 1000 });
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(snapshots.at(-1)?.state).toBe("ended");
+    expect(room.disconnected).toBe(true);
+
+    finishPublish();
+    await starting;
+
+    expect(room.localParticipant.microphoneTrack?.stop).toHaveBeenCalled();
+  });
+
+  it("does not let a stalled leave block the next call", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+    const first = fakeRooms[0];
+    const firstEngine = first.engine;
+    first.disconnect.mockImplementation(() => new Promise<void>(() => {}));
+
+    const ending = client.end();
+    const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+    await starting;
+
+    expect(fakeRooms).toHaveLength(2);
+    const second = fakeRooms[1];
+    emitState(second, "listening");
+    expect(snapshots.at(-1)?.state).toBe("listening");
+
+    await client.end();
+    await vi.advanceTimersByTimeAsync(ROOM_LEAVE_TIMEOUT_MS);
+    await ending;
+
+    expect(first.disconnect).toHaveBeenCalled();
+    expect(firstEngine?.close).toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("runs rapid overlapping start/end cycles without leftover rooms or timers", async () => {
+    const snapshots: VoiceCallSnapshot[] = [];
+    const client = new VoiceSessionClient({
+      createSession: async () => ({ ...SESSION }),
+      onSnapshot: (snapshot) => snapshots.push(snapshot),
+    });
+
+    await client.start({ flowVersionId: "version-1", mode: "test" });
+
+    for (let cycle = 0; cycle < 12; cycle += 1) {
+      const room = fakeRooms.at(-1);
+      if (!room) throw new Error("cycle did not create a room");
+
+      emitState(room, "listening");
+      emitState(room, "speaking");
+
+      const ending = client.end();
+      const starting = client.start({ flowVersionId: "version-1", mode: "test" });
+      await Promise.all([ending, starting]);
+    }
+    await client.end();
+
+    expect(fakeRooms).toHaveLength(13);
+    for (const room of fakeRooms) {
+      expect(room.disconnect).toHaveBeenCalled();
+      expect(room.localParticipant.microphoneTrack?.stop).toHaveBeenCalled();
+    }
+    expect(snapshots.at(-1)?.state).toBe("ended");
+    expect(snapshots.at(-1)?.isActive).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+
+    const emitted = snapshots.length;
+    await vi.advanceTimersByTimeAsync(ROOM_LEAVE_TIMEOUT_MS);
+    expect(snapshots.length).toBe(emitted);
   });
 });
 

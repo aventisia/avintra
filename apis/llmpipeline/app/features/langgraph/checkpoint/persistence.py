@@ -18,7 +18,7 @@ from langchain_core.messages import (
     SystemMessage,
     ToolMessage,
 )
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
@@ -391,6 +391,38 @@ async def update_conversation_status(
     if audit_user_id is not None:
         conversation.last_modified_by_user_id = audit_user_id
     return True
+
+
+async def touch_conversation(
+    session: AsyncSession,
+    conversation_id: str,
+    *,
+    audit_user_id: uuid.UUID | None = None,
+) -> bool:
+    """Refresh an active conversation's heartbeat stamp."""
+
+    try:
+        conversation_uuid = uuid.UUID(conversation_id)
+    except ValueError:
+        logger.error(
+            "Cannot touch conversation; invalid conversation_id UUID: %s",
+            conversation_id,
+        )
+        return False
+
+    values: dict[str, Any] = {"last_modified_on": datetime.now(timezone.utc)}
+    if audit_user_id is not None:
+        values["last_modified_by_user_id"] = audit_user_id
+
+    result = await session.execute(
+        update(Conversation)
+        .where(
+            Conversation.id == conversation_uuid,
+            Conversation.status.notin_(TERMINAL_CONVERSATION_STATUSES),
+        )
+        .values(**values)
+    )
+    return result.rowcount > 0
 
 
 async def load_messages(

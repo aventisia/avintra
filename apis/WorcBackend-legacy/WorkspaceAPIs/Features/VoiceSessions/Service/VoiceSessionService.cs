@@ -13,11 +13,19 @@ public interface IVoiceSessionService
     Task<ServiceResponse<VoiceSessionDto>> CreateSessionAsync(
         VoiceSessionRequestDto voiceSessionRequestDto,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Marks the caller's active voice conversation ended so it stops counting against the session cap.
+    /// </summary>
+    Task<ServiceResponse<bool>> EndSessionAsync(
+        Guid conversationId,
+        CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc />
 public sealed class VoiceSessionService : IVoiceSessionService
 {
+    private static readonly TimeSpan VoiceSessionFreshness = TimeSpan.FromMinutes(3);
     private static readonly JsonSerializerOptions PipelineJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -29,6 +37,7 @@ public sealed class VoiceSessionService : IVoiceSessionService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<VoiceSessionService> _logger;
+    private readonly int _maxActiveVoiceSessionsPerUser;
     private readonly Guid _userId;
     private readonly string _accessToken;
 
@@ -48,6 +57,7 @@ public sealed class VoiceSessionService : IVoiceSessionService
         _environmentConfig = environmentConfig;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _maxActiveVoiceSessionsPerUser = Math.Max(1, environmentConfig.MaxActiveVoiceSessionsPerUser);
         _userId = Guid.TryParse(
             httpContextAccessor.HttpContext?.User?.FindFirstValue("uid"),
             out var userId)
@@ -76,15 +86,63 @@ public sealed class VoiceSessionService : IVoiceSessionService
             return serviceResponse.Update(resolution.Message, resolution.ToHttpStatusCode());
 
         var conversation = CreateVoiceConversation(voiceSessionRequestDto.FlowVersionId);
-        await _unitOfWork.ConversationRepo.InsertAsync(conversation);
+        var freshAfter = DateTimeOffset.UtcNow - VoiceSessionFreshness;
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var activeSessions = 0;
+        var saved = true;
 
-        if (!await _unitOfWork.SaveAsync())
+        await _unitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            // IMPORTANT NOTE: the lock serializes two simultaneous starts for one user,
+            // so both cannot pass the cap before either row exists.
+            await _unitOfWork.AcquireAdvisoryLockAsync($"voice-session:{_userId}");
+            // IMPORTANT NOTE: the cap spans every space of the user, so the query drops the
+            // DbContext space filter and must restate tenant isolation itself.
+            activeSessions = await _unitOfWork.ConversationRepo
+                .GetByConditionAsync(active =>
+                    active.TenantId == tenantId &&
+                    active.UserId == _userId &&
+                    active.Channel == ConversationChannelEnum.Voice &&
+                    active.Status == ConversationStatusEnum.Active &&
+                    active.LastModifiedOn >= freshAfter)
+                .IgnoreQueryFilters()
+                .CountAsync();
+            if (activeSessions >= _maxActiveVoiceSessionsPerUser)
+                return;
+
+            await _unitOfWork.ConversationRepo.InsertAsync(conversation);
+            saved = await _unitOfWork.SaveAsync();
+        });
+
+        if (activeSessions >= _maxActiveVoiceSessionsPerUser)
+            return serviceResponse.Update("You already have the maximum number of active voice sessions.", 429);
+
+        if (!saved)
         {
             _logger.LogError("Failed to persist voice conversation for user {UserId}.", _userId);
             return serviceResponse.Update("Failed to create voice session.", 500);
         }
 
-        var session = await RequestPipelineSessionAsync(settings, conversation.Id, mode, cancellationToken);
+        VoiceSessionDto? session;
+        try
+        {
+            session = await RequestPipelineSessionAsync(settings, conversation.Id, mode, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // IMPORTANT NOTE: the row is already committed, so a cancelled create must not
+            // keep counting against the per-user cap as a live call.
+            conversation.Status = ConversationStatusEnum.Failed;
+            if (!await _unitOfWork.SaveAsync())
+                _logger.LogError("Failed to persist cancelled voice conversation for user {UserId}.", _userId);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Voice session bootstrap request failed for user {UserId}.", _userId);
+            session = null;
+        }
+
         if (session is null)
         {
             conversation.Status = ConversationStatusEnum.Failed;
@@ -94,6 +152,36 @@ public sealed class VoiceSessionService : IVoiceSessionService
         }
 
         return serviceResponse.Update("Voice session created.", 200, session);
+    }
+
+    /// <inheritdoc />
+    public async Task<ServiceResponse<bool>> EndSessionAsync(
+        Guid conversationId,
+        CancellationToken cancellationToken = default)
+    {
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to end voice session.", 500);
+        var tenantId = _currentTenantService.CurrentTenantId;
+        var conversation = await _unitOfWork.ConversationRepo
+            .GetByConditionAsync(existing =>
+                existing.Id == conversationId &&
+                existing.TenantId == tenantId &&
+                existing.UserId == _userId &&
+                existing.Channel == ConversationChannelEnum.Voice)
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (conversation is null || conversation.Status != ConversationStatusEnum.Active)
+            return serviceResponse.Update("Voice session ended.", 200, true);
+
+        conversation.Status = ConversationStatusEnum.Completed;
+        _unitOfWork.ConversationRepo.Update(conversation);
+        if (!await _unitOfWork.SaveAsync())
+        {
+            _logger.LogError("Failed to end voice conversation for user {UserId}.", _userId);
+            return serviceResponse.Update("Failed to end voice session.", 500);
+        }
+
+        return serviceResponse.Update("Voice session ended.", 200, true);
     }
 
     private Conversation CreateVoiceConversation(Guid flowVersionId)

@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import time
-from typing import NamedTuple
 
 from livekit import rtc
 from livekit.agents import (
@@ -31,19 +31,52 @@ from livekit.agents import (
 )
 from livekit.plugins import silero
 
-from app.core.config import env, livekit_ws_url, settings
+from app.core.config import env, livekit_server_ws_url, settings
 from app.core.logger import logger
 
 from .metadata import VoiceSessionRejected, parse_job_metadata, validate_job
-from .session_runtime import run_session
+from .session_runtime import delete_room, run_session
 from .settings_client import fetch_settings
 
+WORKER_RESTART_INITIAL_DELAY_SECONDS = 5.0
+WORKER_RESTART_MAX_DELAY_SECONDS = 60.0
 
-class VoiceWorker(NamedTuple):
-    """A worker running in the API event loop, with the task that owns it."""
 
-    server: AgentServer
-    task: asyncio.Task[None]
+class VoiceWorker:
+    """Supervises the LiveKit worker in the API event loop, restarting it after a crash."""
+
+    def __init__(self, options: WorkerOptions) -> None:
+        self._options = options
+        self.server: AgentServer | None = None
+        self.stopped = asyncio.Event()
+        self.task: asyncio.Task[None] | None = None
+
+    async def run(self) -> None:
+        delay = WORKER_RESTART_INITIAL_DELAY_SECONDS
+        while not self.stopped.is_set():
+            self.server = AgentServer.from_server_options(self._options)
+            try:
+                await self.server.run(devmode=env == "local")
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.exception("[voice-agent] worker stopped unexpectedly")
+            else:
+                logger.warning("[voice-agent] worker exited unexpectedly")
+            if self.stopped.is_set():
+                return
+            try:
+                await self.server.aclose()
+            except Exception:
+                logger.warning(
+                    "[voice-agent] failed to close the crashed worker", exc_info=True
+                )
+            logger.warning("[voice-agent] restarting worker in %.0f s", delay)
+            try:
+                await asyncio.wait_for(self.stopped.wait(), timeout=delay)
+                return
+            except TimeoutError:
+                delay = min(delay * 2, WORKER_RESTART_MAX_DELAY_SECONDS)
 
 
 async def entrypoint(ctx: JobContext) -> None:
@@ -62,6 +95,7 @@ async def entrypoint(ctx: JobContext) -> None:
         )
     except VoiceSessionRejected as error:
         logger.warning("[voice-agent] rejected job: %s", error)
+        await delete_room(ctx)
         ctx.shutdown("voice session rejected")
         return
 
@@ -128,6 +162,7 @@ async def _prepare_session(
         except VoiceSessionRejected as error:
             await _cancel_tasks(connect_task, settings_task)
             logger.warning("[voice-agent] rejected job: %s", error)
+            await delete_room(ctx)
             ctx.shutdown("voice session rejected")
             return None
         except Exception:
@@ -150,6 +185,7 @@ async def _prepare_session(
         return await settings_task
     except VoiceSessionRejected as error:
         logger.warning("[voice-agent] rejected job: %s", error)
+        await delete_room(ctx)
         ctx.shutdown("voice session rejected")
         return None
 
@@ -181,11 +217,45 @@ def voice_worker_configured() -> bool:
     return all(
         (value or "").strip()
         for value in (
-            livekit_ws_url(),
+            livekit_server_ws_url(),
             settings.LIVEKIT_API_KEY,
             settings.LIVEKIT_API_SECRET,
         )
     )
+
+
+def _env_number(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return float(raw)
+    except ValueError:
+        logger.warning(
+            "[voice-agent] ignoring invalid %s=%r; using %g", name, raw, default
+        )
+        return default
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        logger.warning(
+            "[voice-agent] ignoring invalid %s=%r; using %d", name, raw, default
+        )
+        return default
+
+
+def worker_load(_server: AgentServer) -> float:
+    # IMPORTANT NOTE: LiveKit's default load is host CPU percent, and its dispatch
+    # affinity drops any job at 0.7, so a busy host or a warming process makes the
+    # caller wait forever even though the API already returned 200. Report no load;
+    # the API's active-session cap is the admission control.
+    return 0.0
 
 
 def worker_options() -> WorkerOptions:
@@ -196,7 +266,7 @@ def worker_options() -> WorkerOptions:
             "A LiveKit URL (LIVEKIT_WS_URL or LIVEKIT_HTTP_URL), LIVEKIT_API_KEY, and "
             "LIVEKIT_API_SECRET are required to run the voice worker."
         )
-    ws_url = livekit_ws_url()
+    ws_url = livekit_server_ws_url()
     logger.info("[voice-agent] starting worker '%s' for %s", settings.LIVEKIT_AGENT_NAME, ws_url)
 
     return WorkerOptions(
@@ -210,13 +280,23 @@ def worker_options() -> WorkerOptions:
         # engine or HTTP client survives into the next job's loop and fails. Process
         # isolation matches the Linux default and keeps each job's state loop-local.
         job_executor_type=JobExecutorType.PROCESS,
+        load_fnc=worker_load,
         # IMPORTANT NOTE: a Windows job process imports its modules and loads the VAD
         # in ~20s, past the 10s default that kills it mid-startup.
         initialize_process_timeout=30,
         # IMPORTANT NOTE: a cold job process adds its whole import and VAD load
         # (~20s on Windows) to the caller's wait, so every environment keeps warm
-        # processes instead of spawning on the first job.
-        num_idle_processes=2,
+        # processes instead of spawning on the first job. Each warm process costs
+        # its full RSS, so raise the count only with measured memory headroom.
+        num_idle_processes=_env_int("LIVEKIT_NUM_IDLE_PROCESSES", 2),
+        # A per-job limit bounds the blast radius of one leaking call; 0 disables it.
+        job_memory_warn_mb=_env_number("LIVEKIT_JOB_MEMORY_WARN_MB", 1000),
+        job_memory_limit_mb=_env_number("LIVEKIT_JOB_MEMORY_LIMIT_MB", 0),
+        # IMPORTANT NOTE: LiveKit's Linux forkserver preloads only the plugin packages,
+        # so each cold job process re-imports this module's whole app graph and that
+        # import is most of the caller's wait. Preloading it happens once and the job
+        # processes inherit it; "spawn" (Windows) ignores this list.
+        preload_modules=["voice_agent.agent"],
     )
 
 
@@ -227,25 +307,27 @@ async def start_voice_worker() -> VoiceWorker | None:
         logger.info("[voice-agent] LiveKit is not configured; voice worker not started.")
         return None
 
-    server = AgentServer.from_server_options(worker_options())
-    task = asyncio.create_task(
-        server.run(devmode=env == "local"),
-        name="voice-agent-worker",
-    )
-    task.add_done_callback(_log_worker_exit)
-    return VoiceWorker(server=server, task=task)
+    worker = VoiceWorker(worker_options())
+    worker.task = asyncio.create_task(worker.run(), name="voice-agent-worker")
+    worker.task.add_done_callback(_log_worker_exit)
+    return worker
 
 
 async def stop_voice_worker(worker: VoiceWorker, timeout: float = 10) -> None:
     """Stop the worker and wait briefly for its process pool to close."""
 
     async def _shutdown() -> None:
-        await worker.server.aclose()
-        await asyncio.gather(worker.task, return_exceptions=True)
+        worker.stopped.set()
+        if worker.server is not None:
+            await worker.server.aclose()
+        if worker.task is not None:
+            await asyncio.gather(worker.task, return_exceptions=True)
 
     try:
         await asyncio.wait_for(_shutdown(), timeout=timeout)
     except asyncio.TimeoutError:
+        if worker.task is None:
+            return
         worker.task.cancel()
         try:
             await asyncio.wait_for(worker.task, timeout=2)

@@ -97,8 +97,6 @@ public class ProcessLLMRequestNode : BaseNode
                 json_schema = resolvedJsonSchema,
                 max_output_tokens = GetLongProperty(modelConfig, "max_output_tokens") ?? 0L,
                 credential_name = CredentialReferenceHelper.Read(modelConfig),
-                temperature = GetDoubleProperty(modelConfig, "temperature") ?? 1.0,
-                top_p = GetDoubleProperty(modelConfig, "top_p") ?? 1.0,
                 stream = false,
                 ref_type = "Agent",
                 ref_id = flowMetadata.Id,
@@ -222,23 +220,6 @@ public class ProcessLLMRequestNode : BaseNode
         {
             JsonValueKind.Number when prop.TryGetInt64(out var val) => val,
             JsonValueKind.String when long.TryParse(prop.GetString(), out var val) => val,
-            JsonValueKind.Null or JsonValueKind.Undefined => null,
-            _ => null,
-        };
-    }
-
-    private static double? GetDoubleProperty(JsonElement element, string propertyName)
-    {
-        if (element.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
-            return null;
-
-        if (!element.TryGetProperty(propertyName, out var prop))
-            return null;
-
-        return prop.ValueKind switch
-        {
-            JsonValueKind.Number when prop.TryGetDouble(out var val) => val,
-            JsonValueKind.String when double.TryParse(prop.GetString(), out var val) => val,
             JsonValueKind.Null or JsonValueKind.Undefined => null,
             _ => null,
         };

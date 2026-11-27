@@ -49,7 +49,10 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
 3. WorkspaceAPIs creates the conversation row and calls llmpipeline
    `POST /api/v2/voice/sessions` with the same bearer token and the caller's
    `X-Env-Type` / `X-Space-Id`.
-4. llmpipeline creates a room named `voice-<conversationId>-<suffix>`, dispatches the
+4. llmpipeline verifies that the conversation belongs to the caller (same tenant,
+   user, space, and flow version, `Voice` channel, still `Active`) and returns 404
+   otherwise; a finished conversation cannot be replayed to start a new room. It
+   then creates a room named `voice-<conversationId>-<suffix>`, dispatches the
    configured agent name with the binding metadata, and returns:
 
    ```json
@@ -65,7 +68,18 @@ WorkspaceAPIs ── settings + conversation row ──> WorkspaceDb
    ```
 
 5. The caller joins the room with `server_url` and `client_token`. The worker
-   waits for the participant identity `user-<userId>` before starting audio.
+   waits up to 30 seconds for the participant identity `user-<userId>` before
+   starting audio; if the caller never arrives, the worker deletes the room and
+   marks the conversation `Failed`.
+
+A user may hold at most two active voice conversations. WorkspaceAPIs counts
+that user's `Voice` conversations with `Status = Active` and a heartbeat within
+the last three minutes; a third concurrent create returns 429. A crashed call
+stops blocking after three minutes because its heartbeat stops, and a create
+that is cancelled or cannot reach llmpipeline marks its row `Failed` right away.
+The count spans every space of the user, so switching spaces does not raise the
+cap. Raise `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` (WorkspaceAPIs, default 2) only
+for a load test.
 
 WorkspaceAPIs adds the resolved `noiseCancellation` mode (`none` or `auto`) to its
 session response. The browser client maps `auto` to browser noise suppression,
@@ -215,15 +229,18 @@ in production.
 
 | Variable | Used by | Purpose |
 | --- | --- | --- |
-| `LIVEKIT_HTTP_URL` | llmpipeline | LiveKit HTTP API URL (room and dispatch); derived from `LIVEKIT_WS_URL` when unset. |
-| `LIVEKIT_WS_URL` | llmpipeline, worker | WebSocket URL returned to the caller and used by the worker; derived from `LIVEKIT_HTTP_URL` when unset. |
+| `LIVEKIT_HTTP_URL` | llmpipeline, worker | Server-side LiveKit URL: rooms, dispatch, and the worker's registration (as `ws://`/`wss://`). Set it to an internal address, such as `http://livekit:7880` in Docker, so the worker joins the server that hosts the rooms. Derived from `LIVEKIT_WS_URL` when unset. |
+| `LIVEKIT_WS_URL` | llmpipeline | WebSocket URL returned to the caller; derived from `LIVEKIT_HTTP_URL` when unset. |
 | `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` | llmpipeline, worker | LiveKit API credentials. Never expose these to the browser. |
 | `LIVEKIT_AGENT_NAME` | llmpipeline, worker | Dispatch/registration name; defaults to `avintra-voice-agent`. |
+| `LIVEKIT_NUM_IDLE_PROCESSES` | worker | Warm job processes kept ready; defaults to `2`. Each one holds its full RSS. |
+| `LIVEKIT_JOB_MEMORY_WARN_MB` / `LIVEKIT_JOB_MEMORY_LIMIT_MB` | worker | Per-job memory warning and hard kill threshold; the limit defaults to `0` (off). |
 | `WORKSPACE_API_URL` | worker | WorkspaceAPIs base including `/workspace/api`; defaults to `https://<APP_BASE_URL>/workspace/api`. |
 | `APP_BASE_URL` | llmpipeline, worker | Default WorkspaceAPIs host and worker-token issuer/audience. |
 | `JWT_SECRET_KEY` | llmpipeline, worker | Signs the short-lived worker credential. |
 | `SSL_VERIFY` | worker | Set `false` only for a local self-signed WorkspaceAPIs certificate. |
 | `POSTGRESQL_WORKSPACE_DB_NAME` | worker | Workspace database holding conversations and messages. |
+| `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` | WorkspaceAPIs | Concurrent active calls one user may hold; defaults to `2`. Raise only for a load test. |
 | Provider keys / BYOK credential names | llmpipeline | Resolved by the existing LiteLLM STT/TTS/LLM providers; no separate voice provider configuration. |
 
 ## Event and error contract
@@ -276,11 +293,46 @@ events because the worker never joins.
 - On normal disconnect or job shutdown the worker closes the agent session,
   flushes queued events, deletes the LiveKit room, and writes `Completed`.
   Configuration errors, join failures, and runtime errors write `Failed`.
+- The caller join is bounded. If the worker joins the room but never sees
+  `user-<userId>`, it waits `CALLER_JOIN_TIMEOUT_SECONDS` (30 seconds), publishes
+  an `error` and `session.closed`, deletes the room, and writes `Failed`, so the
+  agent participant cannot keep an abandoned room open.
+- If the caller leaves after joining but before the agent session starts, the
+  worker skips or cancels the pending start, deletes the room, and writes
+  `Completed` with reason `participant_disconnected`. `RoomIO` waits for a linked
+  participant without a timeout, so the worker races that wait against the
+  disconnect.
 - The terminal status is written once even if several disconnect/error callbacks
   fire. Room deletion is also attempted on every failure path.
-- If the API accepts a dispatch but no worker ever joins, no worker lifecycle
-  runs; the conversation can remain `Active` after the room's 120-second empty
-  timeout. Check the worker registration when a session has no agent participant.
+- The browser also ends the row through
+  `POST /assist/voice/sessions/{conversationId}/end` on hang-up, start timeout,
+  failed join, or dispose. WorkspaceAPIs marks it `Completed` at once, so a
+  dispatch that never got a worker cannot hold the per-user cap for the sweep
+  window.
+- Teardown is bounded by `FINISH_TIMEOUT_SECONDS` (20 seconds), and the terminal
+  status is persisted before the slow provider/room closes. A close that never
+  returns therefore cannot hold a worker job process and starve later dispatches.
+  A timed-out teardown retries room deletion best-effort, itself bounded by
+  `DELETE_ROOM_TIMEOUT_SECONDS` (5 seconds).
+- A call is capped at `MAX_CALL_DURATION_SECONDS` (1 hour, aligned to the caller
+  token TTL). The worker closes it with reason `max_duration`, writes
+  `Completed`, and deletes the room.
+- While a call is live, the worker refreshes the conversation's
+  `LastModifiedOn` every `USAGE_FLUSH_INTERVAL_SECONDS` (60 seconds). A quiet
+  call is therefore never mistaken for a dead one.
+- llmpipeline runs a reconciler every `VOICE_RECONCILE_INTERVAL_SECONDS`
+  (300 seconds). It marks `Voice` conversations that are still `Active` with a
+  heartbeat older than `VOICE_HEARTBEAT_STALE_SECONDS` (600 seconds) as
+  `Failed`, which covers a dispatch or worker that dies without running
+  teardown. Several replicas may run the sweep; the update is idempotent.
+- llmpipeline supervises its worker: an unexpected `run()` exit is restarted
+  after a 5 s to 60 s capped backoff, and a requested shutdown never restarts.
+- If the API accepts a dispatch but no worker ever picks it up, no worker
+  lifecycle runs; the reconciler marks the row `Failed` within about 15 minutes
+  (10 minutes stale plus the 5-minute sweep). LiveKit reclaims the room on its
+  own timers (20 seconds after the last participant leaves, 120 seconds if
+  nobody ever joins). Check the worker registration when a session has no agent
+  participant.
 
 ## Metering
 
@@ -301,7 +353,7 @@ From `apis/llmpipeline`:
 
 ```sh
 # Every voice suite (sessions, binding, STT, TTS, bridge, orchestration,
-# persistence, interaction, and realtime)
+# persistence, reconciler, interaction, and realtime)
 ./venv/Scripts/python.exe -m pytest tests -k voice -q
 
 # Focused suites
@@ -311,6 +363,7 @@ From `apis/llmpipeline`:
 ./venv/Scripts/python.exe -m pytest tests/test_voice_chat_bridge.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_orchestration.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_persistence.py -q
+./venv/Scripts/python.exe -m pytest tests/test_voice_reconciler.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_realtime.py -q
 ./venv/Scripts/python.exe -m pytest tests/test_voice_latency.py -q
 ```
@@ -327,6 +380,75 @@ For a manual acceptance run, use the Bruno requests in
 create a session. Join the returned room with the LiveKit console/CLI, then
 verify the row in `run_Conversations`, its `Voice` channel and `FlowVersionId`,
 and the final messages and `voice_turn_timing` metadata.
+
+## Stress and teardown verification
+
+`voice_agent.stress` measures concurrent-call setup and teardown against a live
+stack. It creates sessions through WorkspaceAPIs, joins each room as the caller,
+holds the calls, disconnects, and polls the LiveKit room list until every room
+is gone. A call counts as joined only when the agent participant appears within
+`--join-timeout`.
+
+```sh
+./venv/Scripts/python.exe -m voice_agent.stress \
+  --flow-version-id <flow-version-id> \
+  --sessions 8 --ramp 5 --hold 120 --join-timeout 120
+```
+
+`--ramp` spaces session starts; without it every session is created at once and
+the result includes the worker's cold-process spawn burst. `MY_EMAIL` and
+`MY_PWD` (or `--email` and `--password`) authenticate the run; the default URLs
+and LiveKit dev credentials target the local stack.
+
+Add `--abandon N` to create N extra sessions that never join. The worker's
+30-second join timeout must delete each room; the run fails if any room is left
+behind.
+
+A capacity run needs the per-user cap raised: set
+`MAX_ACTIVE_VOICE_SESSIONS_PER_USER` in `apis/WorcBackend-legacy/WorkspaceAPIs/.env.local`
+to at least `--sessions` and restart WorkspaceAPIs. The default of `2` returns
+429 on the third call.
+
+Results below are from local `test`-mode pipeline calls (BYOK OpenAI and
+ElevenLabs) on 2026-11-23, on an AMD Ryzen 5 5600H (6 cores / 12 threads),
+15.3 GB RAM, Windows, with LiveKit, WorkspaceAPIs, Postgres, and llmpipeline on
+the same host. Every run held its joined calls for the full hold.
+
+| Concurrent calls | Hold | Joined | Agent join p50 / p95 (ms) | Teardown p50 / p95 (ms) | Leftover rooms |
+| --- | --- | --- | --- | --- | --- |
+| 3 | 5 s | 3 | 547 / 14208 | 4556 / 5062 | 0 |
+| 8 | 120 s | 8 | 560 / 5355 | 4065 / 5083 | 0 |
+| 10 | 120 s | 10 | 1380 / 13435 | 4076 / 6131 | 0 |
+| 10 (cold repeat) | 120 s | 9 | 590 / 12039 | 4571 / 5589 | 0 |
+
+The largest run that held every call was 10 concurrent calls for two minutes,
+with all 10 joining and all 10 rooms deleted within 6.2 seconds of the callers
+leaving. A cold repeat of the same size bound 9/10: the missed dispatch never
+got a worker process, and its room was still reclaimed. The repeatable ceiling
+from the default worker pool is therefore 8 concurrent calls on this host.
+
+Capacity is memory-bound, not LiveKit-bound: the Agents process pool runs one
+job process per call at roughly 0.5 GB RSS, so each call reserves about 0.5 GB
+above the API/worker baseline. Size production workers from measured RSS instead
+of copying this dev-host number.
+
+Teardown evidence for a run: the room list is empty at the end, and the worker
+log for the same window logs `ended conversation=<id>` for each call. LiveKit's
+own timers are 120 seconds for a room nobody ever joined and 20 seconds after
+the last participant departs, so a missed worker deletion would still be
+visible long after the measured teardown percentiles.
+
+Regression coverage lives in `tests/test_voice_orchestration.py`: a caller who
+never joins must fail and delete the room, a caller who leaves while joining
+must skip the agent session, and a caller who leaves during the start must
+cancel it. A live no-caller check on the same stack connected the worker at
++2 seconds and logged `caller did not join` at +30 seconds; the room was gone
+from the LiveKit list at +32 seconds and the conversation was `Failed`.
+
+The BYOK ElevenLabs key on the test flow allows three concurrent TTS requests.
+Calls beyond that stay connected, but some turns log
+`concurrent_limit_exceeded` and lose audio; that is a provider quota, not a
+session leak.
 
 ## Latency measurement
 
@@ -409,8 +531,13 @@ before quoting a latency number.
   failed TTS call leaves timing fields unset.
 - Events are live data packets, not a replay log; a UI that joins late misses
   earlier events and must load persisted messages separately.
-- A dispatch that never reaches a worker leaves the conversation `Active`; there
-  is no reconciler yet.
+- A worker that dies is reconciled only on the 5-minute sweep after a 10-minute
+  stale cutoff, so the UI can show the call as active for up to ~15 minutes.
+- The two-call per-user cap is a cost guard that spans all of the user's spaces.
+  Raise `MAX_ACTIVE_VOICE_SESSIONS_PER_USER` only for a load test.
+- Concurrent capacity is memory-bound: each call holds one worker job process at
+  roughly 0.5 GB RSS. The measured dev-host ceiling and method are in
+  [Stress and teardown verification](#stress-and-teardown-verification).
 - No SIP/telephony entry point is included; callers must join the returned
   LiveKit room.
 - Enhanced noise cancellation is not implemented. `standard` and `telephony`

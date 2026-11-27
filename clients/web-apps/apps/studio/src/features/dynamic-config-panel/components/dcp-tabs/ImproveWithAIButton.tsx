@@ -69,16 +69,8 @@ const ImproveWithAIButton = ({
         return;
       }
 
-      const {
-        modelProvider,
-        model,
-        systemInput,
-        userInput,
-        isJsonOutput,
-        maxOutputTokens,
-        temperature,
-        topP,
-      } = res.data;
+      const { modelProvider, model, systemInput, userInput, isJsonOutput, maxOutputTokens } =
+        res.data;
 
       const userPrompt = form.getValues(name) ?? "";
 
@@ -98,8 +90,6 @@ const ImproveWithAIButton = ({
         is_json_output: Boolean(isJsonOutput),
         max_output_tokens: maxOutputTokens ?? undefined,
         credential_name: null,
-        temperature: temperature ?? 0.7,
-        top_p: topP ?? 1,
         stream: false,
         ref_id: currentFlow.id,
         ref_name: currentFlow.name,

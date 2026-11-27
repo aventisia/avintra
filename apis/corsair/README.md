@@ -117,6 +117,14 @@ The generation orchestrator is:
 
 - src/dcp-generator/index.ts
 
+### Default auth mode and drift check
+
+Each catalog entry carries the plugin's real default sign-in method (`defaultAuthMode`): the mode the plugin declares at runtime, else the first mode it supports, else `none`. The dialog offers OAuth consent only for entries whose default is `oauth_2` and that ship OAuth app settings (`oauthConfig`); providers that default to OAuth without settings are hidden from the picker but keep their saved credentials.
+
+`npm run test:dcp` generates everything into a temporary directory and then compares the result with the committed catalog copies, both credential-type lists, the vault credential form files, the plugin registry, and the `@corsair-dev/*` dependency list. It fails naming the providers when any of them drift, and when an API-key form does not collect its `ApiKey` (or an OAuth form its client id/secret). The test never writes to the repository, so it is safe to run locally.
+
+Platform-handled providers (LiteLLM model providers and the hand-authored M365/Google Workspace/Salesforce/Twilio/SendGrid forms) are still owned by `scripts/generate_providers.py`; the Corsair generator never overwrites their forms and never requires them to appear in the catalog.
+
 ## Environment variables
 
 Copy .env.example to .env.local and set real values before running the service.

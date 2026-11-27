@@ -66,16 +66,6 @@ export interface LLMRequestDto {
   credential_name?: string | null;
 
   /**
-   * Temperature setting for the model.
-   */
-  temperature?: number;
-
-  /**
-   * Top-p setting for the model.
-   */
-  top_p?: number;
-
-  /**
    * Flag to indicate whether to stream the response.
    */
   stream?: boolean;
@@ -159,16 +149,6 @@ export interface LLMResponseDto {
    * Maximum output tokens used in the response.
    */
   maxOutputTokens?: number;
-
-  /**
-   * Temperature used for generating the response.
-   */
-  temperature: number;
-
-  /**
-   * Top-p value used for the response generation.
-   */
-  top_p: number;
 
   /**
    * Indicates if the response was streamed.

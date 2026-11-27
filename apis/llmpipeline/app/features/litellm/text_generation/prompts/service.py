@@ -26,9 +26,6 @@ CHAT_AGENT_TARGET = "ChatAgentSystemPrompt"
 VOICE_AGENT_TARGET = "VoiceAgentSystemPrompt"
 TEMPLATE_TARGET = "Template"
 
-AGENT_TARGET_TEMPERATURE = 0.4
-DEFAULT_TEMPERATURE = 1
-
 TEMPLATE_BY_REF_TYPE = {
     "agent": "GenerateAgentTemplateDescriptionPrompt.txt",
     "platform": "ImprovedPromptInstructions.txt",
@@ -69,13 +66,6 @@ def _template_file_name(prompt_target: str, ref_type: str, payload: str) -> str:
     if not template_name:
         raise HTTPException(status_code=400, detail=UNSUPPORTED_REF_TYPE_MESSAGE)
     return template_name
-
-
-def _temperature_for(prompt_target: str) -> float:
-    target = prompt_target.strip().lower()
-    if target in (CHAT_AGENT_TARGET.lower(), VOICE_AGENT_TARGET.lower()):
-        return AGENT_TARGET_TEMPERATURE
-    return DEFAULT_TEMPERATURE
 
 
 def _strip_think_block(text: str) -> str:
@@ -166,7 +156,6 @@ class PromptGenerationService:
             provider=PROVIDER,
             model=MODEL,
             input=prompt,
-            temperature=_temperature_for(req.prompt_target),
             ref_type=req.ref_type,
             ref_id=req.ref_id,
             ref_name=req.ref_name,

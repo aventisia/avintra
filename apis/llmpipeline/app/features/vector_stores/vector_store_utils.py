@@ -1,10 +1,7 @@
 """Shared utilities for vector store implementations."""
 import os
-from typing import Union, List
 
 from fastapi import HTTPException, status
-
-from app.features.extract_file_text.extract_file_text_service import extract_text_from_file
 
 
 class VectorStoreInputResolver:
@@ -23,9 +20,16 @@ class VectorStoreInputResolver:
             return ""
 
         if VectorStoreInputResolver._is_extractable_source(source_value):
+            # IMPORTANT NOTE: imported here because the extractor drags pandas, camelot,
+            # pdfplumber, and cv2 into every process that imports this module, including
+            # the voice worker; ingestion is its only caller.
+            from app.features.extract_file_text.extract_file_text_service import (
+                extract_text_from_file,
+            )
+
             return extract_text_from_file(source_value)
 
-        return source_value    
+        return source_value
 
     @staticmethod
     def _is_extractable_source(source_value: str) -> bool:

@@ -24,16 +24,6 @@ export type NodeExecutionLogType = {
   loopIterationIndex?: number;
 };
 
-/** Display identity of one canvas step, carried from the run's saved graph. */
-export type NodeLogDisplayMeta = {
-  label?: string;
-  name?: string;
-  category?: string;
-  iconUrl?: string;
-  icon?: string;
-  img?: string;
-};
-
 export interface ExecutionState {
   executionMap: Record<string, Record<string, NodeExecutionLogType>>; // nodeId -> pathKey -> Log
   executionHistoryMap: Record<string, Record<string, NodeExecutionLogType[]>>; // nodeId -> pathKey -> All attempts
@@ -49,8 +39,6 @@ export interface ExecutionState {
    */
   activeCallerId: string | null;
   nodeTypes: Record<string, string>; // nodeId -> React Flow node type
-  /** nodeId -> display identity from the run's saved graph (picture, names, category). */
-  nodeMeta: Record<string, NodeLogDisplayMeta>;
 
   // O(1) Inference Maps
   routerConfig: Record<string, { defaultId?: string; conditionals: string[] }>;
@@ -69,7 +57,7 @@ export interface ExecutionState {
 /** What the parser derives from a run's logs and flow graph. */
 export type MappedExecution = Omit<
   ExecutionState,
-  "activeIteration" | "activeCallerId" | "nodeTypes" | "nodeMeta" | "runStatus" | "showBranchStats"
+  "activeIteration" | "activeCallerId" | "nodeTypes" | "runStatus" | "showBranchStats"
 >;
 
 export interface ExecutionActions {

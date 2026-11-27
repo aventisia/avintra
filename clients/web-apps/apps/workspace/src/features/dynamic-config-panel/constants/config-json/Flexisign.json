@@ -1,10 +1,19 @@
 [
   {
     "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "Api Key",
+    "description": "Api Key for FlexiSign.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
     "type": "text",
     "name": "tenant_external_id",
     "label": "Tenant_external_id",
-    "description": "Tenant_external_id for Flexisign.",
+    "description": "Tenant_external_id for FlexiSign.",
     "defaultValue": "",
     "required": true
   }

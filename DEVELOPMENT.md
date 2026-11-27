@@ -171,46 +171,37 @@ self-hosted compose file above is local-only and must not run in production.
 
 ## Docker Build & Push
 
-Log in to your container registry if you push images:
+Every push to `main` or `uat` builds and pushes all images to Docker Hub through `.github/workflows/docker-images.yml`, tagged `sha-<7-char commit>` from `main` and `uat-sha-<7-char commit>` (staging web builds) from `uat`; UAT runs the `uat` images, and server 2 will run `main`'s (`deploy/docker/README.md`). To build by hand, log in to Docker Hub if you push:
 
 ```sh
-sudo docker login <registry>
+sudo docker login -u aventisia
 ```
 
-### 1. Install and build legacy web clients
+### 1. Build Docker images from the repository root
+
+The images build the web apps themselves. The full list of images and build commands is in `.claude/skills/build-docker-images/SKILL.md`; the common ones:
 
 ```sh
-npm --prefix clients/web-apps/apps/accounts install
-npm --prefix clients/web-apps/apps/workspace install
-# Studio is now part of the web-apps turborepo (see clients/web-apps/README.md)
-npm --prefix clients/web-apps install
-
-npm --prefix clients/web-apps/apps/accounts run build --mode=production
-npm --prefix clients/web-apps/apps/workspace run build --mode=production
-npx --prefix clients/web-apps turbo run build --filter=studio -- --mode=production
-```
-
-### 2. Build Docker images from the repository root
-
-```sh
-# Nginx frontend
-sudo docker build -f deploy/nginx/Dockerfile -t <registry>/avplatform/frontend:0.4.0 .
+# Edge nginx: web apps over HTTPS, proxying the APIs (amd64 only)
+sudo docker build --platform linux/amd64 -f deploy/docker/web.Dockerfile --target edge -t aventisia/avintra-edge:<tag> .
 
 # Legacy .NET APIs
-sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t <registry>/avplatform/accounts-apis:0.1.0 .
-sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t <registry>/avplatform/workspace-apis:0.1.0 .
+sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t aventisia/avintra-accounts-api:<tag> .
+sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t aventisia/avintra-workspace-api:<tag> .
 
-# LLM Pipeline
-cd apis/llmpipeline && sudo docker build -t <registry>/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
+# LLM Pipeline and Corsair
+sudo docker build -f apis/llmpipeline/Dockerfile -t aventisia/avintra-llmpipeline-api:<tag> apis/llmpipeline
+sudo docker build -f apis/corsair/Dockerfile -t aventisia/avintra-corsair-api:<tag> apis/corsair
 ```
 
-### 3. Push images
+### 2. Push images
 
 ```sh
-sudo docker push <registry>/avplatform/frontend:0.4.0
-sudo docker push <registry>/avplatform/accounts-apis:0.1.0
-sudo docker push <registry>/avplatform/workspace-apis:0.1.0
-sudo docker push <registry>/avplatform/llmpipeline-apis:0.1.0
+sudo docker push aventisia/avintra-edge:<tag>
+sudo docker push aventisia/avintra-accounts-api:<tag>
+sudo docker push aventisia/avintra-workspace-api:<tag>
+sudo docker push aventisia/avintra-llmpipeline-api:<tag>
+sudo docker push aventisia/avintra-corsair-api:<tag>
 ```
 
 ## Network Setup

@@ -250,10 +250,10 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Extract agent ID from the incoming DTO
             var agentId = dto.Agent?.Id;
 
-            // Fetch the published FlowVersion matching the provided agent ID
+            // Fetch the FlowVersion matching the provided agent ID
             var agent = agentId != null
                 ? await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == agentId && w.IsPublished)
+                    .GetByConditionAsync(w => w.Id == agentId)
                     .FirstOrDefaultAsync()
                 : null;
 
@@ -417,7 +417,7 @@ public class WebhookTriggerService : IWebhookTriggerService
             if (requestedAgentId != null && !existingAgentIds.Contains(requestedAgentId.Value))
             {
                 var agent = await _unitOfWork.FlowVersionRepo
-                    .GetByConditionAsync(w => w.Id == requestedAgentId && w.IsPublished)
+                    .GetByConditionAsync(w => w.Id == requestedAgentId)
                     .FirstOrDefaultAsync();
 
                 if (agent != null)

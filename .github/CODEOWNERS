@@ -1,2 +1,3 @@
 # main requires an approval from this team (branch protection: require code owner review).
 * @aventisia/owners
+/.github/workflows/ @aventisia/owners

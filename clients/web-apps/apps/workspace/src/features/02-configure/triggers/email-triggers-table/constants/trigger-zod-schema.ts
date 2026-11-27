@@ -8,7 +8,7 @@ import {
 } from "@avplatform/ui/utils";
 import { z } from "zod";
 
-const MAX_BY_PROVIDER: Record<string, number> = {
+export const MAX_BY_PROVIDER: Record<string, number> = {
   M365: 4320, // 3 days (in minutes)
   GOOGLE: 10080, // example: 7 days
   CUSTOM: 1440, // example: 1 day
@@ -26,60 +26,72 @@ export const triggerNameSchema = z
     message: flexibleNameError("Trigger name"),
   });
 
+const buildTriggerZodSchema = (requireAgents: boolean) =>
+  z
+    .object({
+      // Unique identifier for the trigger
+      id: z.string(),
+
+      // Trigger name validation using the custom schema
+      name: triggerNameSchema,
+
+      agents: requireAgents
+        ? z.array(z.any()).min(1, { message: reqError("Agent(s)") })
+        : z.array(z.any()),
+
+      // Timezone in which the trigger is set
+      timezone: z.string().min(1, { message: reqError("Timezone") }),
+
+      mailbox: z
+        .string()
+        .email()
+        .min(1, { message: reqError("Account") }),
+
+      folder: z.string().optional(),
+
+      // Expiry date and time
+      expiryDateTime: z
+        .date()
+        .min(today, { message: "Expiry date and time cannot be in the past" }),
+
+      resubscribeEnabled: z.boolean().optional(),
+
+      resubscribeFrequency: z
+        .string()
+        .regex(numericRegex, {
+          message: numericError("Resubscribe Frequency"),
+        })
+        .min(1, { message: reqError("Resubscribe Frequency") }),
+      credentialName: z.string().min(1, { message: reqError("Credential") }),
+
+      provider: z.string(),
+
+      // Flag to disable the trigger (optional)
+      isDisabled: z.boolean().nullable().optional(),
+    })
+    .superRefine((data, ctx) => {
+      const freq = Number(data.resubscribeFrequency);
+
+      if (isNaN(freq)) return;
+
+      const max = MAX_BY_PROVIDER[data.provider] ?? 4320; // fallback
+      const min = 0;
+
+      if (freq < min || freq > max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["resubscribeFrequency"],
+          message: `Resubscribe Frequency must be between ${min} and ${max} minutes for ${data.provider}`,
+        });
+      }
+    });
+
 /**
  * Represents the Zod schema for a trigger.
  */
-export const triggerZodSchema = z
-  .object({
-    // Unique identifier for the trigger
-    id: z.string(),
+export const triggerZodSchema = buildTriggerZodSchema(true);
 
-    // Trigger name validation using the custom schema
-    name: triggerNameSchema,
-
-    agents: z.array(z.any()).min(1, { message: reqError("Agent(s)") }),
-
-    // Timezone in which the trigger is set
-    timezone: z.string().min(1, { message: reqError("Timezone") }),
-
-    mailbox: z
-      .string()
-      .email()
-      .min(1, { message: reqError("Account") }),
-
-    folder: z.string().optional(),
-
-    // Expiry date and time
-    expiryDateTime: z.date().min(today, { message: "Expiry date and time cannot be in the past" }),
-
-    resubscribeEnabled: z.boolean().optional(),
-
-    resubscribeFrequency: z
-      .string()
-      .regex(numericRegex, {
-        message: numericError("Resubscribe Frequency"),
-      })
-      .min(1, { message: reqError("Resubscribe Frequency") }),
-    credentialName: z.string().min(1, { message: reqError("Credential") }),
-
-    provider: z.string(),
-
-    // Flag to disable the trigger (optional)
-    isDisabled: z.boolean().nullable().optional(),
-  })
-  .superRefine((data, ctx) => {
-    const freq = Number(data.resubscribeFrequency);
-
-    if (isNaN(freq)) return;
-
-    const max = MAX_BY_PROVIDER[data.provider] ?? 4320; // fallback
-    const min = 0;
-
-    if (freq < min || freq > max) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["resubscribeFrequency"],
-        message: `Resubscribe Frequency must be between ${min} and ${max} minutes for ${data.provider}`,
-      });
-    }
-  });
+/**
+ * Represents the Zod schema for an existing trigger, whose linked agents may be cleared.
+ */
+export const updateTriggerZodSchema = buildTriggerZodSchema(false);

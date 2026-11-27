@@ -10,6 +10,12 @@ def getTargetServers(branchName) {
     }
 }
 
+// IMPORTANT NOTE: these branches' servers run the Docker stack (deploy/docker/README.md), so Jenkins deploys only
+// Apache Camel and the Runner App there; a bare-metal service would fight the containers for their ports.
+def dockerDeployedBranches() {
+    return ['uat']
+}
+
 // Define a function to get the build mode based on the branch name (for Node.js apps)
 def getBuildMode(branchName) {
     switch(branchName) {
@@ -90,10 +96,23 @@ pipeline {
                         env.BUILD_GLOBALADMIN_API = hasChangesInPath(changes, 'apis/WorcBackend-legacy/GlobalAdminAPIs') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath(changes, 'apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_APACHECAMEL_API = hasChangesInPath(changes, 'apis/apache-camel') ? 'true' : 'false'
-                        env.BUILD_CORSAIR_API = hasChangesInPath(changes, 'apis/corsair') ? 'true' : 'false'
+                        env.BUILD_CORSAIR_API = (
+                            hasChangesInPath(changes, 'apis/corsair') ||
+                            hasChangesInPath(changes, 'clients/web-apps/apps/workspace/src/features/02-configure/vault-credentials') ||
+                            hasChangesInPath(changes, 'clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs/Features/Corsair') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/WorkspaceAPIs/Features/CloudConnectors/ConfigFiles') ||
+                            hasChangesInPath(changes, 'apis/WorcBackend-legacy/AspNetToolkit/Enums')
+                        ) ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath(changes, 'clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath(changes, 'clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath(changes, 'clients/RunnerApp') ? 'true' : 'false'
+                    }
+
+                    if (env.BRANCH_NAME in dockerDeployedBranches()) {
+                        echo "${env.BRANCH_NAME} runs on Docker: deploying only Apache Camel and the Runner App"
+                        ['BUILD_ACCOUNTS_API', 'BUILD_WORKSPACE_API', 'BUILD_GLOBALADMIN_API', 'BUILD_LLMPIPELINE_API',
+                         'BUILD_CORSAIR_API', 'BUILD_DOCS_CLIENT', 'BUILD_WEB_APPS'].each { flag -> env."${flag}" = 'false' }
                     }
                     
                     echo """
@@ -206,6 +225,14 @@ pipeline {
                             // --force: @corsair-dev/onepassword pins zod@4.1.13 while
                             // other plugins require ^4.1.13; force resolves the conflict.
                             sh 'npm ci --force'
+                        }
+                    }
+                }
+                stage('Test - Corsair API') {
+                    steps {
+                        dir('apis/corsair') {
+                            // AC7: fail naming catalog/list/form/registry/deps/gate drift; keep before Generate, which rewrites the copies asserted here.
+                            sh 'npm run test:dcp'
                         }
                     }
                 }
