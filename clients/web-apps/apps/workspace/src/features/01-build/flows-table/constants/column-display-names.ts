@@ -4,6 +4,8 @@ import { KeyValueLookupType } from "@avplatform/ui/types";
 export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "select", value: "Select row" },
   { key: "name", value: "Agent" },
+  { key: "status", value: "Status" },
+  { key: "run", value: "Run" },
   { key: "type", value: "Type" },
   { key: "supportedPlatform", value: "Platform" },
   { key: "accessLevel", value: "Access" },

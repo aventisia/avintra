@@ -12,6 +12,8 @@ interface ResourceUserAccessRowActionProps {
   isTenantWideAccess: boolean;
   resourceType: ResourceTypeEnum;
   disabled?: boolean;
+  /** Restrict the people picker to Tenant User holders; used when sharing a published chat/voice agent. */
+  onlyTu?: boolean;
 }
 
 export const ResourceUserAccessRowAction: React.FC<ResourceUserAccessRowActionProps> = ({
@@ -20,6 +22,7 @@ export const ResourceUserAccessRowAction: React.FC<ResourceUserAccessRowActionPr
   isTenantWideAccess,
   resourceType,
   disabled = false,
+  onlyTu = false,
 }) => {
   const { setShowDialog, setResource } = useResourceUserAccessStore(
     useShallow((s) => ({
@@ -38,7 +41,7 @@ export const ResourceUserAccessRowAction: React.FC<ResourceUserAccessRowActionPr
       onClick={() => {
         if (disabled) return;
         setShowDialog(true);
-        setResource(rowId, resourceName, resourceType, isTenantWideAccess);
+        setResource(rowId, resourceName, resourceType, isTenantWideAccess, onlyTu);
       }}
     />
   );

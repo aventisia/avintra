@@ -9,6 +9,7 @@ public interface ISearchByQueryService
     /// <param name="searchKey">The search key to filter users by name or username.</param>
     /// <param name="includeCurrentUser">Whether to include the current user in the results.</param>
     /// <param name="onlyCurrentSpace">When true, restrict results to active members of the current space; otherwise search tenant-wide.</param>
+    /// <param name="onlyTu">When true, restrict results to users who hold the Tenant User role; otherwise search every role.</param>
     /// <returns>A list of users that match the search criteria.</returns>
-    Task<ServiceResponse<IEnumerable<SearchedUserDto>>> SearchUserAsync(string? searchKey, bool includeCurrentUser, bool onlyCurrentSpace);
+    Task<ServiceResponse<IEnumerable<SearchedUserDto>>> SearchUserAsync(string? searchKey, bool includeCurrentUser, bool onlyCurrentSpace, bool onlyTu);
 }

@@ -1,7 +1,7 @@
 import { Input } from "@avplatform/ui";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import { ArrowSquareOutIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowSquareOutIcon, GitBranchIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -68,18 +68,18 @@ const DCPDialogHeader = () => {
   // The action catalog owns the subtitle and docs link for catalog actions;
   // nodes outside the catalog (triggers, custom tools, structural nodes)
   // keep their own hardcoded text.
-  const actionSelectorData = useNodeSelectorStore((state) => state.actionSelectorData);
+  const catalogData = useNodeSelectorStore((state) => state.unfilteredActionSelectorData);
 
   const catalogEntriesByName = useMemo(
     () =>
       new Map(
-        actionSelectorData.flatMap((primary) =>
+        catalogData.flatMap((primary) =>
           primary.actionCategories.flatMap((category) =>
             (category.actions ?? []).map((action) => [action.name, action] as const),
           ),
         ),
       ),
-    [actionSelectorData],
+    [catalogData],
   );
 
   const catalogEntry = nodeData && catalogEntriesByName.get(nodeData.name);
@@ -125,6 +125,8 @@ const DCPDialogHeader = () => {
       iconMapper.CallAgentIcon
     ) : nodeData?.type === "blockNode" ? (
       iconMapper.BlockNodeIcon
+    ) : nodeData?.type === "branchNode1" ? (
+      <GitBranchIcon className="size-4" />
     ) : nodeData?.iconUrl ? (
       <NodeImage src={nodeData.iconUrl} />
     ) : nodeData?.icon && iconMapper[nodeData.icon] ? (

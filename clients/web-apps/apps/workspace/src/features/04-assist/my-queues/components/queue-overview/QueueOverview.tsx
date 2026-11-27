@@ -12,7 +12,7 @@ import { QueueSummaryCard } from "./QueueSummaryCard";
 import { QueueTypeSwitch } from "./QueueTypeSwitch";
 
 /**
- * Renders the overview screen for the Assist > Queues section. Summarizes all
+ * Renders the overview screen for the Build > Queues section. Summarizes all
  * queues the user has access to, showing the total item count for each. A switch
  * toggles between the user's own queues and the agent queues they can view.
  * Clicking a queue navigates to the work-item list screen with that queue

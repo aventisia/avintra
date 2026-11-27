@@ -1,5 +1,5 @@
 import { PersonAvatar } from "@avplatform/ui/avatar";
-import { FALLBACK_STATUS_DISPLAY, STATUS_DISPLAY } from "@avplatform/ui/constants";
+import { FALLBACK_STATUS_DISPLAY, FALLBACK_VALUE, STATUS_DISPLAY } from "@avplatform/ui/constants";
 import { useCrudDialogRecordView } from "@avplatform/ui/crud-dialog";
 import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
@@ -75,13 +75,19 @@ type JobPayloadSectionProps = {
   title: string;
   payload: Record<string, unknown>;
   action?: ReactNode;
+  subtitle?: string;
 };
 
-const JobPayloadSection = ({ title, payload, action }: JobPayloadSectionProps) => {
+const JobPayloadSection = ({ title, payload, action, subtitle }: JobPayloadSectionProps) => {
   const json = toJsonString(payload);
 
   return (
     <RecordSection title={title} action={action ?? createCopyJsonAction(json)}>
+      {subtitle && (
+        <p className="truncate text-xs text-muted-foreground" title={subtitle}>
+          {subtitle}
+        </p>
+      )}
       <RecordPanel className="px-3 pb-1">
         <JsonViewer
           jsonData={json}
@@ -128,6 +134,22 @@ export const JobView = ({ rowId }: JobViewProps) => {
     : `${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
   const status = STATUS_DISPLAY[job.status] ?? FALLBACK_STATUS_DISPLAY;
   const { description, detail } = getTimeline(job);
+
+  const storedDisplayName = job.lastNodeLog?.nodeDisplayName;
+  const storedUniqueName = job.lastNodeLog?.nodeUniqueName;
+  const isPresentName = (value: unknown): value is string =>
+    typeof value === "string" && value !== "" && value !== FALLBACK_VALUE;
+  const lastNodeDisplayName = isPresentName(storedDisplayName)
+    ? storedDisplayName
+    : isPresentName(storedUniqueName)
+      ? storedUniqueName
+      : undefined;
+  const lastNodeSubtitle =
+    lastNodeDisplayName &&
+    isPresentName(storedUniqueName) &&
+    storedUniqueName !== lastNodeDisplayName
+      ? `${lastNodeDisplayName} · ${storedUniqueName}`
+      : lastNodeDisplayName;
 
   return (
     <RecordSheet>
@@ -212,6 +234,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
       {job.lastNodeLog && (
         <JobPayloadSection
           title="Last node log"
+          subtitle={lastNodeSubtitle}
           payload={job.lastNodeLog}
           action={
             <a

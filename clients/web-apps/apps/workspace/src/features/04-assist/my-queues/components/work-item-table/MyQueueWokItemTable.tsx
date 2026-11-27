@@ -117,7 +117,7 @@ export const MyQueueWokItemTable = () => {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <NavLink to="/assist/queues">Queues</NavLink>
+              <NavLink to="/queues">Queues</NavLink>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

@@ -16,12 +16,13 @@ import { SharePersonRow } from "./SharePersonRow";
 type SharePanelsProps = {
   draft: ResourceUserAccessDraft;
   spaceName: string;
+  onlyTu?: boolean;
 };
 
 /**
  * Animated people list or everyone callout below the share mode radio group.
  */
-export const SharePanels = ({ draft, spaceName }: SharePanelsProps) => {
+export const SharePanels = ({ draft, spaceName, onlyTu = false }: SharePanelsProps) => {
   const activeCount = draft.rows.filter((row) => row.change !== "removed").length;
 
   return (
@@ -47,7 +48,7 @@ export const SharePanels = ({ draft, spaceName }: SharePanelsProps) => {
       ) : (
         <AnimatedPanel key="restricted">
           <div className="pb-1 pt-5">
-            <PeoplePicker draft={draft} spaceName={spaceName} />
+            <PeoplePicker draft={draft} spaceName={spaceName} onlyTu={onlyTu} />
             {draft.isModeChanged && (
               <WarningLine>{`Others in ${spaceName} lose access once you save.`}</WarningLine>
             )}
