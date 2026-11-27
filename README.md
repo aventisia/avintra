@@ -97,9 +97,7 @@ The Desktop App and Runner run on Windows 10 and 11, macOS and Linux (x64). Desk
 | Full audit logs and governance | Basic | ✅ |
 | Multi-tenancy | ❌ | With a Commercial License |
 | Support | Community | Dedicated, with SLA |
-| Host and charge for your own solutions for your customers | ❌ | With a Commercial License |
-| White-label your solutions | ❌ | With a Commercial License |
-| Resell Avintra itself or offer it as a competing platform | ❌ | With a Commercial License |
+
 
 [Talk to us about Enterprise](https://aventisia.com/contact/)
 
