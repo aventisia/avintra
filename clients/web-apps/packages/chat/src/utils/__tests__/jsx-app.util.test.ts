@@ -5,7 +5,7 @@ import { buildJsxAppPage } from "../jsx-app.util";
 type FakeElement = { type: unknown; props: unknown; children: FakeElement[] };
 
 const inlineScript = (page: string) => {
-  const scripts = [...page.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+  const scripts = [...page.matchAll(/<script>([\s\S]*?)<\/script>/gi)];
   return scripts.at(-1)![1]!;
 };
 

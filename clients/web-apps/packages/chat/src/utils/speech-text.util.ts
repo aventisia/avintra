@@ -16,6 +16,7 @@ const stripMarkdown = (markdown: string) =>
     .replace(/(\*\*|__|~~|`)/g, "")
     .replace(/(^|\W)[*_](\S[^*_]*?)[*_](?=\W|$)/g, "$1$2")
     .replace(/<[^>]+>/g, "")
+    .replace(/</g, "")
     .trim();
 
 /** The plain text a reply should be read aloud as: no markdown markers, and a file or code block named rather than read. */
