@@ -5,7 +5,7 @@ import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { getUserDisplayName } from "@avplatform/ui/utils";
+import { getSessionEndedUrl, getUserDisplayName } from "@avplatform/ui/utils";
 import {
   BellIcon,
   BuildingsIcon,
@@ -84,6 +84,12 @@ const SidebarAccountMenu = ({ className }: SidebarAccountMenuProps) => {
         setUserSession(null);
         // TODO: Temporarily added for switch tenant feat
         localStorage.removeItem("tenant_switch");
+
+        if (IS_TAURI) {
+          window.location.assign(getSessionEndedUrl());
+          return;
+        }
+
         const accountsBase = import.meta.env.VITE_ACCOUNTS_PATH;
         navigate("/redirect?msg=Logging out...&url=" + accountsBase);
       } else toast.error(httpResponse.message);

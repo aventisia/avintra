@@ -124,6 +124,7 @@ public static partial class AppServicesExtension
         services.AddScoped<IAITaskService, AITaskService>();
         services.AddScoped<IInstanceService, InstanceService>();
         services.AddScoped<ILoginWithExternalAuthService, LoginWithExternalAuthService>();
+        services.AddScoped<IDesktopSignInService, DesktopSignInService>();
         services.AddScoped<IManageTenantService, ManageTenantService>();
         services.AddScoped<ITenantAuthService, TenantAuthService>();
         services.AddScoped<ISearchByQueryService, SearchByQueryService>();

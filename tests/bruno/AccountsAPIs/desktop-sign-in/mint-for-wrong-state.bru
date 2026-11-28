@@ -1,0 +1,39 @@
+meta {
+  name: Mint a second code for the tamper checks
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-wrong-state-case",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "http://localhost:49153/"
+  }
+}
+
+tests {
+  test("responds with 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 200) {
+    bru.setVar("DESKTOP_SIGN_IN_CODE_WRONG_STATE", res.getBody().data.code);
+  }
+}
+
+docs {
+  > Also exercises the second allowed return address, `http://localhost:<port>/`.
+}

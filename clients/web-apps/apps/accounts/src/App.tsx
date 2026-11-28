@@ -11,6 +11,9 @@ const OnBoardingPage = lazy(() => import("@/pages/OnBoardingPage"));
 const LogInPage = lazy(() => import("@/pages/LogInPage"));
 const SsoRedirectPage = lazy(() => import("@/pages/SsoRedirectPage"));
 const ResetPwdPage = lazy(() => import("@/pages/ResetPwdPage"));
+const DesktopConfirmPage = lazy(() => import("@/pages/DesktopConfirmPage"));
+const DesktopCallbackPage = lazy(() => import("@/pages/DesktopCallbackPage"));
+const DesktopReturnedPage = lazy(() => import("@/pages/DesktopReturnedPage"));
 
 // Create a new query client
 const queryClient = new QueryClient({
@@ -39,6 +42,18 @@ const router = createBrowserRouter(
         {
           path: "/sso-redirect",
           element: <SsoRedirectPage />,
+        },
+        {
+          path: "/desktop/confirm",
+          element: <DesktopConfirmPage />,
+        },
+        {
+          path: "/desktop/callback",
+          element: <DesktopCallbackPage />,
+        },
+        {
+          path: "/desktop/returned",
+          element: <DesktopReturnedPage />,
         },
         {
           path: "/create-account",

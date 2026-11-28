@@ -1,0 +1,38 @@
+meta {
+  name: Mint refuses a non-loopback return address
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ACCOUNTS_API_BASE_URL}}/auth/desktop/mint
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{LOGIN_ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "state": "desktop-state-non-loopback",
+    "codeChallenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+    "redirectUri": "https://evil.example/steal"
+  }
+}
+
+tests {
+  test("responds with 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("names the loopback rule", function() {
+    expect(res.getBody()).to.contain("Only a loopback return address is allowed.");
+  });
+}
+
+docs {
+  > The browser may hand the code back only to the desktop app on the person's own computer, so any other
+  > scheme, host or path signs no one in. The access token from `Login` authenticates this request.
+}

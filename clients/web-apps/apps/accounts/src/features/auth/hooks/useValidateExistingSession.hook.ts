@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getDesktopConfirmationPath } from "@/constants/desktop-intent.util";
 import {
   buildOnboardingUrl,
   resolvePostLoginDestination,
@@ -35,7 +36,10 @@ const useValidateExistingSession = ({ enabled }: { enabled: boolean }) => {
         return;
       }
 
-      navigate(buildRedirectPath(resolvePostLoginDestination(userSession.email), "Loading..."));
+      navigate(
+        getDesktopConfirmationPath() ??
+          buildRedirectPath(resolvePostLoginDestination(userSession.email), "Loading..."),
+      );
     },
   });
 

@@ -4,12 +4,13 @@ import {
   getTenantInfo,
   isEmailAvailable,
 } from "@avplatform/ui/apis/accounts-auth-apis";
-import { IS_TAURI, USER_NAME_LS_KEY } from "@avplatform/ui/constants";
+import { USER_NAME_LS_KEY } from "@avplatform/ui/constants";
 import type { EmailDto } from "@avplatform/ui/dtos";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { getDesktopConfirmationAppPath, hasDesktopIntent } from "@/constants/desktop-intent.util";
 import { hasPlanIntent } from "@/constants/post-login-destination";
 
 import { useAuthStore } from "../stores/auth-store";
@@ -45,7 +46,11 @@ const isUnregisteredEmail = async (email: string) => {
 const getProviderLoginUrl = async (provider: string) => {
   try {
     const redirect = new URLSearchParams(window.location.search).get("redirect");
-    const response = await getSocialLoginUrl(provider, redirect, hasPlanIntent());
+    const response = await getSocialLoginUrl(
+      provider,
+      getDesktopConfirmationAppPath() ?? redirect,
+      hasPlanIntent(),
+    );
     return response.data ?? null;
   } catch {
     return null;
@@ -61,8 +66,10 @@ const discoverAccount = async ({ email }: EmailDto): Promise<AccountDiscovery> =
 
   const tenantInfo = await getTenantInfo({ email }).catch(async (error: unknown) => {
     // IMPORTANT NOTE: tenant-info answers an unknown email with a 400, which the axios instance
-    // rejects as a plain string; only a free email turns that rejection into a sign-up.
-    if (!IS_TAURI && typeof error === "string" && (await isUnregisteredEmail(email))) return null;
+    // rejects as a plain string; only a free email turns that rejection into a sign-up, and a
+    // desktop hand-back never offers sign-up.
+    if (!hasDesktopIntent() && typeof error === "string" && (await isUnregisteredEmail(email)))
+      return null;
     throw error;
   });
 

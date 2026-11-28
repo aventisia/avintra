@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { getDesktopConfirmationAppPath } from "@/constants/desktop-intent.util";
+
 import { getPaymentStatus } from "../apis/payment-status-apis";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
 
@@ -72,7 +74,10 @@ export const useFetchPaymentStatus = () => {
             markFreshLogin();
 
             setTimeout(() => {
-              window.location.assign(import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview");
+              window.location.assign(
+                getDesktopConfirmationAppPath() ??
+                  import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview",
+              );
             }, 500); // Delay for a smooth transition
           }
         }, 1000); // Update every second

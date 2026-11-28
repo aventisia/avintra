@@ -7,8 +7,8 @@ interface SetupCardProps {
 }
 
 /**
- * Shared shell for the desktop-app setup screens (Service URL entry and
- * Runner App provisioning). Keeps the two steps visually consistent.
+ * Shared shell for the desktop-app setup and sign-in screens. Keeps the
+ * screens visually consistent.
  */
 export function SetupCard({ title, subtitle, children }: SetupCardProps) {
   return (
